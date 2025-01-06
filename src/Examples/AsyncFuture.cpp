@@ -16,7 +16,7 @@ static WorkerThread comm_thread("CommunicationThread");
 
 // Assume send_data() is not thread-safe and may only be called on comm_thread context.
 // A random std::async thread from the pool is unacceptable and causes cross-threading.
-size_t send_data(const std::string& data) 
+static size_t send_data(const std::string& data) 
 {
     std::this_thread::sleep_for(std::chrono::seconds(2));  // Simulate sending
     return data.size();  // Return the 'bytes_sent' sent result
