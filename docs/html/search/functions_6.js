@@ -1,4 +1,27 @@
 var searchData=
 [
-  ['heap_5farg_5fdeleter_0',['heap_arg_deleter',['../class_delegate_lib_1_1heap__arg__deleter.html#a3013b01fb9e034d4e97c947a40cb6b29',1,'DelegateLib::heap_arg_deleter::heap_arg_deleter()'],['../class_delegate_lib_1_1heap__arg__deleter_3_01_t_01_5_01_4.html#a31ac1274500603c1eaf159e77027cbc0',1,'DelegateLib::heap_arg_deleter&lt; T * &gt;::heap_arg_deleter()'],['../class_delegate_lib_1_1heap__arg__deleter_3_01_t_01_5_5_01_4.html#a9ad3898d1d415f962b3423f8df7e5ac6',1,'DelegateLib::heap_arg_deleter&lt; T ** &gt;::heap_arg_deleter()']]]
+  ['getallocations_0',['GetAllocations',['../class_allocator.html#af894facb6cf20e87a163cb3477a25bb4',1,'Allocator']]],
+  ['getargs_1',['GetArgs',['../class_delegate_lib_1_1_delegate_async_msg.html#a1aee414f10fd730ec393aab7ead86cbd',1,'DelegateLib::DelegateAsyncMsg::GetArgs()'],['../class_delegate_lib_1_1_delegate_async_wait_msg.html#a40e395855b723495c3f9aea2ef2eec6f',1,'DelegateLib::DelegateAsyncWaitMsg::GetArgs()']]],
+  ['getblockcount_2',['GetBlockCount',['../class_allocator.html#a053a03c6607fd3bff94d5b24fcb2867c',1,'Allocator']]],
+  ['getblocksinuse_3',['GetBlocksInUse',['../class_allocator.html#a32a97e614e98ed11ba94c695777faacd',1,'Allocator']]],
+  ['getblocksize_4',['GetBlockSize',['../class_allocator.html#ab04ee3162d48f12e5aa4cdc07cc2102c',1,'Allocator']]],
+  ['getcurrentthreadid_5',['GetCurrentThreadId',['../class_worker_thread.html#ac9627a136d18c9214284496f104f9429',1,'WorkerThread']]],
+  ['getdata_6',['GetData',['../class_thread_msg.html#af1e77cf93fb0caf64b18e0ac7dc6ca9d',1,'ThreadMsg']]],
+  ['getdeallocations_7',['GetDeallocations',['../class_allocator.html#ad23779120d03da72d0bb70da0f05c068',1,'Allocator']]],
+  ['getdelegateinvoker_8',['GetDelegateInvoker',['../class_delegate_lib_1_1_delegate_msg.html#a61f5dfba67aa879a51239f6c1edbd446',1,'DelegateLib::DelegateMsg']]],
+  ['getid_9',['GetId',['../class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593',1,'ThreadMsg']]],
+  ['getinstance_10',['GetInstance',['../class_sys_data.html#a2f077bfc2b17454f0b92e25662b6c0d5',1,'SysData::GetInstance()'],['../class_sys_data_no_lock.html#aa9b34a96cecc991c8092aab1313d1f7c',1,'SysDataNoLock::GetInstance()']]],
+  ['getinvokerwaiting_11',['GetInvokerWaiting',['../class_delegate_lib_1_1_delegate_async_wait_msg.html#ae36cc3b75be6d2698213ef25c43ad390',1,'DelegateLib::DelegateAsyncWaitMsg']]],
+  ['getlock_12',['GetLock',['../class_delegate_lib_1_1_delegate_async_wait_msg.html#ac8ca2d43973ccf4141747494448cd930',1,'DelegateLib::DelegateAsyncWaitMsg']]],
+  ['getmode_13',['GetMode',['../class_example_1_1_communication.html#ac8bef0a56755222e0f01a71db06bb711',1,'Example::Communication']]],
+  ['getname_14',['GetName',['../class_allocator.html#acac0f11cfe5cf1dfcd3b9db54ec00b7d',1,'Allocator']]],
+  ['getqueuesize_15',['GetQueueSize',['../class_worker_thread.html#a0d9b77b5a1cbd388e279ee460f1df4d4',1,'WorkerThread']]],
+  ['getretval_16',['GetRetVal',['../class_delegate_lib_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a1c22a234daf732b6818127a5311572f4',1,'DelegateLib::DelegateFreeAsyncWait&lt; RetType(Args...)&gt;::GetRetVal()'],['../class_delegate_lib_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a4f336c0ec1773959bdc114685a493ac3',1,'DelegateLib::DelegateMemberAsyncWait&lt; TClass, RetType(Args...)&gt;::GetRetVal()'],['../class_delegate_lib_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a19e32658a811a5b584436505c46d8cf7',1,'DelegateLib::DelegateFunctionAsyncWait&lt; RetType(Args...)&gt;::GetRetVal()']]],
+  ['getsema_17',['GetSema',['../class_delegate_lib_1_1_delegate_async_wait_msg.html#a6730a8609639d49721dbe2389971e3bb',1,'DelegateLib::DelegateAsyncWaitMsg']]],
+  ['getstate_18',['getState',['../class_example_1_1_concrete_subject.html#ae3a2afc3507db06040c3db545043b1ae',1,'Example::ConcreteSubject']]],
+  ['getthread_19',['GetThread',['../class_delegate_lib_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a397b49f5a8c8d84b2b88821955a502af',1,'DelegateLib::DelegateFreeAsync&lt; RetType(Args...)&gt;::GetThread()'],['../class_delegate_lib_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a4b20dbce4bedf9253a83b2053530ad18',1,'DelegateLib::DelegateMemberAsync&lt; TClass, RetType(Args...)&gt;::GetThread()'],['../class_delegate_lib_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a1bd821f85fe65d031a307cf2a8f766d6',1,'DelegateLib::DelegateFunctionAsync&lt; RetType(Args...)&gt;::GetThread()'],['../class_delegate_lib_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a5fa555564632da38e4ac50605100d80e',1,'DelegateLib::DelegateFreeAsyncWait&lt; RetType(Args...)&gt;::GetThread()'],['../class_delegate_lib_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a88440ace7c683b5c948ea1ca1c0fd1c2',1,'DelegateLib::DelegateMemberAsyncWait&lt; TClass, RetType(Args...)&gt;::GetThread()'],['../class_delegate_lib_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a941e2ac754b505a169d9029f437e5ea8',1,'DelegateLib::DelegateFunctionAsyncWait&lt; RetType(Args...)&gt;::GetThread()']]],
+  ['getthreadid_20',['GetThreadId',['../class_worker_thread.html#a072c9f946424b91f0fdef5260d7b59aa',1,'WorkerThread']]],
+  ['getthreadname_21',['GetThreadName',['../class_worker_thread.html#a4b33385320113d866cd54428caa8923f',1,'WorkerThread']]],
+  ['gettime_22',['GetTime',['../class_timer.html#a2ac5c694cf3ce5a40caf79d49d208d56',1,'Timer']]],
+  ['getvalue_23',['GetValue',['../class_example_1_1_active_object.html#a52195f23826b355a28cc59a692e79de7',1,'Example::ActiveObject']]]
 ];

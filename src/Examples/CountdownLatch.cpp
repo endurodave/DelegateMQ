@@ -14,52 +14,58 @@
 using namespace DelegateLib;
 using namespace std;
 
-// Process is always called by a WorkerThread instance, not a std::thread
-// from the thread pool.
-static void process(int id, std::latch& startLatch) {
-    startLatch.wait();  // Wait until all threads are ready to start
-
-    std::this_thread::sleep_for(std::chrono::seconds(1)); // Simulate work
-    std::cout << "Task " << id << " is done!" << std::endl;
-}
-
-// Countdown Latch (Synchronizing Tasks Before Proceeding). Assumes the 
-// process() must be called by a user-defined worker thread, not a random
-// std::thread from the thread pool. 
-void CountdownLatchExample()
+namespace Example
 {
-    const int numThreads = 3;
-    std::latch startLatch(numThreads);  // Wait for 3 threads
+    // Process is always called by a WorkerThread instance, not a std::thread
+    // from the thread pool.
+    static void process(int id, std::latch& startLatch) {
+        startLatch.wait();  // Wait until all threads are ready to start
 
-    // Create worker threads
-    WorkerThread wt1("Thread1");
-    wt1.CreateThread();
-    WorkerThread wt2("Thread2");
-    wt2.CreateThread();
-    WorkerThread wt3("Thread3");
-    wt3.CreateThread();
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // Simulate work
+        std::cout << "Task " << id << " is done!" << std::endl;
+    }
 
-    // Create async blocking delegates
-    auto delegate1 = MakeDelegate(&process, wt1, WAIT_INFINITE);
-    auto delegate2 = MakeDelegate(&process, wt2, WAIT_INFINITE);
-    auto delegate3 = MakeDelegate(&process, wt3, WAIT_INFINITE);
+    // Countdown Latch (Synchronizing Tasks Before Proceeding). Assumes the 
+    // process() must be called by a user-defined worker thread, not a random
+    // std::thread from the thread pool. 
+    void CountdownLatchExample()
+    {
+        const int numThreads = 3;
+        std::latch startLatch(numThreads);  // Wait for 3 threads
 
-    // Create a thread attached to a delegate
-    std::thread t1(delegate1, 1, std::ref(startLatch));
-    std::thread t2(delegate2, 2, std::ref(startLatch));
-    std::thread t3(delegate3, 3, std::ref(startLatch));
+        // Create worker threads
+        WorkerThread wt1("Thread1");
+        wt1.CreateThread();
+        WorkerThread wt2("Thread2");
+        wt2.CreateThread();
+        WorkerThread wt3("Thread3");
+        wt3.CreateThread();
 
-    std::this_thread::sleep_for(std::chrono::seconds(1)); // Simulate some setup time
-    std::cout << "All threads ready, proceeding..." << std::endl;
+        // Create async blocking delegates
+        auto delegate1 = MakeDelegate(&process, wt1, WAIT_INFINITE);
+        auto delegate2 = MakeDelegate(&process, wt2, WAIT_INFINITE);
+        auto delegate3 = MakeDelegate(&process, wt3, WAIT_INFINITE);
 
-    startLatch.count_down();  // Decrease latch count and allow threads to proceed
-    startLatch.count_down();
-    startLatch.count_down();
+        // Create a thread attached to a delegate
+        std::thread t1(delegate1, 1, std::ref(startLatch));
+        std::thread t2(delegate2, 2, std::ref(startLatch));
+        std::thread t3(delegate3, 3, std::ref(startLatch));
 
-    t1.join();
-    t2.join();
-    t3.join();
+        std::this_thread::sleep_for(std::chrono::seconds(1)); // Simulate some setup time
+        std::cout << "All threads ready, proceeding..." << std::endl;
+
+        startLatch.count_down();  // Decrease latch count and allow threads to proceed
+        startLatch.count_down();
+        startLatch.count_down();
+
+        t1.join();
+        t2.join();
+        t3.join();
+    }
 }
 #else
-void CountdownLatchExample() {}
+namespace Example
+{
+    void CountdownLatchExample() {}
+}
 #endif

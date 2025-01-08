@@ -11,7 +11,7 @@ public:
 	/// @param[in] data - a pointer to the messsage data to be typecast
 	///		by the receiving task based on the id value. 
 	/// @pre The data pointer argument *must* be created on the heap.
-	/// @port The destination thread will delete the heap allocated data once the 
+	/// @post The destination thread will delete the heap allocated data once the 
 	///		callback is complete.  
 	ThreadMsg(int id, std::shared_ptr<DelegateLib::DelegateMsg> data) :
 		m_id(id), 

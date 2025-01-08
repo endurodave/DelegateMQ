@@ -23,6 +23,7 @@
 #include <memory>
 #include "DelegateOpt.h"
 
+/// The delegate library namespace
 namespace DelegateLib {
 
 /// @brief Non-template base class for all delegates.

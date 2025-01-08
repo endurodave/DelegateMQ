@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Delegates: src/Delegate/MulticastDelegate.h Source File</title>
+<title>Delegates: MulticastDelegate.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -226,7 +226,7 @@ $(function(){initNavTree('_multicast_delegate_8h_source.html',''); initResizable
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        }</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    }</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_typedef" href="_delegate_opt_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">xlist&lt;std::shared_ptr&lt;DelegateType&gt;</a>&gt; m_delegates;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_typedef" href="xlist_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">xlist&lt;std::shared_ptr&lt;DelegateType&gt;</a>&gt; m_delegates;</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>};</div>
 </div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
@@ -234,9 +234,8 @@ $(function(){initNavTree('_multicast_delegate_8h_source.html',''); initResizable
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_delegate_8h_html"><div class="ttname"><a href="_delegate_8h.html">Delegate.h</a></div><div class="ttdoc">Delegate series of classes are used to invoke a function synchronously.</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a9e6c72a4d9879e662d02c096cf16ff3c"><div class="ttname"><a href="_delegate_opt_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">xlist</a></div><div class="ttdeci">std::list&lt; T, Alloc &gt; xlist</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:33</div></div>
 <div class="ttc" id="a_delegate_opt_8h_html_abe89b46e296c7421855410a08d6d31fe"><div class="ttname"><a href="_delegate_opt_8h.html#abe89b46e296c7421855410a08d6d31fe">BAD_ALLOC</a></div><div class="ttdeci">#define BAD_ALLOC()</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:18</div></div>
-<div class="ttc" id="aclass_delegate_lib_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4_html"><div class="ttname"><a href="class_delegate_lib_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html">DelegateLib::Delegate&lt; RetType(Args...)&gt;</a></div><div class="ttdoc">Template base class for all delegates.</div><div class="ttdef"><b>Definition</b> Delegate.h:77</div></div>
+<div class="ttc" id="aclass_delegate_lib_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4_html"><div class="ttname"><a href="class_delegate_lib_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html">DelegateLib::Delegate&lt; RetType(Args...)&gt;</a></div><div class="ttdoc">Template base class for all delegates.</div><div class="ttdef"><b>Definition</b> Delegate.h:78</div></div>
 <div class="ttc" id="aclass_delegate_lib_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4_html_a8ae51fd14e2d7f0193f394095c3f6ed0"><div class="ttname"><a href="class_delegate_lib_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a8ae51fd14e2d7f0193f394095c3f6ed0">DelegateLib::Delegate&lt; RetType(Args...)&gt;::Clone</a></div><div class="ttdeci">virtual Delegate * Clone() const =0</div><div class="ttdoc">Clone an instance of a Delegate instance.</div></div>
 <div class="ttc" id="aclass_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4_html_a0867a51586fdae4a58df55b5970b063b"><div class="ttname"><a href="class_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a0867a51586fdae4a58df55b5970b063b">DelegateLib::MulticastDelegate&lt; RetType(Args...)&gt;::Remove</a></div><div class="ttdeci">void Remove(const DelegateType &amp;delegate)</div><div class="ttdef"><b>Definition</b> MulticastDelegate.h:115</div></div>
 <div class="ttc" id="aclass_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4_html_a26a9d91e595a24e354d753ae7fde1ed5"><div class="ttname"><a href="class_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a26a9d91e595a24e354d753ae7fde1ed5">DelegateLib::MulticastDelegate&lt; RetType(Args...)&gt;::Broadcast</a></div><div class="ttdeci">void Broadcast(Args... args)</div><div class="ttdef"><b>Definition</b> MulticastDelegate.h:52</div></div>
@@ -256,9 +255,10 @@ $(function(){initNavTree('_multicast_delegate_8h_source.html',''); initResizable
 <div class="ttc" id="aclass_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4_html_ae33dc4dd2f945c459cf3daff3223bcef"><div class="ttname"><a href="class_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ae33dc4dd2f945c459cf3daff3223bcef">DelegateLib::MulticastDelegate&lt; RetType(Args...)&gt;::PushBack</a></div><div class="ttdeci">void PushBack(const DelegateType &amp;delegate)</div><div class="ttdef"><b>Definition</b> MulticastDelegate.h:99</div></div>
 <div class="ttc" id="aclass_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4_html_ae9bc3846e98e0240e349c66ac8d2e263"><div class="ttname"><a href="class_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ae9bc3846e98e0240e349c66ac8d2e263">DelegateLib::MulticastDelegate&lt; RetType(Args...)&gt;::operator+=</a></div><div class="ttdeci">void operator+=(DelegateType &amp;&amp;delegate)</div><div class="ttdef"><b>Definition</b> MulticastDelegate.h:62</div></div>
 <div class="ttc" id="aclass_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4_html_aecd5f8e6240ee6a7bc748162ef9e46cd"><div class="ttname"><a href="class_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#aecd5f8e6240ee6a7bc748162ef9e46cd">DelegateLib::MulticastDelegate&lt; RetType(Args...)&gt;::Empty</a></div><div class="ttdeci">bool Empty() const</div><div class="ttdef"><b>Definition</b> MulticastDelegate.h:130</div></div>
-<div class="ttc" id="anamespace_delegate_lib_html"><div class="ttname"><a href="namespace_delegate_lib.html">DelegateLib</a></div><div class="ttdef"><b>Definition</b> Delegate.h:26</div></div>
-<div class="ttc" id="astruct_delegate_lib_1_1_delegate_html"><div class="ttname"><a href="struct_delegate_lib_1_1_delegate.html">DelegateLib::Delegate</a></div><div class="ttdef"><b>Definition</b> Delegate.h:71</div></div>
+<div class="ttc" id="anamespace_delegate_lib_html"><div class="ttname"><a href="namespace_delegate_lib.html">DelegateLib</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
+<div class="ttc" id="astruct_delegate_lib_1_1_delegate_html"><div class="ttname"><a href="struct_delegate_lib_1_1_delegate.html">DelegateLib::Delegate</a></div><div class="ttdef"><b>Definition</b> Delegate.h:72</div></div>
 <div class="ttc" id="astruct_delegate_lib_1_1_multicast_delegate_html"><div class="ttname"><a href="struct_delegate_lib_1_1_multicast_delegate.html">DelegateLib::MulticastDelegate</a></div><div class="ttdef"><b>Definition</b> MulticastDelegate.h:16</div></div>
+<div class="ttc" id="axlist_8h_html_a9e6c72a4d9879e662d02c096cf16ff3c"><div class="ttname"><a href="xlist_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">xlist</a></div><div class="ttdeci">std::list&lt; T, Alloc &gt; xlist</div><div class="ttdef"><b>Definition</b> xlist.h:9</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

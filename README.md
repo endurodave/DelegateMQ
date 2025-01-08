@@ -167,10 +167,9 @@ A simple publish/subscribe example using asynchronous delegates.
 
 Typically a delegate is inserted into a delegate container. <code>AlarmCd</code> is a delegate container. 
 
-<figure>
-    <img src="docs/Figure1.jpg" alt="Figure 1" style="width:65%;">
-    <figcaption>Figure 1: AlarmCb Delegate Container</figcaption>
-</figure>
+<img src="docs/Figure1.jpg" alt="Figure 1: AlarmCb Delegate Container" style="width:65%;">  
+
+**Figure 1: AlarmCb Delegate Container**
 
 1. <code>MulticastDelegateSafe</code> - the delegate container type.
 2. <code>void(int, const string&)</code> - the function signature accepted by the delegate container. Any function matching can be inserted, such as a class member, static or lambda function.
@@ -191,10 +190,9 @@ void NotifyAlarmSubscribers(int alarmId, const string& note)
 
 Typically a subscriber registers with a delegate container instance to receive callbacks, either synchronously or asynchronously.
 
-<figure>
-    <img src="docs/Figure2.jpg" alt="Figure 2" style="width:75%;">
-    <figcaption>Figure 2: Insert into AlarmCb Delegate Container</figcaption>
-</figure>
+<img src="docs/Figure2.jpg" alt="Figure 2: Insert into AlarmCb Delegate Container" style="width:75%;">
+
+**Figure 2: Insert into AlarmCb Delegate Container**
 
 1. <code>AlarmCb</code> - the publisher delegate container instance.
 2. <code>+=</code> - add a function target to the container. 
@@ -443,10 +441,9 @@ IDelegateInvoker
 
 After executed, open the Visual Studio project from within the `build` directory.
 
-<figure>
-    <img src="docs/Figure3.jpg" alt="Figure 3" style="width:100%;">
-    <figcaption>Figure 3: Visual Studio Build</figcaption>
-</figure>
+<img src="docs/Figure3.jpg" alt="Figure 3: Visual Studio Build" style="width:100%;">
+
+**Figure 3: Visual Studio Build**
 
 ## Linux Make
 
@@ -456,10 +453,9 @@ After executed, open the Visual Studio project from within the `build` directory
 
 After executed, build the software from within the `build` directory using the command `make`. Run the console app using `./DelegateApp`.
 
-<figure>
-    <img src="docs/Figure4.jpg" alt="Figure 4" style="width:70%;">
-    <figcaption>Figure 4: Linux Makefile Build</figcaption>
-</figure>
+<img src="docs/Figure4.jpg" alt="Figure 4: Linux Makefile Build" style="width:70%;">
+
+**Figure 4: Linux Makefile Build**
 
 # Related Repositories
 

@@ -1,0 +1,26 @@
+var namespace_main =
+[
+    [ "Base", "class_main_1_1_base.html", "class_main_1_1_base" ],
+    [ "Coordinates", "class_main_1_1_coordinates.html", "class_main_1_1_coordinates" ],
+    [ "CoordinatesHandler", "class_main_1_1_coordinates_handler.html", "class_main_1_1_coordinates_handler" ],
+    [ "Derived", "class_main_1_1_derived.html", "class_main_1_1_derived" ],
+    [ "SysDataClient", "class_main_1_1_sys_data_client.html", "class_main_1_1_sys_data_client" ],
+    [ "Test", "class_main_1_1_test.html", "class_main_1_1_test" ],
+    [ "TestClass", "class_main_1_1_test_class.html", "class_main_1_1_test_class" ],
+    [ "TestStruct", "struct_main_1_1_test_struct.html", "struct_main_1_1_test_struct" ],
+    [ "TestStructNoCopy", "struct_main_1_1_test_struct_no_copy.html", "struct_main_1_1_test_struct_no_copy" ],
+    [ "CoordinatesChangedCallback", "namespace_main.html#afa2cf987a10f01f36b755251c6b5bc2d", null ],
+    [ "CoordinatesChangedCallbackError", "namespace_main.html#aeccc7af7fc131cd73f4f85426931c48d", null ],
+    [ "CoordinatesChangedCallbackError2", "namespace_main.html#a69d6ec14bf4307b5294e26ca178c0a3e", null ],
+    [ "CoordinatesChangedCallbackError3", "namespace_main.html#ab2ac825a7c0e1b077309bb9f246a6e07", null ],
+    [ "CoordinatesChangedCallbackError4", "namespace_main.html#a492ece0d7cb71d24ccd7a18dea8aecf8", null ],
+    [ "FreeFuncInt", "namespace_main.html#a2f1d0afabb25abd50c9ae296c2466c4f", null ],
+    [ "FreeFuncIntRetInt", "namespace_main.html#ae951a1bf7487bd2cfbfeaac97606f474", null ],
+    [ "FreeFuncPtrPtrTestStruct", "namespace_main.html#a835e48a3540e17a6f94c951a8e42cd4e", null ],
+    [ "FreeFuncPtrTestStruct", "namespace_main.html#a8e2648d2e5e13f03b7d3ee78c5711f18", null ],
+    [ "FreeFuncRefTestStruct", "namespace_main.html#ad09f48c314041b36f04df6ee274ea4ec", null ],
+    [ "FreeFuncRetInt", "namespace_main.html#a8e233dce83487c255933ad5df12652a6", null ],
+    [ "FreeFuncVoid", "namespace_main.html#ad9d2fc250ea22cf3ce6ced7594181863", null ],
+    [ "TimerExpiredCb", "namespace_main.html#ad5448e6075edc928cd7ea246ee21f82c", null ],
+    [ "workerThread1", "namespace_main.html#a7c4cfa68179ff00c63ed869676420b18", null ]
+];
