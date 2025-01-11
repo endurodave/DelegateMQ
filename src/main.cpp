@@ -8,6 +8,8 @@
 #include "AsyncAPI.h"
 #include "AllTargets.h"
 #include "Observer.h"
+#include "Reactor.h"
+#include "Proactor.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -263,12 +265,6 @@ namespace Main
         cout << "New coordinates " << c->x << " " << c->y << endl;
     }
 
-    // Do not allow shared_ptr references. Causes compile error if used with Async delegates.
-    void CoordinatesChangedCallbackError(std::shared_ptr<const Coordinates>& c) {}
-    void CoordinatesChangedCallbackError2(const std::shared_ptr<const Coordinates>& c) {}
-    void CoordinatesChangedCallbackError3(std::shared_ptr<const Coordinates>* c) {}
-    void CoordinatesChangedCallbackError4(const std::shared_ptr<const Coordinates>* c) {}
-
     class Test
     {
     public:
@@ -301,9 +297,6 @@ int main(void)
     Timer timer;
     timer.Expired = MakeDelegate(&TimerExpiredCb, workerThread1);
     timer.Start(std::chrono::milliseconds(250));
-
-    // Run all unit tests
-    DelegateUnitTests();
 
     // Create a delegate bound to a free function then invoke
     auto delegateFree = MakeDelegate(&FreeFuncInt);
@@ -494,15 +487,6 @@ int main(void)
     auto baseDelegate = MakeDelegate(base, &Base::display, workerThread1);
     baseDelegate("Invoke Derviced::display()!");
 
-#if 0
-    // Causes compiler error. shared_ptr references not allowed; undefined behavior 
-    // in multithreaded system.
-    auto errorDel = MakeDelegate(&CoordinatesChangedCallbackError, workerThread1);
-    auto errorDel2 = MakeDelegate(&CoordinatesChangedCallbackError2, workerThread1);
-    auto errorDel3 = MakeDelegate(&CoordinatesChangedCallbackError3, workerThread1);
-    auto errorDel4 = MakeDelegate(&CoordinatesChangedCallbackError4, workerThread1);
-#endif
-
     // Begin lambda examples. Lambda captures not allowed if delegates used to invoke.
     DelegateFunction<int(int)> delFunc([](int x) -> int { return x + 5; });
     int val = delFunc(8);
@@ -608,11 +592,20 @@ int main(void)
     // Run observer pattern example
     ObserverExample();
 
-    // Run countdown latch example
-    CountdownLatchExample();
-
     // Run producer-consumer pattern example
     ProducerConsumerExample();
+
+    // Run reactor pattern example
+    ReactorExample();
+
+    // Run proactor pattern example
+    ProactorExample();
+
+// C++20 examples
+#if defined(_MSVC_LANG) && _MSVC_LANG >= 202002L || __cplusplus >= 202002L
+    // Run countdown latch example
+    CountdownLatchExample();
+#endif
 
     // Create a SysDataClient instance on the stack
     SysDataClient sysDataClient;
@@ -634,6 +627,9 @@ int main(void)
     SystemMode::Type previousMode;
     previousMode = SysDataNoLock::GetInstance().SetSystemModeAsyncWaitAPI(SystemMode::STARTING);
     previousMode = SysDataNoLock::GetInstance().SetSystemModeAsyncWaitAPI(SystemMode::NORMAL);
+
+    // Run all unit tests
+    DelegateUnitTests();
 
     timer.Stop();
     timer.Expired.Clear();

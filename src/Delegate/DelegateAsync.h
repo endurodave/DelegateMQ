@@ -52,6 +52,22 @@
 
 namespace DelegateLib {
 
+// Helper trait to check if a type is a reference to a std::shared_ptr
+template <typename T>
+struct is_shared_ptr_reference : std::false_type {};
+
+template <typename T>
+struct is_shared_ptr_reference<std::shared_ptr<T>&> : std::true_type {};
+
+template <typename T>
+struct is_shared_ptr_reference<std::shared_ptr<T>*> : std::true_type {};
+
+template <typename T>
+struct is_shared_ptr_reference<const std::shared_ptr<T>&> : std::true_type {};
+
+template <typename T>
+struct is_shared_ptr_reference<const std::shared_ptr<T>* > : std::true_type {};
+
 /// @brief Stores all function arguments suitable for non-blocking asynchronous calls.
 /// Argument data is stored in the heap.
 /// @tparam Args The argument types of the bound delegate function.
@@ -268,8 +284,8 @@ public:
             // undefined. In other words:
             // void MyFunc(std::shared_ptr<T> data)		// Ok!
             // void MyFunc(std::shared_ptr<T>& data)	// Error if DelegateAsync or DelegateSpAsync target!
-            static_assert(!(std::disjunction_v<is_shared_ptr<Args>...> &&
-                (std::disjunction_v<std::is_lvalue_reference<Args>, std::is_pointer<Args>> || ...)),
+            static_assert(!(
+                std::disjunction_v<is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
         }
     }
@@ -568,8 +584,8 @@ public:
             // undefined. In other words:
             // void MyFunc(std::shared_ptr<T> data)		// Ok!
             // void MyFunc(std::shared_ptr<T>& data)	// Error if DelegateAsync or DelegateSpAsync target!
-            static_assert(!(std::disjunction_v<is_shared_ptr<Args>...> &&
-                (std::disjunction_v<std::is_lvalue_reference<Args>, std::is_pointer<Args>> || ...)),
+            static_assert(!(
+                std::disjunction_v<is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
         }
     }
@@ -809,8 +825,8 @@ public:
             // undefined. In other words:
             // void MyFunc(std::shared_ptr<T> data)		// Ok!
             // void MyFunc(std::shared_ptr<T>& data)	// Error if DelegateAsync or DelegateSpAsync target!
-            static_assert(!(std::disjunction_v<is_shared_ptr<Args>...> &&
-                (std::disjunction_v<std::is_lvalue_reference<Args>, std::is_pointer<Args>> || ...)),
+            static_assert(!(
+                std::disjunction_v<is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
         }
     }

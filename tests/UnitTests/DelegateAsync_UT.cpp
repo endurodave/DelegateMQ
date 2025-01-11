@@ -29,6 +29,26 @@ namespace Async
     public:
         TestReturn Func() { return TestReturn{}; }
     };
+
+    // Do not allow shared_ptr references. Causes compile error if used with Async delegates.
+    void NoError(std::shared_ptr<const StructParam> c) {}
+    void NoError2(const std::string& s, std::shared_ptr<const StructParam> c) {}
+    void Error(std::shared_ptr<const StructParam>& c) {}
+    void Error2(const std::shared_ptr<const StructParam>& c) {}
+    void Error3(std::shared_ptr<const StructParam>* c) {}
+    void Error4(const std::shared_ptr<const StructParam>* c) {}
+
+    class ClassError
+    {
+    public:
+        // Do not allow shared_ptr references. Causes compile error if used with Async delegates.
+        void NoError(std::shared_ptr<const StructParam> c) {}
+        void NoError2(const std::string& s, std::shared_ptr<const StructParam> c) {}
+        void Error(std::shared_ptr<const StructParam>& c) {}
+        void Error2(const std::shared_ptr<const StructParam>& c) {}
+        void Error3(std::shared_ptr<const StructParam>* c) {}
+        void Error4(const std::shared_ptr<const StructParam>* c) {}
+    };
 }
 using namespace Async;
 
@@ -119,6 +139,17 @@ static void DelegateFreeAsyncTests()
     auto delRef = MakeDelegate(&SetClassSingletonRef, workerThread);
     auto delPtr = MakeDelegate(&SetClassSingletonPtr, workerThread);
     auto delPtrPtr = MakeDelegate(&SetClassSingletonPtrPtr, workerThread);
+#endif
+
+    auto noErrorDel = MakeDelegate(&NoError, workerThread);
+    auto noErrorDel2 = MakeDelegate(&NoError2, workerThread);
+#if 0
+    // Causes compiler error. shared_ptr references not allowed; undefined behavior 
+    // in multi-threaded system.
+    auto errorDel = MakeDelegate(&Error, workerThread);
+    auto errorDel2 = MakeDelegate(&Error2, workerThread);
+    auto errorDel3 = MakeDelegate(&Error3, workerThread);
+    auto errorDel4 = MakeDelegate(&Error4, workerThread);
 #endif
 
     // Shared pointer does not copy singleton object; no copy of shared_ptr arg.
@@ -307,6 +338,18 @@ static void DelegateMemberAsyncTests()
     auto delRef = MakeDelegate(&setClassSingleton, &SetClassSingleton::Ref, workerThread);
     auto delPtr = MakeDelegate(&setClassSingleton, &SetClassSingleton::Ptr, workerThread);
     auto delPtrPtr = MakeDelegate(&setClassSingleton, &SetClassSingleton::PtrPtr, workerThread);
+#endif
+
+    ClassError classError;
+    auto noErrorDel = MakeDelegate(&classError, &ClassError::NoError, workerThread);
+    auto noErrorDel2 = MakeDelegate(&classError, &ClassError::NoError2, workerThread);
+#if 0
+    // Causes compiler error. shared_ptr references not allowed; undefined behavior 
+    // in multi-threaded system.
+    auto errorDel = MakeDelegate(&classError, &ClassError::Error, workerThread);
+    auto errorDel2 = MakeDelegate(&classError, &ClassError::Error2, workerThread);
+    auto errorDel3 = MakeDelegate(&classError, &ClassError::Error3, workerThread);
+    auto errorDel4 = MakeDelegate(&classError, &ClassError::Error4, workerThread);
 #endif
 
     // Shared pointer does not copy singleton object; no copy of shared_ptr arg.
@@ -526,6 +569,24 @@ static void DelegateFunctionAsyncTests()
     for (int i = 0; i < 2; i++)
         arr[i](TEST_INT);
     delete[] arr;
+
+    std::function NoError = [](std::shared_ptr<const StructParam> c) {};
+    std::function NoError2 = [](const std::string& s, std::shared_ptr<const StructParam> c) {};
+    std::function Error = [](std::shared_ptr<const StructParam>& c) {};
+    std::function Error2 = [](const std::shared_ptr<const StructParam>& c) {};
+    std::function Error3 = [](std::shared_ptr<const StructParam>* c) {};
+    std::function Error4 = [](const std::shared_ptr<const StructParam>* c) {};
+
+    auto noErrorDel = MakeDelegate(NoError, workerThread);
+    auto noErrorDel2 = MakeDelegate(NoError2, workerThread);
+#if 0
+    // Causes compiler error. shared_ptr references not allowed; undefined behavior 
+    // in multi-threaded system.
+    auto errorDel = MakeDelegate(Error, workerThread);
+    auto errorDel2 = MakeDelegate(Error2, workerThread);
+    auto errorDel3 = MakeDelegate(Error3, workerThread);
+    auto errorDel4 = MakeDelegate(Error4, workerThread);
+#endif
 }
 
 void DelegateAsync_UT()

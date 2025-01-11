@@ -1,14 +1,13 @@
 /// @file
 /// @brief Implement a countdown latch using C++20 std::latch and delegates. 
 
+#if defined(_MSVC_LANG) && _MSVC_LANG >= 202002L || __cplusplus >= 202002L
+
 #include "CountdownLatch.h"
 #include "DelegateLib.h"
 #include "WorkerThreadStd.h"
 #include <iostream>
 #include <chrono>
-
-#if defined(_MSVC_LANG) && _MSVC_LANG >= 202002L || __cplusplus >= 202002L
-
 #include <latch>
 
 using namespace DelegateLib;
@@ -62,10 +61,5 @@ namespace Example
         t2.join();
         t3.join();
     }
-}
-#else
-namespace Example
-{
-    void CountdownLatchExample() {}
 }
 #endif
