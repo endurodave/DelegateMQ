@@ -61,10 +61,7 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ],
-        [ "Enumerations", "functions_enum.html", null ],
-        [ "Enumerator", "functions_eval.html", null ],
         [ "Related Symbols", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -72,8 +69,6 @@ var NAVTREE =
       [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
-        [ "Functions", "globals_func.html", null ],
-        [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
@@ -83,12 +78,10 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_active_object_8cpp.html",
-"class_delegate_lib_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html#ad50bc3385f014ff12cf61c16c030f9c0",
-"class_delegate_lib_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#abb4565ae99fbe20a227497c323cb9f12",
-"class_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a9110f01afdbe9ed70d2c4f77eaff94c4",
-"class_main_1_1_test_class.html#a77020fb47cfb1cccfb7ce8dbdde8eaa3",
-"struct_delegate_lib_1_1is__shared__ptr.html"
+"_delegate_8h.html",
+"class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a1fded7c503030e142d45bfbeed84fbb7",
+"class_delegate_lib_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ab2dc309b92c007f22d9e22b489d53ff3",
+"class_delegate_lib_1_1heap__arg__deleter_3_01_t_01_5_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['expired_0',['Expired',['../class_timer.html#a5ab24da76b0875ede34107513ac9cdf6',1,'Timer']]]
+  ['wait_5finfinite_0',['WAIT_INFINITE',['../namespace_delegate_lib.html#aa0e7491d38d4053d6218bf874d56e868',1,'DelegateLib']]]
 ];

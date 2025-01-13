@@ -37,6 +37,11 @@ var annotated_dup =
       [ "is_shared_ptr< std::shared_ptr< T > & >", "struct_delegate_lib_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
       [ "is_shared_ptr< std::shared_ptr< T > * >", "struct_delegate_lib_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
       [ "is_shared_ptr< std::shared_ptr< T > >", "struct_delegate_lib_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html", null ],
+      [ "is_shared_ptr_reference", "struct_delegate_lib_1_1is__shared__ptr__reference.html", null ],
+      [ "is_shared_ptr_reference< const std::shared_ptr< T > & >", "struct_delegate_lib_1_1is__shared__ptr__reference_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
+      [ "is_shared_ptr_reference< const std::shared_ptr< T > * >", "struct_delegate_lib_1_1is__shared__ptr__reference_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
+      [ "is_shared_ptr_reference< std::shared_ptr< T > & >", "struct_delegate_lib_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
+      [ "is_shared_ptr_reference< std::shared_ptr< T > * >", "struct_delegate_lib_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
       [ "is_unique_ptr", "struct_delegate_lib_1_1is__unique__ptr.html", null ],
       [ "is_unique_ptr< std::unique_ptr< T > >", "struct_delegate_lib_1_1is__unique__ptr_3_01std_1_1unique__ptr_3_01_t_01_4_01_4.html", null ],
       [ "MulticastDelegate", "struct_delegate_lib_1_1_multicast_delegate.html", null ],
@@ -46,38 +51,5 @@ var annotated_dup =
       [ "Semaphore", "class_delegate_lib_1_1_semaphore.html", "class_delegate_lib_1_1_semaphore" ],
       [ "UnicastDelegate", "struct_delegate_lib_1_1_unicast_delegate.html", null ],
       [ "UnicastDelegate< RetType(Args...)>", "class_delegate_lib_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "class_delegate_lib_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4" ]
-    ] ],
-    [ "Example", "namespace_example.html", [
-      [ "ActiveObject", "class_example_1_1_active_object.html", "class_example_1_1_active_object" ],
-      [ "Communication", "class_example_1_1_communication.html", "class_example_1_1_communication" ],
-      [ "ConcreteObserverA", "class_example_1_1_concrete_observer_a.html", "class_example_1_1_concrete_observer_a" ],
-      [ "ConcreteObserverB", "class_example_1_1_concrete_observer_b.html", "class_example_1_1_concrete_observer_b" ],
-      [ "ConcreteSubject", "class_example_1_1_concrete_subject.html", "class_example_1_1_concrete_subject" ],
-      [ "Consumer", "class_example_1_1_consumer.html", "class_example_1_1_consumer" ],
-      [ "Observer", "class_example_1_1_observer.html", "class_example_1_1_observer" ],
-      [ "Producer", "class_example_1_1_producer.html", "class_example_1_1_producer" ],
-      [ "Subject", "class_example_1_1_subject.html", "class_example_1_1_subject" ]
-    ] ],
-    [ "Main", "namespace_main.html", [
-      [ "Base", "class_main_1_1_base.html", "class_main_1_1_base" ],
-      [ "Coordinates", "class_main_1_1_coordinates.html", "class_main_1_1_coordinates" ],
-      [ "CoordinatesHandler", "class_main_1_1_coordinates_handler.html", "class_main_1_1_coordinates_handler" ],
-      [ "Derived", "class_main_1_1_derived.html", "class_main_1_1_derived" ],
-      [ "SysDataClient", "class_main_1_1_sys_data_client.html", "class_main_1_1_sys_data_client" ],
-      [ "Test", "class_main_1_1_test.html", "class_main_1_1_test" ],
-      [ "TestClass", "class_main_1_1_test_class.html", "class_main_1_1_test_class" ],
-      [ "TestStruct", "struct_main_1_1_test_struct.html", "struct_main_1_1_test_struct" ],
-      [ "TestStructNoCopy", "struct_main_1_1_test_struct_no_copy.html", "struct_main_1_1_test_struct_no_copy" ]
-    ] ],
-    [ "Allocator", "class_allocator.html", "class_allocator" ],
-    [ "AllocatorPool", "class_allocator_pool.html", "class_allocator_pool" ],
-    [ "stl_allocator", "classstl__allocator.html", "classstl__allocator" ],
-    [ "stl_allocator< void >", "classstl__allocator_3_01void_01_4.html", "classstl__allocator_3_01void_01_4" ],
-    [ "SysData", "class_sys_data.html", "class_sys_data" ],
-    [ "SysDataNoLock", "class_sys_data_no_lock.html", "class_sys_data_no_lock" ],
-    [ "SystemMode", "struct_system_mode.html", "struct_system_mode" ],
-    [ "SystemModeChanged", "class_system_mode_changed.html", "class_system_mode_changed" ],
-    [ "ThreadMsg", "class_thread_msg.html", "class_thread_msg" ],
-    [ "Timer", "class_timer.html", "class_timer" ],
-    [ "WorkerThread", "class_worker_thread.html", "class_worker_thread" ]
+    ] ]
 ];

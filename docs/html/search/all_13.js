@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['value_5ftype_0',['value_type',['../classstl__allocator_3_01void_01_4.html#adda4ff9c0566dfeb687621a9ba0ee913',1,'stl_allocator&lt; void &gt;::value_type'],['../classstl__allocator.html#ab6b0750c53bb3557b729cbfdc7668651',1,'stl_allocator::value_type']]],
-  ['visual_20studio_1',['Windows Visual Studio',['../index.html#autotoc_md11',1,'']]]
+  ['wait_0',['Wait',['../class_delegate_lib_1_1_semaphore.html#a031954138f0b60dd1f23b8c47ab16442',1,'DelegateLib::Semaphore']]],
+  ['wait_5finfinite_1',['WAIT_INFINITE',['../namespace_delegate_lib.html#aa0e7491d38d4053d6218bf874d56e868',1,'DelegateLib']]],
+  ['windows_20visual_20studio_2',['Windows Visual Studio',['../index.html#autotoc_md11',1,'']]]
 ];
