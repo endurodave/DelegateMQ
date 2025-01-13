@@ -17,7 +17,7 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 
 # Set C++ standard 
 # C++17 minimum required. C++20 tested and works too.
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Collect all .cpp and *.h source files in the src directory

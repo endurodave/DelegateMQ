@@ -549,7 +549,7 @@ static void DelegateFunctionAsyncTests()
 
     auto delS1 = MakeDelegate(LambdaNoCapture, workerThread);
     auto delS2 = MakeDelegate(LambdaNoCapture2, workerThread);
-    //ASSERT_TRUE(!(delS1 == delS2));  // std::function can't distriguish difference
+    //ASSERT_TRUE(!(delS1 == delS2));  // std::function can't distiguish difference
 
     std::set<Del> setDel;
     setDel.insert(delS1);

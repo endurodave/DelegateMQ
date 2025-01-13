@@ -21,8 +21,9 @@
 // If USE_ASSERTS defined above, consider defining USE_ALLOCATOR to prevent 
 // std::list usage within delegate library from throwing a std::bad_alloc 
 // exception. The std_allocator calls assert if out of memory. 
+// See master CMakeLists.txt for info on enabling the fixed-block allocator.
 #ifdef USE_ALLOCATOR
-    // Use stl_allocator fixed block allocator for dynamic storage allocation
+    // Use stl_allocator fixed-block allocator for dynamic storage allocation
     #include "xlist.h"
     #include "stl_allocator.h"
 #else

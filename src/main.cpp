@@ -4,12 +4,15 @@
 #include "ProducerConsumer.h"
 #include "CountdownLatch.h"
 #include "ActiveObject.h"
+#include "AsyncMethodInvocation.h"
 #include "AsyncFuture.h"
 #include "AsyncAPI.h"
 #include "AllTargets.h"
 #include "Observer.h"
 #include "Reactor.h"
 #include "Proactor.h"
+#include "Command.h"
+#include "BindingProperty.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -21,19 +24,6 @@
 // main.cpp
 // @see https://github.com/endurodave/cpp-async-delegate
 // David Lafreniere, Aug 2020.
-
-#if 0 // Not reliable
-#if WIN32
-struct DumpLeaks
-{
-    ~DumpLeaks() {
-        BOOL leaks = _CrtDumpMemoryLeaks();
-        ASSERT_TRUE(leaks == FALSE);
-    }
-};
-static DumpLeaks dumpLeaks;
-#endif
-#endif
 
 using namespace std;
 using namespace DelegateLib;
@@ -76,6 +66,7 @@ namespace Main
 
         int m_numberOfCallbacks;
 
+        // See USE_ALLOCATOR in DelegateOpt.h for info about optional fixed-block allocator use
         XALLOCATOR
     };
 
@@ -100,20 +91,9 @@ namespace Main
         TestStructNoCopy& operator=(const TestStructNoCopy&) = delete;
     };
 
-    void FreeFuncVoid()
-    {
-        cout << "FreeFuncVoid " << endl;
-    }
-
     void FreeFuncInt(int value)
     {
         cout << "FreeFuncInt " << value << endl;
-    }
-
-    int FreeFuncRetInt()
-    {
-        cout << "FreeFuncRetInt " << endl;
-        return 567;
     }
 
     int FreeFuncIntRetInt(int value)
@@ -122,27 +102,15 @@ namespace Main
         return value;
     }
 
-    void FreeFuncPtrTestStruct(TestStruct* value)
-    {
-        cout << "FreeFuncTestStruct" << value->x << endl;
-    }
-
     void FreeFuncPtrPtrTestStruct(TestStruct** value)
     {
         cout << "FreeFuncPtrPtrTestStruct " << (*value)->x << endl;
     }
 
-    void FreeFuncRefTestStruct(const TestStruct& value)
-    {
-        cout << "FreeFuncRefTestStruct " << value.x << endl;
-    }
-
     class TestClass
     {
     public:
-        ~TestClass()
-        {
-        }
+        ~TestClass() {}
 
         void StaticFuncInt(int value)
         {
@@ -583,11 +551,20 @@ int main(void)
     // Run asynchronous API using delegates example 
     AsyncAPIExample();
 
+    // Run the asychronous invocation example (AMI) example
+    AsyncMethodInvocationExample();
+
     // Run the std::async and std::future example with delegates
     AsyncFutureExample();
 
     // Run the active object pattern example
     ActiveObjectExample();
+
+    // Run the binding property pattern example
+    BindingPropertyExample();
+
+    // Run the command pattern example
+    CommandExample();
 
     // Run observer pattern example
     ObserverExample();
