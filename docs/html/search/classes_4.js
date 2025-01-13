@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['semaphore_0',['Semaphore',['../class_delegate_lib_1_1_semaphore.html',1,'DelegateLib']]]
+  ['eventhandler_0',['EventHandler',['../class_example_1_1_event_handler.html',1,'Example']]]
 ];

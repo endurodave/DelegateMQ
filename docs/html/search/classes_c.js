@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['unicastdelegate_0',['UnicastDelegate',['../struct_delegate_lib_1_1_unicast_delegate.html',1,'DelegateLib']]],
-  ['unicastdelegate_3c_20rettype_28args_2e_2e_2e_29_3e_1',['UnicastDelegate&lt; RetType(Args...)&gt;',['../class_delegate_lib_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html',1,'DelegateLib']]],
-  ['unicastdelegate_3c_20void_28void_29_3e_2',['UnicastDelegate&lt; void(void)&gt;',['../struct_delegate_lib_1_1_unicast_delegate.html',1,'DelegateLib']]]
+  ['reactor_0',['Reactor',['../class_example_1_1_reactor.html',1,'Example']]],
+  ['rebind_1',['rebind',['../structstl__allocator_1_1rebind.html',1,'stl_allocator&lt; T &gt;::rebind&lt; U &gt;'],['../structstl__allocator_3_01void_01_4_1_1rebind.html',1,'stl_allocator&lt; void &gt;::rebind']]],
+  ['remotecontrol_2',['RemoteControl',['../class_example_1_1_remote_control.html',1,'Example']]]
 ];

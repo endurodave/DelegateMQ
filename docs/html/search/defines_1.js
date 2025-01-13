@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['xallocator_0',['XALLOCATOR',['../_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c',1,'DelegateOpt.h']]]
+  ['bad_5falloc_0',['BAD_ALLOC',['../_delegate_opt_8h.html#abe89b46e296c7421855410a08d6d31fe',1,'DelegateOpt.h']]]
 ];

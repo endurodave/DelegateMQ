@@ -51,7 +51,8 @@ var NAVTREE =
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Functions", "namespacemembers_func.html", null ],
-        [ "Variables", "namespacemembers_vars.html", null ]
+        [ "Variables", "namespacemembers_vars.html", null ],
+        [ "Enumerations", "namespacemembers_enum.html", null ]
       ] ]
     ] ],
     [ "Classes", "annotated.html", [
@@ -61,7 +62,10 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
+        [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ],
+        [ "Enumerations", "functions_enum.html", null ],
+        [ "Enumerator", "functions_eval.html", null ],
         [ "Related Symbols", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -69,6 +73,8 @@ var NAVTREE =
       [ "File List", "files.html", "files_dup" ],
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
+        [ "Functions", "globals_func.html", null ],
+        [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
@@ -78,10 +84,12 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_delegate_8h.html",
-"class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a1fded7c503030e142d45bfbeed84fbb7",
-"class_delegate_lib_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ab2dc309b92c007f22d9e22b489d53ff3",
-"class_delegate_lib_1_1heap__arg__deleter_3_01_t_01_5_01_4.html"
+"_active_object_8cpp.html",
+"class_delegate_lib_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html#a3e31fdd4391c352138672960a50e973d",
+"class_delegate_lib_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a2a30607bfeb5eaec0aa46a48ffb469ce",
+"class_delegate_lib_1_1_delegate_thread.html#a37d3e15bf942d92da6dbdf21820c5101",
+"class_example_1_1_light.html#a4dea525603fa357b853e011db1fa04ac",
+"index.html#autotoc_md10"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -279,7 +279,7 @@ Subscriber</h3>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md7"></a>
 All Delegate Types Example</h2>
 <p>A delegate container inserting and removing all delegate types.</p>
-<div class="fragment"><div class="line">WorkerThread workerThread1(<span class="stringliteral">&quot;WorkerThread1&quot;</span>);</div>
+<div class="fragment"><div class="line"><a class="code hl_class" href="class_worker_thread.html">WorkerThread</a> workerThread1(<span class="stringliteral">&quot;WorkerThread1&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">static</span> <span class="keywordtype">int</span> callCnt = 0;</div>
 <div class="line"> </div>
@@ -398,34 +398,45 @@ All Delegate Types Example</h2>
 <div class="line">    delegateA -= <a class="code hl_function" href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">MakeDelegate</a>(testClassSp, &amp;Class::MemberFunc, workerThread1, WAIT_INFINITE);</div>
 <div class="line">    delegateA -= <a class="code hl_function" href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">MakeDelegate</a>(testClassSp, &amp;Class::MemberFuncConst, workerThread1, WAIT_INFINITE);</div>
 <div class="line"> </div>
-<div class="line">    ASSERT_TRUE(delegateA.Size() == 0);</div>
-<div class="line">    ASSERT_TRUE(callCnt == 27);</div>
+<div class="line">    <a class="code hl_define" href="_allocator_2_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a>(delegateA.Size() == 0);</div>
+<div class="line">    <a class="code hl_define" href="_allocator_2_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a>(callCnt == 27);</div>
 <div class="line">}</div>
+<div class="ttc" id="a_allocator_2_fault_8h_html_ae9244bfbda562e8b798789b001993fa5"><div class="ttname"><a href="_allocator_2_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a></div><div class="ttdeci">#define ASSERT_TRUE(condition)</div><div class="ttdef"><b>Definition</b> Allocator/Fault.h:11</div></div>
+<div class="ttc" id="aclass_worker_thread_html"><div class="ttname"><a href="class_worker_thread.html">WorkerThread</a></div><div class="ttdef"><b>Definition</b> WorkerThreadStd.h:18</div></div>
 <div class="ttc" id="anamespace_delegate_lib_html_a4815e70cd651512c838e354bf81a0c80"><div class="ttname"><a href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">DelegateLib::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:670</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md8"></a>
 Asynchronous API Example</h2>
 <p><code>SetSystemModeAsyncAPI()</code> is an asynchronous function call that re-invokes on <code>workerThread2</code> if necessary.</p>
-<div class="fragment"><div class="line"><span class="keywordtype">void</span> SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)</div>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> <a class="code hl_function" href="class_sys_data_no_lock.html#a1583080bcf23c33ff74d4ef6e943d16f">SysDataNoLock::SetSystemModeAsyncAPI</a>(<a class="code hl_enumeration" href="struct_system_mode.html#ae7a8c124a40da8b25e5aa8b7e8450653">SystemMode::Type</a> systemMode)</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// Is the caller executing on workerThread2?</span></div>
-<div class="line">    <span class="keywordflow">if</span> (workerThread2.GetThreadId() != WorkerThread::GetCurrentThreadId())</div>
+<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_variable" href="_sys_data_no_lock_8cpp.html#ad92600e1f17070e4e1f1ddc0afc607e6">workerThread2</a>.<a class="code hl_function" href="class_worker_thread.html#a072c9f946424b91f0fdef5260d7b59aa">GetThreadId</a>() != <a class="code hl_function" href="class_worker_thread.html#ac9627a136d18c9214284496f104f9429">WorkerThread::GetCurrentThreadId</a>())</div>
 <div class="line">    {</div>
 <div class="line">        <span class="comment">// Create an asynchronous delegate and re-invoke the function call on workerThread2</span></div>
-<div class="line">        MakeDelegate(<span class="keyword">this</span>, &amp;SysDataNoLock::SetSystemModeAsyncAPI, workerThread2).AsyncInvoke(systemMode);</div>
+<div class="line">        <a class="code hl_function" href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">MakeDelegate</a>(<span class="keyword">this</span>, &amp;<a class="code hl_function" href="class_sys_data_no_lock.html#a1583080bcf23c33ff74d4ef6e943d16f">SysDataNoLock::SetSystemModeAsyncAPI</a>, <a class="code hl_variable" href="_sys_data_no_lock_8cpp.html#ad92600e1f17070e4e1f1ddc0afc607e6">workerThread2</a>).AsyncInvoke(systemMode);</div>
 <div class="line">        <span class="keywordflow">return</span>;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Create the callback data</span></div>
-<div class="line">    SystemModeChanged callbackData;</div>
-<div class="line">    callbackData.PreviousSystemMode = m_systemMode;</div>
-<div class="line">    callbackData.CurrentSystemMode = systemMode;</div>
+<div class="line">    <a class="code hl_class" href="class_system_mode_changed.html">SystemModeChanged</a> callbackData;</div>
+<div class="line">    callbackData.<a class="code hl_variable" href="class_system_mode_changed.html#afdb7f95fd3790a18b7e944deb8e1f757">PreviousSystemMode</a> = m_systemMode;</div>
+<div class="line">    callbackData.<a class="code hl_variable" href="class_system_mode_changed.html#a28bdd2552042f3479f0efa09da087047">CurrentSystemMode</a> = systemMode;</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Update the system mode</span></div>
 <div class="line">    m_systemMode = systemMode;</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Callback all registered subscribers</span></div>
-<div class="line">    SystemModeChangedDelegate(callbackData);</div>
+<div class="line">    <a class="code hl_variable" href="class_sys_data_no_lock.html#aeed880430601ed1e4baf62e63fb8967e">SystemModeChangedDelegate</a>(callbackData);</div>
 <div class="line">}</div>
+<div class="ttc" id="a_sys_data_no_lock_8cpp_html_ad92600e1f17070e4e1f1ddc0afc607e6"><div class="ttname"><a href="_sys_data_no_lock_8cpp.html#ad92600e1f17070e4e1f1ddc0afc607e6">workerThread2</a></div><div class="ttdeci">WorkerThread workerThread2(&quot;WorkerThread2&quot;)</div></div>
+<div class="ttc" id="aclass_sys_data_no_lock_html_a1583080bcf23c33ff74d4ef6e943d16f"><div class="ttname"><a href="class_sys_data_no_lock.html#a1583080bcf23c33ff74d4ef6e943d16f">SysDataNoLock::SetSystemModeAsyncAPI</a></div><div class="ttdeci">void SetSystemModeAsyncAPI(SystemMode::Type systemMode)</div><div class="ttdef"><b>Definition</b> SysDataNoLock.cpp:46</div></div>
+<div class="ttc" id="aclass_sys_data_no_lock_html_aeed880430601ed1e4baf62e63fb8967e"><div class="ttname"><a href="class_sys_data_no_lock.html#aeed880430601ed1e4baf62e63fb8967e">SysDataNoLock::SystemModeChangedDelegate</a></div><div class="ttdeci">MulticastDelegateSafe&lt; void(const SystemModeChanged &amp;)&gt; SystemModeChangedDelegate</div><div class="ttdoc">Clients register with MulticastDelegateSafe to get callbacks when system mode changes.</div><div class="ttdef"><b>Definition</b> SysDataNoLock.h:15</div></div>
+<div class="ttc" id="aclass_system_mode_changed_html"><div class="ttname"><a href="class_system_mode_changed.html">SystemModeChanged</a></div><div class="ttdoc">Structure to hold system mode callback data.</div><div class="ttdef"><b>Definition</b> SysDataTypes.h:17</div></div>
+<div class="ttc" id="aclass_system_mode_changed_html_a28bdd2552042f3479f0efa09da087047"><div class="ttname"><a href="class_system_mode_changed.html#a28bdd2552042f3479f0efa09da087047">SystemModeChanged::CurrentSystemMode</a></div><div class="ttdeci">SystemMode::Type CurrentSystemMode</div><div class="ttdef"><b>Definition</b> SysDataTypes.h:26</div></div>
+<div class="ttc" id="aclass_system_mode_changed_html_afdb7f95fd3790a18b7e944deb8e1f757"><div class="ttname"><a href="class_system_mode_changed.html#afdb7f95fd3790a18b7e944deb8e1f757">SystemModeChanged::PreviousSystemMode</a></div><div class="ttdeci">SystemMode::Type PreviousSystemMode</div><div class="ttdef"><b>Definition</b> SysDataTypes.h:25</div></div>
+<div class="ttc" id="aclass_worker_thread_html_a072c9f946424b91f0fdef5260d7b59aa"><div class="ttname"><a href="class_worker_thread.html#a072c9f946424b91f0fdef5260d7b59aa">WorkerThread::GetThreadId</a></div><div class="ttdeci">std::thread::id GetThreadId()</div><div class="ttdoc">Get the ID of this thread instance.</div><div class="ttdef"><b>Definition</b> WorkerThreadStd.cpp:60</div></div>
+<div class="ttc" id="aclass_worker_thread_html_ac9627a136d18c9214284496f104f9429"><div class="ttname"><a href="class_worker_thread.html#ac9627a136d18c9214284496f104f9429">WorkerThread::GetCurrentThreadId</a></div><div class="ttdeci">static std::thread::id GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div><div class="ttdef"><b>Definition</b> WorkerThreadStd.cpp:71</div></div>
+<div class="ttc" id="astruct_system_mode_html_ae7a8c124a40da8b25e5aa8b7e8450653"><div class="ttname"><a href="struct_system_mode.html#ae7a8c124a40da8b25e5aa8b7e8450653">SystemMode::Type</a></div><div class="ttdeci">Type</div><div class="ttdef"><b>Definition</b> SysDataTypes.h:7</div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md9"></a>
 Delegate Classes</h1>
 <p>Primary delegate library classes.</p>
@@ -459,7 +470,7 @@ Delegate Classes</h1>
 <p><code>MultcastDelegateSafe&lt;&gt;</code> is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.</p>
 <h1><a class="anchor" id="autotoc_md10"></a>
 Project Build</h1>
-<p><a href="https://www.cmake.org">CMake</a> is used to create the build files. CMake is free and open-source software. Windows, Linux and other toolchains are supported. Example CMake console commands executed inside the project root directory:</p>
+<p><a href="https://www.cmake.org">CMake</a> is used to create the build files. CMake is free and open-source software. Windows, Linux and other toolchains are supported. <a class="el" href="namespace_example.html" title="The delegate examples namespace.">Example</a> CMake console commands executed inside the project root directory:</p>
 <h2><a class="anchor" id="autotoc_md11"></a>
 Windows Visual Studio</h2>
 <p><code>cmake -G "Visual Studio 17 2022" -A Win32 -B build -S .</code></p>
