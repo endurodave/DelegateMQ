@@ -8,6 +8,7 @@
 # *** Linux ***
 # cmake -G "Unix Makefiles" -B build -S .
 # cmake -G "Unix Makefiles" -B build -S . -DENABLE_ALLOCATOR=ON
+# cmake -G "Unix Makefiles" -B build -S . -DTEST_COVERAGE=ON
 
 # Specify the minimum CMake version required
 cmake_minimum_required(VERSION 3.10)
@@ -28,6 +29,17 @@ file(GLOB Delegate_HEADERS "${CMAKE_SOURCE_DIR}/src/Delegate/*.h")
 
 # Organize Delegate headers into a "Delegate Files" folder in Visual Studio
 source_group("Delegate Files" FILES ${Delegate_HEADERS})
+
+# Check if the TEST_COVERAGE argument is passed
+option(TEST_COVERAGE "Enable code coverage" OFF)
+
+if(TEST_COVERAGE)
+  message(STATUS "Code coverage is enabled")
+
+  # Add coverage flags for GCC/Clang compilers
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+  set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+endif()
 
 # Add subdirectories to include path
 include_directories( 
