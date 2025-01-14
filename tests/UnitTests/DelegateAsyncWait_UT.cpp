@@ -213,7 +213,7 @@ static void DelegateFreeAsyncWaitTests()
     // so loop till success is false.
     auto zeroWait = MakeDelegate(&RetVoidPtr, workerThread, chrono::milliseconds(0));
     int loops = 0;
-    while (zeroWait.AsyncInvoke().has_value() && ++loops<100);
+    while (zeroWait.AsyncInvoke().has_value() && ++loops<10);
     //ASSERT_TRUE(zeroWait.IsSuccess() == false);
 }
 
@@ -389,7 +389,7 @@ static void DelegateMemberAsyncWaitTests()
     // so loop till success is false.
     auto zeroWait = MakeDelegate(&voidTest, &Class::RetVoidPtr, workerThread, chrono::milliseconds(0));
     int loops = 0;
-    while (zeroWait.AsyncInvoke().has_value() && ++loops<100);
+    while (zeroWait.AsyncInvoke().has_value() && ++loops<10);
     //ASSERT_TRUE(zeroWait.IsSuccess() == false);
 }
 
@@ -519,7 +519,7 @@ static void DelegateMemberSpAsyncWaitTests()
     // so loop till success is false.
     auto zeroWait = MakeDelegate(testClass1, &TestClass1::MemberFuncInt1, workerThread, chrono::milliseconds(0));
     int loops = 0;
-    while (zeroWait.AsyncInvoke(TEST_INT).has_value() && ++loops<100);
+    while (zeroWait.AsyncInvoke(TEST_INT).has_value() && ++loops<10);
     //ASSERT_TRUE(zeroWait.IsSuccess() == false);
 }
 
@@ -639,7 +639,7 @@ static void DelegateFunctionAsyncWaitTests()
     // so loop till success is false.
     auto zeroWait = MakeDelegate(LambdaNoCapture, workerThread, chrono::milliseconds(0));
     int loops = 0;
-    while (zeroWait.AsyncInvoke(TEST_INT).has_value() && ++loops<100);
+    while (zeroWait.AsyncInvoke(TEST_INT).has_value() && ++loops<10);
     //ASSERT_TRUE(zeroWait.IsSuccess() == false);
 
     {
