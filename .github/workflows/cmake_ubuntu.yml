@@ -36,11 +36,11 @@ jobs:
         # Optionally, filter out system headers and unneeded files
         lcov --remove coverage.info '/usr/*' --output-file coverage_filtered.info
 
-    - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: endurodave/cpp-async-delegate
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2  # Upload coverage report to Codecov
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}  # GitHub repository secret for authentication with Codecov
+        files: build/coverage_filtered.info  # Path to the filtered coverage file
 
     - name: Run DelegateApp
       run: ./build/DelegateApp  # Run the built executable (to run the tests)
