@@ -76,6 +76,10 @@ static void DelegateFreeAsyncWaitTests()
     DelegateFunction<void(int)> other;
     ASSERT_TRUE(!(delegate6.Equal(other)));
 
+    delegate6 = nullptr;
+    ASSERT_TRUE(delegate6.Empty());
+    ASSERT_TRUE(delegate6 == nullptr);
+
     Del delegate7(FreeFuncInt1, workerThread, std::chrono::milliseconds(0));
     auto success = delegate7.AsyncInvoke(TEST_INT);
     //ASSERT_TRUE(!success.has_value());
@@ -203,6 +207,14 @@ static void DelegateFreeAsyncWaitTests()
     for (int i = 0; i < 2; i++)
         arr[i](TEST_INT);
     delete[] arr;
+
+    // Test default return value (time expired before invoke)
+    // Can guarantee timeout of 0 will fail (depends on OS scheduler),  
+    // so loop till success is false
+    auto zeroWait = MakeDelegate(&RetVoidPtr, workerThread, chrono::milliseconds(0));
+    int loops = 0;
+    while (zeroWait.AsyncInvoke().has_value() && ++loops<1000);
+    ASSERT_TRUE(zeroWait.IsSuccess() == false);
 }
 
 static void DelegateMemberAsyncWaitTests()
@@ -371,6 +383,14 @@ static void DelegateMemberAsyncWaitTests()
     for (int i = 0; i < 2; i++)
         arr[i](TEST_INT);
     delete[] arr;
+
+    // Test default return value (time expired before invoke)
+    // Can guarantee timeout of 0 will fail (depends on OS scheduler),  
+    // so loop till success is false
+    auto zeroWait = MakeDelegate(&voidTest, &Class::RetVoidPtr, workerThread, chrono::milliseconds(0));
+    int loops = 0;
+    while (zeroWait.AsyncInvoke().has_value() && ++loops<1000);
+    ASSERT_TRUE(zeroWait.IsSuccess() == false);
 }
 
 static void DelegateMemberSpAsyncWaitTests()
@@ -493,6 +513,14 @@ static void DelegateMemberSpAsyncWaitTests()
     for (int i = 0; i < 2; i++)
         arr[i](TEST_INT);
     delete[] arr;
+
+    // Test default return value (time expired before invoke)
+    // Can guarantee timeout of 0 will fail (depends on OS scheduler),  
+    // so loop till success is false
+    auto zeroWait = MakeDelegate(testClass1, &TestClass1::MemberFuncInt1, workerThread, chrono::milliseconds(0));
+    int loops = 0;
+    while (zeroWait.AsyncInvoke(TEST_INT).has_value() && ++loops<1000);
+    ASSERT_TRUE(zeroWait.IsSuccess() == false);
 }
 
 static void DelegateFunctionAsyncWaitTests()
@@ -605,6 +633,14 @@ static void DelegateFunctionAsyncWaitTests()
     for (int i = 0; i < 2; i++)
         arr[i](TEST_INT);
     delete[] arr;
+
+    // Test default return value (time expired before invoke)
+    // Can guarantee timeout of 0 will fail (depends on OS scheduler),  
+    // so loop till success is false
+    auto zeroWait = MakeDelegate(LambdaNoCapture, workerThread, chrono::milliseconds(0));
+    int loops = 0;
+    while (zeroWait.AsyncInvoke(TEST_INT).has_value() && ++loops<1000);
+    ASSERT_TRUE(zeroWait.IsSuccess() == false);
 
     {
         using Del = DelegateFunctionAsyncWait<int(int)>;

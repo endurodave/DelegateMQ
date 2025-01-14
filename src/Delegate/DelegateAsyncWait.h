@@ -76,7 +76,20 @@ public:
     DelegateAsyncWaitMsg(std::shared_ptr<IDelegateInvoker> invoker, Args... args) : DelegateMsg(invoker),
         m_args(std::forward<Args>(args)...) {}
 
-    virtual ~DelegateAsyncWaitMsg() {}
+    /// Delete the default constructor
+    DelegateAsyncWaitMsg() = delete;
+
+    /// Delete the copy constructor
+    DelegateAsyncWaitMsg(const DelegateAsyncWaitMsg&) = delete;
+
+    /// Delete the copy assignment operator
+    DelegateAsyncWaitMsg& operator=(const DelegateAsyncWaitMsg&) = delete;
+
+    /// Delete the move constructor and move assignment
+    DelegateAsyncWaitMsg(DelegateAsyncWaitMsg&&) = delete;
+    DelegateAsyncWaitMsg& operator=(DelegateAsyncWaitMsg&&) = delete;
+
+    virtual ~DelegateAsyncWaitMsg() = default;
 
     /// Get all function arguments 
     /// @return A tuple of all function arguments
@@ -139,7 +152,7 @@ public:
     /// invoke the target function. 
     DelegateFreeAsyncWait(FreeFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
         BaseType(func), m_thread(&thread), m_timeout(timeout) {
-        Bind(func, thread);
+        Bind(func, thread, timeout);
     }
 
     /// @brief Copy constructor that creates a copy of the given instance.
@@ -463,7 +476,7 @@ public:
     /// invoke the target function. 
     DelegateMemberAsyncWait(SharedPtr object, MemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
-        Bind(object, func, thread);
+        Bind(object, func, thread, timeout);
     }
 
     /// @brief Constructor to create a class instance.
@@ -474,7 +487,7 @@ public:
     /// invoke the target function. 
     DelegateMemberAsyncWait(SharedPtr object, ConstMemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
-        Bind(object, func, thread);
+        Bind(object, func, thread, timeout);
     }
 
     /// @brief Constructor to create a class instance.
@@ -485,7 +498,7 @@ public:
     /// invoke the target function. 
     DelegateMemberAsyncWait(ObjectPtr object, MemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
-        Bind(object, func, thread);
+        Bind(object, func, thread, timeout);
     }
 
     /// @brief Constructor to create a class instance.
@@ -496,7 +509,7 @@ public:
     /// invoke the target function. 
     DelegateMemberAsyncWait(ObjectPtr object, ConstMemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
-        Bind(object, func, thread);
+        Bind(object, func, thread, timeout);
     }
 
     /// @brief Copy constructor that creates a copy of the given instance.
@@ -864,7 +877,7 @@ public:
     /// invoke the target function. 
     DelegateFunctionAsyncWait(FunctionType func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
         BaseType(func), m_thread(&thread), m_timeout(timeout) {
-        Bind(func, thread);
+        Bind(func, thread, timeout);
     }
 
     /// @brief Copy constructor that creates a copy of the given instance.

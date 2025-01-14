@@ -132,6 +132,8 @@ static void DelegateFreeTests()
     std::swap(delS1, delS2);
     ASSERT_TRUE(!delS1.Empty());
     ASSERT_TRUE(delS2.Empty());
+    delS1.Clear();
+    ASSERT_TRUE(delS1 == delS2);
 
     std::function<int(int)> stdFunc = MakeDelegate(&FreeFuncIntWithReturn1);
     int stdFuncRetVal = stdFunc(TEST_INT);
@@ -312,6 +314,8 @@ static void DelegateMemberTests()
     std::swap(delS1, delS2);
     ASSERT_TRUE(!delS1.Empty());
     ASSERT_TRUE(delS2.Empty());
+    delS1.Clear();
+    ASSERT_TRUE(delS1 == delS2);
 
     const TestClass1 tcConst;
     auto delConstCheck = MakeDelegate(&tcConst, &TestClass1::ConstCheck);
@@ -471,6 +475,8 @@ static void DelegateMemberSpTests()
     std::swap(delS1, delS2);
     ASSERT_TRUE(!delS1.Empty());
     ASSERT_TRUE(delS2.Empty());
+    delS1.Clear();
+    ASSERT_TRUE(delS1 == delS2);
 
     std::function<int(int)> stdFunc = MakeDelegate(testClass1, &TestClass1::MemberFuncIntWithReturn1);
     int stdFuncRetVal = stdFunc(TEST_INT);
@@ -581,6 +587,8 @@ static void DelegateFunctionTests()
     std::swap(delS1, delS2);
     ASSERT_TRUE(!delS1.Empty());
     ASSERT_TRUE(delS2.Empty());
+    delS1.Clear();
+    ASSERT_TRUE(delS1 == delS2);
 
     std::set<Del> setDel;
     setDel.insert(delS1);

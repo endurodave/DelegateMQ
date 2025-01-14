@@ -82,6 +82,19 @@ public:
     DelegateAsyncMsg(std::shared_ptr<IDelegateInvoker> invoker, Args... args) : DelegateMsg(invoker),
         m_args(make_tuple_heap(m_heapMem, m_start, std::forward<Args>(args)...)) { }
 
+    /// Delete the default constructor
+    DelegateAsyncMsg() = delete;
+
+    /// Delete the copy constructor
+    DelegateAsyncMsg(const DelegateAsyncMsg&) = delete;
+
+    /// Delete the copy assignment operator
+    DelegateAsyncMsg& operator=(const DelegateAsyncMsg&) = delete;
+
+    /// Delete the move constructor and move assignment
+    DelegateAsyncMsg(DelegateAsyncMsg&&) = delete;
+    DelegateAsyncMsg& operator=(DelegateAsyncMsg&&) = delete;
+
     virtual ~DelegateAsyncMsg() = default;
 
     /// Get all function arguments that were created on the heap

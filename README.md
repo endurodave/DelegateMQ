@@ -2,10 +2,11 @@
 [![conan Ubuntu](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml)
 [![conan Ubuntu](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml)
 [![conan Windows](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml)
+[![Codecov](https://codecov.io/gh/endurodave/cpp-async-delegate/branch/main/graph/badge.svg)](https://app.codecov.io/gh/endurodave/cpp-async-delegate)
 
 # Asynchronous Delegates in C++
 
-The C++ delegate library allows anonymous asynchronous invocation of any callable function on a user-specified thread of control, in contrast to `std::async` which uses an unspecified thread from a thread pool.
+The C++ delegate library allows for anonymous asynchronous invocation of any callable function on a user-specified thread of control. It is a header-only template library that is thread-safe, unit-tested, and easy to use. Multi-threaded application development is simplified through the use of delegates and delegate containers. 
 
 ```cpp
 // Create an async delegate targeting lambda on thread1
@@ -61,6 +62,8 @@ Originally published on CodeProject at: <a href="https://www.codeproject.com/Art
  See [Design Details](docs/DETAILS.md) for implementation design documentation and more examples.
 
  See [Doxygen Documentation](https://endurodave.github.io/cpp-async-delegate/html/index.html) for source code documentation. 
+
+ See [Unit Test Code Coverage](https://app.codecov.io/gh/endurodave/cpp-async-delegate) test results.
 
 # Quick Start
 
