@@ -2,7 +2,7 @@
 [![conan Ubuntu](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml)
 [![conan Ubuntu](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml)
 [![conan Windows](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml)
-[![Codecov](https://codecov.io/gh/endurodave/cpp-async-delegate/branch/main/graph/badge.svg)](https://app.codecov.io/gh/endurodave/cpp-async-delegate)
+[![Codecov](https://codecov.io/gh/endurodave/cpp-async-delegate/branch/master/graph/badge.svg)](https://app.codecov.io/gh/endurodave/cpp-async-delegate)
 
 # Asynchronous Delegates in C++
 
