@@ -16,8 +16,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2  # Checkout the repository code
 
+    - name: Install lcov
+      run: sudo apt-get update && sudo apt-get install -y lcov  # Install lcov tool
+
     - name: Configure CMake
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DTEST_COVERAGE=ON  # Configure CMake to generate build files in 'build' directory with Debug configuration
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DTEST_COVERAGE=ON  # Configure CMake with Debug and coverage
 
     - name: Build with coverage flags
       run: cmake --build build --target DelegateApp  # Build the project using CMake
