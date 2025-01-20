@@ -52,8 +52,8 @@
 /// `python src_dup.py DelegateAsyncWait.h`
 
 #include "Delegate.h"
-#include "DelegateThread.h"
-#include "DelegateInvoker.h"
+#include "IThread.h"
+#include "IInvoker.h"
 #include <optional>
 #include <any>
 #include <chrono>
@@ -73,7 +73,7 @@ public:
     /// Constructor
     /// @param[in] invoker - the invoker instance
     /// @param[in] args - a parameter pack of all target function arguments
-    DelegateAsyncWaitMsg(std::shared_ptr<IDelegateInvoker> invoker, Args... args) : DelegateMsg(invoker),
+    DelegateAsyncWaitMsg(std::shared_ptr<IThreadInvoker> invoker, Args... args) : DelegateMsg(invoker),
         m_args(std::forward<Args>(args)...) {}
 
     /// Delete the default constructor
@@ -139,7 +139,7 @@ struct DelegateFreeAsyncWait; // Not defined
 /// @tparam RetType The return type of the bound delegate function.
 /// @tparam Args The argument types of the bound delegate function.
 template <class RetType, class... Args>
-class DelegateFreeAsyncWait<RetType(Args...)> : public DelegateFree<RetType(Args...)>, public IDelegateInvoker {
+class DelegateFreeAsyncWait<RetType(Args...)> : public DelegateFree<RetType(Args...)>, public IThreadInvoker {
 public:
     typedef RetType(*FreeFunc)(Args...);
     using ClassType = DelegateFreeAsyncWait<RetType(Args...)>;
@@ -150,7 +150,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    DelegateFreeAsyncWait(FreeFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
+    DelegateFreeAsyncWait(FreeFunc func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
         BaseType(func), m_thread(&thread), m_timeout(timeout) {
         Bind(func, thread, timeout);
     }
@@ -182,7 +182,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    void Bind(FreeFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
+    void Bind(FreeFunc func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
         m_thread = &thread;
         m_timeout = timeout;
         BaseType::Bind(func);
@@ -430,11 +430,11 @@ public:
 
     ///@brief Get the destination thread that the target function is invoked on.
     // @return The target thread.
-    DelegateThread* GetThread() noexcept { return m_thread; }
+    IThread* GetThread() noexcept { return m_thread; }
 
 private:
     /// The target thread to invoke the delegate function.
-    DelegateThread* m_thread = nullptr;
+    IThread* m_thread = nullptr;
 
     /// Flag to control synchronous vs asynchronous target invoke behavior.
     bool m_sync = false;
@@ -459,7 +459,7 @@ struct DelegateMemberAsyncWait; // Not defined
 /// @tparam RetType The return type of the bound delegate function.
 /// @tparam Args The argument types of the bound delegate function.
 template <class TClass, class RetType, class... Args>
-class DelegateMemberAsyncWait<TClass, RetType(Args...)> : public DelegateMember<TClass, RetType(Args...)>, public IDelegateInvoker {
+class DelegateMemberAsyncWait<TClass, RetType(Args...)> : public DelegateMember<TClass, RetType(Args...)>, public IThreadInvoker {
 public:
     typedef TClass* ObjectPtr;
     typedef std::shared_ptr<TClass> SharedPtr;
@@ -474,7 +474,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    DelegateMemberAsyncWait(SharedPtr object, MemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
+    DelegateMemberAsyncWait(SharedPtr object, MemberFunc func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
         Bind(object, func, thread, timeout);
     }
@@ -485,7 +485,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    DelegateMemberAsyncWait(SharedPtr object, ConstMemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout) :
+    DelegateMemberAsyncWait(SharedPtr object, ConstMemberFunc func, IThread& thread, std::chrono::milliseconds timeout) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
         Bind(object, func, thread, timeout);
     }
@@ -496,7 +496,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    DelegateMemberAsyncWait(ObjectPtr object, MemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
+    DelegateMemberAsyncWait(ObjectPtr object, MemberFunc func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
         Bind(object, func, thread, timeout);
     }
@@ -507,7 +507,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    DelegateMemberAsyncWait(ObjectPtr object, ConstMemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout) :
+    DelegateMemberAsyncWait(ObjectPtr object, ConstMemberFunc func, IThread& thread, std::chrono::milliseconds timeout) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
         Bind(object, func, thread, timeout);
     }
@@ -540,7 +540,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    void Bind(SharedPtr object, MemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
+    void Bind(SharedPtr object, MemberFunc func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
         m_thread = &thread;
         m_timeout = timeout;
         BaseType::Bind(object, func);
@@ -555,7 +555,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    void Bind(SharedPtr object, ConstMemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
+    void Bind(SharedPtr object, ConstMemberFunc func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
         m_thread = &thread;
         m_timeout = timeout;
         BaseType::Bind(object, func);
@@ -570,7 +570,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    void Bind(ObjectPtr object, MemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
+    void Bind(ObjectPtr object, MemberFunc func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
         m_thread = &thread;
         m_timeout = timeout;
         BaseType::Bind(object, func);
@@ -585,7 +585,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    void Bind(ObjectPtr object, ConstMemberFunc func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
+    void Bind(ObjectPtr object, ConstMemberFunc func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
         m_thread = &thread;
         m_timeout = timeout;
         BaseType::Bind(object, func);
@@ -833,11 +833,11 @@ public:
 
     ///@brief Get the destination thread that the target function is invoked on.
     // @return The target thread.
-    DelegateThread* GetThread() noexcept { return m_thread; }
+    IThread* GetThread() noexcept { return m_thread; }
 
 private:
     /// The target thread to invoke the delegate function.
-    DelegateThread* m_thread = nullptr;
+    IThread* m_thread = nullptr;
 
     /// Flag to control synchronous vs asynchronous target invoke behavior.
     bool m_sync = false;
@@ -864,7 +864,7 @@ struct DelegateFunctionAsyncWait; // Not defined
 /// @tparam RetType The return type of the bound delegate function.
 /// @tparam Args The argument types of the bound delegate function.
 template <class RetType, class... Args>
-class DelegateFunctionAsyncWait<RetType(Args...)> : public DelegateFunction<RetType(Args...)>, public IDelegateInvoker {
+class DelegateFunctionAsyncWait<RetType(Args...)> : public DelegateFunction<RetType(Args...)>, public IThreadInvoker {
 public:
     using FunctionType = std::function<RetType(Args...)>;
     using ClassType = DelegateFunctionAsyncWait<RetType(Args...)>;
@@ -875,7 +875,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    DelegateFunctionAsyncWait(FunctionType func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
+    DelegateFunctionAsyncWait(FunctionType func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) :
         BaseType(func), m_thread(&thread), m_timeout(timeout) {
         Bind(func, thread, timeout);
     }
@@ -907,7 +907,7 @@ public:
     /// @param[in] thread The execution thread to invoke `func`.
     /// @param[in] timeout The calling thread timeout for destination thread to
     /// invoke the target function. 
-    void Bind(FunctionType func, DelegateThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
+    void Bind(FunctionType func, IThread& thread, std::chrono::milliseconds timeout = WAIT_INFINITE) {
         m_thread = &thread;
         m_timeout = timeout;
         BaseType::Bind(func);
@@ -1155,11 +1155,11 @@ public:
 
     ///@brief Get the destination thread that the target function is invoked on.
     // @return The target thread.
-    DelegateThread* GetThread() noexcept { return m_thread; }
+    IThread* GetThread() noexcept { return m_thread; }
 
 private:
     /// The target thread to invoke the delegate function.
-    DelegateThread* m_thread = nullptr;
+    IThread* m_thread = nullptr;
 
     /// Flag to control synchronous vs asynchronous target invoke behavior.
     bool m_sync = false;
@@ -1180,11 +1180,11 @@ private:
 /// @tparam RetType The return type of the free function.
 /// @tparam Args The types of the function arguments.
 /// @param[in] func A pointer to the free function to bind to the delegate.
-/// @param[in] thread The `DelegateThread` on which the function will be invoked asynchronously.
+/// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
 /// @param[in] timeout The duration to wait for the function to complete before returning.
 /// @return A `DelegateFreeAsyncWait` object bound to the specified free function, thread, and timeout.
 template <class RetType, class... Args>
-auto MakeDelegate(RetType(*func)(Args... args), DelegateThread& thread, std::chrono::milliseconds timeout) {
+auto MakeDelegate(RetType(*func)(Args... args), IThread& thread, std::chrono::milliseconds timeout) {
     return DelegateFreeAsyncWait<RetType(Args...)>(func, thread, timeout);
 }
 
@@ -1194,11 +1194,11 @@ auto MakeDelegate(RetType(*func)(Args... args), DelegateThread& thread, std::chr
 /// @tparam Args The types of the function arguments.
 /// @param[in] object A pointer to the instance of `TClass` that will be used for the delegate.
 /// @param[in] func A pointer to the non-const member function of `TClass` to bind to the delegate.
-/// @param[in] thread The `DelegateThread` on which the function will be invoked asynchronously.
+/// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
 /// @param[in] timeout The duration to wait for the function to complete before returning.
 /// @return A `DelegateMemberAsyncWait` object bound to the specified non-const member function, thread, and timeout.
 template <class TClass, class RetType, class... Args>
-auto MakeDelegate(TClass* object, RetType(TClass::*func)(Args... args), DelegateThread& thread, std::chrono::milliseconds timeout) {
+auto MakeDelegate(TClass* object, RetType(TClass::*func)(Args... args), IThread& thread, std::chrono::milliseconds timeout) {
     return DelegateMemberAsyncWait<TClass, RetType(Args...)>(object, func, thread, timeout);
 }
 
@@ -1208,11 +1208,11 @@ auto MakeDelegate(TClass* object, RetType(TClass::*func)(Args... args), Delegate
 /// @tparam Args The types of the function arguments.
 /// @param[in] object A pointer to the instance of `TClass` that will be used for the delegate.
 /// @param[in] func A pointer to the const member function of `TClass` to bind to the delegate.
-/// @param[in] thread The `DelegateThread` on which the function will be invoked asynchronously.
+/// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
 /// @param[in] timeout The duration to wait for the function to complete before returning.
 /// @return A `DelegateMemberAsyncWait` object bound to the specified const member function, thread, and timeout.
 template <class TClass, class RetType, class... Args>
-auto MakeDelegate(TClass* object, RetType(TClass::*func)(Args... args) const, DelegateThread& thread, std::chrono::milliseconds timeout) {
+auto MakeDelegate(TClass* object, RetType(TClass::*func)(Args... args) const, IThread& thread, std::chrono::milliseconds timeout) {
     return DelegateMemberAsyncWait<TClass, RetType(Args...)>(object, func, thread, timeout);
 }
 
@@ -1222,11 +1222,11 @@ auto MakeDelegate(TClass* object, RetType(TClass::*func)(Args... args) const, De
 /// @tparam Args The types of the function arguments.
 /// @param[in] object A pointer to the instance of `TClass` that will be used for the delegate.
 /// @param[in] func A pointer to the non-const member function of `TClass` to bind to the delegate.
-/// @param[in] thread The `DelegateThread` on which the function will be invoked asynchronously.
+/// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
 /// @param[in] timeout The duration to wait for the function to complete before returning.
 /// @return A `DelegateMemberAsyncWait` object bound to the specified non-const member function.
 template <class TClass, class RetType, class... Args>
-auto MakeDelegate(const TClass* object, RetType(TClass::* func)(Args... args) const, DelegateThread& thread, std::chrono::milliseconds timeout) {
+auto MakeDelegate(const TClass* object, RetType(TClass::* func)(Args... args) const, IThread& thread, std::chrono::milliseconds timeout) {
     return DelegateMemberAsyncWait<const TClass, RetType(Args...)>(object, func, thread, timeout);
 }
 
@@ -1237,11 +1237,11 @@ auto MakeDelegate(const TClass* object, RetType(TClass::* func)(Args... args) co
 /// @tparam Args The types of the function arguments.
 /// @param[in] object A shared pointer to the instance of `TClass` that will be used for the delegate.
 /// @param[in] func A pointer to the non-const member function of `TClass` to bind to the delegate.
-/// @param[in] thread The `DelegateThread` on which the function will be invoked asynchronously.
+/// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
 /// @param[in] timeout The duration to wait for the function to complete before returning.
 /// @return A `DelegateMemberAsyncWait` shared pointer bound to the specified non-const member function, thread, and timeout.
 template <class TClass, class RetVal, class... Args>
-auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args... args), DelegateThread& thread, std::chrono::milliseconds timeout) {
+auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args... args), IThread& thread, std::chrono::milliseconds timeout) {
     return DelegateMemberAsyncWait<TClass, RetVal(Args...)>(object, func, thread, timeout);
 }
 
@@ -1251,11 +1251,11 @@ auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args...
 /// @tparam Args The types of the function arguments.
 /// @param[in] object A shared pointer to the instance of `TClass` that will be used for the delegate.
 /// @param[in] func A pointer to the const member function of `TClass` to bind to the delegate.
-/// @param[in] thread The `DelegateThread` on which the function will be invoked asynchronously.
+/// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
 /// @param[in] timeout The duration to wait for the function to complete before returning.
 /// @return A `DelegateMemberAsyncWait` shared pointer bound to the specified const member function, thread, and timeout.
 template <class TClass, class RetVal, class... Args>
-auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args... args) const, DelegateThread& thread, std::chrono::milliseconds timeout) {
+auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args... args) const, IThread& thread, std::chrono::milliseconds timeout) {
     return DelegateMemberAsyncWait<TClass, RetVal(Args...)>(object, func, thread, timeout);
 }
 
@@ -1263,11 +1263,11 @@ auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args...
 /// @tparam RetType The return type of the `std::function`.
 /// @tparam Args The types of the function arguments.
 /// @param[in] func The `std::function` to bind to the delegate.
-/// @param[in] thread The `DelegateThread` on which the function will be invoked asynchronously.
+/// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
 /// @param[in] timeout The duration to wait for the function to complete before returning.
 /// @return A `DelegateFunctionAsyncWait` object bound to the specified `std::function`, thread, and timeout.
 template <class RetType, class... Args>
-auto MakeDelegate(std::function<RetType(Args...)> func, DelegateThread& thread, std::chrono::milliseconds timeout) {
+auto MakeDelegate(std::function<RetType(Args...)> func, IThread& thread, std::chrono::milliseconds timeout) {
     return DelegateFunctionAsyncWait<RetType(Args...)>(func, thread, timeout);
 }
 

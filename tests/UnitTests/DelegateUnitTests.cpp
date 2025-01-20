@@ -2575,6 +2575,7 @@ void DelegateMemberAsyncWaitTests()
 extern void Delegate_UT();
 extern void DelegateAsync_UT();
 extern void DelegateAsyncWait_UT();
+extern void DelegateRemote_UT();
 extern void DelegateThreads_UT();
 extern void Containers_UT();
 
@@ -2586,6 +2587,7 @@ void DelegateUnitTests()
 		Delegate_UT();
 		DelegateAsync_UT();
 		DelegateAsyncWait_UT();
+		DelegateRemote_UT();
 		DelegateThreads_UT();
 	}
 	catch (const std::exception& e)

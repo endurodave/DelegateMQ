@@ -171,7 +171,7 @@ void WorkerThread::Process()
 				auto delegateMsg = msg->GetData();
 				ASSERT_TRUE(delegateMsg);
 
-				auto invoker = delegateMsg->GetDelegateInvoker();
+				auto invoker = delegateMsg->GetInvoker();
 				ASSERT_TRUE(invoker);
 
 				// Invoke the delegate destination target function

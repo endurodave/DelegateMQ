@@ -396,19 +396,31 @@ DelegateBase
         DelegateFree<>
             DelegateFreeAsync<>
             DelegateFreeAsyncWait<>
+            DelegateFreeRemote<>
         DelegateMember<>
             DelegateMemberAsync<>
             DelegateMemberAsyncWait<>
+            DelegateMemberRemote<>
         DelegateFunction<>
             DelegateFunctionAsync<>
             DelegateFunctionAsyncWait<>
+            DelegateFunctionRemote<>
+
+// Interfaces
+IDispatcher
+ISerializer
+IThread
+IThreadInvoker
+IRemoteInvoker
 ``` 
 
 `DelegateFree<>` binds to a free or static member function. `DelegateMember<>` binds to a class instance member function. `DelegateFunction<>` binds to a `std::function` target. All versions offer synchronous function invocation.
 
-`DelegateFreeAsync<>`, `DelegateMemberAsync<>` and `DelegateFunctionAsync<>` operate in the same way as their synchronous counterparts; except these versions offer non-blocking asynchronous function execution on a specified thread of control.
+`DelegateFreeAsync<>`, `DelegateMemberAsync<>` and `DelegateFunctionAsync<>` operate in the same way as their synchronous counterparts; except these versions offer non-blocking asynchronous function execution on a specified thread of control. `IThread` and `IThreadInvoker` interfaces to send messages integrates with any OS.
 
 `DelegateFreeAsyncWait<>`, `DelegateMemberAsyncWait<>` and `DelegateFunctionAsyncWait<>` provides blocking asynchronous function execution on a target thread with a caller supplied maximum wait timeout. The destination thread will not invoke the target function if the timeout expires.
+
+`DelegateFreeRemote<>`, `DelegateMemberRemote<>` and `DelegateFunctionRemote<>` provides non-blocking remote function execution. `ISerialize` and `IRemoteInvoker` interfaces support integration with any system. 
 
 The three main delegate container classes are:
 
@@ -417,11 +429,6 @@ The three main delegate container classes are:
 UnicastDelegate<>
 MulticastDelegate<>
     MulticastDelegateSafe<>
-
-// Helper Classes
-DelegateMsg
-DelegateThread
-IDelegateInvoker
 ``` 
 
 `UnicastDelegate<>` is a delegate container accepting a single delegate.

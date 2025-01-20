@@ -5,7 +5,7 @@
 // David Lafreniere, Feb 2017.
 
 #include "DelegateOpt.h"
-#include "DelegateThread.h"
+#include "IThread.h"
 #include <thread>
 #include <queue>
 #include <mutex>
@@ -14,7 +14,7 @@
 
 class ThreadMsg;
 
-class WorkerThread : public DelegateLib::DelegateThread
+class WorkerThread : public DelegateLib::IThread
 {
 public:
 	/// Constructor

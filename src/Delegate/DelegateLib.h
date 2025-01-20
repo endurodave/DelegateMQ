@@ -58,5 +58,6 @@
 #include "UnicastDelegate.h"
 #include "DelegateAsync.h"
 #include "DelegateAsyncWait.h"
+#include "DelegateRemote.h"
 
 #endif

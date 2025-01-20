@@ -1,5 +1,5 @@
-#ifndef _DELEGATE_INVOKER_H
-#define _DELEGATE_INVOKER_H
+#ifndef _IINVOKER_H
+#define _IINVOKER_H
 
 /// @file
 /// @brief Delegate inter-thread invoker base class. 
@@ -22,14 +22,23 @@ class DelegateMsg;
 /// `auto delegateMsg = msg->GetData();`
 ///
 /// // Invoke the delegate destination target function  
-/// `delegateMsg->GetDelegateInvoker()->Invoke(delegateMsg);`
-class IDelegateInvoker
+/// `delegateMsg->GetInvoker()->Invoke(delegateMsg);`
+class IThreadInvoker
 {
 public:
 	/// Called to invoke the bound target function by the destination thread of control.
-	/// @param[in] msg - the incoming delegate message.
+	/// @param[in] msg The incoming delegate message.
 	/// @return `true` if function was invoked; `false` if failed. 
 	virtual bool Invoke(std::shared_ptr<DelegateMsg> msg) = 0;
+};
+
+class IRemoteInvoker
+{
+public: 
+    /// Called to invoke the bound target function by the remote system. 
+    /// @param[in] is The incoming remote message stream. 
+    /// @return `true` if function was invoked; `false` if failed. 
+    virtual bool Invoke(std::istream& is) = 0;
 };
 
 }

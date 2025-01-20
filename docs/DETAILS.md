@@ -22,6 +22,7 @@ A C++ delegate library capable of anonymously invoking any callable function eit
   - [Synchronous Delegates](#synchronous-delegates)
   - [Asynchronous Non-Blocking Delegates](#asynchronous-non-blocking-delegates)
   - [Asynchronous Blocking Delegates](#asynchronous-blocking-delegates)
+  - [Remote Delegates](#remote-delegates)
   - [Fixed-Block Memory Allocator](#fixed-block-memory-allocator)
   - [Error Handling](#error-handling)
   - [Function Argument Copy](#function-argument-copy)
@@ -181,13 +182,22 @@ DelegateBase
         DelegateFunction<>
             DelegateFunctionAsync<>
             DelegateFunctionAsyncWait<>
+
+// Interfaces
+IDispatcher
+ISerializer
+IThread
+IThreadInvoker
+IRemoteInvoker
 ``` 
 
 `DelegateFree<>` binds to a free or static member function. `DelegateMember<>` binds to a class instance member function. `DelegateFunction<>` binds to a `std::function` target. All versions offer synchronous function invocation.
 
-`DelegateFreeAsync<>`, `DelegateMemberAsync<>` and `DelegateFunctionAsync<>` operate in the same way as their synchronous counterparts; except these versions offer non-blocking asynchronous function execution on a specified thread of control.
+`DelegateFreeAsync<>`, `DelegateMemberAsync<>` and `DelegateFunctionAsync<>` operate in the same way as their synchronous counterparts; except these versions offer non-blocking asynchronous function execution on a specified thread of control. `IThread` and `IThreadInvoker` interfaces to send messages integrates with any OS.
 
 `DelegateFreeAsyncWait<>`, `DelegateMemberAsyncWait<>` and `DelegateFunctionAsyncWait<>` provides blocking asynchronous function execution on a target thread with a caller supplied maximum wait timeout. The destination thread will not invoke the target function if the timeout expires.
+
+`DelegateFreeRemote<>`, `DelegateMemberRemote<>` and `DelegateFunctionRemote<>` provides non-blocking remote function execution. `ISerialize` and `IRemoteInvoker` interfaces support integration with any system. 
 
 The template-overloaded `MakeDelegate()` helper function eases delegate creation.
 
@@ -387,6 +397,79 @@ std::shared_ptr<TestClass> spObject(new TestClass());
 auto delegateMemberSp = MakeDelegate(spObject, &TestClass::MemberFuncStdString);
 delegateMemberSp("Hello world using shared_ptr", 2020);
 ```
+## Remote Delegates
+
+A remote delegate asynchronously invokes a remote target function. The sender must implement these interfaces:
+
+```cpp
+template <class R>
+struct ISerializer; // Not defined
+
+/// @brief Delegate serializer interface for serializing and deserializing
+/// remote delegate arguments. 
+template<class RetType, class... Args>
+class ISerializer<RetType(Args...)>
+{
+public:
+    /// Inheriting class implements the write function to serialize
+    /// data for transport. 
+    /// @param[out] os The output stream
+    /// @param[in] args The target function arguments 
+    /// @return The input stream
+    virtual std::ostream& write(std::ostream& os, Args... args) = 0;
+
+    /// Inheriting class implements the read function to unserialize data
+    /// from transport. 
+    /// @param[in] is The input stream
+    /// @param[out] args The target function arguments 
+    /// @return The input stream
+    virtual std::istream& read(std::istream& is, Args&... args) = 0;
+};
+
+/// @brief Delegate interface class to dispatch serialized function argument data
+/// to a remote destination. 
+class IDispatcher
+{
+public:
+    /// Dispatch a stream of bytes to a remote system. The implementer is responsible
+    /// for sending the bytes over a communication link. 
+    /// @param[in] os An outgoing stream to send to the remote destination.
+    virtual int Dispatch(std::ostream& os) = 0;
+};
+```
+
+The sender sends invokes the remote delegate. All function argument data is serialized and sent using the dispatcher.
+
+```cpp
+// Target function
+void FreeFuncInt(int i) { ASSERT_TRUE(i == TEST_INT); }
+
+// Dispatcher and serializer instances
+Dispatcher dispatcher;
+Serializer<void(int)> serializer;
+
+// Sender creates delegate and registers dispatcher and serializer
+DelegateFreeRemote<void(int)> delegateRemote(FreeFuncInt, REMOTE_ID);
+delegateRemote.SetDispatcher(&dispatcher);
+delegateRemote.SetSerializer(&serializer);
+
+// Send invokes the remote function using the serializer and dispatcher interfaces
+delegateRemote(TEST_INT);
+```
+
+The receiver receives the serialized function argument data bytes and invokes the target function.
+
+```cpp
+Serializer<void(int)> serializer;
+DelegateFreeRemote<void(int)> delegateRemote(FreeFuncInt, REMOTE_ID);
+delegateRemote.SetSerializer(&serializer);
+
+// Receiver code obtains the serializers incoming argument data.
+std::istream& recv_stream;  // TODO: get incoming argument data bytes
+
+// Receiver invokes the remote target function
+delegateRemote.Invoke(recv_stream);
+```
 
 ## Fixed-Block Memory Allocator
 
@@ -570,11 +653,6 @@ DelegateBase
 UnicastDelegate<>
 MulticastDelegate<>
     MulticastDelegateSafe<>
-
-// Helper Classes
-DelegateMsg
-DelegateThread
-IDelegateInvoker
 ```
 
 Some degree of code duplication exists within the delegate inheritance hierarchy. This arises because the `Free`, `Member`, and `Function` classes support different target function types, making code sharing via inheritance difficult. Alternative solutions to share code either compromised type safety, caused non-intuitive user syntax, or significantly increased implementation complexity and code readability. Extensive unit tests ensure a reliable implementation.
@@ -719,14 +797,14 @@ if (thread) {
 }
 ```
 
-An application specific class inherits from `DelegateThread` interface. 
+An application specific class inherits from `IThread` interface. 
 
 ```cpp
-class DelegateThread
+class IThread
 {
 public:
 	/// Destructor
-	virtual ~DelegateThread() = default;
+	virtual ~IThread() = default;
 
 	/// Dispatch a DelegateMsg onto this thread. The implementer is responsible
 	/// for getting the DelegateMsg into an OS message queue. Once DelegateMsg
