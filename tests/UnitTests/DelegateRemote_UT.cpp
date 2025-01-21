@@ -384,7 +384,7 @@ static void DelegateFreeRemoteTests()
     {
         Serializer<void(int)> serializer;
         DelegateFreeRemote<void(int)> delegateRemote(FreeFuncInt, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         delegateRemote(TEST_INT);
@@ -397,7 +397,7 @@ static void DelegateFreeRemoteTests()
     {
         Serializer<void(int&)> serializer;
         DelegateFreeRemote<void(int&)> delegateRemote(FreeFuncIntRef, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         int i = TEST_INT;
@@ -411,7 +411,7 @@ static void DelegateFreeRemoteTests()
     {
         Serializer<void(int*)> serializer;
         DelegateFreeRemote<void(int*)> delegateRemote(FreeFuncIntPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         int i = TEST_INT;
@@ -426,7 +426,7 @@ static void DelegateFreeRemoteTests()
     {
         Serializer<void(int**)> serializer;
         DelegateFreeRemote<void(int**)> delegateRemote(FreeFuncIntPtrPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         int i = TEST_INT;
@@ -442,7 +442,7 @@ static void DelegateFreeRemoteTests()
     {
         Serializer<void(RemoteData&)> serializer;
         DelegateFreeRemote<void(RemoteData&)> delegateRemote(FreeFuncRemoteData, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         RemoteData d(TEST_INT, TEST_INT+1);
@@ -456,7 +456,7 @@ static void DelegateFreeRemoteTests()
     {
         Serializer<void(RemoteData*)> serializer;
         DelegateFreeRemote<void(RemoteData*)> delegateRemote(FreeFuncRemoteDataPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         RemoteData d(TEST_INT, TEST_INT + 1);
@@ -629,7 +629,7 @@ static void DelegateMemberRemoteTests()
     {
         Serializer<void(int)> serializer;
         DelegateMemberRemote<RemoteClass, void(int)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncInt, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         delegateRemote(TEST_INT);
@@ -642,7 +642,7 @@ static void DelegateMemberRemoteTests()
     {
         Serializer<void(int&)> serializer;
         DelegateMemberRemote<RemoteClass, void(int&)> delegateRemote(&remoteClass, &RemoteClass::MmberFuncIntRef, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         int i = TEST_INT;
@@ -656,7 +656,7 @@ static void DelegateMemberRemoteTests()
     {
         Serializer<void(int*)> serializer;
         DelegateMemberRemote<RemoteClass, void(int*)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncIntPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         int i = TEST_INT;
@@ -670,7 +670,7 @@ static void DelegateMemberRemoteTests()
     {
         Serializer<void(RemoteData&)> serializer;
         DelegateMemberRemote<RemoteClass, void(RemoteData&)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncRemoteData, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         RemoteData d(TEST_INT, TEST_INT + 1);
@@ -684,7 +684,7 @@ static void DelegateMemberRemoteTests()
     {
         Serializer<void(RemoteData*)> serializer;
         DelegateMemberRemote<RemoteClass, void(RemoteData*)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncRemoteDataPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         RemoteData d(TEST_INT, TEST_INT + 1);
@@ -822,7 +822,7 @@ static void DelegateMemberSpRemoteTests()
     {
         Serializer<void(int)> serializer;
         DelegateFunctionRemote<void(int)> delegateRemote(LambdaFuncInt, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         delegateRemote(TEST_INT);
@@ -835,7 +835,7 @@ static void DelegateMemberSpRemoteTests()
     {
         Serializer<void(int&)> serializer;
         DelegateFunctionRemote<void(int&)> delegateRemote(LambdaFuncIntRef, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         int i = TEST_INT;
@@ -849,7 +849,7 @@ static void DelegateMemberSpRemoteTests()
     {
         Serializer<void(int*)> serializer;
         DelegateFunctionRemote<void(int*)> delegateRemote(LambdaFuncIntPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         int i = TEST_INT;
@@ -863,7 +863,7 @@ static void DelegateMemberSpRemoteTests()
     {
         Serializer<void(RemoteData&)> serializer;
         DelegateFunctionRemote<void(RemoteData&)> delegateRemote(LambdaFuncRemoteData, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         RemoteData d(TEST_INT, TEST_INT + 1);
@@ -877,7 +877,7 @@ static void DelegateMemberSpRemoteTests()
     {
         Serializer<void(RemoteData*)> serializer;
         DelegateFunctionRemote<void(RemoteData*)> delegateRemote(LambdaFuncRemoteDataPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         RemoteData d(TEST_INT, TEST_INT + 1);
@@ -1000,7 +1000,7 @@ static void DelegateFunctionRemoteTests()
     {
         Serializer<void(int)> serializer;
         DelegateMemberRemote<RemoteClass, void(int)> delegateRemote(remoteClass, &RemoteClass::MemberFuncInt, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         delegateRemote(TEST_INT);
@@ -1013,7 +1013,7 @@ static void DelegateFunctionRemoteTests()
     {
         Serializer<void(int&)> serializer;
         DelegateMemberRemote<RemoteClass, void(int&)> delegateRemote(remoteClass, &RemoteClass::MmberFuncIntRef, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         int i = TEST_INT;
@@ -1027,7 +1027,7 @@ static void DelegateFunctionRemoteTests()
     {
         Serializer<void(int*)> serializer;
         DelegateMemberRemote<RemoteClass, void(int*)> delegateRemote(remoteClass, &RemoteClass::MemberFuncIntPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         int i = TEST_INT;
@@ -1041,7 +1041,7 @@ static void DelegateFunctionRemoteTests()
     {
         Serializer<void(RemoteData&)> serializer;
         DelegateMemberRemote<RemoteClass, void(RemoteData&)> delegateRemote(remoteClass, &RemoteClass::MemberFuncRemoteData, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         RemoteData d(TEST_INT, TEST_INT + 1);
@@ -1055,7 +1055,7 @@ static void DelegateFunctionRemoteTests()
     {
         Serializer<void(RemoteData*)> serializer;
         DelegateMemberRemote<RemoteClass, void(RemoteData*)> delegateRemote(remoteClass, &RemoteClass::MemberFuncRemoteDataPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
         delegateRemote.SetSerializer(&serializer);
         RemoteData d(TEST_INT, TEST_INT + 1);

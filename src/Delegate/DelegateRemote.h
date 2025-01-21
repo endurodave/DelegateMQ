@@ -449,7 +449,7 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, int)>* errorHandler) {
+    void SetErrorHandler(Delegate<void(DelegateError, int)>& errorHandler) {
         m_errorHandler = errorHandler;
     }
 
@@ -467,15 +467,14 @@ private:
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
     void RaiseError(DelegateError error, int auxCode = 0) {
-        if (m_errorHandler)
-            (*m_errorHandler)(error, auxCode);
+        m_errorHandler(error, auxCode);
     }
 
     /// The delegate unique remote identifier
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
 
     /// A pointer to a error handler callback
-    Delegate<void(DelegateError, int)>* m_errorHandler = nullptr;
+    UnicastDelegate<void(DelegateError, int)> m_errorHandler;
 
     /// A pointer to the delegate dispatcher
     IDispatcher* m_dispatcher = nullptr;
@@ -894,7 +893,7 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, int)>* errorHandler) {
+    void SetErrorHandler(Delegate<void(DelegateError, int)>& errorHandler) {
         m_errorHandler = errorHandler;
     }
 
@@ -912,15 +911,14 @@ private:
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
     void RaiseError(DelegateError error, int auxCode = 0) {
-        if (m_errorHandler)
-            (*m_errorHandler)(error, auxCode);
+        m_errorHandler(error, auxCode);
     }
 
     /// The delegate unique remote identifier
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
 
     /// A pointer to a error handler callback
-    Delegate<void(DelegateError, int)>* m_errorHandler = nullptr;
+    UnicastDelegate<void(DelegateError, int)> m_errorHandler;
 
     /// A pointer to the delegate dispatcher
     IDispatcher* m_dispatcher = nullptr;
@@ -1280,7 +1278,7 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, int)>* errorHandler) {
+    void SetErrorHandler(Delegate<void(DelegateError, int)>& errorHandler) {
         m_errorHandler = errorHandler;
     }
 
@@ -1298,15 +1296,14 @@ private:
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
     void RaiseError(DelegateError error, int auxCode = 0) {
-        if (m_errorHandler)
-            (*m_errorHandler)(error, auxCode);
+        m_errorHandler(error, auxCode);
     }
 
     /// The delegate unique remote identifier
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
 
     /// A pointer to a error handler callback
-    Delegate<void(DelegateError, int)>* m_errorHandler = nullptr;
+    UnicastDelegate<void(DelegateError, int)> m_errorHandler;
 
     /// A pointer to the delegate dispatcher
     IDispatcher* m_dispatcher = nullptr;
