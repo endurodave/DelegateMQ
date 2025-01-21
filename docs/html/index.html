@@ -99,10 +99,10 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
   <div class="headertitle"><div class="title">Delegates </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a></p>
+<div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a> <a href="https://app.codecov.io/gh/endurodave/cpp-async-delegate"><img src="https://codecov.io/gh/endurodave/cpp-async-delegate/branch/master/graph/badge.svg" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
 <h1><a class="anchor" id="autotoc_md0"></a>
 Asynchronous Delegates in C++</h1>
-<p>The C++ delegate library allows anonymous asynchronous invocation of any callable function on a user-specified thread of control, in contrast to <code>std::async</code> which uses an unspecified thread from a thread pool.</p>
+<p>The C++ delegate library allows for anonymous asynchronous invocation of any callable function on a user-specified thread of control. It is a header-only template library that is thread-safe, unit-tested, and easy to use. Multi-threaded application development is simplified through the use of delegates and delegate containers.</p>
 <div class="fragment"><div class="line"><span class="comment">// Create an async delegate targeting lambda on thread1</span></div>
 <div class="line"><span class="keyword">auto</span> lambda = [](<span class="keywordtype">int</span> i) { std::cout &lt;&lt; i; };</div>
 <div class="line"><span class="keyword">auto</span> lambdaDelegate = MakeDelegate(std::function(lambda), thread1);</div>
@@ -147,6 +147,7 @@ Asynchronous Delegates in C++</h1>
 Design Documentation</h1>
 <p>See Design Details for implementation design documentation and more examples.</p>
 <p>See <a href="https://endurodave.github.io/cpp-async-delegate/html/index.html">Doxygen Documentation</a> for source code documentation.</p>
+<p>See <a href="https://app.codecov.io/gh/endurodave/cpp-async-delegate">Unit Test Code Coverage</a> test results.</p>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Quick Start</h1>
 <h2><a class="anchor" id="autotoc_md3"></a>
@@ -446,25 +447,31 @@ Delegate Classes</h1>
 <div class="line">        DelegateFree&lt;&gt;</div>
 <div class="line">            DelegateFreeAsync&lt;&gt;</div>
 <div class="line">            DelegateFreeAsyncWait&lt;&gt;</div>
+<div class="line">            DelegateFreeRemote&lt;&gt;</div>
 <div class="line">        DelegateMember&lt;&gt;</div>
 <div class="line">            DelegateMemberAsync&lt;&gt;</div>
 <div class="line">            DelegateMemberAsyncWait&lt;&gt;</div>
+<div class="line">            DelegateMemberRemote&lt;&gt;</div>
 <div class="line">        DelegateFunction&lt;&gt;</div>
 <div class="line">            DelegateFunctionAsync&lt;&gt;</div>
 <div class="line">            DelegateFunctionAsyncWait&lt;&gt;</div>
+<div class="line">            DelegateFunctionRemote&lt;&gt;</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Interfaces</span></div>
+<div class="line">IDispatcher</div>
+<div class="line">ISerializer</div>
+<div class="line">IThread</div>
+<div class="line">IThreadInvoker</div>
+<div class="line">IRemoteInvoker</div>
 </div><!-- fragment --><p><code>DelegateFree&lt;&gt;</code> binds to a free or static member function. <code>DelegateMember&lt;&gt;</code> binds to a class instance member function. <code>DelegateFunction&lt;&gt;</code> binds to a <code>std::function</code> target. All versions offer synchronous function invocation.</p>
-<p><code>DelegateFreeAsync&lt;&gt;</code>, <code>DelegateMemberAsync&lt;&gt;</code> and <code>DelegateFunctionAsync&lt;&gt;</code> operate in the same way as their synchronous counterparts; except these versions offer non-blocking asynchronous function execution on a specified thread of control.</p>
+<p><code>DelegateFreeAsync&lt;&gt;</code>, <code>DelegateMemberAsync&lt;&gt;</code> and <code>DelegateFunctionAsync&lt;&gt;</code> operate in the same way as their synchronous counterparts; except these versions offer non-blocking asynchronous function execution on a specified thread of control. <code>IThread</code> and <code>IThreadInvoker</code> interfaces to send messages integrates with any OS.</p>
 <p><code>DelegateFreeAsyncWait&lt;&gt;</code>, <code>DelegateMemberAsyncWait&lt;&gt;</code> and <code>DelegateFunctionAsyncWait&lt;&gt;</code> provides blocking asynchronous function execution on a target thread with a caller supplied maximum wait timeout. The destination thread will not invoke the target function if the timeout expires.</p>
+<p><code>DelegateFreeRemote&lt;&gt;</code>, <code>DelegateMemberRemote&lt;&gt;</code> and <code>DelegateFunctionRemote&lt;&gt;</code> provides non-blocking remote function execution. <code>ISerializer</code> and <code>IRemoteInvoker</code> interfaces support integration with any system.</p>
 <p>The three main delegate container classes are:</p>
 <div class="fragment"><div class="line"><span class="comment">// Delegate Containers</span></div>
 <div class="line">UnicastDelegate&lt;&gt;</div>
 <div class="line">MulticastDelegate&lt;&gt;</div>
 <div class="line">    MulticastDelegateSafe&lt;&gt;</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// Helper Classes</span></div>
-<div class="line">DelegateMsg</div>
-<div class="line">DelegateThread</div>
-<div class="line">IDelegateInvoker</div>
 </div><!-- fragment --><p><code>UnicastDelegate&lt;&gt;</code> is a delegate container accepting a single delegate.</p>
 <p><code>MulticastDelegate&lt;&gt;</code> is a delegate container accepting multiple delegates.</p>
 <p><code>MultcastDelegateSafe&lt;&gt;</code> is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.</p>
@@ -501,12 +508,8 @@ Projects Using Delegates</h2>
 <ul>
 <li><a href="https://github.com/endurodave/AsyncStateMachine">Asynchronous State Machine Design in C++</a> - an asynchronous C++ state machine implemented using an asynchronous delegate library.</li>
 <li><a href="https://github.com/endurodave/IntegrationTestFramework">Integration Test Framework using Google Test and Delegates</a> - a multi-threaded C++ software integration test framework using Google Test and Delegate libraries.</li>
-<li><a href="https://github.com/endurodave/Async-SQLite">Asynchronous SQLite API using C++ Delegates</a> - an asynchronous SQLite wrapper implemented using an asynchronous delegate library.</li>
+<li><a href="https://github.com/endurodave/Async-SQLite">Asynchronous SQLite API using C++ Delegates</a> - an asynchronous SQLite wrapper implemented using an asynchronous delegate library. </li>
 </ul>
-<h1><a class="anchor" id="autotoc_md16"></a>
-Star History</h1>
-<p>Find this repository useful? Consider giving it a star!</p>
-<p><a href="https://star-history.com/#endurodave/cpp-async-delegate&amp;Date"><img src="https://api.star-history.com/svg?repos=endurodave/cpp-async-delegate&amp;type=Date" alt="Star History Chart" class="inline"/></a> </p>
 </div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->

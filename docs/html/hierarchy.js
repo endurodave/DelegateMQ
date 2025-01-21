@@ -26,33 +26,36 @@ var hierarchy =
       [ "DelegateLib::Delegate< RetType(Args...)>", "class_delegate_lib_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", [
         [ "DelegateLib::DelegateFree< RetType(Args...)>", "class_delegate_lib_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html", [
           [ "DelegateLib::DelegateFreeAsync< RetType(Args...)>", "class_delegate_lib_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
-          [ "DelegateLib::DelegateFreeAsyncWait< RetType(Args...)>", "class_delegate_lib_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
+          [ "DelegateLib::DelegateFreeAsyncWait< RetType(Args...)>", "class_delegate_lib_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+          [ "DelegateLib::DelegateFreeRemote< RetType(Args...)>", "class_delegate_lib_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
         ] ],
         [ "DelegateLib::DelegateFunction< RetType(Args...)>", "class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html", [
           [ "DelegateLib::DelegateFunctionAsync< RetType(Args...)>", "class_delegate_lib_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
-          [ "DelegateLib::DelegateFunctionAsyncWait< RetType(Args...)>", "class_delegate_lib_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
+          [ "DelegateLib::DelegateFunctionAsyncWait< RetType(Args...)>", "class_delegate_lib_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+          [ "DelegateLib::DelegateFunctionRemote< RetType(Args...)>", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
         ] ],
         [ "DelegateLib::DelegateMember< TClass, RetType(Args...)>", "class_delegate_lib_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", [
           [ "DelegateLib::DelegateMemberAsync< TClass, RetType(Args...)>", "class_delegate_lib_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
-          [ "DelegateLib::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "class_delegate_lib_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
+          [ "DelegateLib::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "class_delegate_lib_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
+          [ "DelegateLib::DelegateMemberRemote< TClass, RetType(Args...)>", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
         ] ]
       ] ]
     ] ],
     [ "DelegateLib::DelegateFree< R >", "struct_delegate_lib_1_1_delegate_free.html", null ],
     [ "DelegateLib::DelegateFreeAsync< R >", "struct_delegate_lib_1_1_delegate_free_async.html", null ],
     [ "DelegateLib::DelegateFreeAsyncWait< R >", "struct_delegate_lib_1_1_delegate_free_async_wait.html", null ],
+    [ "DelegateLib::DelegateFreeRemote< R >", "struct_delegate_lib_1_1_delegate_free_remote.html", null ],
     [ "DelegateLib::DelegateFunction< R >", "class_delegate_lib_1_1_delegate_function.html", null ],
     [ "DelegateLib::DelegateFunctionAsync< R >", "struct_delegate_lib_1_1_delegate_function_async.html", null ],
     [ "DelegateLib::DelegateFunctionAsyncWait< R >", "struct_delegate_lib_1_1_delegate_function_async_wait.html", null ],
+    [ "DelegateLib::DelegateFunctionRemote< R >", "struct_delegate_lib_1_1_delegate_function_remote.html", null ],
     [ "DelegateLib::DelegateMember< C, R >", "struct_delegate_lib_1_1_delegate_member.html", null ],
     [ "DelegateLib::DelegateMemberAsync< C, R >", "struct_delegate_lib_1_1_delegate_member_async.html", null ],
     [ "DelegateLib::DelegateMemberAsyncWait< C, R >", "struct_delegate_lib_1_1_delegate_member_async_wait.html", null ],
+    [ "DelegateLib::DelegateMemberRemote< C, R >", "struct_delegate_lib_1_1_delegate_member_remote.html", null ],
     [ "DelegateLib::DelegateMsg", "class_delegate_lib_1_1_delegate_msg.html", [
       [ "DelegateLib::DelegateAsyncMsg< Args >", "class_delegate_lib_1_1_delegate_async_msg.html", null ],
       [ "DelegateLib::DelegateAsyncWaitMsg< Args >", "class_delegate_lib_1_1_delegate_async_wait_msg.html", null ]
-    ] ],
-    [ "DelegateLib::DelegateThread", "class_delegate_lib_1_1_delegate_thread.html", [
-      [ "WorkerThread", "class_worker_thread.html", null ]
     ] ],
     [ "Example::EventHandler", "class_example_1_1_event_handler.html", [
       [ "Example::IOReadEventHandler", "class_example_1_1_i_o_read_event_handler.html", null ],
@@ -69,7 +72,18 @@ var hierarchy =
       [ "DelegateLib::heap_arg_deleter< T * >", "class_delegate_lib_1_1heap__arg__deleter_3_01_t_01_5_01_4.html", null ],
       [ "DelegateLib::heap_arg_deleter< T ** >", "class_delegate_lib_1_1heap__arg__deleter_3_01_t_01_5_5_01_4.html", null ]
     ] ],
-    [ "DelegateLib::IDelegateInvoker", "class_delegate_lib_1_1_i_delegate_invoker.html", [
+    [ "DelegateLib::IDispatcher", "class_delegate_lib_1_1_i_dispatcher.html", null ],
+    [ "DelegateLib::IRemoteInvoker", "class_delegate_lib_1_1_i_remote_invoker.html", [
+      [ "DelegateLib::DelegateFreeRemote< RetType(Args...)>", "class_delegate_lib_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+      [ "DelegateLib::DelegateFunctionRemote< RetType(Args...)>", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+      [ "DelegateLib::DelegateMemberRemote< TClass, RetType(Args...)>", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
+    ] ],
+    [ "DelegateLib::ISerializer< R >", "struct_delegate_lib_1_1_i_serializer.html", null ],
+    [ "DelegateLib::ISerializer< RetType(Args...)>", "class_delegate_lib_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+    [ "DelegateLib::IThread", "class_delegate_lib_1_1_i_thread.html", [
+      [ "WorkerThread", "class_worker_thread.html", null ]
+    ] ],
+    [ "DelegateLib::IThreadInvoker", "class_delegate_lib_1_1_i_thread_invoker.html", [
       [ "DelegateLib::DelegateFreeAsync< RetType(Args...)>", "class_delegate_lib_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "DelegateLib::DelegateFreeAsyncWait< RetType(Args...)>", "class_delegate_lib_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "DelegateLib::DelegateFunctionAsync< RetType(Args...)>", "class_delegate_lib_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
@@ -99,6 +113,10 @@ var hierarchy =
     [ "Example::Reactor", "class_example_1_1_reactor.html", null ],
     [ "stl_allocator< T >::rebind< U >", "structstl__allocator_1_1rebind.html", null ],
     [ "stl_allocator< void >::rebind", "structstl__allocator_3_01void_01_4_1_1rebind.html", null ],
+    [ "DelegateLib::RemoteArg< Arg >", "class_delegate_lib_1_1_remote_arg.html", null ],
+    [ "DelegateLib::RemoteArg< Arg & >", "class_delegate_lib_1_1_remote_arg_3_01_arg_01_6_01_4.html", null ],
+    [ "DelegateLib::RemoteArg< Arg * >", "class_delegate_lib_1_1_remote_arg_3_01_arg_01_5_01_4.html", null ],
+    [ "DelegateLib::RemoteArg< Arg ** >", "class_delegate_lib_1_1_remote_arg_3_01_arg_01_5_5_01_4.html", null ],
     [ "Example::RemoteControl", "class_example_1_1_remote_control.html", null ],
     [ "DelegateLib::Semaphore", "class_delegate_lib_1_1_semaphore.html", null ],
     [ "stl_allocator< void >", "classstl__allocator_3_01void_01_4.html", null ],
@@ -130,5 +148,6 @@ var hierarchy =
     ] ],
     [ "DelegateLib::UnicastDelegate< R >", "struct_delegate_lib_1_1_unicast_delegate.html", null ],
     [ "DelegateLib::UnicastDelegate< RetType(Args...)>", "class_delegate_lib_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+    [ "DelegateLib::UnicastDelegate< void(DelegateError, int)>", "struct_delegate_lib_1_1_unicast_delegate.html", null ],
     [ "DelegateLib::UnicastDelegate< void(void)>", "struct_delegate_lib_1_1_unicast_delegate.html", null ]
 ];

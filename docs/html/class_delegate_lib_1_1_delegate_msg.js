@@ -1,6 +1,6 @@
 var class_delegate_lib_1_1_delegate_msg =
 [
-    [ "DelegateMsg", "class_delegate_lib_1_1_delegate_msg.html#ad0ce3c1203f3f485d18b2be60f8bf703", null ],
+    [ "DelegateMsg", "class_delegate_lib_1_1_delegate_msg.html#ac3be8209ef33b0d50c21e859df3b4d27", null ],
     [ "~DelegateMsg", "class_delegate_lib_1_1_delegate_msg.html#a67c68e6b2805c427afee8e8b4e846aac", null ],
-    [ "GetDelegateInvoker", "class_delegate_lib_1_1_delegate_msg.html#a61f5dfba67aa879a51239f6c1edbd446", null ]
+    [ "GetInvoker", "class_delegate_lib_1_1_delegate_msg.html#a3ed188fb548876bfd770b2c2f651900b", null ]
 ];

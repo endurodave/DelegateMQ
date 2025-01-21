@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['float_0',['FLOAT',['../_data_types_8h.html#a8d06b04c04132c6f7c0fcb08c6167455',1,'DataTypes.h']]],
-  ['freefunc_1',['FreeFunc',['../class_delegate_lib_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html#a675cfeb6a9d7e08307ee60747977b795',1,'DelegateLib::DelegateFree&lt; RetType(Args...)&gt;::FreeFunc'],['../class_delegate_lib_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#abd1ecddf8c92d4c3544865fffb36688b',1,'DelegateLib::DelegateFreeAsync&lt; RetType(Args...)&gt;::FreeFunc'],['../class_delegate_lib_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#affde0c05f770aa97dfb1744bbdd33d0d',1,'DelegateLib::DelegateFreeAsyncWait&lt; RetType(Args...)&gt;::FreeFunc']]],
-  ['functiontype_2',['FunctionType',['../class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#ab301553daa1552051356610973a9a284',1,'DelegateLib::DelegateFunction&lt; RetType(Args...)&gt;::FunctionType'],['../class_delegate_lib_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a4002625654c02248b5b37266bf63ef66',1,'DelegateLib::DelegateFunctionAsync&lt; RetType(Args...)&gt;::FunctionType'],['../class_delegate_lib_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a793983b42fc5819a186a891b9cac5806',1,'DelegateLib::DelegateFunctionAsyncWait&lt; RetType(Args...)&gt;::FunctionType']]]
+  ['eventhandlerptr_0',['EventHandlerPtr',['../class_example_1_1_reactor.html#a278e009d792b0bfbd2bea2a1af40b32c',1,'Example::Reactor']]]
 ];

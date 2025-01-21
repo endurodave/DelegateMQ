@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['normal_0',['NORMAL',['../struct_system_mode.html#ae7a8c124a40da8b25e5aa8b7e8450653afb1a852addfd4576baa00a94bc4ea4e9',1,'SystemMode']]]
+  ['ioread_0',['IORead',['../namespace_example.html#a138503238c4f38364226c21bf8d00505a1c6b4dfb3ac789573101c64dd6daab9b',1,'Example']]],
+  ['iowrite_1',['IOWrite',['../namespace_example.html#a138503238c4f38364226c21bf8d00505ae3303759c25da3d234e02381fc59c0cf',1,'Example']]]
 ];

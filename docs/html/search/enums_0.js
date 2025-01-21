@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['eventtype_0',['EventType',['../namespace_example.html#a138503238c4f38364226c21bf8d00505',1,'Example']]]
+  ['delegateerror_0',['DelegateError',['../namespace_delegate_lib.html#ab447bf5fb19c4e1b013d45ac81f4f84b',1,'DelegateLib']]]
 ];

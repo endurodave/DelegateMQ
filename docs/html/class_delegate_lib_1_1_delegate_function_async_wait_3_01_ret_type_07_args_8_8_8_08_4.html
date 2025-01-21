@@ -116,7 +116,7 @@ Inheritance diagram for DelegateLib::DelegateFunctionAsyncWait&lt; RetType(Args.
   <img src="class_delegate_lib_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.png" usemap="#DelegateLib::DelegateFunctionAsyncWait_3C_20RetType_28Args..._29_3E_map" alt=""/>
   <map id="DelegateLib::DelegateFunctionAsyncWait_3C_20RetType_28Args..._29_3E_map" name="DelegateLib::DelegateFunctionAsyncWait_3C_20RetType_28Args..._29_3E_map">
 <area href="class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html" title="DelegateFunction&lt;&gt; class synchronously invokes a std::function target function." alt="DelegateLib::DelegateFunction&lt; RetType(Args...)&gt;" shape="rect" coords="0,112,356,136"/>
-<area href="class_delegate_lib_1_1_i_delegate_invoker.html" title="Abstract base class to support asynchronous delegate function invoke on destination thread of control..." alt="DelegateLib::IDelegateInvoker" shape="rect" coords="366,112,722,136"/>
+<area href="class_delegate_lib_1_1_i_thread_invoker.html" title="Abstract base class to support asynchronous delegate function invoke on destination thread of control..." alt="DelegateLib::IThreadInvoker" shape="rect" coords="366,112,722,136"/>
 <area href="class_delegate_lib_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html" title="Template base class for all delegates." alt="DelegateLib::Delegate&lt; RetType(Args...)&gt;" shape="rect" coords="0,56,356,80"/>
 <area href="class_delegate_lib_1_1_delegate_base.html" title="Non-template base class for all delegates." alt="DelegateLib::DelegateBase" shape="rect" coords="0,0,356,24"/>
   </map>
@@ -138,9 +138,9 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a12fee611f64b1ff921f144456f735c34" id="r_a12fee611f64b1ff921f144456f735c34"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12fee611f64b1ff921f144456f735c34">DelegateFunctionAsyncWait</a> (<a class="el" href="#a793983b42fc5819a186a891b9cac5806">FunctionType</a> func, <a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> &amp;thread, std::chrono::milliseconds timeout=<a class="el" href="namespace_delegate_lib.html#aa0e7491d38d4053d6218bf874d56e868">WAIT_INFINITE</a>)</td></tr>
-<tr class="memdesc:a12fee611f64b1ff921f144456f735c34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to create a class instance.  <br /></td></tr>
-<tr class="separator:a12fee611f64b1ff921f144456f735c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60167ddcb4724154f9987378f622ccce" id="r_a60167ddcb4724154f9987378f622ccce"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a60167ddcb4724154f9987378f622ccce">DelegateFunctionAsyncWait</a> (<a class="el" href="#a793983b42fc5819a186a891b9cac5806">FunctionType</a> func, <a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> &amp;thread, std::chrono::milliseconds timeout=<a class="el" href="namespace_delegate_lib.html#aa0e7491d38d4053d6218bf874d56e868">WAIT_INFINITE</a>)</td></tr>
+<tr class="memdesc:a60167ddcb4724154f9987378f622ccce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to create a class instance.  <br /></td></tr>
+<tr class="separator:a60167ddcb4724154f9987378f622ccce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49ee2d06133beb8f1f97d9435dd233d8" id="r_a49ee2d06133beb8f1f97d9435dd233d8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49ee2d06133beb8f1f97d9435dd233d8">DelegateFunctionAsyncWait</a> (const <a class="el" href="#ab18be594adc125473e2967684953ac1c">ClassType</a> &amp;rhs)</td></tr>
 <tr class="memdesc:a49ee2d06133beb8f1f97d9435dd233d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor that creates a copy of the given instance.  <br /></td></tr>
 <tr class="separator:a49ee2d06133beb8f1f97d9435dd233d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,9 +149,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a61de38703ed39347662b0d523940751a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5619cfb84f2bc1f1217a0051e0172e7f" id="r_a5619cfb84f2bc1f1217a0051e0172e7f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5619cfb84f2bc1f1217a0051e0172e7f">DelegateFunctionAsyncWait</a> ()=default</td></tr>
 <tr class="separator:a5619cfb84f2bc1f1217a0051e0172e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a30607bfeb5eaec0aa46a48ffb469ce" id="r_a2a30607bfeb5eaec0aa46a48ffb469ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a30607bfeb5eaec0aa46a48ffb469ce">Bind</a> (<a class="el" href="#a793983b42fc5819a186a891b9cac5806">FunctionType</a> func, <a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> &amp;thread, std::chrono::milliseconds timeout=<a class="el" href="namespace_delegate_lib.html#aa0e7491d38d4053d6218bf874d56e868">WAIT_INFINITE</a>)</td></tr>
-<tr class="memdesc:a2a30607bfeb5eaec0aa46a48ffb469ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a <code>std::function</code> to the delegate.  <br /></td></tr>
-<tr class="separator:a2a30607bfeb5eaec0aa46a48ffb469ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4dff94029cc5c9431587935dec8fb73" id="r_ae4dff94029cc5c9431587935dec8fb73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4dff94029cc5c9431587935dec8fb73">Bind</a> (<a class="el" href="#a793983b42fc5819a186a891b9cac5806">FunctionType</a> func, <a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> &amp;thread, std::chrono::milliseconds timeout=<a class="el" href="namespace_delegate_lib.html#aa0e7491d38d4053d6218bf874d56e868">WAIT_INFINITE</a>)</td></tr>
+<tr class="memdesc:ae4dff94029cc5c9431587935dec8fb73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a <code>std::function</code> to the delegate.  <br /></td></tr>
+<tr class="separator:ae4dff94029cc5c9431587935dec8fb73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06a1f3a07b3b85f30d1d149a8ce7694d" id="r_a06a1f3a07b3b85f30d1d149a8ce7694d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06a1f3a07b3b85f30d1d149a8ce7694d">Assign</a> (const <a class="el" href="#ab18be594adc125473e2967684953ac1c">ClassType</a> &amp;rhs)</td></tr>
 <tr class="memdesc:a06a1f3a07b3b85f30d1d149a8ce7694d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns the state of one object to another.  <br /></td></tr>
 <tr class="separator:a06a1f3a07b3b85f30d1d149a8ce7694d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,9 +189,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5e9ae067e7bc5c3621a6ad80d39cd0bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19e32658a811a5b584436505c46d8cf7" id="r_a19e32658a811a5b584436505c46d8cf7"><td class="memItemLeft" align="right" valign="top">RetType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19e32658a811a5b584436505c46d8cf7">GetRetVal</a> () noexcept</td></tr>
 <tr class="separator:a19e32658a811a5b584436505c46d8cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a941e2ac754b505a169d9029f437e5ea8" id="r_a941e2ac754b505a169d9029f437e5ea8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a941e2ac754b505a169d9029f437e5ea8">GetThread</a> () noexcept</td></tr>
-<tr class="memdesc:a941e2ac754b505a169d9029f437e5ea8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the destination thread that the target function is invoked on.  <br /></td></tr>
-<tr class="separator:a941e2ac754b505a169d9029f437e5ea8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae86902d4f0b1ceba592c15dae718091f" id="r_ae86902d4f0b1ceba592c15dae718091f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae86902d4f0b1ceba592c15dae718091f">GetThread</a> () noexcept</td></tr>
+<tr class="memdesc:ae86902d4f0b1ceba592c15dae718091f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the destination thread that the target function is invoked on.  <br /></td></tr>
+<tr class="separator:ae86902d4f0b1ceba592c15dae718091f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html">DelegateLib::DelegateFunction&lt; RetType(Args...)&gt;</a></td></tr>
 <tr class="memitem:a4f5654f2336389d28212ec1d38c7f56d inherit pub_methods_class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4" id="r_a4f5654f2336389d28212ec1d38c7f56d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a4f5654f2336389d28212ec1d38c7f56d">DelegateFunction</a> (<a class="el" href="class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#ab301553daa1552051356610973a9a284">FunctionType</a> func)</td></tr>
 <tr class="memdesc:a4f5654f2336389d28212ec1d38c7f56d inherit pub_methods_class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to create a class instance.  <br /></td></tr>
@@ -245,7 +245,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a170fcb3125188fa4338c90fb2d9cfa73 inherit pub_methods_class_delegate_lib_1_1_delegate_base" id="r_a170fcb3125188fa4338c90fb2d9cfa73"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_delegate_lib_1_1_delegate_base.html#a170fcb3125188fa4338c90fb2d9cfa73">operator!=</a> (const <a class="el" href="class_delegate_lib_1_1_delegate_base.html">DelegateBase</a> &amp;rhs) const</td></tr>
 <tr class="memdesc:a170fcb3125188fa4338c90fb2d9cfa73 inherit pub_methods_class_delegate_lib_1_1_delegate_base"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares two delegate objects for inequality.  <br /></td></tr>
 <tr class="separator:a170fcb3125188fa4338c90fb2d9cfa73 inherit pub_methods_class_delegate_lib_1_1_delegate_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_class_delegate_lib_1_1_i_delegate_invoker"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_delegate_lib_1_1_i_delegate_invoker')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_delegate_lib_1_1_i_delegate_invoker.html">DelegateLib::IDelegateInvoker</a></td></tr>
+<tr class="inherit_header pub_methods_class_delegate_lib_1_1_i_thread_invoker"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_delegate_lib_1_1_i_thread_invoker')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_delegate_lib_1_1_i_thread_invoker.html">DelegateLib::IThreadInvoker</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -315,8 +315,8 @@ template&lt;class RetType , class... Args&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a12fee611f64b1ff921f144456f735c34" name="a12fee611f64b1ff921f144456f735c34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12fee611f64b1ff921f144456f735c34">&#9670;&#160;</a></span>DelegateFunctionAsyncWait() <span class="overload">[1/4]</span></h2>
+<a id="a60167ddcb4724154f9987378f622ccce" name="a60167ddcb4724154f9987378f622ccce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60167ddcb4724154f9987378f622ccce">&#9670;&#160;</a></span>DelegateFunctionAsyncWait() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -334,7 +334,7 @@ template&lt;class RetType , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -532,8 +532,8 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a2a30607bfeb5eaec0aa46a48ffb469ce" name="a2a30607bfeb5eaec0aa46a48ffb469ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a30607bfeb5eaec0aa46a48ffb469ce">&#9670;&#160;</a></span>Bind()</h2>
+<a id="ae4dff94029cc5c9431587935dec8fb73" name="ae4dff94029cc5c9431587935dec8fb73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4dff94029cc5c9431587935dec8fb73">&#9670;&#160;</a></span>Bind()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -551,7 +551,7 @@ template&lt;class RetType , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -684,8 +684,8 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a941e2ac754b505a169d9029f437e5ea8" name="a941e2ac754b505a169d9029f437e5ea8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a941e2ac754b505a169d9029f437e5ea8">&#9670;&#160;</a></span>GetThread()</h2>
+<a id="ae86902d4f0b1ceba592c15dae718091f" name="ae86902d4f0b1ceba592c15dae718091f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae86902d4f0b1ceba592c15dae718091f">&#9670;&#160;</a></span>GetThread()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -696,7 +696,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> * <a class="el" href="struct_delegate_lib_1_1_delegate_function_async_wait.html">DelegateLib::DelegateFunctionAsyncWait</a>&lt; RetType(Args...)&gt;::GetThread </td>
+          <td class="memname"><a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> * <a class="el" href="struct_delegate_lib_1_1_delegate_function_async_wait.html">DelegateLib::DelegateFunctionAsyncWait</a>&lt; RetType(Args...)&gt;::GetThread </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -749,7 +749,7 @@ template&lt;class RetType , class... Args&gt; </div>
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if target function invoked or timeout expired; <code>false</code> if error. <br  />
  </dd></dl>
 
-<p>Implements <a class="el" href="class_delegate_lib_1_1_i_delegate_invoker.html#aca69f324a6770793cb2c9311fa22273a">DelegateLib::IDelegateInvoker</a>.</p>
+<p>Implements <a class="el" href="class_delegate_lib_1_1_i_thread_invoker.html#ad2da7cb824922fb3c72c0590a43f14aa">DelegateLib::IThreadInvoker</a>.</p>
 
 </div>
 </div>

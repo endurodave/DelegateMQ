@@ -18,7 +18,7 @@
 /// remote delegate. 
 /// 
 /// `RetType operator()(Args... args)` - called by the sender to initiate the remote function call. 
-/// Use `SetErrorHandler()' to catch invoke errors. Clone() may throw `std::bad_alloc` unless 
+/// Use `SetErrorHandler()` to catch invoke errors. Clone() may throw `std::bad_alloc` unless 
 /// `USE_ASSERTS`. All other delegate class functions do not throw exceptions.
 ///
 /// `void Invoke(std::istream& is)` - called by the receiver to invoke the target function. 
@@ -42,7 +42,7 @@
 /// the code within the `DelegateFreeRemote` `common_code` tags, then run the script to 
 /// propagate to the remaining delegate classes to simplify code maintenance.
 /// 
-/// `python src_dup.py DelegateRemote.h`
+/// `python src_dup.py DelegateRemote.h`  
 
 #include "Delegate.h"
 #include "ISerializer.h"

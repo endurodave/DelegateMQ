@@ -45,13 +45,13 @@ var NAVTREE =
       [ "Alternative Implementations", "index.html#autotoc_md14", null ],
       [ "Projects Using Delegates", "index.html#autotoc_md15", null ]
     ] ],
-    [ "Star History", "index.html#autotoc_md16", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Functions", "namespacemembers_func.html", null ],
         [ "Variables", "namespacemembers_vars.html", null ],
+        [ "Typedefs", "namespacemembers_type.html", null ],
         [ "Enumerations", "namespacemembers_enum.html", null ]
       ] ]
     ] ],
@@ -85,11 +85,13 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_active_object_8cpp.html",
-"class_delegate_lib_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html#a3e31fdd4391c352138672960a50e973d",
-"class_delegate_lib_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a2a30607bfeb5eaec0aa46a48ffb469ce",
-"class_delegate_lib_1_1_delegate_thread.html#a37d3e15bf942d92da6dbdf21820c5101",
-"class_example_1_1_light.html#a4dea525603fa357b853e011db1fa04ac",
-"index.html#autotoc_md10"
+"class_delegate_lib_1_1_delegate_async_wait_msg.html#ac8ca2d43973ccf4141747494448cd930",
+"class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a3c083176824748f380c99f04f4c6c3f3",
+"class_delegate_lib_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ab639313353b5269e652b72883adc5c61",
+"class_delegate_lib_1_1_i_remote_invoker.html#a595b8b7997fd46a3890cb996e721955b",
+"class_example_1_1_consumer.html#a55b6bed2f8088cc183072df888708412",
+"functions_h.html",
+"xmap_8h.html#ae6e99a0ad5b40dd413347112d7049833"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

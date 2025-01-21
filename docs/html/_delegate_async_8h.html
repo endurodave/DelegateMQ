@@ -107,8 +107,8 @@ $(function(){initNavTree('_delegate_async_8h.html',''); initResizable(true); });
 <p>Delegate "`Async`" series of classes used to invoke a function asynchronously.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_delegate_8h_source.html">Delegate.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_delegate_thread_8h_source.html">DelegateThread.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_delegate_invoker_8h_source.html">DelegateInvoker.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_thread_8h_source.html">IThread.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_invoker_8h_source.html">IInvoker.h</a>&quot;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
 </div>
 <p><a href="_delegate_async_8h_source.html">Go to the source code of this file.</a></p>
@@ -146,30 +146,31 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:afcc494e28640f3620d005b448a0df490" id="r_afcc494e28640f3620d005b448a0df490"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:afcc494e28640f3620d005b448a0df490"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#afcc494e28640f3620d005b448a0df490">DelegateLib::MakeDelegate</a> (RetType(*func)(Args... args), <a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> &amp;thread)</td></tr>
-<tr class="memdesc:afcc494e28640f3620d005b448a0df490"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a free function.  <br /></td></tr>
-<tr class="separator:afcc494e28640f3620d005b448a0df490"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac033202416b2065e3b918664b2907d54" id="r_ac033202416b2065e3b918664b2907d54"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:ac033202416b2065e3b918664b2907d54"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#ac033202416b2065e3b918664b2907d54">DelegateLib::MakeDelegate</a> (TClass *object, RetType(TClass::*func)(Args... args), <a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> &amp;thread)</td></tr>
-<tr class="memdesc:ac033202416b2065e3b918664b2907d54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function.  <br /></td></tr>
-<tr class="separator:ac033202416b2065e3b918664b2907d54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55d872b0094fcd6ab2190355ea1651f1" id="r_a55d872b0094fcd6ab2190355ea1651f1"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:a55d872b0094fcd6ab2190355ea1651f1"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#a55d872b0094fcd6ab2190355ea1651f1">DelegateLib::MakeDelegate</a> (const TClass *object, RetType(TClass::*func)(Args... args) const, <a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> &amp;thread)</td></tr>
-<tr class="memdesc:a55d872b0094fcd6ab2190355ea1651f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a delegate that binds to a const member function.  <br /></td></tr>
-<tr class="separator:a55d872b0094fcd6ab2190355ea1651f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a46d90a0e7993da09169cc9ec1ac189" id="r_a0a46d90a0e7993da09169cc9ec1ac189"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetVal , class... Args&gt; </td></tr>
-<tr class="memitem:a0a46d90a0e7993da09169cc9ec1ac189"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#a0a46d90a0e7993da09169cc9ec1ac189">DelegateLib::MakeDelegate</a> (std::shared_ptr&lt; TClass &gt; object, RetVal(TClass::*func)(Args... args), <a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> &amp;thread)</td></tr>
-<tr class="memdesc:a0a46d90a0e7993da09169cc9ec1ac189"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function using a shared pointer.  <br /></td></tr>
-<tr class="separator:a0a46d90a0e7993da09169cc9ec1ac189"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11a36b849b693ae960abe78a4242b536" id="r_a11a36b849b693ae960abe78a4242b536"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:a11a36b849b693ae960abe78a4242b536"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#a11a36b849b693ae960abe78a4242b536">DelegateLib::MakeDelegate</a> (std::function&lt; RetType(Args...)&gt; func, <a class="el" href="class_delegate_lib_1_1_delegate_thread.html">DelegateThread</a> &amp;thread)</td></tr>
-<tr class="memdesc:a11a36b849b693ae960abe78a4242b536"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a <code>std::function</code>.  <br /></td></tr>
-<tr class="separator:a11a36b849b693ae960abe78a4242b536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f181767b8ff03677b18a8105f187fd3" id="r_a6f181767b8ff03677b18a8105f187fd3"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
+<tr class="memitem:a6f181767b8ff03677b18a8105f187fd3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#a6f181767b8ff03677b18a8105f187fd3">DelegateLib::MakeDelegate</a> (RetType(*func)(Args... args), <a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> &amp;thread)</td></tr>
+<tr class="memdesc:a6f181767b8ff03677b18a8105f187fd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a free function.  <br /></td></tr>
+<tr class="separator:a6f181767b8ff03677b18a8105f187fd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12da19046c9c320474683dcaf64c6692" id="r_a12da19046c9c320474683dcaf64c6692"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
+<tr class="memitem:a12da19046c9c320474683dcaf64c6692"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#a12da19046c9c320474683dcaf64c6692">DelegateLib::MakeDelegate</a> (TClass *object, RetType(TClass::*func)(Args... args), <a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> &amp;thread)</td></tr>
+<tr class="memdesc:a12da19046c9c320474683dcaf64c6692"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function.  <br /></td></tr>
+<tr class="separator:a12da19046c9c320474683dcaf64c6692"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae84fb44a2f2daddf18baf0dc1a372fb2" id="r_ae84fb44a2f2daddf18baf0dc1a372fb2"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
+<tr class="memitem:ae84fb44a2f2daddf18baf0dc1a372fb2"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#ae84fb44a2f2daddf18baf0dc1a372fb2">DelegateLib::MakeDelegate</a> (const TClass *object, RetType(TClass::*func)(Args... args) const, <a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> &amp;thread)</td></tr>
+<tr class="memdesc:ae84fb44a2f2daddf18baf0dc1a372fb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a delegate that binds to a const member function.  <br /></td></tr>
+<tr class="separator:ae84fb44a2f2daddf18baf0dc1a372fb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa41d5f11be1a19ce1428161d7e7930d0" id="r_aa41d5f11be1a19ce1428161d7e7930d0"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetVal , class... Args&gt; </td></tr>
+<tr class="memitem:aa41d5f11be1a19ce1428161d7e7930d0"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#aa41d5f11be1a19ce1428161d7e7930d0">DelegateLib::MakeDelegate</a> (std::shared_ptr&lt; TClass &gt; object, RetVal(TClass::*func)(Args... args), <a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> &amp;thread)</td></tr>
+<tr class="memdesc:aa41d5f11be1a19ce1428161d7e7930d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function using a shared pointer.  <br /></td></tr>
+<tr class="separator:aa41d5f11be1a19ce1428161d7e7930d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d0dd7353cdeb9ce09d87981250846ad" id="r_a8d0dd7353cdeb9ce09d87981250846ad"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
+<tr class="memitem:a8d0dd7353cdeb9ce09d87981250846ad"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_delegate_lib.html#a8d0dd7353cdeb9ce09d87981250846ad">DelegateLib::MakeDelegate</a> (std::function&lt; RetType(Args...)&gt; func, <a class="el" href="class_delegate_lib_1_1_i_thread.html">IThread</a> &amp;thread)</td></tr>
+<tr class="memdesc:a8d0dd7353cdeb9ce09d87981250846ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a <code>std::function</code>.  <br /></td></tr>
+<tr class="separator:a8d0dd7353cdeb9ce09d87981250846ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Delegate "`Async`" series of classes used to invoke a function asynchronously. </p>
 <p>The classes are not thread safe. Invoking a function asynchronously requires sending a clone of the object to the destination thread message queue. The destination thread calls <code>Invoke()</code> to invoke the target function.</p>
+<p>A <code>IThread</code> implementation is required to serialize and dispatch an async delegate onto a destination thread of control.</p>
 <p>Argument data is created on the heap using <code>operator new</code> for transport thought a thread message queue. An optional fixed-block allocator is available. See <code>USE_ALLOCATOR</code>.</p>
 <p><code>RetType operator()(Args... args)</code> - called by the source thread to initiate the async function call. May throw <code>std::bad_alloc</code> if dynamic storage allocation fails and <code>USE_ASSERTS</code> is not defined. Clone() may also throw <code>std::bad_alloc</code> unless <code>USE_ASSERTS</code>. All other delegate class functions do not throw exceptions.</p>
 <p><code>void Invoke(std::shared_ptr&lt;DelegateMsg&gt; msg)</code> - called by the destination thread to invoke the target function. The destination thread must not call any other delegate instance functions.</p>

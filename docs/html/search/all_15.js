@@ -16,7 +16,7 @@ var searchData=
   ['xmap_2eh_13',['xmap.h',['../xmap_8h.html',1,'']]],
   ['xmultimap_14',['xmultimap',['../xmap_8h.html#ae6e99a0ad5b40dd413347112d7049833',1,'xmap.h']]],
   ['xmultiset_15',['xmultiset',['../xset_8h.html#ae58e845a30ad7ec68502a4a9a90aa2ba',1,'xset.h']]],
-  ['xostringstream_16',['xostringstream',['../xsstream_8h.html#a31a26eccdbdbd59beb7ee9735a7a17db',1,'xsstream.h']]],
+  ['xostringstream_16',['xostringstream',['../xsstream_8h.html#a31a26eccdbdbd59beb7ee9735a7a17db',1,'xostringstream:&#160;xsstream.h'],['../_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc',1,'xostringstream:&#160;DelegateOpt.h']]],
   ['xqueue_17',['xqueue',['../xqueue_8h.html#ab491ae9d713da6cb9faba7cead6a03e0',1,'xqueue.h']]],
   ['xqueue_2eh_18',['xqueue.h',['../xqueue_8h.html',1,'']]],
   ['xrealloc_19',['xrealloc',['../xallocator_8cpp.html#a51a9bfbb1448216ca4660577dc6b0e79',1,'xrealloc(void *oldMem, size_t size):&#160;xallocator.cpp'],['../xallocator_8h.html#af1634ff7d575d04a5ad3bd26343b4e51',1,'xrealloc(void *ptr, size_t size):&#160;xallocator.cpp']]],
