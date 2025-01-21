@@ -13,6 +13,9 @@
 /// and waits for the function to be executed or a timeout occurs. Use IsSuccess() to determine if 
 /// asynchronous call succeeded before using the return value and outgoing argument values.
 /// 
+/// A `IThread` implementation is required to serialize and dispatch an async delegate onto
+/// a destination thread of control. 
+/// 
 /// Delegate "`AsyncWait`" series of classes used to invoke a function asynchronously and wait for 
 /// completion by the destination target thread. Invoking a function asynchronously requires making 
 /// a clone of the object to be sent to the destination thread message queue. The destination thread 

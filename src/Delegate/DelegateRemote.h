@@ -14,11 +14,12 @@
 /// argument data is serialized into a stream. The receiver calls `Invoke()` with the received
 /// serialized stream arguments.
 /// 
-/// TODO: bad_alloc thrown? Check.
+/// An `ISerializer` and `IDispatcher` implementations are required to serialize and dispatch a 
+/// remote delegate. 
+/// 
 /// `RetType operator()(Args... args)` - called by the sender to initiate the remote function call. 
-/// May throw `std::bad_alloc` if dynamic storage allocation fails and `USE_ASSERTS` is not 
-/// defined. Clone() may also throw `std::bad_alloc` unless `USE_ASSERTS`. All other delegate 
-/// class functions do not throw exceptions.
+/// Use `SetErrorHandler()' to catch invoke errors. Clone() may throw `std::bad_alloc` unless 
+/// `USE_ASSERTS`. All other delegate class functions do not throw exceptions.
 ///
 /// `void Invoke(std::istream& is)` - called by the receiver to invoke the target function. 
 /// 
@@ -31,14 +32,14 @@
 /// 
 /// * Cannot use rvalue reference (T&&) as a target function argument.
 /// 
-/// * Cannot insert `DelegateMemberAsync` into an ordered container. e.g. `std::list` ok, 
+/// * Cannot insert `DelegateRemoteAsync` into an ordered container. e.g. `std::list` ok, 
 /// `std::set` not ok.
 /// 
 /// * `std::function` compares the function signature type, not the underlying object instance.
 /// See `DelegateFunction<>` class for more info.
 /// 
 /// Code within `<common_code>` and `</common_code>` is updated using sync_src.py. Manually update 
-/// the code within the `DelegateFreeAsync` `common_code` tags, then run the script to 
+/// the code within the `DelegateFreeRemote` `common_code` tags, then run the script to 
 /// propagate to the remaining delegate classes to simplify code maintenance.
 /// 
 /// `python src_dup.py DelegateRemote.h`
@@ -51,6 +52,7 @@
 
 namespace DelegateLib {
 
+// Remote identifier shared between sender and receiver remotes
 typedef int DelegateRemoteId;
 const int INVALID_REMOTE_ID = -1;
 
@@ -254,8 +256,8 @@ public:
 
     /// @brief Invoke the bound delegate function on the remote. Called by the sender.
     /// @details Invoke remote delegate function asynchronously and do not wait for the 
-    /// return value. This function is called by the sender. Dispatches the delegate data to the 
-    /// destination remote receiver. `Invoke()` must be called by the destination 
+    /// return value. This function is called by the sender. Dispatches the delegate data to 
+    /// the destination remote receiver. `Invoke()` must be called by the destination 
     /// remote receiver to invoke the target function. Always safe to call.
     /// 
     /// All argument data is serialized into a binary byte stream. The stream of bytes is 
@@ -265,17 +267,14 @@ public:
     /// All user-defined argument data must inherit from ISerializer and implement the 
     /// `read()` and `write()` functions to serialize each data member. 
     /// 
-    /// Does not throw exceptions. However, the platform-specific ISerializer implementation 
+    /// Does not throw exceptions. However, the platform-specific `ISerializer` implementation 
     /// might. Register for error callbacks using `SetErrorHandler()`.
     /// 
     /// @param[in] args The function arguments, if any.
     /// @return A default return value. The return value is *not* returned from the 
     /// target function. Do not use the return value.
     /// @post Do not use the return value as its not valid.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and USE_ASSERTS not defined.
     virtual RetType operator()(Args... args) override {
-        // TODO: can serialization fail? Handle with BAD_ALLOC
-       
         // Synchronously invoke the target function?
         if (m_sync) {
             if (this->Empty())
@@ -286,9 +285,9 @@ public:
         }
         else {
             if (m_serializer) {
-                // TODO: xostringstream?
-                ostringstream arg_stream(ios::out | ios::in | ios::binary);
+                xostringstream arg_stream(ios::out | ios::in | ios::binary);
 
+                // Serialize all target function arguments into a stream
                 m_serializer->write(arg_stream, std::forward<Args>(args)...);
 
                 if (arg_stream.fail() || arg_stream.bad()) {
@@ -314,7 +313,7 @@ public:
             // std::shared_ptr reference arguments are not allowed with asynchronous delegates as the behavior is 
             // undefined. In other words:
             // void MyFunc(std::shared_ptr<T> data)		// Ok!
-            // void MyFunc(std::shared_ptr<T>& data)	// Error if DelegateAsync or DelegateSpAsync target!
+            // void MyFunc(std::shared_ptr<T>& data)	// Error
             static_assert(!(
                 std::disjunction_v<is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
@@ -356,8 +355,6 @@ public:
 
             m_serializer->read(is, a1);
             operator()(a1);
-
-            // TODO: static_assert to disallow some arguments (e.g. serialize does not allow pointers)
         }
         else if constexpr (ArgCnt::value == 2) {
             using Arg1 = ArgTypeOf<0, Args...>;
@@ -704,8 +701,8 @@ public:
 
     /// @brief Invoke the bound delegate function on the remote. Called by the sender.
     /// @details Invoke remote delegate function asynchronously and do not wait for the 
-    /// return value. This function is called by the sender. Dispatches the delegate data to the 
-    /// destination remote receiver. `Invoke()` must be called by the destination 
+    /// return value. This function is called by the sender. Dispatches the delegate data to 
+    /// the destination remote receiver. `Invoke()` must be called by the destination 
     /// remote receiver to invoke the target function. Always safe to call.
     /// 
     /// All argument data is serialized into a binary byte stream. The stream of bytes is 
@@ -715,17 +712,14 @@ public:
     /// All user-defined argument data must inherit from ISerializer and implement the 
     /// `read()` and `write()` functions to serialize each data member. 
     /// 
-    /// Does not throw exceptions. However, the platform-specific ISerializer implementation 
+    /// Does not throw exceptions. However, the platform-specific `ISerializer` implementation 
     /// might. Register for error callbacks using `SetErrorHandler()`.
     /// 
     /// @param[in] args The function arguments, if any.
     /// @return A default return value. The return value is *not* returned from the 
     /// target function. Do not use the return value.
     /// @post Do not use the return value as its not valid.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and USE_ASSERTS not defined.
     virtual RetType operator()(Args... args) override {
-        // TODO: can serialization fail? Handle with BAD_ALLOC
-       
         // Synchronously invoke the target function?
         if (m_sync) {
             if (this->Empty())
@@ -736,9 +730,9 @@ public:
         }
         else {
             if (m_serializer) {
-                // TODO: xostringstream?
-                ostringstream arg_stream(ios::out | ios::in | ios::binary);
+                xostringstream arg_stream(ios::out | ios::in | ios::binary);
 
+                // Serialize all target function arguments into a stream
                 m_serializer->write(arg_stream, std::forward<Args>(args)...);
 
                 if (arg_stream.fail() || arg_stream.bad()) {
@@ -764,7 +758,7 @@ public:
             // std::shared_ptr reference arguments are not allowed with asynchronous delegates as the behavior is 
             // undefined. In other words:
             // void MyFunc(std::shared_ptr<T> data)		// Ok!
-            // void MyFunc(std::shared_ptr<T>& data)	// Error if DelegateAsync or DelegateSpAsync target!
+            // void MyFunc(std::shared_ptr<T>& data)	// Error
             static_assert(!(
                 std::disjunction_v<is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
@@ -806,8 +800,6 @@ public:
 
             m_serializer->read(is, a1);
             operator()(a1);
-
-            // TODO: static_assert to disallow some arguments (e.g. serialize does not allow pointers)
         }
         else if constexpr (ArgCnt::value == 2) {
             using Arg1 = ArgTypeOf<0, Args...>;
@@ -1095,8 +1087,8 @@ public:
 
     /// @brief Invoke the bound delegate function on the remote. Called by the sender.
     /// @details Invoke remote delegate function asynchronously and do not wait for the 
-    /// return value. This function is called by the sender. Dispatches the delegate data to the 
-    /// destination remote receiver. `Invoke()` must be called by the destination 
+    /// return value. This function is called by the sender. Dispatches the delegate data to 
+    /// the destination remote receiver. `Invoke()` must be called by the destination 
     /// remote receiver to invoke the target function. Always safe to call.
     /// 
     /// All argument data is serialized into a binary byte stream. The stream of bytes is 
@@ -1106,17 +1098,14 @@ public:
     /// All user-defined argument data must inherit from ISerializer and implement the 
     /// `read()` and `write()` functions to serialize each data member. 
     /// 
-    /// Does not throw exceptions. However, the platform-specific ISerializer implementation 
+    /// Does not throw exceptions. However, the platform-specific `ISerializer` implementation 
     /// might. Register for error callbacks using `SetErrorHandler()`.
     /// 
     /// @param[in] args The function arguments, if any.
     /// @return A default return value. The return value is *not* returned from the 
     /// target function. Do not use the return value.
     /// @post Do not use the return value as its not valid.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and USE_ASSERTS not defined.
     virtual RetType operator()(Args... args) override {
-        // TODO: can serialization fail? Handle with BAD_ALLOC
-       
         // Synchronously invoke the target function?
         if (m_sync) {
             if (this->Empty())
@@ -1127,9 +1116,9 @@ public:
         }
         else {
             if (m_serializer) {
-                // TODO: xostringstream?
-                ostringstream arg_stream(ios::out | ios::in | ios::binary);
+                xostringstream arg_stream(ios::out | ios::in | ios::binary);
 
+                // Serialize all target function arguments into a stream
                 m_serializer->write(arg_stream, std::forward<Args>(args)...);
 
                 if (arg_stream.fail() || arg_stream.bad()) {
@@ -1155,7 +1144,7 @@ public:
             // std::shared_ptr reference arguments are not allowed with asynchronous delegates as the behavior is 
             // undefined. In other words:
             // void MyFunc(std::shared_ptr<T> data)		// Ok!
-            // void MyFunc(std::shared_ptr<T>& data)	// Error if DelegateAsync or DelegateSpAsync target!
+            // void MyFunc(std::shared_ptr<T>& data)	// Error
             static_assert(!(
                 std::disjunction_v<is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
@@ -1197,8 +1186,6 @@ public:
 
             m_serializer->read(is, a1);
             operator()(a1);
-
-            // TODO: static_assert to disallow some arguments (e.g. serialize does not allow pointers)
         }
         else if constexpr (ArgCnt::value == 2) {
             using Arg1 = ArgTypeOf<0, Args...>;

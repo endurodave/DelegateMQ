@@ -12,6 +12,9 @@
 /// sending a clone of the object to the destination thread message queue. The destination 
 /// thread calls `Invoke()` to invoke the target function.
 /// 
+/// A `IThread` implementation is required to serialize and dispatch an async delegate onto
+/// a destination thread of control. 
+/// 
 /// Argument data is created on the heap using `operator new` for transport thought a thread 
 /// message queue. An optional fixed-block allocator is available. See `USE_ALLOCATOR`. 
 /// 

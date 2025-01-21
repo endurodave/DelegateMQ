@@ -399,7 +399,7 @@ delegateMemberSp("Hello world using shared_ptr", 2020);
 ```
 ## Remote Delegates
 
-A remote delegate asynchronously invokes a remote target function. The sender must implement these interfaces:
+A remote delegate asynchronously invokes a remote target function. The sender must implement the `ISerializer` and `IDispatcher` interfaces:
 
 ```cpp
 template <class R>
@@ -438,34 +438,38 @@ public:
 };
 ```
 
-The sender sends invokes the remote delegate. All function argument data is serialized and sent using the dispatcher.
+The sender sends the remote delegate. All function argument data is serialized and sent using the dispatcher.
 
 ```cpp
-// Target function
-void FreeFuncInt(int i) { ASSERT_TRUE(i == TEST_INT); }
-
 // Dispatcher and serializer instances
 Dispatcher dispatcher;
 Serializer<void(int)> serializer;
 
-// Sender creates delegate and registers dispatcher and serializer
-DelegateFreeRemote<void(int)> delegateRemote(FreeFuncInt, REMOTE_ID);
+// Send delegate and registers dispatcher and serializer
+DelegateFreeRemote<void(int)> delegateRemote(REMOTE_ID);
 delegateRemote.SetDispatcher(&dispatcher);
 delegateRemote.SetSerializer(&serializer);
 
 // Send invokes the remote function using the serializer and dispatcher interfaces
-delegateRemote(TEST_INT);
+delegateRemote(123);
 ```
 
 The receiver receives the serialized function argument data bytes and invokes the target function.
 
 ```cpp
+// Remote target function
+void FreeFuncInt(int i) { std::cout << i; }
+
+// Serializer used to deserialize incoming data
 Serializer<void(int)> serializer;
+
+// Receiver delegate and registers serializer
 DelegateFreeRemote<void(int)> delegateRemote(FreeFuncInt, REMOTE_ID);
 delegateRemote.SetSerializer(&serializer);
 
-// Receiver code obtains the serializers incoming argument data.
-std::istream& recv_stream;  // TODO: get incoming argument data bytes
+// TODO: Receiver code obtains the serializers incoming argument data
+// from your application-specific reception code and stored within a stream.
+std::istream& recv_stream;
 
 // Receiver invokes the remote target function
 delegateRemote.Invoke(recv_stream);

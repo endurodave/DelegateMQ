@@ -7,12 +7,20 @@
 namespace DelegateLib {
 
 /// @brief Delegate interface class to dispatch serialized function argument data
-/// to a remote destination. 
+/// to a remote destination. Implemented by the application if using remote delegates.
+/// 
+/// @details Incoming data from the remote must the `IDispatcher::Dispatch()` to 
+/// invoke the target function using argument data. The argument data is serialized 
+/// for transport using a concrete class implementing the `ISerialzer` interface 
+/// allowing any data argument serialization method is supported.
+/// @post The receiver calls `IRemoteInvoker::Invoke()` when the dispatched message
+/// is received.
 class IDispatcher
 {
 public:
     /// Dispatch a stream of bytes to a remote system. The implementer is responsible
-    /// for sending the bytes over a communication link. 
+    /// for sending the bytes over a communication transport (UDP, TCP, shared memory, 
+    /// serial, ...). 
     /// @param[in] os An outgoing stream to send to the remote destination.
     virtual int Dispatch(std::ostream& os) = 0;
 };

@@ -35,6 +35,11 @@ namespace Remote
         ASSERT_TRUE(pi); 
         ASSERT_TRUE(*pi == TEST_INT); 
     }
+    void FreeFuncIntPtrPtr(int** pi) {
+        ASSERT_TRUE(pi);
+        ASSERT_TRUE(*pi);
+        ASSERT_TRUE(**pi == TEST_INT);
+    }
 
     class RemoteData {
     public:
@@ -110,7 +115,7 @@ namespace Remote
         Dispatcher() : m_ss(ios::in | ios::out | ios::binary) {}
 
         virtual int Dispatch(std::ostream& os) {
-            // Save dispatched string to simulate sending data
+            // Save dispatched string to simulate sending data over a transport
             m_ss.str("");
             m_ss.clear();
             m_ss << os.rdbuf();                
@@ -288,7 +293,6 @@ static void DelegateFreeRemoteTests()
     auto delShared = MakeDelegate(&SetClassSingletonShared, REMOTE_ID);
     delShared(singletonSp);
 
-#if 0 // TODO: fix
     // Test nullptr arguments
     auto nullPtrArg = MakeDelegate(&NullPtrArg, REMOTE_ID);
     nullPtrArg(nullptr);
@@ -320,14 +324,20 @@ static void DelegateFreeRemoteTests()
     outgoingArg3(sparam);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     ASSERT_TRUE(sparam.val == TEST_INT);
+    
+    {
+        Dispatcher dispatcher;
+        Serializer<void(Class* c)> serializer;
 
-    // Aync invoke copies Class object when passed to func
-    Class classInstance;
-    Class::m_construtorCnt = 0;
-    auto cntDel = MakeDelegate(&ConstructorCnt, REMOTE_ID);
-    cntDel(&classInstance);
-    ASSERT_TRUE(Class::m_construtorCnt == 1);
-#endif
+        // Remote invoke does not copy Class object when passed to func
+        Class classInstance;
+        Class::m_construtorCnt = 0;
+        auto cntDel = MakeDelegate(&ConstructorCnt, REMOTE_ID);
+        cntDel.SetDispatcher(&dispatcher);
+        cntDel.SetSerializer(&serializer);
+        cntDel(&classInstance);
+        ASSERT_TRUE(Class::m_construtorCnt == 0);
+    }
 
     // Compile error. Invalid to pass void* argument to remote target function
 #if 0
@@ -656,23 +666,6 @@ static void DelegateMemberRemoteTests()
         delegateRemote.Invoke(recv_stream);
     }
 
-#if 0  // Pointer-to-pointer argument not supported
-    {
-        Serializer<void(int**)> serializer;
-        DelegateMemberRemote<RemoteClass, void(int**)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncIntPtrPtr, REMOTE_ID);
-        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
-        delegateRemote.SetDispatcher(&dispatcher);
-        delegateRemote.SetSerializer(&serializer);
-        int i = TEST_INT;
-        int* pi = &i;
-        delegateRemote(&pi);
-
-        std::istream& recv_stream = dispatcher.GetDispached();
-        recv_stream.seekg(0);
-        delegateRemote.Invoke(recv_stream);
-    }
-#endif
-
     {
         Serializer<void(RemoteData&)> serializer;
         DelegateMemberRemote<RemoteClass, void(RemoteData&)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncRemoteData, REMOTE_ID);
@@ -801,7 +794,98 @@ static void DelegateMemberSpRemoteTests()
         arr[i](TEST_INT);
     delete[] arr;
 
-    // TODO: more tests
+    std::function<void(DelegateError, int)> errorHandler = [](DelegateError error, int code) {
+        ASSERT_TRUE(false);
+    };
+    static std::function<void(int)> LambdaFuncInt = +[](int i) {
+        ASSERT_TRUE(i == TEST_INT);
+    };
+    static std::function<void(int&)> LambdaFuncIntRef = +[](int& i) {
+        ASSERT_TRUE(i == TEST_INT);
+    };
+    static std::function<void(int*)> LambdaFuncIntPtr = +[](int* i) {
+        ASSERT_TRUE(i);
+        ASSERT_TRUE(*i == TEST_INT);
+    };
+    static std::function<void(RemoteData&)> LambdaFuncRemoteData = +[](RemoteData& d) {
+        ASSERT_TRUE(d.x == TEST_INT);
+        ASSERT_TRUE(d.y == TEST_INT+1);
+    };
+    static std::function<void(RemoteData*)> LambdaFuncRemoteDataPtr = +[](RemoteData* d) {
+        ASSERT_TRUE(d);
+        ASSERT_TRUE(d->x == TEST_INT);
+        ASSERT_TRUE(d->y == TEST_INT + 1);
+    };
+    Dispatcher dispatcher;
+
+    {
+        Serializer<void(int)> serializer;
+        DelegateFunctionRemote<void(int)> delegateRemote(LambdaFuncInt, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        delegateRemote(TEST_INT);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
+
+    {
+        Serializer<void(int&)> serializer;
+        DelegateFunctionRemote<void(int&)> delegateRemote(LambdaFuncIntRef, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        int i = TEST_INT;
+        delegateRemote(i);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
+
+    {
+        Serializer<void(int*)> serializer;
+        DelegateFunctionRemote<void(int*)> delegateRemote(LambdaFuncIntPtr, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        int i = TEST_INT;
+        delegateRemote(&i);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
+
+    {
+        Serializer<void(RemoteData&)> serializer;
+        DelegateFunctionRemote<void(RemoteData&)> delegateRemote(LambdaFuncRemoteData, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        RemoteData d(TEST_INT, TEST_INT + 1);
+        delegateRemote(d);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
+
+    {
+        Serializer<void(RemoteData*)> serializer;
+        DelegateFunctionRemote<void(RemoteData*)> delegateRemote(LambdaFuncRemoteDataPtr, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        RemoteData d(TEST_INT, TEST_INT + 1);
+        delegateRemote(&d);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
 }
 
 static void DelegateFunctionRemoteTests()
@@ -906,7 +990,80 @@ static void DelegateFunctionRemoteTests()
     auto errorDel4 = MakeDelegate(Error4, REMOTE_ID);
 #endif
 
-    // TODO: more tests
+    std::function<void(DelegateError, int)> errorHandler = [](DelegateError error, int code) {
+        ASSERT_TRUE(false);
+    };
+    Dispatcher dispatcher;
+    auto remoteClass = std::make_shared<RemoteClass>();
+
+    {
+        Serializer<void(int)> serializer;
+        DelegateMemberRemote<RemoteClass, void(int)> delegateRemote(remoteClass, &RemoteClass::MemberFuncInt, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        delegateRemote(TEST_INT);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
+
+    {
+        Serializer<void(int&)> serializer;
+        DelegateMemberRemote<RemoteClass, void(int&)> delegateRemote(remoteClass, &RemoteClass::MmberFuncIntRef, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        int i = TEST_INT;
+        delegateRemote(i);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
+
+    {
+        Serializer<void(int*)> serializer;
+        DelegateMemberRemote<RemoteClass, void(int*)> delegateRemote(remoteClass, &RemoteClass::MemberFuncIntPtr, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        int i = TEST_INT;
+        delegateRemote(&i);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
+
+    {
+        Serializer<void(RemoteData&)> serializer;
+        DelegateMemberRemote<RemoteClass, void(RemoteData&)> delegateRemote(remoteClass, &RemoteClass::MemberFuncRemoteData, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        RemoteData d(TEST_INT, TEST_INT + 1);
+        delegateRemote(d);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
+
+    {
+        Serializer<void(RemoteData*)> serializer;
+        DelegateMemberRemote<RemoteClass, void(RemoteData*)> delegateRemote(remoteClass, &RemoteClass::MemberFuncRemoteDataPtr, REMOTE_ID);
+        delegateRemote.SetErrorHandler(&MakeDelegate(errorHandler));
+        delegateRemote.SetDispatcher(&dispatcher);
+        delegateRemote.SetSerializer(&serializer);
+        RemoteData d(TEST_INT, TEST_INT + 1);
+        delegateRemote(&d);
+
+        std::istream& recv_stream = dispatcher.GetDispached();
+        recv_stream.seekg(0);
+        delegateRemote.Invoke(recv_stream);
+    }
 }
 
 void DelegateRemote_UT()

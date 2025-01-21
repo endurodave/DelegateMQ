@@ -11,18 +11,8 @@ namespace DelegateLib {
 class DelegateMsg;
 
 /// @brief Abstract base class to support asynchronous delegate function invoke
-/// on destination thread of control. 
-/// 
-/// @details Inherit form this class and implement `Invoke()`. The implementation
-/// typically posts a message into the destination thread message queue. The destination
-/// thread receives the message and invokes the target bound function. Destination 
-/// thread invoke example: 
-/// 
-/// // Get pointer to DelegateMsg data from queue msg data  
-/// `auto delegateMsg = msg->GetData();`
-///
-/// // Invoke the delegate destination target function  
-/// `delegateMsg->GetInvoker()->Invoke(delegateMsg);`
+/// on destination thread of control. Used internally by the delegate library, 
+/// not user application code. 
 class IThreadInvoker
 {
 public:
@@ -32,6 +22,9 @@ public:
 	virtual bool Invoke(std::shared_ptr<DelegateMsg> msg) = 0;
 };
 
+/// @brief Abstract base class to support remote delegate function invoke
+/// to a remote system. Used internally by the delegate library, not
+/// user application code.
 class IRemoteInvoker
 {
 public: 

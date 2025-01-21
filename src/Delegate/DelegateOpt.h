@@ -25,13 +25,17 @@
 #ifdef USE_ALLOCATOR
     // Use stl_allocator fixed-block allocator for dynamic storage allocation
     #include "xlist.h"
+    #include "xsstream.h"
     #include "stl_allocator.h"
 #else
     #include <list>
+    #include <sstream>
 
     // Use default std::allocator for dynamic storage allocation
     template <typename T, typename Alloc = std::allocator<T>>
     using xlist = std::list<T, Alloc>;
+
+    typedef std::basic_ostringstream<char, std::char_traits<char>> xostringstream;
 
     #define XALLOCATOR
 #endif

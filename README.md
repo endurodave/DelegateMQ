@@ -420,7 +420,7 @@ IRemoteInvoker
 
 `DelegateFreeAsyncWait<>`, `DelegateMemberAsyncWait<>` and `DelegateFunctionAsyncWait<>` provides blocking asynchronous function execution on a target thread with a caller supplied maximum wait timeout. The destination thread will not invoke the target function if the timeout expires.
 
-`DelegateFreeRemote<>`, `DelegateMemberRemote<>` and `DelegateFunctionRemote<>` provides non-blocking remote function execution. `ISerialize` and `IRemoteInvoker` interfaces support integration with any system. 
+`DelegateFreeRemote<>`, `DelegateMemberRemote<>` and `DelegateFunctionRemote<>` provides non-blocking remote function execution. `ISerializer` and `IRemoteInvoker` interfaces support integration with any system. 
 
 The three main delegate container classes are:
 
@@ -484,11 +484,6 @@ Repositories utilizing the delegate library within different multithreaded appli
 * <a href="https://github.com/endurodave/IntegrationTestFramework">Integration Test Framework using Google Test and Delegates</a> - a multi-threaded C++ software integration test framework using Google Test and Delegate libraries.
 * <a href="https://github.com/endurodave/Async-SQLite">Asynchronous SQLite API using C++ Delegates</a> - an asynchronous SQLite wrapper implemented using an asynchronous delegate library.
 
-# Star History
-
-Find this repository useful? Consider giving it a star!
-
-[![Star History Chart](https://api.star-history.com/svg?repos=endurodave/cpp-async-delegate&type=Date)](https://star-history.com/#endurodave/cpp-async-delegate&Date)
 
 
 

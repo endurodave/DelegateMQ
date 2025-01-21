@@ -10,7 +10,12 @@ template <class R>
 struct ISerializer; // Not defined
 
 /// @brief Delegate serializer interface for serializing and deserializing
-/// remote delegate arguments. 
+/// remote delegate arguments. Implemented by application code if remote 
+/// delegates are used.
+/// 
+/// @details All argument data is serialized into a stream. `write()` is called
+/// by the sender when the delegate is invoked. `read()` is called by the receiver
+/// upon reception of the remote message data bytes. 
 template<class RetType, class... Args>
 class ISerializer<RetType(Args...)>
 {

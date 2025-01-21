@@ -46,6 +46,9 @@ namespace UnitTestData
 		static int m_construtorCnt;
 	};
 
+	std::ostream& operator<<(std::ostream& os, const Class& data);
+	std::istream& operator>>(std::istream& is, Class& data);
+
 	static void ConstructorCnt(Class* c) {}
 	static std::uint16_t Func() { return 0; }
 	static std::unique_ptr<int> FuncUnique(int i) { return std::make_unique<int>(i); }
