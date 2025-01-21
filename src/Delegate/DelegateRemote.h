@@ -285,7 +285,7 @@ public:
         }
         else {
             if (m_serializer) {
-                xostringstream arg_stream(ios::out | ios::in | ios::binary);
+                xostringstream arg_stream(std::ios::out | std::ios::in | std::ios::binary);
 
                 // Serialize all target function arguments into a stream
                 m_serializer->write(arg_stream, std::forward<Args>(args)...);
@@ -730,7 +730,7 @@ public:
         }
         else {
             if (m_serializer) {
-                xostringstream arg_stream(ios::out | ios::in | ios::binary);
+                xostringstream arg_stream(std::ios::out | std::ios::in | std::ios::binary);
 
                 // Serialize all target function arguments into a stream
                 m_serializer->write(arg_stream, std::forward<Args>(args)...);
@@ -1116,7 +1116,7 @@ public:
         }
         else {
             if (m_serializer) {
-                xostringstream arg_stream(ios::out | ios::in | ios::binary);
+                xostringstream arg_stream(std::ios::out | std::ios::in | std::ios::binary);
 
                 // Serialize all target function arguments into a stream
                 m_serializer->write(arg_stream, std::forward<Args>(args)...);
