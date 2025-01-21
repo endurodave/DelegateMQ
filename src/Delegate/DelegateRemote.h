@@ -449,8 +449,15 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, int)>& errorHandler) {
-        m_errorHandler = errorHandler;
+    void SetErrorHandler(const Delegate<void(DelegateError, int)>& errorHandler) {
+        m_errorHandler = errorHandler;  // Copy
+    }
+
+    /// @brief Set the error handler
+    /// @param[in] errorHandler The delegate error handler called when 
+    /// an error is detected.
+    void SetErrorHandler(Delegate<void(DelegateError, int)>&& errorHandler) {
+        m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
     /// @brief Get the last error code
@@ -893,8 +900,15 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, int)>& errorHandler) {
-        m_errorHandler = errorHandler;
+    void SetErrorHandler(const Delegate<void(DelegateError, int)>& errorHandler) {
+        m_errorHandler = errorHandler;  // Copy
+    }
+
+    /// @brief Set the error handler
+    /// @param[in] errorHandler The delegate error handler called when 
+    /// an error is detected.
+    void SetErrorHandler(Delegate<void(DelegateError, int)>&& errorHandler) {
+        m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
     /// @brief Get the last error code
@@ -1278,8 +1292,15 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, int)>& errorHandler) {
-        m_errorHandler = errorHandler;
+    void SetErrorHandler(const Delegate<void(DelegateError, int)>& errorHandler) {
+        m_errorHandler = errorHandler;  // Copy
+    }
+
+    /// @brief Set the error handler
+    /// @param[in] errorHandler The delegate error handler called when 
+    /// an error is detected.
+    void SetErrorHandler(Delegate<void(DelegateError, int)>&& errorHandler) {
+        m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
     /// @brief Get the last error code
