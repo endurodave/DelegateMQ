@@ -13,6 +13,7 @@
 #include "Proactor.h"
 #include "Command.h"
 #include "BindingProperty.h"
+#include "RemoteCommunication.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -577,6 +578,9 @@ int main(void)
 
     // Run proactor pattern example
     ProactorExample();
+
+    // Run remote communication example
+    RemoteCommunicationExample();
 
 // C++20 examples
 #if defined(_MSVC_LANG) && _MSVC_LANG >= 202002L || __cplusplus >= 202002L

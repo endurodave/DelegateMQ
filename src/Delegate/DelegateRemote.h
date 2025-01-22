@@ -48,7 +48,7 @@
 #include "ISerializer.h"
 #include "IDispatcher.h"
 #include <tuple>
-#include <sstream>
+#include <iostream>
 
 namespace DelegateLib {
 
@@ -63,6 +63,8 @@ enum class DelegateError {
     ERR_NO_SERIALIZER = 3,
     ERR_DISPATCH_ERROR = 4
 };
+
+typedef int DelegateErrorAux;
 
 // Get the type of the Nth position within a template parameter pack
 template<size_t N, class... Args> using ArgTypeOf =
@@ -284,22 +286,20 @@ public:
             return BaseType::operator()(std::forward<Args>(args)...);
         }
         else {
-            if (m_serializer) {
-                xostringstream arg_stream(std::ios::out | std::ios::in | std::ios::binary);
-
+            if (m_serializer && m_stream) {
                 // Serialize all target function arguments into a stream
-                m_serializer->write(arg_stream, std::forward<Args>(args)...);
+                m_serializer->write(*m_stream, std::forward<Args>(args)...);
 
-                if (arg_stream.fail() || arg_stream.bad()) {
+                if (m_stream->fail() || m_stream->bad()) {
                     RaiseError(DelegateError::ERR_STREAM_FAIL);
                 }
-                else if (arg_stream.eof()) {
+                else if (m_stream->eof()) {
                     RaiseError(DelegateError::ERR_STREAM_EMPTY);
                 }
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
-                        int error = m_dispatcher->Dispatch(arg_stream);
+                        int error = m_dispatcher->Dispatch(*m_stream);
                         if (error)
                             RaiseError(DelegateError::ERR_DISPATCH_ERROR, error);
                     }
@@ -446,6 +446,13 @@ public:
         m_serializer = serializer;
     }
 
+    /// @brief Set the serialization stream used to store serialized function 
+    /// argument data. 
+    /// @param[in] stream An output stream.
+    void SetStream(std::ostream* stream) {
+        m_stream = stream;
+    }
+
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
@@ -473,7 +480,7 @@ private:
     /// @brief Raise an error and callback registered error handler
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
-    void RaiseError(DelegateError error, int auxCode = 0) {
+    void RaiseError(DelegateError error, DelegateErrorAux auxCode = 0) {
         m_errorHandler(error, auxCode);
     }
 
@@ -481,7 +488,7 @@ private:
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
 
     /// A pointer to a error handler callback
-    UnicastDelegate<void(DelegateError, int)> m_errorHandler;
+    UnicastDelegate<void(DelegateError, DelegateErrorAux)> m_errorHandler;
 
     /// A pointer to the delegate dispatcher
     IDispatcher* m_dispatcher = nullptr;
@@ -494,6 +501,9 @@ private:
 
     /// The error detected
     DelegateError m_error = DelegateError::SUCCESS;
+
+    /// Stream to store serialize remote argument function data
+    std::ostream* m_stream = nullptr;
 
     // </common_code>
 };
@@ -735,22 +745,20 @@ public:
             return BaseType::operator()(std::forward<Args>(args)...);
         }
         else {
-            if (m_serializer) {
-                xostringstream arg_stream(std::ios::out | std::ios::in | std::ios::binary);
-
+            if (m_serializer && m_stream) {
                 // Serialize all target function arguments into a stream
-                m_serializer->write(arg_stream, std::forward<Args>(args)...);
+                m_serializer->write(*m_stream, std::forward<Args>(args)...);
 
-                if (arg_stream.fail() || arg_stream.bad()) {
+                if (m_stream->fail() || m_stream->bad()) {
                     RaiseError(DelegateError::ERR_STREAM_FAIL);
                 }
-                else if (arg_stream.eof()) {
+                else if (m_stream->eof()) {
                     RaiseError(DelegateError::ERR_STREAM_EMPTY);
                 }
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
-                        int error = m_dispatcher->Dispatch(arg_stream);
+                        int error = m_dispatcher->Dispatch(*m_stream);
                         if (error)
                             RaiseError(DelegateError::ERR_DISPATCH_ERROR, error);
                     }
@@ -897,6 +905,13 @@ public:
         m_serializer = serializer;
     }
 
+    /// @brief Set the serialization stream used to store serialized function 
+    /// argument data. 
+    /// @param[in] stream An output stream.
+    void SetStream(std::ostream* stream) {
+        m_stream = stream;
+    }
+
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
@@ -924,7 +939,7 @@ private:
     /// @brief Raise an error and callback registered error handler
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
-    void RaiseError(DelegateError error, int auxCode = 0) {
+    void RaiseError(DelegateError error, DelegateErrorAux auxCode = 0) {
         m_errorHandler(error, auxCode);
     }
 
@@ -932,7 +947,7 @@ private:
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
 
     /// A pointer to a error handler callback
-    UnicastDelegate<void(DelegateError, int)> m_errorHandler;
+    UnicastDelegate<void(DelegateError, DelegateErrorAux)> m_errorHandler;
 
     /// A pointer to the delegate dispatcher
     IDispatcher* m_dispatcher = nullptr;
@@ -945,6 +960,9 @@ private:
 
     /// The error detected
     DelegateError m_error = DelegateError::SUCCESS;
+
+    /// Stream to store serialize remote argument function data
+    std::ostream* m_stream = nullptr;
 
     // </common_code>
 };
@@ -1127,22 +1145,20 @@ public:
             return BaseType::operator()(std::forward<Args>(args)...);
         }
         else {
-            if (m_serializer) {
-                xostringstream arg_stream(std::ios::out | std::ios::in | std::ios::binary);
-
+            if (m_serializer && m_stream) {
                 // Serialize all target function arguments into a stream
-                m_serializer->write(arg_stream, std::forward<Args>(args)...);
+                m_serializer->write(*m_stream, std::forward<Args>(args)...);
 
-                if (arg_stream.fail() || arg_stream.bad()) {
+                if (m_stream->fail() || m_stream->bad()) {
                     RaiseError(DelegateError::ERR_STREAM_FAIL);
                 }
-                else if (arg_stream.eof()) {
+                else if (m_stream->eof()) {
                     RaiseError(DelegateError::ERR_STREAM_EMPTY);
                 }
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
-                        int error = m_dispatcher->Dispatch(arg_stream);
+                        int error = m_dispatcher->Dispatch(*m_stream);
                         if (error)
                             RaiseError(DelegateError::ERR_DISPATCH_ERROR, error);
                     }
@@ -1289,6 +1305,13 @@ public:
         m_serializer = serializer;
     }
 
+    /// @brief Set the serialization stream used to store serialized function 
+    /// argument data. 
+    /// @param[in] stream An output stream.
+    void SetStream(std::ostream* stream) {
+        m_stream = stream;
+    }
+
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
@@ -1316,7 +1339,7 @@ private:
     /// @brief Raise an error and callback registered error handler
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
-    void RaiseError(DelegateError error, int auxCode = 0) {
+    void RaiseError(DelegateError error, DelegateErrorAux auxCode = 0) {
         m_errorHandler(error, auxCode);
     }
 
@@ -1324,7 +1347,7 @@ private:
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
 
     /// A pointer to a error handler callback
-    UnicastDelegate<void(DelegateError, int)> m_errorHandler;
+    UnicastDelegate<void(DelegateError, DelegateErrorAux)> m_errorHandler;
 
     /// A pointer to the delegate dispatcher
     IDispatcher* m_dispatcher = nullptr;
@@ -1337,6 +1360,9 @@ private:
 
     /// The error detected
     DelegateError m_error = DelegateError::SUCCESS;
+
+    /// Stream to store serialize remote argument function data
+    std::ostream* m_stream = nullptr;
 
     // </common_code>
 };
