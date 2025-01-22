@@ -43,10 +43,10 @@ endif()
 
 # Add subdirectories to include path
 include_directories( 
-    ${CMAKE_SOURCE_DIR}/src/Delegate
-    ${CMAKE_SOURCE_DIR}/src/Examples
-    ${CMAKE_SOURCE_DIR}/src/Port
-    ${CMAKE_SOURCE_DIR}/tests/UnitTests
+    ${CMAKE_SOURCE_DIR}/src/delegate
+    ${CMAKE_SOURCE_DIR}/src/port
+    ${CMAKE_SOURCE_DIR}/tests/unit_tests
+    ${CMAKE_SOURCE_DIR}/example/sample_code
 )
 
 if (ENABLE_ALLOCATOR)
@@ -63,23 +63,23 @@ if (ENABLE_ALLOCATOR)
 endif()
 
 # Add subdirectories to build
-add_subdirectory(src/Examples)
-add_subdirectory(src/Port)
-add_subdirectory(tests/UnitTests)
+add_subdirectory(src/port)
+add_subdirectory(tests/unit_tests)
+add_subdirectory(examples/sample_code)
 
 if (ENABLE_ALLOCATOR)
-    add_subdirectory(src/Allocator)
+    add_subdirectory(src/allocator)
 endif()
 
 target_link_libraries(DelegateApp PRIVATE 
-    ExamplesLib
-    PortLib
-    UnitTestsLib
+    port_lib
+    unit_tests_lib
+    sample_code_lib
 )
 
 if (ENABLE_ALLOCATOR)
     target_link_libraries(DelegateApp PRIVATE 
-        AllocatorLib
+        allocator_lib
 )
 endif()
 
