@@ -23,12 +23,12 @@ jobs:
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DTEST_COVERAGE=ON  # Configure CMake with Debug and coverage
 
     - name: Build with coverage flags
-      run: cmake --build build --target DelegateApp  # Build the project using CMake
+      run: cmake --build build --target delegate_app  # Build the project using CMake
 
-    - name: Run DelegateApp to execute tests
+    - name: Run delegate_app to execute tests
       run: |
         cd build
-        ./DelegateApp  # Run your app to execute tests
+        ./delegate_app  # Run your app to execute tests
         
         # Collect code coverage data
         lcov --capture --directory . --output-file coverage.info
@@ -42,5 +42,5 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}  # GitHub repository secret for authentication with Codecov
         files: build/coverage_filtered.info  # Path to the filtered coverage file
 
-    - name: Run DelegateApp
-      run: ./build/DelegateApp  # Run the built executable (to run the tests)
+    - name: Run delegate_app
+      run: ./build/delegate_app  # Run the built executable (to run the tests)

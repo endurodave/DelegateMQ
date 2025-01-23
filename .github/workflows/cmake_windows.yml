@@ -25,5 +25,5 @@ jobs:
     - name: Build
       run: cmake --build build --config Release  # Build the project using CMake with Release configuration
 
-    - name: Run DelegateApp
-      run: .\build\Release\DelegateApp.exe  # Run the built executable (adjust path for MSBuild)
+    - name: Run delegate_app
+      run: .\build\Release\delegate_app.exe  # Run the built executable (adjust path for MSBuild)
