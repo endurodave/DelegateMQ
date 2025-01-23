@@ -315,7 +315,7 @@ public:
             // void MyFunc(std::shared_ptr<T> data)		// Ok!
             // void MyFunc(std::shared_ptr<T>& data)	// Error
             static_assert(!(
-                std::disjunction_v<is_shared_ptr_reference<Args>...>),
+                std::disjunction_v<trait::is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
         }
     }
@@ -456,14 +456,14 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(const Delegate<void(DelegateError, int)>& errorHandler) {
+    void SetErrorHandler(const Delegate<void(DelegateError, DelegateErrorAux)>& errorHandler) {
         m_errorHandler = errorHandler;  // Copy
     }
 
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, int)>&& errorHandler) {
+    void SetErrorHandler(Delegate<void(DelegateError, DelegateErrorAux)>&& errorHandler) {
         m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
@@ -774,7 +774,7 @@ public:
             // void MyFunc(std::shared_ptr<T> data)		// Ok!
             // void MyFunc(std::shared_ptr<T>& data)	// Error
             static_assert(!(
-                std::disjunction_v<is_shared_ptr_reference<Args>...>),
+                std::disjunction_v<trait::is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
         }
     }
@@ -915,14 +915,14 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(const Delegate<void(DelegateError, int)>& errorHandler) {
+    void SetErrorHandler(const Delegate<void(DelegateError, DelegateErrorAux)>& errorHandler) {
         m_errorHandler = errorHandler;  // Copy
     }
 
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, int)>&& errorHandler) {
+    void SetErrorHandler(Delegate<void(DelegateError, DelegateErrorAux)>&& errorHandler) {
         m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
@@ -1174,7 +1174,7 @@ public:
             // void MyFunc(std::shared_ptr<T> data)		// Ok!
             // void MyFunc(std::shared_ptr<T>& data)	// Error
             static_assert(!(
-                std::disjunction_v<is_shared_ptr_reference<Args>...>),
+                std::disjunction_v<trait::is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
         }
     }
@@ -1315,14 +1315,14 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(const Delegate<void(DelegateError, int)>& errorHandler) {
+    void SetErrorHandler(const Delegate<void(DelegateError, DelegateErrorAux)>& errorHandler) {
         m_errorHandler = errorHandler;  // Copy
     }
 
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, int)>&& errorHandler) {
+    void SetErrorHandler(Delegate<void(DelegateError, DelegateErrorAux)>&& errorHandler) {
         m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 

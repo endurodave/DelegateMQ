@@ -25,7 +25,6 @@
 
 namespace DelegateLib 
 {
-
 // std::shared_ptr reference arguments are not allowed with asynchronous delegates as the behavior is 
 // undefined. In other words:
 // void MyFunc(std::shared_ptr<T> data)		// Ok!
