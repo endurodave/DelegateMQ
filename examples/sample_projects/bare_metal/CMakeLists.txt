@@ -1,7 +1,6 @@
 # Example CMake command line to create project build files:
 #
 # *** Windows ***
-# cmake -G "Visual Studio 17 2022" -A Win32 -B build -S .
 # cmake -G "Visual Studio 17 2022" -A x64 -B build -S .
 # cmake -G "Visual Studio 17 2022" -A x64 -B build -S . -DENABLE_ALLOCATOR=ON
 #
@@ -22,10 +21,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Collect all .cpp and *.h source files in the src directory
-file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp" "${CMAKE_SOURCE_DIR}/src/*.h")
+file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
 
 # Collect all header files in the src/Delegate directory
-file(GLOB Delegate_HEADERS "${CMAKE_SOURCE_DIR}/src/delegate/*.h")
+file(GLOB Delegate_HEADERS "${CMAKE_SOURCE_DIR}/../../../src/delegate/*.h")
 
 # Organize Delegate headers into a "Delegate Files" folder in Visual Studio
 source_group("Delegate Files" FILES ${Delegate_HEADERS})
@@ -43,15 +42,13 @@ endif()
 
 # Add subdirectories to include path
 include_directories( 
-    ${CMAKE_SOURCE_DIR}/src/delegate
-    ${CMAKE_SOURCE_DIR}/src/port
-    ${CMAKE_SOURCE_DIR}/tests/unit_tests
-    ${CMAKE_SOURCE_DIR}/example/sample_code
+    ${CMAKE_SOURCE_DIR}/../../../src/delegate
+    ${CMAKE_SOURCE_DIR}/../../../src/port
 )
 
 if (ENABLE_ALLOCATOR)
 include_directories( 
-    ${CMAKE_SOURCE_DIR}/src/Allocator
+    ${CMAKE_SOURCE_DIR}/../../../src/Allocator
 )
 endif()
 
@@ -63,18 +60,14 @@ if (ENABLE_ALLOCATOR)
 endif()
 
 # Add subdirectories to build
-add_subdirectory(src/port)
-add_subdirectory(tests/unit_tests)
-add_subdirectory(examples/sample_code)
+add_subdirectory(../../../src/port ${CMAKE_BINARY_DIR}/port)
 
 if (ENABLE_ALLOCATOR)
-    add_subdirectory(src/allocator)
+    add_subdirectory(../../../src/allocator ${CMAKE_BINARY_DIR}/allocator)
 endif()
 
 target_link_libraries(delegate_app PRIVATE 
     port_lib
-    unit_tests_lib
-    sample_code_lib
 )
 
 if (ENABLE_ALLOCATOR)

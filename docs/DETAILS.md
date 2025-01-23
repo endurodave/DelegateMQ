@@ -34,9 +34,12 @@ A C++ delegate library capable of anonymously invoking any callable function eit
     - [Argument Heap Copy](#argument-heap-copy)
     - [Bypassing Argument Heap Copy](#bypassing-argument-heap-copy)
     - [Array Argument Heap Copy](#array-argument-heap-copy)
-- [Delegate Thread](#delegate-thread)
-  - [Send `DelegateMsg`](#send-delegatemsg)
-  - [Receive `DelegateMsg`](#receive-delegatemsg)
+- [Delegate Library Interfaces](#delegate-library-interfaces)
+  - [`IThread`](#ithread)
+    - [Send `DelegateMsg`](#send-delegatemsg)
+    - [Receive `DelegateMsg`](#receive-delegatemsg)
+  - [`ISerializer`](#iserializer)
+  - [`IDispatcher`](#idispatcher)
 - [Examples](#examples)
   - [Callback Example](#callback-example)
   - [Register Callback Example](#register-callback-example)
@@ -92,6 +95,8 @@ If you're not familiar with a delegate, the concept is quite simple. A delegate 
 In practice, while a delegate is useful, a multicast version significantly expands its utility. The ability to bind more than one function pointer and sequentially invoke all registrars' makes for an effective publisher/subscriber mechanism. Publisher code exposes a delegate container and one or more anonymous subscribers register with the publisher for callback notifications.
 
 The problem with callbacks on a multithreaded system, whether it be a delegate-based or function pointer based, is that the callback occurs synchronously. Care must be taken that a callback from another thread of control is not invoked on code that isn't thread-safe. Multithreaded application development is hard. It 's hard for the original designer; it 's hard because engineers of various skill levels must maintain the code; it 's hard because bugs manifest themselves in difficult ways. Ideally, an architectural solution helps to minimize errors and eases application development.
+
+A remote delegate takes the concept further and allows invoking an endpoint function located in a separate process or processor. Extremely configurable using custom serializer and dispatcher interfaces to store callable argument data and send to a remote system.
 
 This C++ delegate implementation is full featured and allows calling any function, even instance member functions, with any arguments either synchronously or asynchronously. The delegate library makes binding to and invoking any function a snap.
 
@@ -784,24 +789,11 @@ delegateArrayFunc(cArray);
 
 There is no way to asynchronously pass a C-style array by value. Avoid C-style arrays if possible when using asynchronous delegates to avoid confusion and mistakes.
 
-# Delegate Thread
+# Delegate Library Interfaces
 
-A delegate thread is required to dispatch asynchronous delegates to a specified target thread. Interface base classes enable customization of the thread and message queue for any target operating system platform.
+## `IThread`
 
-## Send `DelegateMsg`
-
-An asynchronous delegate library function operator `RetType operator()(Args... args)` calls `DispatchDelegate()` to send a delegate message to the destination target thread.
-
-```cpp
-auto thread = this->GetThread();
-if (thread) {
-    // Dispatch message onto the callback destination thread. Invoke()
-    // will be called by the destination thread. 
-    thread->DispatchDelegate(msg);
-}
-```
-
-An application specific class inherits from `IThread` interface. 
+The `IThread` interface is used to send a delegate and argument data through a message queue. A delegate thread is required to dispatch asynchronous delegates to a specified target thread. The delegate library automatically constructs a `DelegateMsg` containing everything necessary for the destination thread.
 
 ```cpp
 class IThread
@@ -819,6 +811,19 @@ public:
 	/// @post The destination thread calls Invoke().
 	virtual void DispatchDelegate(std::shared_ptr<DelegateMsg> msg) = 0;
 };
+```
+
+### Send `DelegateMsg`
+
+An asynchronous delegate library function operator `RetType operator()(Args... args)` calls `DispatchDelegate()` to send a delegate message to the destination target thread.
+
+```cpp
+auto thread = this->GetThread();
+if (thread) {
+    // Dispatch message onto the callback destination thread. Invoke()
+    // will be called by the destination thread. 
+    thread->DispatchDelegate(msg);
+}
 ```
 
 `DispatchDelegate()` inserts a message into the thread message queue. `WorkerThread` class uses a underlying `std::thread`. `WorkerThread` is an implementation detail; create a unique `DispatchDelegate()` function based on the platform operating system API.
@@ -839,7 +844,7 @@ void WorkerThread::DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> ms
 }
 ```
 
-## Receive `DelegateMsg`
+### Receive `DelegateMsg`
 
  Inherit from `IDelegateInvoker` and implement the `Invoke()` function. The implementation typically inserts a `std::shared_ptr<DelegateMsg>` into the thread's message queue for processing.
 
@@ -917,6 +922,66 @@ void WorkerThread::Process()
 		}
 	}
 }
+```
+
+## `ISerializer`
+
+The `ISerializer` interface is used to serializes argument data for sending to a remote destination endpoint. Each target function built-in or user defined argument is serialized and deserialized based on the system requirements. Custom serialization such as Protocol Buffers (protobuf), MessagePack, or JSON. The `examples` folder contains sample projects.
+
+```cpp
+template <class R>
+struct ISerializer; // Not defined
+
+/// @brief Delegate serializer interface for serializing and deserializing
+/// remote delegate arguments. Implemented by application code if remote 
+/// delegates are used.
+/// 
+/// @details All argument data is serialized into a stream. `write()` is called
+/// by the sender when the delegate is invoked. `read()` is called by the receiver
+/// upon reception of the remote message data bytes. 
+template<class RetType, class... Args>
+class ISerializer<RetType(Args...)>
+{
+public:
+    /// Inheriting class implements the write function to serialize
+    /// data for transport. 
+    /// @param[out] os The output stream
+    /// @param[in] args The target function arguments 
+    /// @return The input stream
+    virtual std::ostream& write(std::ostream& os, Args... args) = 0;
+
+    /// Inheriting class implements the read function to unserialize data
+    /// from transport. 
+    /// @param[in] is The input stream
+    /// @param[out] args The target function arguments 
+    /// @return The input stream
+    virtual std::istream& read(std::istream& is, Args&... args) = 0;
+};
+```
+
+## `IDispatcher`
+
+The `IDispatcher` interface is used to dispatch the target function argument data to a remote destination endpoint. Custom dispatchers such as sockets, named pipes, or `ZeroMQ` is supported. The `examples` folder contains sample projects.
+
+```cpp
+/// @brief Delegate interface class to dispatch serialized function argument data
+/// to a remote destination. Implemented by the application if using remote delegates.
+/// 
+/// @details Incoming data from the remote must the `IDispatcher::Dispatch()` to 
+/// invoke the target function using argument data. The argument data is serialized 
+/// for transport using a concrete class implementing the `ISerialzer` interface 
+/// allowing any data argument serialization method is supported.
+/// @post The receiver calls `IRemoteInvoker::Invoke()` when the dispatched message
+/// is received.
+class IDispatcher
+{
+public:
+    /// Dispatch a stream of bytes to a remote system. The implementer is responsible
+    /// for sending the bytes over a communication transport (UDP, TCP, shared memory, 
+    /// serial, ...). 
+    /// @param[in] os An outgoing stream to send to the remote destination.
+    virtual int Dispatch(std::ostream& os) = 0;
+};
 ```
 
 # Examples
@@ -1227,7 +1292,7 @@ void AsyncFutureExample()
 ```
 ## More Examples
 
-See the `Examples` folder for additional examples.
+See the `examples` directory for additional examples.
 
 # Testing
 

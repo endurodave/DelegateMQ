@@ -6,7 +6,7 @@
 
 # Asynchronous Delegates in C++
 
-The C++ delegate library allows for anonymous asynchronous invocation of any callable function on a user-specified thread of control. It is a header-only template library that is thread-safe, unit-tested, and easy to use. Multi-threaded application development is simplified through the use of delegates and delegate containers. 
+The C++ delegates library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. This concept unifies all function invocations to simplify multi-threaded and multi-processor development. Well-defined abstract interfaces and numerous concrete examples offer easy porting to any platform. It is a header-only template library that is thread-safe, unit-tested, and easy to use.
 
 ```cpp
 // Create an async delegate targeting lambda on thread1
@@ -43,11 +43,12 @@ It is always safe to call the delegate. In its null state, a call will not perfo
  
 Typical use cases are:
 
+* Synchronous and Asynchronous Callbacks
+* Event-Driven Programming
+* Inter-process and Inter-processor Communication 
 * Inter-Thread Publish/Subscribe (Observer) Pattern
 * Thread-Safe Asynchronous API
-* Asynchronous Method Invocation (AMI)
-* Anonymous, Asynchronous Thread-Safe Callbacks
-* Event-Driven Programming
+* Asynchronous Method Invocation (AMI) 
 * Design Patterns (Active Object)
 * `std::async` Thread Targeting
 
@@ -64,6 +65,16 @@ Originally published on CodeProject at: <a href="https://www.codeproject.com/Art
  See [Doxygen Documentation](https://endurodave.github.io/cpp-async-delegate/html/index.html) for source code documentation. 
 
  See [Unit Test Code Coverage](https://app.codecov.io/gh/endurodave/cpp-async-delegate) test results.
+
+# Delegate Library Interfaces 
+
+Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Simple examples offer ready-made solutions or allow you to create your own.
+
+| Class | Interface | Notes
+| --- | --- | ---
+| `Delegate` | n/a | No interfaces; use as-is without external dependencies.
+| `DelegateAsync`<br>`DelegateAsyncWait` | `IThread` | `IThread` used to send a delegate and argument data through an OS message queue.
+| `DelegateRemote` | `ISerializer`<br>`IDispatcher` | `ISerializer` used to serialize callable argument data.<br>`IDispatcher` used to send serialized argument data to a remote endpoint.
 
 # Quick Start
 
