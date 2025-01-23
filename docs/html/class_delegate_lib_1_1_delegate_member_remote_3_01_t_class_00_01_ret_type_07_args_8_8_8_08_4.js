@@ -34,9 +34,10 @@ var class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07
     [ "operator==", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a4aff92fd4a2ab8144c9e5fdd1c536610", null ],
     [ "operator==", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a3fd720ebffd025e61da765ccbd413ae5", null ],
     [ "SetDispatcher", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a89e3fe4e9e199a8a10e895d86338fd21", null ],
-    [ "SetErrorHandler", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#adce28cf1d7cf5fcc308542f006e5937c", null ],
-    [ "SetErrorHandler", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#aafadfd6b9dc3fbad54d506d31420f94c", null ],
+    [ "SetErrorHandler", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a8d84ec9c2ab6d15eb0ccc318e7b98217", null ],
+    [ "SetErrorHandler", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ae7d8e1c8ca8b3ee7c203eb87e2b3a33b", null ],
     [ "SetSerializer", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a5a784c93c383544b9031b1cb62d61dbb", null ],
+    [ "SetStream", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a36202fece1a5ad008fca56f1126a9a58", null ],
     [ "operator!=", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],
     [ "operator==", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797", null ]
 ];

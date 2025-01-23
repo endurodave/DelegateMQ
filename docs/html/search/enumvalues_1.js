@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['ioread_0',['IORead',['../namespace_example.html#a138503238c4f38364226c21bf8d00505a1c6b4dfb3ac789573101c64dd6daab9b',1,'Example']]],
-  ['iowrite_1',['IOWrite',['../namespace_example.html#a138503238c4f38364226c21bf8d00505ae3303759c25da3d234e02381fc59c0cf',1,'Example']]]
+  ['success_0',['SUCCESS',['../namespace_delegate_lib.html#ab447bf5fb19c4e1b013d45ac81f4f84bad0749aaba8b833466dfcbb0428e4f89c',1,'DelegateLib']]]
 ];

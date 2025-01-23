@@ -62,13 +62,15 @@ Originally published on CodeProject at: <a href="https://www.codeproject.com/Art
 
  See [Design Details](docs/DETAILS.md) for implementation design documentation and more examples.
 
+ See [Sample Projects](examples/sample_projects/EXAMPLES.md) for information on example projects.
+
  See [Doxygen Documentation](https://endurodave.github.io/cpp-async-delegate/html/index.html) for source code documentation. 
 
  See [Unit Test Code Coverage](https://app.codecov.io/gh/endurodave/cpp-async-delegate) test results.
 
 # Delegate Library Interfaces 
 
-Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Simple examples offer ready-made solutions or allow you to create your own.
+Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Complete example code offer ready-made solutions or allow you to create your own.
 
 | Class | Interface | Notes
 | --- | --- | ---

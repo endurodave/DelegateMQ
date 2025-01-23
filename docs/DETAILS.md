@@ -5,7 +5,7 @@
 
 # Asynchronous Delegates in C++
 
-A C++ delegate library capable of anonymously invoking any callable function either synchronously or asynchronously on a user-specified thread of control. 
+The C++ delegates library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. 
 
 # Table of Contents
 
@@ -73,18 +73,19 @@ The features of the modern C++ delegate library are:
 5. **Multiple Arguments** – supports N number of function arguments for the bound function
 6. **Synchronous Invocation** – call the bound function synchronously
 7. **Asynchronous Invocation** – call the bound function asynchronously on a client specified thread
-8. **Blocking Asynchronous Invocation** - invoke asynchronously using blocking or non-blocking delegates
-9. **Smart Pointer Support** - bind an instance function using a raw object pointer or `std::shared_ptr`
-10. **Lambda Support** - bind and invoke lambda functions asynchronously using delegates
-11. **Automatic Heap Handling** – automatically copy argument data to the heap for safe transport through a message queue
-12. **Memory Management** - support for global heap or fixed-block memory allocator
-13. **Any OS** – easy porting to any OS. C++11 `std::thread` port included
-14. **32/64-bit** - Support for 32 and 64-bit projects
-15. **Dynamic Storage Allocation** - optional fixed-block memory allocator
-16. **CMake Build** - CMake supports most toolchains including Windows and Linux
-17. **Unit Tests** - extensive unit testing of the delegate library included
-18. **No External Libraries** – delegate does not rely upon external libraries
-19. **Ease of Use** – function signature template arguments (e.g., `DelegateFree<void(TestStruct*)>`)
+8. **Remote Invocation** - call a function located on a remote endpoint.
+9. **Blocking Asynchronous Invocation** - invoke asynchronously using blocking or non-blocking delegates
+10. **Smart Pointer Support** - bind an instance function using a raw object pointer or `std::shared_ptr`
+11. **Lambda Support** - bind and invoke lambda functions asynchronously using delegates
+12. **Automatic Heap Handling** – automatically copy argument data to the heap for safe transport through a message queue
+13. **Memory Management** - support for global heap or fixed-block memory allocator
+14. **Any OS** – easy porting to any OS. C++11 `std::thread` port included
+15. **32/64-bit** - Support for 32 and 64-bit projects
+16. **Dynamic Storage Allocation** - optional fixed-block memory allocator
+17. **CMake Build** - CMake supports most toolchains including Windows and Linux
+18. **Unit Tests** - extensive unit testing of the delegate library included
+19. **No External Libraries** – delegate does not rely upon external libraries
+20. **Ease of Use** – function signature template arguments (e.g., `DelegateFree<void(TestStruct*)>`)
 
 The delegate implementation greatly simplifies multithreaded application development by executing the delegate function with all of its arguments on the specified thread of control. The framework manages all the low-level operations needed to safely invoke any function signature on the target thread. CMake build files allow experimentation on Windows, Linux, and other platforms.
 
@@ -651,12 +652,15 @@ DelegateBase
         DelegateFree<>
             DelegateFreeAsync<>
             DelegateFreeAsyncWait<>
+            DelegateFreeRemote<>
         DelegateMember<>
             DelegateMemberAsync<>
             DelegateMemberAsyncWait<>
+            DelegateMemberRemote<>
         DelegateFunction<>
             DelegateFunctionAsync<>
             DelegateFunctionAsyncWait<>
+            DelegateFunctionRemote<>
 
 // Delegate Containers
 UnicastDelegate<>

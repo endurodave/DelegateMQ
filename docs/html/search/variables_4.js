@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['subjectlambda_0',['SubjectLambda',['../namespace_example.html#a81a000b265814956ad0efcb17e1dd830',1,'Example']]],
-  ['subjectlambda2_1',['SubjectLambda2',['../namespace_example.html#aacb4aeb5af3b9dd864ec5e20f4659ae0',1,'Example']]],
-  ['systemmodechangeddelegate_2',['SystemModeChangedDelegate',['../class_sys_data.html#a9f8d18bbd0ba6381db48df081cd4f567',1,'SysData::SystemModeChangedDelegate'],['../class_sys_data_no_lock.html#aeed880430601ed1e4baf62e63fb8967e',1,'SysDataNoLock::SystemModeChangedDelegate']]]
+  ['x_0',['x',['../struct_main_1_1_test_struct.html#a5089d7ab9bf4e1f9e67a169759d6ec92',1,'Main::TestStruct::x'],['../struct_main_1_1_test_struct_no_copy.html#ac37030e739ed415013a1b20f458ace7f',1,'Main::TestStructNoCopy::x'],['../class_main_1_1_coordinates.html#a849f5be3e8dc939fa5a979afd990d6ce',1,'Main::Coordinates::x']]]
 ];

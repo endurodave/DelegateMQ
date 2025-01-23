@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['unicastdelegate_0',['UnicastDelegate',['../class_delegate_lib_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a82975231641ed94655a77f2885aaf358',1,'DelegateLib::UnicastDelegate&lt; RetType(Args...)&gt;::UnicastDelegate()=default'],['../class_delegate_lib_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a5ad610d6c02c159d9468c1357971f86d',1,'DelegateLib::UnicastDelegate&lt; RetType(Args...)&gt;::UnicastDelegate(const UnicastDelegate &amp;rhs)'],['../class_delegate_lib_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#aa7c99581fdb05907c15cf4dcc4279aeb',1,'DelegateLib::UnicastDelegate&lt; RetType(Args...)&gt;::UnicastDelegate(UnicastDelegate &amp;&amp;rhs) noexcept']]],
-  ['update_1',['update',['../class_example_1_1_observer.html#a920a44c85f4500de5f02bb1699903727',1,'Example::Observer::update()'],['../class_example_1_1_concrete_observer_a.html#a7576934ba9f58d4034190f05f894f99d',1,'Example::ConcreteObserverA::update()'],['../class_example_1_1_concrete_observer_b.html#a3a7afd9ff174ba3ef700f4487318e392',1,'Example::ConcreteObserverB::update()']]]
+  ['wait_0',['Wait',['../class_delegate_lib_1_1_semaphore.html#a031954138f0b60dd1f23b8c47ab16442',1,'DelegateLib::Semaphore']]],
+  ['workerthread_1',['WorkerThread',['../class_worker_thread.html#aaac3e066cc9ce875881866d17152d13a',1,'WorkerThread']]],
+  ['write_2',['write',['../class_delegate_lib_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a68c310d56b8b4fdebbe2e4872096d4a5',1,'DelegateLib::ISerializer&lt; RetType(Args...)&gt;']]]
 ];

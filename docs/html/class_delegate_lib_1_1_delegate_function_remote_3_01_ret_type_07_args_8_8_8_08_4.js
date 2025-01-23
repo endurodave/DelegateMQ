@@ -25,9 +25,10 @@ var class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_
     [ "operator==", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a8d38db65f751c29a3638d1a0c341219c", null ],
     [ "operator==", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a90d40a867c50e42cd770b76d2f181a1c", null ],
     [ "SetDispatcher", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#aeb8329920592659b6402d777b8cc9eb5", null ],
-    [ "SetErrorHandler", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a3e9f8fccb0cbed6f5c99be14ca7ccfd1", null ],
-    [ "SetErrorHandler", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a7f4a7db8a813e1d6dde845278049714a", null ],
+    [ "SetErrorHandler", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a2ae295fea02957859748d35436a7e455", null ],
+    [ "SetErrorHandler", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#aa633d06c11b7b7716136053ced3d6328", null ],
     [ "SetSerializer", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a181d91ac7e7ea8ef7c26e5695ee549de", null ],
+    [ "SetStream", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#aec15b4449fbc1af1443caed8f45d6802", null ],
     [ "operator!=", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],
     [ "operator==", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797", null ]
 ];

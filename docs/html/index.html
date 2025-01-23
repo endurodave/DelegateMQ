@@ -102,7 +102,7 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
 <div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a> <a href="https://app.codecov.io/gh/endurodave/cpp-async-delegate"><img src="https://codecov.io/gh/endurodave/cpp-async-delegate/branch/master/graph/badge.svg" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
 <h1><a class="anchor" id="autotoc_md0"></a>
 Asynchronous Delegates in C++</h1>
-<p>The C++ delegate library allows for anonymous asynchronous invocation of any callable function on a user-specified thread of control. It is a header-only template library that is thread-safe, unit-tested, and easy to use. Multi-threaded application development is simplified through the use of delegates and delegate containers.</p>
+<p>The C++ delegates library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. This concept unifies all function invocations to simplify multi-threaded and multi-processor development. Well-defined abstract interfaces and numerous concrete examples offer easy porting to any platform. It is a header-only template library that is thread-safe, unit-tested, and easy to use.</p>
 <div class="fragment"><div class="line"><span class="comment">// Create an async delegate targeting lambda on thread1</span></div>
 <div class="line"><span class="keyword">auto</span> lambda = [](<span class="keywordtype">int</span> i) { std::cout &lt;&lt; i; };</div>
 <div class="line"><span class="keyword">auto</span> lambdaDelegate = MakeDelegate(std::function(lambda), thread1);</div>
@@ -132,11 +132,12 @@ Asynchronous Delegates in C++</h1>
 </ul>
 <p>Typical use cases are:</p>
 <ul>
+<li>Synchronous and Asynchronous Callbacks</li>
+<li>Event-Driven Programming</li>
+<li>Inter-process and Inter-processor Communication</li>
 <li>Inter-Thread Publish/Subscribe (Observer) Pattern</li>
 <li>Thread-Safe Asynchronous API</li>
 <li>Asynchronous Method Invocation (AMI)</li>
-<li>Anonymous, Asynchronous Thread-Safe Callbacks</li>
-<li>Event-Driven Programming</li>
 <li>Design Patterns (Active Object)</li>
 <li><code>std::async</code> Thread Targeting</li>
 </ul>
@@ -146,11 +147,28 @@ Asynchronous Delegates in C++</h1>
 <h1><a class="anchor" id="autotoc_md1"></a>
 Design Documentation</h1>
 <p>See Design Details for implementation design documentation and more examples.</p>
+<p>See Sample Projects for information on example projects.</p>
 <p>See <a href="https://endurodave.github.io/cpp-async-delegate/html/index.html">Doxygen Documentation</a> for source code documentation.</p>
 <p>See <a href="https://app.codecov.io/gh/endurodave/cpp-async-delegate">Unit Test Code Coverage</a> test results.</p>
 <h1><a class="anchor" id="autotoc_md2"></a>
+Delegate Library Interfaces</h1>
+<p>Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Complete example code offer ready-made solutions or allow you to create your own.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Class   </th><th class="markdownTableHeadNone">Interface   </th><th class="markdownTableHeadNone">Notes    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>Delegate</code>   </td><td class="markdownTableBodyNone">n/a   </td><td class="markdownTableBodyNone">No interfaces; use as-is without external dependencies.    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>DelegateAsync</code><br  />
+<code>DelegateAsyncWait</code>   </td><td class="markdownTableBodyNone"><code>IThread</code>   </td><td class="markdownTableBodyNone"><code>IThread</code> used to send a delegate and argument data through an OS message queue.    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>DelegateRemote</code>   </td><td class="markdownTableBodyNone"><code>ISerializer</code><br  />
+<code>IDispatcher</code>   </td><td class="markdownTableBodyNone"><code>ISerializer</code> used to serialize callable argument data.<br  />
+<code>IDispatcher</code> used to send serialized argument data to a remote endpoint.   </td></tr>
+</table>
+<h1><a class="anchor" id="autotoc_md3"></a>
 Quick Start</h1>
-<h2><a class="anchor" id="autotoc_md3"></a>
+<h2><a class="anchor" id="autotoc_md4"></a>
 Basic Examples</h2>
 <p>Simple function definitions.</p>
 <div class="fragment"><div class="line"><span class="keywordtype">void</span> FreeFunc(<span class="keywordtype">int</span> value) {</div>
@@ -222,10 +240,10 @@ Basic Examples</h2>
 <div class="line"><span class="comment">// Wait for AddFunc return value</span></div>
 <div class="line"><span class="keywordtype">int</span> sum = result.get();</div>
 <div class="line">cout &lt;&lt; <span class="stringliteral">&quot;AddFunc return value: &quot;</span> &lt;&lt; sum &lt;&lt; <span class="stringliteral">&quot; &quot;</span>;</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md4"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
 Publish/Subscribe Example</h2>
 <p>A simple publish/subscribe example using asynchronous delegates.</p>
-<h3><a class="anchor" id="autotoc_md5"></a>
+<h3><a class="anchor" id="autotoc_md6"></a>
 Publisher</h3>
 <p>Typically a delegate is inserted into a delegate container. <code>AlarmCd</code> is a delegate container.</p>
 <p><img src="docs/Figure1.jpg" alt="Figure 1: AlarmCb Delegate Container" style="width:65%;" class="inline"/> <br  />
@@ -244,7 +262,7 @@ Publisher</h3>
 <div class="line">    <span class="comment">// Invoke delegate to generate callback(s) to subscribers</span></div>
 <div class="line">    AlarmCb(alarmId, note);</div>
 <div class="line">}</div>
-</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md6"></a>
+</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md7"></a>
 Subscriber</h3>
 <p>Typically a subscriber registers with a delegate container instance to receive callbacks, either synchronously or asynchronously.</p>
 <p><img src="docs/Figure2.jpg" alt="Figure 2: Insert into AlarmCb Delegate Container" style="width:75%;" class="inline"/></p>
@@ -277,7 +295,7 @@ Subscriber</h3>
 <div class="line">        <span class="comment">// Handle callback here. Called on workerThread1 context.</span></div>
 <div class="line">    }</div>
 <div class="line">}</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md7"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md8"></a>
 All Delegate Types Example</h2>
 <p>A delegate container inserting and removing all delegate types.</p>
 <div class="fragment"><div class="line"><a class="code hl_class" href="class_worker_thread.html">WorkerThread</a> workerThread1(<span class="stringliteral">&quot;WorkerThread1&quot;</span>);</div>
@@ -399,46 +417,38 @@ All Delegate Types Example</h2>
 <div class="line">    delegateA -= <a class="code hl_function" href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">MakeDelegate</a>(testClassSp, &amp;Class::MemberFunc, workerThread1, WAIT_INFINITE);</div>
 <div class="line">    delegateA -= <a class="code hl_function" href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">MakeDelegate</a>(testClassSp, &amp;Class::MemberFuncConst, workerThread1, WAIT_INFINITE);</div>
 <div class="line"> </div>
-<div class="line">    <a class="code hl_define" href="_allocator_2_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a>(delegateA.Size() == 0);</div>
-<div class="line">    <a class="code hl_define" href="_allocator_2_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a>(callCnt == 27);</div>
+<div class="line">    <a class="code hl_define" href="allocator_2_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a>(delegateA.Size() == 0);</div>
+<div class="line">    <a class="code hl_define" href="allocator_2_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a>(callCnt == 27);</div>
 <div class="line">}</div>
-<div class="ttc" id="a_allocator_2_fault_8h_html_ae9244bfbda562e8b798789b001993fa5"><div class="ttname"><a href="_allocator_2_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a></div><div class="ttdeci">#define ASSERT_TRUE(condition)</div><div class="ttdef"><b>Definition</b> Allocator/Fault.h:11</div></div>
+<div class="ttc" id="aallocator_2_fault_8h_html_ae9244bfbda562e8b798789b001993fa5"><div class="ttname"><a href="allocator_2_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a></div><div class="ttdeci">#define ASSERT_TRUE(condition)</div><div class="ttdef"><b>Definition</b> allocator/Fault.h:11</div></div>
 <div class="ttc" id="aclass_worker_thread_html"><div class="ttname"><a href="class_worker_thread.html">WorkerThread</a></div><div class="ttdef"><b>Definition</b> WorkerThreadStd.h:18</div></div>
 <div class="ttc" id="anamespace_delegate_lib_html_a4815e70cd651512c838e354bf81a0c80"><div class="ttname"><a href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">DelegateLib::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:670</div></div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md8"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md9"></a>
 Asynchronous API Example</h2>
 <p><code>SetSystemModeAsyncAPI()</code> is an asynchronous function call that re-invokes on <code>workerThread2</code> if necessary.</p>
-<div class="fragment"><div class="line"><span class="keywordtype">void</span> <a class="code hl_function" href="class_sys_data_no_lock.html#a1583080bcf23c33ff74d4ef6e943d16f">SysDataNoLock::SetSystemModeAsyncAPI</a>(<a class="code hl_enumeration" href="struct_system_mode.html#ae7a8c124a40da8b25e5aa8b7e8450653">SystemMode::Type</a> systemMode)</div>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// Is the caller executing on workerThread2?</span></div>
-<div class="line">    <span class="keywordflow">if</span> (<a class="code hl_variable" href="_sys_data_no_lock_8cpp.html#ad92600e1f17070e4e1f1ddc0afc607e6">workerThread2</a>.<a class="code hl_function" href="class_worker_thread.html#a072c9f946424b91f0fdef5260d7b59aa">GetThreadId</a>() != <a class="code hl_function" href="class_worker_thread.html#ac9627a136d18c9214284496f104f9429">WorkerThread::GetCurrentThreadId</a>())</div>
+<div class="line">    <span class="keywordflow">if</span> (workerThread2.GetThreadId() != <a class="code hl_function" href="class_worker_thread.html#ac9627a136d18c9214284496f104f9429">WorkerThread::GetCurrentThreadId</a>())</div>
 <div class="line">    {</div>
 <div class="line">        <span class="comment">// Create an asynchronous delegate and re-invoke the function call on workerThread2</span></div>
-<div class="line">        <a class="code hl_function" href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">MakeDelegate</a>(<span class="keyword">this</span>, &amp;<a class="code hl_function" href="class_sys_data_no_lock.html#a1583080bcf23c33ff74d4ef6e943d16f">SysDataNoLock::SetSystemModeAsyncAPI</a>, <a class="code hl_variable" href="_sys_data_no_lock_8cpp.html#ad92600e1f17070e4e1f1ddc0afc607e6">workerThread2</a>).AsyncInvoke(systemMode);</div>
+<div class="line">        MakeDelegate(<span class="keyword">this</span>, &amp;SysDataNoLock::SetSystemModeAsyncAPI, workerThread2).AsyncInvoke(systemMode);</div>
 <div class="line">        <span class="keywordflow">return</span>;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Create the callback data</span></div>
-<div class="line">    <a class="code hl_class" href="class_system_mode_changed.html">SystemModeChanged</a> callbackData;</div>
-<div class="line">    callbackData.<a class="code hl_variable" href="class_system_mode_changed.html#afdb7f95fd3790a18b7e944deb8e1f757">PreviousSystemMode</a> = m_systemMode;</div>
-<div class="line">    callbackData.<a class="code hl_variable" href="class_system_mode_changed.html#a28bdd2552042f3479f0efa09da087047">CurrentSystemMode</a> = systemMode;</div>
+<div class="line">    SystemModeChanged callbackData;</div>
+<div class="line">    callbackData.PreviousSystemMode = m_systemMode;</div>
+<div class="line">    callbackData.CurrentSystemMode = systemMode;</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Update the system mode</span></div>
 <div class="line">    m_systemMode = systemMode;</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Callback all registered subscribers</span></div>
-<div class="line">    <a class="code hl_variable" href="class_sys_data_no_lock.html#aeed880430601ed1e4baf62e63fb8967e">SystemModeChangedDelegate</a>(callbackData);</div>
+<div class="line">    SystemModeChangedDelegate(callbackData);</div>
 <div class="line">}</div>
-<div class="ttc" id="a_sys_data_no_lock_8cpp_html_ad92600e1f17070e4e1f1ddc0afc607e6"><div class="ttname"><a href="_sys_data_no_lock_8cpp.html#ad92600e1f17070e4e1f1ddc0afc607e6">workerThread2</a></div><div class="ttdeci">WorkerThread workerThread2(&quot;WorkerThread2&quot;)</div></div>
-<div class="ttc" id="aclass_sys_data_no_lock_html_a1583080bcf23c33ff74d4ef6e943d16f"><div class="ttname"><a href="class_sys_data_no_lock.html#a1583080bcf23c33ff74d4ef6e943d16f">SysDataNoLock::SetSystemModeAsyncAPI</a></div><div class="ttdeci">void SetSystemModeAsyncAPI(SystemMode::Type systemMode)</div><div class="ttdef"><b>Definition</b> SysDataNoLock.cpp:46</div></div>
-<div class="ttc" id="aclass_sys_data_no_lock_html_aeed880430601ed1e4baf62e63fb8967e"><div class="ttname"><a href="class_sys_data_no_lock.html#aeed880430601ed1e4baf62e63fb8967e">SysDataNoLock::SystemModeChangedDelegate</a></div><div class="ttdeci">MulticastDelegateSafe&lt; void(const SystemModeChanged &amp;)&gt; SystemModeChangedDelegate</div><div class="ttdoc">Clients register with MulticastDelegateSafe to get callbacks when system mode changes.</div><div class="ttdef"><b>Definition</b> SysDataNoLock.h:15</div></div>
-<div class="ttc" id="aclass_system_mode_changed_html"><div class="ttname"><a href="class_system_mode_changed.html">SystemModeChanged</a></div><div class="ttdoc">Structure to hold system mode callback data.</div><div class="ttdef"><b>Definition</b> SysDataTypes.h:17</div></div>
-<div class="ttc" id="aclass_system_mode_changed_html_a28bdd2552042f3479f0efa09da087047"><div class="ttname"><a href="class_system_mode_changed.html#a28bdd2552042f3479f0efa09da087047">SystemModeChanged::CurrentSystemMode</a></div><div class="ttdeci">SystemMode::Type CurrentSystemMode</div><div class="ttdef"><b>Definition</b> SysDataTypes.h:26</div></div>
-<div class="ttc" id="aclass_system_mode_changed_html_afdb7f95fd3790a18b7e944deb8e1f757"><div class="ttname"><a href="class_system_mode_changed.html#afdb7f95fd3790a18b7e944deb8e1f757">SystemModeChanged::PreviousSystemMode</a></div><div class="ttdeci">SystemMode::Type PreviousSystemMode</div><div class="ttdef"><b>Definition</b> SysDataTypes.h:25</div></div>
-<div class="ttc" id="aclass_worker_thread_html_a072c9f946424b91f0fdef5260d7b59aa"><div class="ttname"><a href="class_worker_thread.html#a072c9f946424b91f0fdef5260d7b59aa">WorkerThread::GetThreadId</a></div><div class="ttdeci">std::thread::id GetThreadId()</div><div class="ttdoc">Get the ID of this thread instance.</div><div class="ttdef"><b>Definition</b> WorkerThreadStd.cpp:60</div></div>
 <div class="ttc" id="aclass_worker_thread_html_ac9627a136d18c9214284496f104f9429"><div class="ttname"><a href="class_worker_thread.html#ac9627a136d18c9214284496f104f9429">WorkerThread::GetCurrentThreadId</a></div><div class="ttdeci">static std::thread::id GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div><div class="ttdef"><b>Definition</b> WorkerThreadStd.cpp:71</div></div>
-<div class="ttc" id="astruct_system_mode_html_ae7a8c124a40da8b25e5aa8b7e8450653"><div class="ttname"><a href="struct_system_mode.html#ae7a8c124a40da8b25e5aa8b7e8450653">SystemMode::Type</a></div><div class="ttdeci">Type</div><div class="ttdef"><b>Definition</b> SysDataTypes.h:7</div></div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md9"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md10"></a>
 Delegate Classes</h1>
 <p>Primary delegate library classes.</p>
 <div class="fragment"><div class="line"><span class="comment">// Delegates</span></div>
@@ -475,10 +485,10 @@ Delegate Classes</h1>
 </div><!-- fragment --><p><code>UnicastDelegate&lt;&gt;</code> is a delegate container accepting a single delegate.</p>
 <p><code>MulticastDelegate&lt;&gt;</code> is a delegate container accepting multiple delegates.</p>
 <p><code>MultcastDelegateSafe&lt;&gt;</code> is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.</p>
-<h1><a class="anchor" id="autotoc_md10"></a>
+<h1><a class="anchor" id="autotoc_md11"></a>
 Project Build</h1>
-<p><a href="https://www.cmake.org">CMake</a> is used to create the build files. CMake is free and open-source software. Windows, Linux and other toolchains are supported. <a class="el" href="namespace_example.html" title="The delegate examples namespace.">Example</a> CMake console commands executed inside the project root directory:</p>
-<h2><a class="anchor" id="autotoc_md11"></a>
+<p><a href="https://www.cmake.org">CMake</a> is used to create the build files. CMake is free and open-source software. Windows, Linux and other toolchains are supported. Example CMake console commands executed inside the project root directory:</p>
+<h2><a class="anchor" id="autotoc_md12"></a>
 Windows Visual Studio</h2>
 <p><code>cmake -G "Visual Studio 17 2022" -A Win32 -B build -S .</code></p>
 <p><code>cmake -G "Visual Studio 17 2022" -A x64 -B build -S .</code></p>
@@ -486,23 +496,23 @@ Windows Visual Studio</h2>
 <p>After executed, open the Visual Studio project from within the <code>build</code> directory.</p>
 <p><img src="docs/Figure3.jpg" alt="Figure 3: Visual Studio Build" style="width:100%;" class="inline"/></p>
 <p><b>Figure 3: Visual Studio Build</b></p>
-<h2><a class="anchor" id="autotoc_md12"></a>
+<h2><a class="anchor" id="autotoc_md13"></a>
 Linux Make</h2>
 <p><code>cmake -G "Unix Makefiles" -B build -S .</code></p>
 <p><code>cmake -G "Unix Makefiles" -B build -S . -DENABLE_ALLOCATOR=ON</code></p>
 <p>After executed, build the software from within the <code>build</code> directory using the command <code>make</code>. Run the console app using <code>./DelegateApp</code>.</p>
 <p><img src="docs/Figure4.jpg" alt="Figure 4: Linux Makefile Build" style="width:70%;" class="inline"/></p>
 <p><b>Figure 4: Linux Makefile Build</b></p>
-<h1><a class="anchor" id="autotoc_md13"></a>
+<h1><a class="anchor" id="autotoc_md14"></a>
 Related Repositories</h1>
-<h2><a class="anchor" id="autotoc_md14"></a>
+<h2><a class="anchor" id="autotoc_md15"></a>
 Alternative Implementations</h2>
 <p>Alternative asynchronous implementations similar in concept to C++ delegate.</p>
 <ul>
 <li><a href="https://github.com/endurodave/AsyncCallback">Asynchronous Callbacks in C++</a> - A C++ asynchronous callback framework simplifies passing data between threads.</li>
 <li><a href="https://github.com/endurodave/C_AsyncCallback">Asynchronous Callbacks in C</a> - A C language asynchronous callback framework simplifies passing data between threads.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md15"></a>
+<h2><a class="anchor" id="autotoc_md16"></a>
 Projects Using Delegates</h2>
 <p>Repositories utilizing the delegate library within different multithreaded applications.</p>
 <ul>

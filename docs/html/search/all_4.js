@@ -7,12 +7,8 @@ var searchData=
   ['err_5fno_5fserializer_4',['ERR_NO_SERIALIZER',['../namespace_delegate_lib.html#ab447bf5fb19c4e1b013d45ac81f4f84bafdbb48f8e830dba35bd9fbd08a92e3ce',1,'DelegateLib']]],
   ['err_5fstream_5fempty_5',['ERR_STREAM_EMPTY',['../namespace_delegate_lib.html#ab447bf5fb19c4e1b013d45ac81f4f84ba3d3fe247b631d721c6c8d423f7050f0c',1,'DelegateLib']]],
   ['err_5fstream_5ffail_6',['ERR_STREAM_FAIL',['../namespace_delegate_lib.html#ab447bf5fb19c4e1b013d45ac81f4f84bace6e247bfe3d77b344711311fee24107',1,'DelegateLib']]],
-  ['eventhandler_7',['EventHandler',['../class_example_1_1_event_handler.html',1,'Example']]],
-  ['eventhandlerptr_8',['EventHandlerPtr',['../class_example_1_1_reactor.html#a278e009d792b0bfbd2bea2a1af40b32c',1,'Example::Reactor']]],
-  ['eventtype_9',['EventType',['../namespace_example.html#a138503238c4f38364226c21bf8d00505',1,'Example']]],
-  ['example_10',['Example',['../index.html#autotoc_md7',1,'All Delegate Types Example'],['../index.html#autotoc_md8',1,'Asynchronous API Example'],['../namespace_example.html',1,'Example'],['../index.html#autotoc_md4',1,'Publish/Subscribe Example']]],
-  ['examples_11',['Basic Examples',['../index.html#autotoc_md3',1,'']]],
-  ['execute_12',['execute',['../class_example_1_1_command.html#ab9b81dfa410cb35b8984d3b827f01c49',1,'Example::Command::execute()'],['../class_example_1_1_light_on_command.html#a5f177b39a4fa51bd5bb47fc8b7e1cb0d',1,'Example::LightOnCommand::execute()']]],
-  ['exitthread_13',['ExitThread',['../class_worker_thread.html#ad2c16297b2c663fd39b7026d5dda7d38',1,'WorkerThread']]],
-  ['expired_14',['Expired',['../class_timer.html#a5ab24da76b0875ede34107513ac9cdf6',1,'Timer']]]
+  ['example_7',['Example',['../index.html#autotoc_md8',1,'All Delegate Types Example'],['../index.html#autotoc_md9',1,'Asynchronous API Example'],['../index.html#autotoc_md5',1,'Publish/Subscribe Example']]],
+  ['examples_8',['Basic Examples',['../index.html#autotoc_md4',1,'']]],
+  ['exitthread_9',['ExitThread',['../class_worker_thread.html#ad2c16297b2c663fd39b7026d5dda7d38',1,'WorkerThread']]],
+  ['expired_10',['Expired',['../class_timer.html#a5ab24da76b0875ede34107513ac9cdf6',1,'Timer']]]
 ];

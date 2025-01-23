@@ -27,23 +27,24 @@ var NAVTREE =
   [ "Delegates", "index.html", [
     [ "Asynchronous Delegates in C++", "index.html#autotoc_md0", null ],
     [ "Design Documentation", "index.html#autotoc_md1", null ],
-    [ "Quick Start", "index.html#autotoc_md2", [
-      [ "Basic Examples", "index.html#autotoc_md3", null ],
-      [ "Publish/Subscribe Example", "index.html#autotoc_md4", [
-        [ "Publisher", "index.html#autotoc_md5", null ],
-        [ "Subscriber", "index.html#autotoc_md6", null ]
+    [ "Delegate Library Interfaces", "index.html#autotoc_md2", null ],
+    [ "Quick Start", "index.html#autotoc_md3", [
+      [ "Basic Examples", "index.html#autotoc_md4", null ],
+      [ "Publish/Subscribe Example", "index.html#autotoc_md5", [
+        [ "Publisher", "index.html#autotoc_md6", null ],
+        [ "Subscriber", "index.html#autotoc_md7", null ]
       ] ],
-      [ "All Delegate Types Example", "index.html#autotoc_md7", null ],
-      [ "Asynchronous API Example", "index.html#autotoc_md8", null ]
+      [ "All Delegate Types Example", "index.html#autotoc_md8", null ],
+      [ "Asynchronous API Example", "index.html#autotoc_md9", null ]
     ] ],
-    [ "Delegate Classes", "index.html#autotoc_md9", null ],
-    [ "Project Build", "index.html#autotoc_md10", [
-      [ "Windows Visual Studio", "index.html#autotoc_md11", null ],
-      [ "Linux Make", "index.html#autotoc_md12", null ]
+    [ "Delegate Classes", "index.html#autotoc_md10", null ],
+    [ "Project Build", "index.html#autotoc_md11", [
+      [ "Windows Visual Studio", "index.html#autotoc_md12", null ],
+      [ "Linux Make", "index.html#autotoc_md13", null ]
     ] ],
-    [ "Related Repositories", "index.html#autotoc_md13", [
-      [ "Alternative Implementations", "index.html#autotoc_md14", null ],
-      [ "Projects Using Delegates", "index.html#autotoc_md15", null ]
+    [ "Related Repositories", "index.html#autotoc_md14", [
+      [ "Alternative Implementations", "index.html#autotoc_md15", null ],
+      [ "Projects Using Delegates", "index.html#autotoc_md16", null ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -64,8 +65,6 @@ var NAVTREE =
         [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ],
-        [ "Enumerations", "functions_enum.html", null ],
-        [ "Enumerator", "functions_eval.html", null ],
         [ "Related Symbols", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -74,7 +73,6 @@ var NAVTREE =
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
-        [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
@@ -84,14 +82,12 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_active_object_8cpp.html",
-"class_delegate_lib_1_1_delegate_async_wait_msg.html#ac8ca2d43973ccf4141747494448cd930",
-"class_delegate_lib_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a3c083176824748f380c99f04f4c6c3f3",
-"class_delegate_lib_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ab639313353b5269e652b72883adc5c61",
-"class_delegate_lib_1_1_i_remote_invoker.html#a595b8b7997fd46a3890cb996e721955b",
-"class_example_1_1_consumer.html#a55b6bed2f8088cc183072df888708412",
-"functions_h.html",
-"xmap_8h.html#ae6e99a0ad5b40dd413347112d7049833"
+"_allocator_8cpp.html",
+"class_delegate_lib_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a1539d9effc50d7af8624b05b3ec37139",
+"class_delegate_lib_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#aa26e80dc355d468498afff49fe33762e",
+"class_delegate_lib_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ae589e1362362d65dde18b4d53d3a1fbc",
+"class_delegate_lib_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a63e6c6400891774615483ef099d719d7",
+"functions_u.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

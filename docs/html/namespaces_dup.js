@@ -1,7 +1,6 @@
 var namespaces_dup =
 [
     [ "DelegateLib", "namespace_delegate_lib.html", "namespace_delegate_lib" ],
-    [ "Example", "namespace_example.html", "namespace_example" ],
     [ "Main", "namespace_main.html", "namespace_main" ],
     [ "src_dup", "namespacesrc__dup.html", [
       [ "copy_common_code", "namespacesrc__dup.html#afc752b49e0a83100098f19079eaafef1", null ],

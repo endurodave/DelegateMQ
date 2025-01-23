@@ -8,6 +8,7 @@ var _delegate_remote_8h =
     [ "DelegateLib::DelegateMemberRemote< TClass, RetType(Args...)>", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "class_delegate_lib_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
     [ "DelegateLib::DelegateFunctionRemote< RetType(Args...)>", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html", "class_delegate_lib_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4" ],
     [ "ArgTypeOf", "_delegate_remote_8h.html#a333bcc34658de83355fbbeacded4d26a", null ],
+    [ "DelegateErrorAux", "_delegate_remote_8h.html#a2efc09896d1bddbfd7ae13523c1d1e0d", null ],
     [ "DelegateRemoteId", "_delegate_remote_8h.html#aecc5cacf2e74bfe83d35a32dbce63e92", null ],
     [ "DelegateError", "_delegate_remote_8h.html#ab447bf5fb19c4e1b013d45ac81f4f84b", [
       [ "SUCCESS", "_delegate_remote_8h.html#ab447bf5fb19c4e1b013d45ac81f4f84bad0749aaba8b833466dfcbb0428e4f89c", null ],
