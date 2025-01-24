@@ -59,7 +59,7 @@ include_directories(
 
 if (ENABLE_ALLOCATOR)
 include_directories( 
-    ${CMAKE_SOURCE_DIR}/${DELEGATE_ROOT_DIR}/Allocator
+    ${CMAKE_SOURCE_DIR}/${DELEGATE_ROOT_DIR}/allocator
 )
 endif()
 

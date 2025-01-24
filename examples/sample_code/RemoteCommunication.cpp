@@ -68,7 +68,7 @@ namespace Example
 
     template<typename Arg1, typename... Args>
     void make_serialized(std::ostream& os, Arg1** arg1, Args... args) {
-        static_assert(false, "Pointer-to-pointer argument not supported");
+        static_assert(!std::is_pointer_v<Arg1>, "Pointer-to-pointer argument not supported");
     }
 
     // make_unserialized serializes each remote function argument
@@ -89,7 +89,7 @@ namespace Example
 
     template<typename Arg1, typename... Args>
     void make_unserialized(std::istream& is, Arg1** arg1, Args... args) {
-        static_assert(false, "Pointer-to-pointer argument not supported");
+        static_assert(!std::is_pointer_v<Arg1>, "Pointer-to-pointer argument not supported");
     }
 
     template <class R>

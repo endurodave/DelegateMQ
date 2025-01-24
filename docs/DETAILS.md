@@ -930,7 +930,7 @@ void WorkerThread::Process()
 
 ## `ISerializer`
 
-The `ISerializer` interface is used to serializes argument data for sending to a remote destination endpoint. Each target function built-in or user defined argument is serialized and deserialized based on the system requirements. Custom serialization such as Protocol Buffers (protobuf), MessagePack, or JSON. The `examples` folder contains sample projects.
+The `ISerializer` interface is used to serializes argument data for sending to a remote destination endpoint. Each target function built-in or user defined argument is serialized and deserialized based on the system requirements. Custom serialization such as [MessagePack](https://msgpack.org/index.html). The `examples` folder contains sample projects.
 
 ```cpp
 template <class R>

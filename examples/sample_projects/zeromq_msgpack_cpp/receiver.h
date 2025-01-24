@@ -60,7 +60,7 @@ private:
     void Poll()
     {
         // Get incoming data
-        auto& arg_data = m_transport.Receive();
+        auto arg_data = m_transport.Receive();
 
         // Incoming remote delegate data arrived?
         if (!arg_data.str().empty())

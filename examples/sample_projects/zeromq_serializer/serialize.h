@@ -28,7 +28,6 @@ namespace serialize_traits
     template <typename U>
     struct is_unsupported_container : std::false_type {};
 }
-using namespace serialize_traits;
 
 // Define to enable compile-time checking of unsupported container types
 // Undefine for less compile-time include file dependencies
@@ -43,34 +42,34 @@ using namespace serialize_traits;
 #include <unordered_map>
 
     template <typename U>
-    struct is_unsupported_container<std::multiset<U>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::multiset<U>> : std::true_type {};
 
     template <typename U, typename V>
-    struct is_unsupported_container<std::pair<U, V>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::pair<U, V>> : std::true_type {};
 
     template <typename T, typename Alloc>
-    struct is_unsupported_container<std::deque<T, Alloc>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::deque<T, Alloc>> : std::true_type {};
 
     template <typename T, typename Alloc>
-    struct is_unsupported_container<std::forward_list<T, Alloc>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::forward_list<T, Alloc>> : std::true_type {};
 
     template <typename T, typename Alloc>
-    struct is_unsupported_container<std::priority_queue<T, std::vector<T, Alloc>>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::priority_queue<T, std::vector<T, Alloc>>> : std::true_type {};
 
     template <typename T, typename Alloc>
-    struct is_unsupported_container<std::queue<T, Alloc>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::queue<T, Alloc>> : std::true_type {};
 
     template <typename T, typename Alloc>
-    struct is_unsupported_container<std::stack<T, Alloc>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::stack<T, Alloc>> : std::true_type {};
 
     template <typename T, typename Hash, typename KeyEqual, typename Alloc>
-    struct is_unsupported_container<std::unordered_multiset<T, Hash, KeyEqual, Alloc>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::unordered_multiset<T, Hash, KeyEqual, Alloc>> : std::true_type {};
 
     template <typename Key, typename T, typename Hash, typename KeyEqual, typename Alloc>
-    struct is_unsupported_container<std::unordered_map<Key, T, Hash, KeyEqual, Alloc>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::unordered_map<Key, T, Hash, KeyEqual, Alloc>> : std::true_type {};
 
     template <typename Key, typename T, typename Hash, typename KeyEqual, typename Alloc>
-    struct is_unsupported_container<std::unordered_multimap<Key, T, Hash, KeyEqual, Alloc>> : std::true_type {};
+    struct serialize_traits::is_unsupported_container<std::unordered_multimap<Key, T, Hash, KeyEqual, Alloc>> : std::true_type {};
 #endif  // CHECK_UNSUPPORTED_CONTAINER
 
 /// @brief The serialize class binary serializes and deserializes C++ objects.
@@ -487,7 +486,7 @@ public:
     template<typename T>
     std::istream& read(std::istream& is, T &t_, bool readPrependedType = true)
     {   
-        static_assert(!is_unsupported_container<T>::value, "Unsupported C++ container type");
+        static_assert(!serialize_traits::is_unsupported_container<T>::value, "Unsupported C++ container type");
 
         static_assert(!(std::is_pointer<T>::value &&
             (std::is_arithmetic<typename std::remove_pointer<T>::type>::value ||
@@ -540,7 +539,7 @@ public:
     template<typename T>
     std::ostream& write(std::ostream& os, T &t_, bool prependType = true)
     {
-        static_assert(!is_unsupported_container<T>::value, "Unsupported C++ container type");
+        static_assert(!serialize_traits::is_unsupported_container<T>::value, "Unsupported C++ container type");
 
         static_assert(!(std::is_pointer<T>::value &&
             (std::is_arithmetic<typename std::remove_pointer<T>::type>::value ||
@@ -582,7 +581,7 @@ public:
     template <class T>
     std::ostream& write(std::ostream& os, std::vector<T>& container)
     {
-        static_assert(!is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
+        static_assert(!serialize_traits::is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
 
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::VECTOR);
@@ -605,7 +604,7 @@ public:
     template <class T>
     std::istream& read(std::istream& is, std::vector<T>& container)
     {
-        static_assert(!is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
+        static_assert(!serialize_traits::is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
 
         if (check_stop_parse(is))
             return is;
@@ -717,7 +716,7 @@ public:
     template <class K, class V, class P>
     std::ostream& write(std::ostream& os, std::map<K, V, P>& container)
     {
-        static_assert(!is_shared_ptr<V>::value, "Type V must not be a shared_ptr type");
+        static_assert(!serialize_traits::is_shared_ptr<V>::value, "Type V must not be a shared_ptr type");
 
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::MAP);
@@ -741,7 +740,7 @@ public:
     template <class K, class V, class P>
     std::istream& read(std::istream& is, std::map<K, V, P>& container)
     {
-        static_assert(!is_shared_ptr<V>::value, "Type V must not be a shared_ptr type");
+        static_assert(!serialize_traits::is_shared_ptr<V>::value, "Type V must not be a shared_ptr type");
 
         if (check_stop_parse(is))
             return is;
@@ -858,7 +857,7 @@ public:
     template <class T, class P>
     std::ostream& write(std::ostream& os, std::set<T, P>& container)
     {
-        static_assert(!is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
+        static_assert(!serialize_traits::is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
 
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::SET);
@@ -882,7 +881,7 @@ public:
     template <class T, class P>
     std::istream& read(std::istream& is, std::set<T, P>& container)
     {
-        static_assert(!is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
+        static_assert(!serialize_traits::is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
 
         if (check_stop_parse(is))
             return is;
@@ -991,7 +990,7 @@ public:
     template <class T>
     std::ostream& write(std::ostream& os, std::list<T>& container)
     {
-        static_assert(!is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
+        static_assert(!serialize_traits::is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
 
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::LIST);
@@ -1015,7 +1014,7 @@ public:
     template <class T>
     std::istream& read(std::istream& is, std::list<T>& container)
     {
-        static_assert(!is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
+        static_assert(!serialize_traits::is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
 
         if (check_stop_parse(is))
             return is;

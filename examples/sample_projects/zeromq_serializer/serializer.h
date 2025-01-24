@@ -21,16 +21,6 @@ void make_serialized(serialize& ser, std::ostream& os, Arg1& arg1, Args... args)
     make_serialized(ser, os, args...);
 }
 
-template<typename Arg1, typename... Args>
-void make_serialized(serialize& ser, std::ostream& os, Arg1* arg1, Args... args) {
-    static_assert(false, "Pointer argument not supported");
-}
-
-template<typename Arg1, typename... Args>
-void make_serialized(serialize& ser, std::ostream& os, Arg1** arg1, Args... args) {
-    static_assert(false, "Pointer-to-pointer argument not supported");
-}
-
 // make_unserialized serializes each remote function argument
 template<typename... Ts>
 void make_unserialized(serialize& ser, std::istream& is) { }
@@ -39,16 +29,6 @@ template<typename Arg1, typename... Args>
 void make_unserialized(serialize& ser, std::istream& is, Arg1& arg1, Args... args) {
     ser.read(is, arg1);
     make_unserialized(ser, is, args...);
-}
-
-template<typename Arg1, typename... Args>
-void make_unserialized(serialize& ser, std::istream& is, Arg1* arg1, Args... args) {
-    static_assert(false, "Pointer argument not supported");
-}
-
-template<typename Arg1, typename... Args>
-void make_unserialized(serialize& ser, std::istream& is, Arg1** arg1, Args... args) {
-    static_assert(false, "Pointer-to-pointer argument not supported");
 }
 
 template <class R>

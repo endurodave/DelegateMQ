@@ -423,7 +423,7 @@ public:
             operator()(a1, a2, a3, a4, a5);
         }
         else {
-            static_assert(false, "Too many target function arguments");
+            static_assert(ArgCnt::value <= 5, "Too many target function arguments");
         }
 
         return true;
@@ -882,7 +882,7 @@ public:
             operator()(a1, a2, a3, a4, a5);
         }
         else {
-            static_assert(false, "Too many target function arguments");
+            static_assert(ArgCnt::value <= 5, "Too many target function arguments");
         }
 
         return true;
@@ -1282,7 +1282,7 @@ public:
             operator()(a1, a2, a3, a4, a5);
         }
         else {
-            static_assert(false, "Too many target function arguments");
+            static_assert(ArgCnt::value <= 5, "Too many target function arguments");
         }
 
         return true;

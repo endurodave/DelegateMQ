@@ -52,9 +52,7 @@ public:
             // Subscribe to all messages
             zmq_setsockopt(m_zmq, ZMQ_SUBSCRIBE, "", 0);
         }
-
-        // Allow time for subscribers to connect
-        std::this_thread::sleep_for(std::chrono::seconds(1)); // TODO: move somewhere else
+        return 0;
     }
 
     void Close()
