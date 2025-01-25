@@ -32,7 +32,7 @@ public:
         m_sendDelegate.SetErrorHandler(MakeDelegate(this, &Sender::ErrorHandler));
 
         // Set the transport
-        m_transport.Create(Transport::Type::PUB);
+        m_transport.Create(Transport::Type::PUB, "tcp://*:5555");
         m_dispatcher.SetTransport(&m_transport);
         
         // Create the sender thread

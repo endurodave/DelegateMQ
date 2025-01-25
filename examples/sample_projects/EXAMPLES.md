@@ -24,7 +24,7 @@ A [ZeroMQ](https://github.com/zeromq) integrated with remote delegates example. 
 
 # ZeroMQ and serialize
 
-A ZeroMQ and `serialize` integrated with remote delegates example. Think of `serialize` a MessagePack-lite. See `zeromq_serializer` directory.
+A ZeroMQ and `serialize` integrated with remote delegates example. Think of `serialize` a MessagePack-lite (one header file). See `zeromq_serializer` directory.
 
 | Interface | Interface Implementation |
 | --- | --- |

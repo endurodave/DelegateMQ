@@ -49,27 +49,13 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/example/sample_code
 )
 
-if (ENABLE_ALLOCATOR)
-include_directories( 
-    ${CMAKE_SOURCE_DIR}/src/Allocator
-)
-endif()
-
 # Add an executable target
 add_executable(delegate_app ${SOURCES} ${Delegate_HEADERS})
-
-if (ENABLE_ALLOCATOR)
-    add_compile_definitions(USE_ALLOCATOR)
-endif()
 
 # Add subdirectories to build
 add_subdirectory(src/port)
 add_subdirectory(tests/unit_tests)
 add_subdirectory(examples/sample_code)
-
-if (ENABLE_ALLOCATOR)
-    add_subdirectory(src/allocator)
-endif()
 
 target_link_libraries(delegate_app PRIVATE 
     port_lib
@@ -78,8 +64,9 @@ target_link_libraries(delegate_app PRIVATE
 )
 
 if (ENABLE_ALLOCATOR)
-    target_link_libraries(delegate_app PRIVATE 
-        allocator_lib
-)
+    include_directories(${CMAKE_SOURCE_DIR}/src/allocator)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/allocator ${CMAKE_BINARY_DIR}/allocator)
+    target_link_libraries(delegate_app PRIVATE allocator_lib)
+    add_compile_definitions(USE_ALLOCATOR)
 endif()
 

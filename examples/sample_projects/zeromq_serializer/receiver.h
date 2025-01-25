@@ -29,7 +29,7 @@ public:
         m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, id);
 
         // Set the transport
-        m_transport.Create(Transport::Type::SUB);
+        m_transport.Create(Transport::Type::SUB, "tcp://localhost:5555");
 
         // Create the receiver thread
         m_thread.CreateThread();

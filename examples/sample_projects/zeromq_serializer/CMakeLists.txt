@@ -10,19 +10,23 @@ cmake_minimum_required(VERSION 3.10)
 # Project name and language (C or C++)
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
-set(DELEGATE_ROOT_DIR "../../../src")
+# Root directory for delegate library source code
+set(DELEGATE_ROOT_DIR "${CMAKE_SOURCE_DIR}/../../../src")
+if(NOT EXISTS "${DELEGATE_ROOT_DIR}")
+    message(FATAL_ERROR "${DELEGATE_ROOT_DIR} Directory does not exist. Update DELEGATE_ROOT_DIR to the correct directory.")
+endif()
 
-# Path to the vcpkg directory (for ZeroMQ library)
+# Include directory for MessagePack C++ library 
+# https://github.com/msgpack/msgpack-c/tree/cpp_master
+set(MSGPACK_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/../../../../msgpack-c/include")
+if(NOT EXISTS "${MSGPACK_INCLUDE_DIR}")
+    message(FATAL_ERROR "${MSGPACK_INCLUDE_DIR} Directory does not exist. Update MSGPACK_INCLUDE_DIR to the correct msgpack-c/include directory.")
+endif()
+
+# Path to the vcpkg directory for support libraries (e.g. ZeroMQ)
 set(VCPKG_ROOT_DIR "../../../../vcpkg/installed/x64-windows")
-set(VCPKG_BIN_DIR "${VCPKG_ROOT_DIR}/bin")
-set(VCPKG_LIB_DIR "${VCPKG_ROOT_DIR}/lib")
-set(VCPKG_INCLUDE_DIR "${VCPKG_ROOT_DIR}/include")
-
-# Check if the file exists
-if(EXISTS "${VCPKG_LIB_DIR}/czmq.lib")
-    message(STATUS "File czmq.lib exists!")
-else()
-    message(FATAL_ERROR "File czmq.lib does NOT exist! Check VCPKG_ROOT_DIR path.")
+if(NOT EXISTS "${VCPKG_ROOT_DIR}")
+    message(FATAL_ERROR "${VCPKG_ROOT_DIR} Directory does not exist. Update VCPKG_ROOT_DIR to the correct directory.")
 endif()
 
 # Set C++ standard 
@@ -34,63 +38,39 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
 
 # Collect all header files in the src/Delegate directory
-file(GLOB Delegate_HEADERS "${CMAKE_SOURCE_DIR}/${DELEGATE_ROOT_DIR}/delegate/*.h")
+file(GLOB Delegate_HEADERS "${DELEGATE_ROOT_DIR}/delegate/*.h")
 
 # Organize Delegate headers into a "Delegate Files" folder in Visual Studio
 source_group("Delegate Files" FILES ${Delegate_HEADERS})
 
-# Check if the TEST_COVERAGE argument is passed
-option(TEST_COVERAGE "Enable code coverage" OFF)
-
-if(TEST_COVERAGE)
-  message(STATUS "Code coverage is enabled")
-
-  # Add coverage flags for GCC/Clang compilers
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage -fprofile-update=atomic")
-  set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -fprofile-update=atomic")
-endif()
-
 # Add subdirectories to include path
 include_directories( 
-    ${VCPKG_INCLUDE_DIR}
-    ${CMAKE_SOURCE_DIR}/${DELEGATE_ROOT_DIR}/delegate
-    ${CMAKE_SOURCE_DIR}/${DELEGATE_ROOT_DIR}/port
+    ${VCPKG_ROOT_DIR}/include
+    ${MSGPACK_INCLUDE_DIR}
+    ${DELEGATE_ROOT_DIR}/delegate
+    ${DELEGATE_ROOT_DIR}/port
 )
-
-if (ENABLE_ALLOCATOR)
-include_directories( 
-    ${CMAKE_SOURCE_DIR}/${DELEGATE_ROOT_DIR}/allocator
-)
-endif()
 
 # Add an executable target
 add_executable(delegate_app ${SOURCES} ${Delegate_HEADERS})
 
-if (ENABLE_ALLOCATOR)
-    add_compile_definitions(USE_ALLOCATOR)
-endif()
-
 # Add subdirectories to build
 add_subdirectory(${DELEGATE_ROOT_DIR}/port ${CMAKE_BINARY_DIR}/port)
 
-if (ENABLE_ALLOCATOR)
-    add_subdirectory(${DELEGATE_ROOT_DIR}/allocator ${CMAKE_BINARY_DIR}/allocator)
-endif()
-
 target_link_libraries(delegate_app PRIVATE 
-    ../${VCPKG_LIB_DIR}/czmq
-    ../${VCPKG_LIB_DIR}/libzmq-mt-4_3_5
+    ../${VCPKG_ROOT_DIR}/lib/libzmq-mt-4_3_5
     port_lib
 )
 
 if (ENABLE_ALLOCATOR)
-    target_link_libraries(delegate_app PRIVATE 
-        allocator_lib
-)
+    include_directories(${DELEGATE_ROOT_DIR}/allocator)
+    add_subdirectory(${DELEGATE_ROOT_DIR}/allocator ${CMAKE_BINARY_DIR}/allocator)
+    target_link_libraries(delegate_app PRIVATE allocator_lib)
+    add_compile_definitions(USE_ALLOCATOR)
 endif()
 
-# Get all .dll files in the vcpkg bin directory
-file(GLOB ZMQ_BIN_FILES "${VCPKG_BIN_DIR}/*.dll" "${VCPKG_BIN_DIR}/*.pdb")
+# Get .dll files in the vcpkg bin directory
+file(GLOB ZMQ_BIN_FILES "${VCPKG_ROOT_DIR}/bin/libzmq*.dll" "${VCPKG_ROOT_DIR}/bin/libzmq*.pdb")
 
 # Copy each DLL file to the build output directory
 foreach(DLL_FILE ${ZMQ_BIN_FILES})
