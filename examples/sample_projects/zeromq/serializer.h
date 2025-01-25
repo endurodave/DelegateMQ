@@ -9,6 +9,7 @@
 /// operators. 
 
 #include <iostream>
+#include "ISerializer.h"
 
 // make_serialized serializes each remote function argument
 template<typename... Ts>
@@ -57,7 +58,7 @@ struct Serializer; // Not defined
 
 // Serialize all target function argument data
 template<class RetType, class... Args>
-class Serializer<RetType(Args...)> : public ISerializer<RetType(Args...)>
+class Serializer<RetType(Args...)> : public DelegateLib::ISerializer<RetType(Args...)>
 {
 public:
     virtual std::ostream& write(std::ostream& os, Args... args) override {

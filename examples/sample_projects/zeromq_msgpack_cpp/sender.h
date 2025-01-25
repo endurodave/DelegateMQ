@@ -10,6 +10,7 @@
 #include "Timer.h"
 #include "dispatcher.h"
 #include "serializer.h"
+#include "transport.h"
 #include "data.h"
 
 using namespace DelegateLib;

@@ -8,6 +8,7 @@
 /// Example of serializer relying upon the serialize class to binary serialize
 /// complex data objects including build-in and user defined data types.
 
+#include "ISerializer.h"
 #include "serialize.h"
 #include <iostream>
 
@@ -36,7 +37,7 @@ struct Serializer; // Not defined
 
 // Serialize all target function argument data
 template<class RetType, class... Args>
-class Serializer<RetType(Args...)> : public ISerializer<RetType(Args...)>
+class Serializer<RetType(Args...)> : public DelegateLib::ISerializer<RetType(Args...)>
 {
 public:
     virtual std::ostream& write(std::ostream& os, Args... args) override {

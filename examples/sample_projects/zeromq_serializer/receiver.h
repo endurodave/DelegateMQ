@@ -9,6 +9,8 @@
 
 #include "DelegateLib.h"
 #include "WorkerThreadStd.h"
+#include "serialize.h"
+#include "transport.h"
 #include "Timer.h"
 #include "data.h"
 

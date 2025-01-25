@@ -27,9 +27,18 @@ public:
     }
 
     // Send argument data to the transport
-    virtual int Dispatch(std::ostream& os) 
+    virtual int Dispatch(std::ostream& os, DelegateLib::DelegateRemoteId id) 
     {
         std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+
+        // Prepend marker (0x55AA as a short)
+        const short MARKER = 0x55AA;
+        ss.write(reinterpret_cast<const char*>(&MARKER), sizeof(MARKER));
+
+        // Prepend DelegateRemoteId
+        ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
+
+        // insert delegate arguments
         ss << os.rdbuf();
         if (m_transport)
             m_transport->Send(ss);

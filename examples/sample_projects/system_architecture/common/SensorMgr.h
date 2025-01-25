@@ -1,28 +1,22 @@
-#ifndef RECEIVER_H
-#define RECEIVER_H
+#ifndef SENSOR_MGR_H
+#define SENSOR_MGR_H
 
-/// @file main.cpp
+/// @file
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
-/// 
-/// @brief ZeroMQ with remote delegates examples. 
 
 #include "DelegateLib.h"
 #include "WorkerThreadStd.h"
-#include "serializer.h"
-#include "transport.h"
-#include "Timer.h"
-#include "data.h"
 
 using namespace DelegateLib;
 using namespace std;
 
 /// @brief Receiver receives data from the Sender.
-class Receiver
+class SensorMgr
 {
 public:
-    Receiver(DelegateRemoteId id) :
-        m_thread("Receiver"),
+    SensorMgr() :
+        m_thread("SensorMgr"),
         m_argStream(ios::in | ios::out | ios::binary)
     {
         // Set the delegate interfaces
@@ -37,7 +31,7 @@ public:
         m_thread.CreateThread();
     }
 
-    ~Receiver()
+    ~SensorMgr()
     {
         m_thread.ExitThread();
         m_recvDelegate = nullptr;

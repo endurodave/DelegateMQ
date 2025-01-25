@@ -52,10 +52,6 @@
 
 namespace DelegateLib {
 
-// Remote identifier shared between sender and receiver remotes
-typedef int DelegateRemoteId;
-const int INVALID_REMOTE_ID = -1;
-
 enum class DelegateError {
     SUCCESS = 0,
     ERR_STREAM_FAIL = 1,
@@ -299,7 +295,7 @@ public:
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
-                        int error = m_dispatcher->Dispatch(*m_stream);
+                        int error = m_dispatcher->Dispatch(*m_stream, m_id);
                         if (error)
                             RaiseError(DelegateError::ERR_DISPATCH_ERROR, error);
                     }
@@ -758,7 +754,7 @@ public:
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
-                        int error = m_dispatcher->Dispatch(*m_stream);
+                        int error = m_dispatcher->Dispatch(*m_stream, m_id);
                         if (error)
                             RaiseError(DelegateError::ERR_DISPATCH_ERROR, error);
                     }
@@ -1158,7 +1154,7 @@ public:
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
-                        int error = m_dispatcher->Dispatch(*m_stream);
+                        int error = m_dispatcher->Dispatch(*m_stream, m_id);
                         if (error)
                             RaiseError(DelegateError::ERR_DISPATCH_ERROR, error);
                     }

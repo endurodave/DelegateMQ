@@ -6,10 +6,11 @@
 /// David Lafreniere, 2025.
 
 #include "transport.h"
+#include "IDispatcher.h"
 #include <sstream>
 
 /// @brief Dispatcher sends data to the transport for transmission to the endpoint.
-class Dispatcher : public IDispatcher
+class Dispatcher : public DelegateLib::IDispatcher
 {
 public:
     Dispatcher() = default;

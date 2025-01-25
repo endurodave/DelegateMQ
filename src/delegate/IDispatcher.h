@@ -3,8 +3,13 @@
 
 /// @file
 /// @brief Delegate dispatcher interface class. 
+/// 
 
 namespace DelegateLib {
+
+// Remote identifier shared between sender and receiver remotes
+typedef int DelegateRemoteId;
+const int INVALID_REMOTE_ID = -1;
 
 /// @brief Delegate interface class to dispatch serialized function argument data
 /// to a remote destination. Implemented by the application if using remote delegates.
@@ -22,7 +27,8 @@ public:
     /// for sending the bytes over a communication transport (UDP, TCP, shared memory, 
     /// serial, ...). 
     /// @param[in] os An outgoing stream to send to the remote destination.
-    virtual int Dispatch(std::ostream& os) = 0;
+    /// @param[in] id The unique delegate identifier shared between sender and receiver.
+    virtual int Dispatch(std::ostream& os, DelegateRemoteId id) = 0;
 };
 
 }
