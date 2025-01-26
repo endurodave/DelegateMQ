@@ -56,15 +56,11 @@ include_directories(
     ${DELEGATE_ROOT_DIR}/delegate-mq/predef/util
     ${DELEGATE_ROOT_DIR}/delegate-mq/predef/dispatcher
     ${DELEGATE_ROOT_DIR}/delegate-mq/predef/transport/msgpack
+    ${DELEGATE_ROOT_DIR}/delegate-mq/predef/os/stdlib
+    ${DELEGATE_ROOT_DIR}/delegate-mq/predef/serialize/msgpack
     ${VCPKG_ROOT_DIR}/include
     ${MSGPACK_INCLUDE_DIR}
 )
-
-add_compile_definitions(STDTHREAD_THREAD)
-include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/os/stdlib)
-
-add_compile_definitions(MSGSPACK_SERIALIZE)
-include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/serialize/msgpack)
 
 # Add an executable target
 add_executable(delegate_server_app ${SOURCES} ${Delegate_HEADERS})
@@ -90,8 +86,8 @@ target_link_libraries(delegate_server_app PRIVATE
 )
 
 if (ENABLE_ALLOCATOR)
-    include_directories(${DELEGATE_ROOT_DIR}/allocator)
-    add_subdirectory(${DELEGATE_ROOT_DIR}/allocator ${CMAKE_BINARY_DIR}/allocator)
+    include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/allocator)
+    add_subdirectory(${DELEGATE_ROOT_DIR}//delegate-mq/predef/allocator ${CMAKE_BINARY_DIR}/allocator)
     target_link_libraries(delegate_server_app PRIVATE allocator_lib)
     add_compile_definitions(USE_ALLOCATOR)
 endif()

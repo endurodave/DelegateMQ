@@ -78,7 +78,7 @@ private:
         ASSERT_TRUE(0);
     }
 
-    WorkerThread m_thread;
+    Thread m_thread;
     Timer m_sendTimer;
 
     xostringstream m_argStream;

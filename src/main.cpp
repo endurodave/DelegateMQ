@@ -33,7 +33,7 @@ using namespace std::chrono;
 /// The main file examples namespace
 namespace Main
 {
-    WorkerThread workerThread1("WorkerThread1");
+    Thread workerThread1("WorkerThread1");
 
     /// @brief Test client to get callbacks from SysData::SystemModeChangedDelgate and 
     /// SysDataNoLock::SystemModeChangedDelegate

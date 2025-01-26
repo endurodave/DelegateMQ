@@ -14,14 +14,14 @@
 
 class ThreadMsg;
 
-class WorkerThread : public DelegateLib::IThread
+class Thread : public DelegateLib::IThread
 {
 public:
 	/// Constructor
-	WorkerThread(const std::string& threadName);
+	Thread(const std::string& threadName);
 
 	/// Destructor
-	~WorkerThread();
+	~Thread();
 
 	/// Called once to create the worker thread
 	/// @return TRUE if thread is created. FALSE otherise. 
@@ -45,8 +45,8 @@ public:
 	virtual void DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> msg);
 
 private:
-	WorkerThread(const WorkerThread&) = delete;
-	WorkerThread& operator=(const WorkerThread&) = delete;
+	Thread(const Thread&) = delete;
+	Thread& operator=(const Thread&) = delete;
 
 	/// Entry point for the thread
 	void Process();

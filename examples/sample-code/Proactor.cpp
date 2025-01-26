@@ -61,7 +61,7 @@ namespace Example
         }
 
         // Private thread
-        WorkerThread m_fileThread;
+        Thread m_fileThread;
     };
 
     // Concrete handler class that processes the completion of the operation

@@ -19,12 +19,12 @@
 /// @param[in] timeout - the time to wait for invoke to complete
 /// @param[in] args - the function argument(s) passed to func
 template <class Func, class... Args>
-auto AsyncInvoke(Func func, WorkerThread& thread, const std::chrono::milliseconds& timeout, Args&&... args) {
+auto AsyncInvoke(Func func, Thread& thread, const std::chrono::milliseconds& timeout, Args&&... args) {
     // Deduce return type of func
     using RetType = decltype(func(std::forward<Args>(args)...));
 
     // Is the calling function executing on the requested thread?
-    if (thread.GetThreadId() != WorkerThread::GetCurrentThreadId()) {
+    if (thread.GetThreadId() != Thread::GetCurrentThreadId()) {
         // Create a delegate that points to func to invoke on thread
         auto delegate = DelegateLib::MakeDelegate(func, thread, timeout);
 
@@ -59,12 +59,12 @@ auto AsyncInvoke(Func func, WorkerThread& thread, const std::chrono::millisecond
 /// @param[in] timeout - the time to wait for invoke to complete
 /// @param[in] args - the function argument(s) passed to func
 template <class TClass, class Func, class... Args>
-auto AsyncInvoke(TClass tclass, Func func, WorkerThread& thread, const std::chrono::milliseconds& timeout, Args&&... args) {
+auto AsyncInvoke(TClass tclass, Func func, Thread& thread, const std::chrono::milliseconds& timeout, Args&&... args) {
     // Deduce return type of func
     using RetType = decltype((tclass->*func)(std::forward<Args>(args)...));
 
     // Is the calling function executing on the requested thread?
-    if (thread.GetThreadId() != WorkerThread::GetCurrentThreadId()) {
+    if (thread.GetThreadId() != Thread::GetCurrentThreadId()) {
         // Create a delegate that points to func to invoke on thread
         auto delegate = DelegateLib::MakeDelegate(tclass, func, thread, timeout);
 

@@ -16,7 +16,7 @@ using namespace std;
 
 namespace Example
 {
-    static WorkerThread comm_thread("CommunicationThread");
+    static Thread comm_thread("CommunicationThread");
     static bool _mode = false;
 
     // Private implementation function only called on comm_thread.
@@ -64,7 +64,7 @@ namespace Example
 
         // Alternate async API implementation style all within the public function
         size_t SendDataV2(const std::string& data) {
-            if (comm_thread.GetThreadId() != WorkerThread::GetCurrentThreadId())
+            if (comm_thread.GetThreadId() != Thread::GetCurrentThreadId())
                 return MakeDelegate(this, &Communication::SendDataV2, comm_thread, WAIT_INFINITE)(data);
 
             std::this_thread::sleep_for(std::chrono::seconds(2));  // Simulate sending

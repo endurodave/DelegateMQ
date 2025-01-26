@@ -55,15 +55,11 @@ include_directories(
     ${DELEGATE_ROOT_DIR}/delegate-mq/predef/util
     ${DELEGATE_ROOT_DIR}/delegate-mq/predef/dispatcher
     ${DELEGATE_ROOT_DIR}/delegate-mq/predef/transport/msgpack
+    ${DELEGATE_ROOT_DIR}/delegate-mq/predef/os/stdlib
+    ${DELEGATE_ROOT_DIR}/delegate-mq/predef/serialize/serialize
     ${VCPKG_ROOT_DIR}/include
     ${MSGPACK_INCLUDE_DIR}
 )
-
-add_compile_definitions(STDTHREAD_THREAD)
-include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/os/stdlib)
-
-add_compile_definitions(MSGSERIALIZE_SERIALIZE)
-include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/serialize/serialize)
 
 # Add an executable target
 add_executable(delegate_app ${SOURCES} ${Delegate_HEADERS})

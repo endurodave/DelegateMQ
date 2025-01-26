@@ -14,7 +14,7 @@ using namespace std;
 
 namespace Example
 {
-    static WorkerThread comm_thread("CommunicationThread");
+    static Thread comm_thread("CommunicationThread");
 
     // Assume send_data() is not thread-safe and may only be called on comm_thread context.
     // A random std::async thread from the pool is unacceptable and causes cross-threading.

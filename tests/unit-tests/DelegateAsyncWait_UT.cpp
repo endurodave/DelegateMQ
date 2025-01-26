@@ -9,7 +9,7 @@ using namespace DelegateLib;
 using namespace std;
 using namespace UnitTestData;
 
-static WorkerThread workerThread("DelegateAsyncWait_UT");
+static Thread workerThread("DelegateAsyncWait_UT");
 
 namespace AsyncWait
 {

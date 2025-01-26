@@ -47,34 +47,16 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/predef/os
     ${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/predef/serialize
     ${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/predef/util
+    ${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/predef/os/stdlib
+    ${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/predef/serialize/serialize
 )
-
-add_compile_definitions(STDTHREAD_THREAD)
-include_directories(${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/predef/os/stdlib)
-
-add_compile_definitions(MSGSERIALIZE_SERIALIZE)
-include_directories(${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/predef/serialize/serialize)
-
-if (ENABLE_ALLOCATOR)
-include_directories( 
-    ${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/allocator
-)
-endif()
 
 # Add an executable target
 add_executable(delegate_app ${SOURCES} ${Delegate_HEADERS})
 
-if (ENABLE_ALLOCATOR)
-    add_compile_definitions(USE_ALLOCATOR)
-endif()
-
 # Add subdirectories to build
 add_subdirectory(../../../src/delegate-mq/predef/os "${CMAKE_BINARY_DIR}/predef/os")
 add_subdirectory(../../../src/delegate-mq/predef/util "${CMAKE_BINARY_DIR}/predef/util")
-
-if (ENABLE_ALLOCATOR)
-    add_subdirectory(../../../src/delegate-mq/allocator ${CMAKE_BINARY_DIR}/allocator)
-endif()
 
 target_link_libraries(delegate_app PRIVATE 
     os_lib
@@ -82,8 +64,9 @@ target_link_libraries(delegate_app PRIVATE
 )
 
 if (ENABLE_ALLOCATOR)
-    target_link_libraries(delegate_app PRIVATE 
-        allocator_lib
-)
+    include_directories(${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/predef/allocator)
+    add_subdirectory( ${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/predef/allocator ${CMAKE_BINARY_DIR}/allocator)
+    target_link_libraries(delegate_server_app PRIVATE allocator_lib)
+    add_compile_definitions(USE_ALLOCATOR)
 endif()
 

@@ -80,7 +80,7 @@ private:
     }
 
     DelegateRemoteId m_id;
-    WorkerThread m_thread;
+    Thread m_thread;
     Timer m_recvTimer;
 
     xostringstream m_argStream;

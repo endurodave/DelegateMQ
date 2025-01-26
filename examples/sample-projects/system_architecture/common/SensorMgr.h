@@ -6,7 +6,7 @@
 /// David Lafreniere, 2025.
 
 #include "DelegateLib.h"
-#include "WorkerThreadStd.h"
+#include "Thread.h"
 
 using namespace DelegateLib;
 using namespace std;
@@ -72,7 +72,7 @@ private:
         cout << data.msg << " " << data.dataPoints[0].y << " " << data.dataPoints[0].y << endl;
     }
 
-    WorkerThread m_thread;
+    Thread m_thread;
     Timer m_recvTimer;
 
     xostringstream m_argStream;

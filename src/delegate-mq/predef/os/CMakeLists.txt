@@ -1,5 +1,5 @@
 
-file(GLOB SUBDIR_SOURCES "*.h" "stdlib/*.h" "stdlib/*.cpp")
+file(GLOB SUBDIR_SOURCES "stdlib/*.h" "stdlib/*.cpp")
 
 # Create a library target
 add_library(os_lib STATIC ${SUBDIR_SOURCES})

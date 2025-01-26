@@ -8,7 +8,7 @@
 /// @brief ZeroMQ with remote delegates examples. 
 
 #include "DelegateLib.h"
-#include "WorkerThreadStd.h"
+#include "Thread.h"
 #include "serializer.h"
 #include "transport.h"
 #include "Timer.h"
@@ -78,7 +78,7 @@ private:
         cout << data.msg << " " << data.dataPoints[0].y << " " << data.dataPoints[0].y << endl;
     }
 
-    WorkerThread m_thread;
+    Thread m_thread;
     Timer m_recvTimer;
 
     xostringstream m_argStream;

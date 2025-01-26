@@ -5,7 +5,7 @@
 
 #include "CountdownLatch.h"
 #include "DelegateLib.h"
-#include "WorkerThreadStd.h"
+#include "Thread.h"
 #include <iostream>
 #include <chrono>
 #include <latch>
@@ -15,7 +15,7 @@ using namespace std;
 
 namespace Example
 {
-    // Process is always called by a WorkerThread instance, not a std::thread
+    // Process is always called by a Thread instance, not a std::thread
     // from the thread pool.
     static void process(int id, std::latch& startLatch) {
         startLatch.wait();  // Wait until all threads are ready to start
@@ -33,11 +33,11 @@ namespace Example
         std::latch startLatch(numThreads);  // Wait for 3 threads
 
         // Create worker threads
-        WorkerThread wt1("Thread1");
+        Thread wt1("Thread1");
         wt1.CreateThread();
-        WorkerThread wt2("Thread2");
+        Thread wt2("Thread2");
         wt2.CreateThread();
-        WorkerThread wt3("Thread3");
+        Thread wt3("Thread3");
         wt3.CreateThread();
 
         // Create async blocking delegates

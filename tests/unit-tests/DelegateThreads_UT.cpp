@@ -10,8 +10,8 @@ using namespace DelegateLib;
 using namespace std;
 using namespace UnitTestData;
 
-static WorkerThread workerThread1("DelegateThreads1_UT");
-static WorkerThread workerThread2("DelegateThreads2_UT");
+static Thread workerThread1("DelegateThreads1_UT");
+static Thread workerThread2("DelegateThreads2_UT");
 
 static std::mutex m_lock;
 static const int LOOPS = 10;

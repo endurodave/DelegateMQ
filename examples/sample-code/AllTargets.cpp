@@ -15,7 +15,7 @@ using namespace std;
 
 namespace Example
 {
-    static WorkerThread workerThread1("AllTargets");
+    static Thread workerThread1("AllTargets");
 
     static int callCnt = 0;
 

@@ -27,7 +27,7 @@ namespace Example
         /// Process data from any producer
         void Process(int data) {
             // Is the producer executing on m_thread?
-            if (m_thread.GetThreadId() != WorkerThread::GetCurrentThreadId()) {
+            if (m_thread.GetThreadId() != Thread::GetCurrentThreadId()) {
                 // Reinvoke Process() on m_thread; non-blocking call (caller does not wait)
                 MakeDelegate(this, &Consumer::Process, m_thread).AsyncInvoke(data);
                 return;
@@ -37,7 +37,7 @@ namespace Example
 
     private:
         /// Consumer worker thread
-        WorkerThread m_thread;
+        Thread m_thread;
     };
 
     /// @brief Produce data for the consumer

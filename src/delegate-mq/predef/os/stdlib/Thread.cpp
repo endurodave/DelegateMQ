@@ -15,16 +15,16 @@ using namespace DelegateLib;
 #define MSG_TIMER				3
 
 //----------------------------------------------------------------------------
-// WorkerThread
+// Thread
 //----------------------------------------------------------------------------
-WorkerThread::WorkerThread(const std::string& threadName) : m_thread(nullptr), m_timerExit(false), THREAD_NAME(threadName)
+Thread::Thread(const std::string& threadName) : m_thread(nullptr), m_timerExit(false), THREAD_NAME(threadName)
 {
 }
 
 //----------------------------------------------------------------------------
-// ~WorkerThread
+// ~Thread
 //----------------------------------------------------------------------------
-WorkerThread::~WorkerThread()
+Thread::~Thread()
 {
 	ExitThread();
 }
@@ -32,11 +32,11 @@ WorkerThread::~WorkerThread()
 //----------------------------------------------------------------------------
 // CreateThread
 //----------------------------------------------------------------------------
-bool WorkerThread::CreateThread()
+bool Thread::CreateThread()
 {
 	if (!m_thread)
 	{
-		m_thread = std::unique_ptr<std::thread>(new thread(&WorkerThread::Process, this));
+		m_thread = std::unique_ptr<std::thread>(new thread(&Thread::Process, this));
 
 #ifdef WIN32
 		// Get the thread's native Windows handle
@@ -57,7 +57,7 @@ bool WorkerThread::CreateThread()
 //----------------------------------------------------------------------------
 // GetThreadId
 //----------------------------------------------------------------------------
-std::thread::id WorkerThread::GetThreadId()
+std::thread::id Thread::GetThreadId()
 {
 	if (m_thread == nullptr)
 		throw std::invalid_argument("Thread pointer is null");
@@ -68,7 +68,7 @@ std::thread::id WorkerThread::GetThreadId()
 //----------------------------------------------------------------------------
 // GetCurrentThreadId
 //----------------------------------------------------------------------------
-std::thread::id WorkerThread::GetCurrentThreadId()
+std::thread::id Thread::GetCurrentThreadId()
 {
 	return this_thread::get_id();
 }
@@ -76,7 +76,7 @@ std::thread::id WorkerThread::GetCurrentThreadId()
 //----------------------------------------------------------------------------
 // GetQueueSize
 //----------------------------------------------------------------------------
-size_t WorkerThread::GetQueueSize()
+size_t Thread::GetQueueSize()
 {
 	lock_guard<mutex> lock(m_mutex);
 	return m_queue.size();
@@ -85,7 +85,7 @@ size_t WorkerThread::GetQueueSize()
 //----------------------------------------------------------------------------
 // ExitThread
 //----------------------------------------------------------------------------
-void WorkerThread::ExitThread()
+void Thread::ExitThread()
 {
 	if (!m_thread)
 		return;
@@ -107,7 +107,7 @@ void WorkerThread::ExitThread()
 //----------------------------------------------------------------------------
 // DispatchDelegate
 //----------------------------------------------------------------------------
-void WorkerThread::DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> msg)
+void Thread::DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> msg)
 {
 	if (m_thread == nullptr)
 		throw std::invalid_argument("Thread pointer is null");
@@ -124,7 +124,7 @@ void WorkerThread::DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> ms
 //----------------------------------------------------------------------------
 // TimerThread
 //----------------------------------------------------------------------------
-void WorkerThread::TimerThread()
+void Thread::TimerThread()
 {
     while (!m_timerExit)
     {
@@ -142,10 +142,10 @@ void WorkerThread::TimerThread()
 //----------------------------------------------------------------------------
 // Process
 //----------------------------------------------------------------------------
-void WorkerThread::Process()
+void Thread::Process()
 {
     m_timerExit = false;
-    std::thread timerThread(&WorkerThread::TimerThread, this);
+    std::thread timerThread(&Thread::TimerThread, this);
 
 	while (1)
 	{

@@ -21,7 +21,7 @@ namespace Example
 
         void SetValue(double v) {
             // Is caller executing on m_thread?
-            if (m_thread.GetThreadId() != WorkerThread::GetCurrentThreadId())
+            if (m_thread.GetThreadId() != Thread::GetCurrentThreadId())
             {
                 // Create an asynchronous delegate and reinvoke the function call on m_thread
                 MakeDelegate(this, &ActiveObject::SetValue, m_thread).AsyncInvoke(v);
@@ -34,7 +34,7 @@ namespace Example
 
         double GetValue() {
             // Is caller executing on m_thread?
-            if (m_thread.GetThreadId() != WorkerThread::GetCurrentThreadId())
+            if (m_thread.GetThreadId() != Thread::GetCurrentThreadId())
             {
                 // Create an asynchronous delegate and reinvoke the function call on m_thread
                 return MakeDelegate(this, &ActiveObject::GetValue, m_thread, WAIT_INFINITE)();
@@ -53,7 +53,7 @@ namespace Example
         double m_value = 0.0;
 
         // Object has an internal thread
-        WorkerThread m_thread;
+        Thread m_thread;
     };
 
 

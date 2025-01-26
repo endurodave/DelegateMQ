@@ -51,7 +51,7 @@ namespace Example
     // A simple class that demonstrates property binding
     class PropertyBinding {
     private:
-        WorkerThread workerThread;
+        Thread workerThread;
         Property property1;
         Property property2;
         Property property3;

@@ -8,7 +8,7 @@
 
 using namespace DelegateLib;
 
-WorkerThread testThread("DelegateUnitTestsThread");
+Thread testThread("DelegateUnitTestsThread");
 
 static const int TEST_INT  = 12345678;
 

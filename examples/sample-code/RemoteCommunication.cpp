@@ -175,7 +175,7 @@ namespace Example
         }
 
     private:
-        WorkerThread m_thread;
+        Thread m_thread;
         Timer m_sendTimer;
 
         xostringstream m_args;
@@ -235,7 +235,7 @@ namespace Example
         }
 
     private:
-        WorkerThread m_thread;
+        Thread m_thread;
         Timer m_recvTimer;
 
         xostringstream m_args;

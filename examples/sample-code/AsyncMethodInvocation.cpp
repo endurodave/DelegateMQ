@@ -23,7 +23,7 @@ namespace Example
     class AsyncExample {
     private:
         // Async APIs use workerThread for execution context
-        WorkerThread workerThread;
+        Thread workerThread;
 
     public:
         AsyncExample() : workerThread("AsyncExample") {

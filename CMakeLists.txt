@@ -59,10 +59,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/example/sample-code
 )
 
-add_compile_definitions(STDTHREAD_THREAD)
 include_directories(${CMAKE_SOURCE_DIR}/src/delegate-mq/predef/os/stdlib)
-
-add_compile_definitions(MSGSERIALIZE_SERIALIZE)
 include_directories(${CMAKE_SOURCE_DIR}/src/delegate-mq/predef/serialize/serialize)
 
 # Add an executable target

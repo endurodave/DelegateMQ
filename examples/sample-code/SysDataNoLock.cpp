@@ -1,7 +1,7 @@
 #include "SysDataNoLock.h"
 #include "Thread.h"
 
-WorkerThread workerThread2("WorkerThread2");
+Thread workerThread2("WorkerThread2");
 
 //----------------------------------------------------------------------------
 // GetInstance
@@ -46,7 +46,7 @@ void SysDataNoLock::SetSystemMode(SystemMode::Type systemMode)
 void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
 {
 	// Is the caller executing on workerThread2?
-	if (workerThread2.GetThreadId() != WorkerThread::GetCurrentThreadId())
+	if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
 	{
 		// Create an asynchronous delegate and reinvoke the function call on workerThread2
 		MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncAPI, workerThread2).AsyncInvoke(systemMode);
@@ -71,7 +71,7 @@ void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
 SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type systemMode)
 {
 	// Is the caller executing on workerThread2?
-	if (workerThread2.GetThreadId() != WorkerThread::GetCurrentThreadId())
+	if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
 	{
 		// Create an asynchronous delegate and reinvoke the function call on workerThread2
 		auto delegate =

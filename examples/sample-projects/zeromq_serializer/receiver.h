@@ -9,7 +9,7 @@
 
 #include "DelegateLib.h"
 #include "Thread.h"
-#include "serialize.h"
+#include "msg_serialize.h"
 #include "transport.h"
 #include "Timer.h"
 #include "data.h"
@@ -80,7 +80,7 @@ private:
     }
 
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
-    WorkerThread m_thread;
+    Thread m_thread;
     Timer m_recvTimer;
 
     xostringstream m_argStream;
