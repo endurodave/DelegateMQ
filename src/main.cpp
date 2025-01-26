@@ -14,17 +14,17 @@
 #include "Command.h"
 #include "BindingProperty.h"
 #include "RemoteCommunication.h"
+#include "Thread.h"
+#include "Timer.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <utility>
 #include <future>
-#include "WorkerThreadStd.h"
-#include "Timer.h"
 
 // main.cpp
 // @see https://github.com/endurodave/cpp-async-delegate
-// David Lafreniere, Aug 2020.
+// David Lafreniere, 2025.
 
 using namespace std;
 using namespace DelegateLib;
