@@ -318,7 +318,7 @@ delegateF = nullptr;
 Create an asynchronous delegate by adding an extra thread argument to `MakeDelegate()`.
 
 ```cpp
-WorkerThread workerThread1("WorkerThread1");
+Thread workerThread1("WorkerThread1");
 workerThread.CreateThread();
 
 // Create delegate and invoke FreeFuncInt() on workerThread
@@ -352,7 +352,7 @@ delegateH("Hello world", 2020);
 Create an asynchronous blocking delegate by adding an thread and timeout arguments to `MakeDelegate()`.
 
 ```cpp
-WorkerThread workerThread1("WorkerThread1");
+Thread workerThread1("WorkerThread1");
 workerThread.CreateThread();
 
 // Create delegate and invoke FreeFuncInt() on workerThread 
@@ -830,10 +830,10 @@ if (thread) {
 }
 ```
 
-`DispatchDelegate()` inserts a message into the thread message queue. `WorkerThread` class uses a underlying `std::thread`. `WorkerThread` is an implementation detail; create a unique `DispatchDelegate()` function based on the platform operating system API.
+`DispatchDelegate()` inserts a message into the thread message queue. `Thread` class uses a underlying `std::thread`. `Thread` is an implementation detail; create a unique `DispatchDelegate()` function based on the platform operating system API.
 
 ```cpp
-void WorkerThread::DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> msg)
+void Thread::DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> msg)
 {
 	if (m_thread == nullptr)
 		throw std::invalid_argument("Thread pointer is null");
@@ -869,13 +869,13 @@ public:
 };
 ```
 
-The `WorkerThread::Process()` thread loop is shown below. `Invoke()` is called for each incoming `MSG_DISPATCH_DELEGATE` queue message.
+The `Thread::Process()` thread loop is shown below. `Invoke()` is called for each incoming `MSG_DISPATCH_DELEGATE` queue message.
 
 ```cpp
-void WorkerThread::Process()
+void Thread::Process()
 {
 	m_timerExit = false;
-	std::thread timerThread(&WorkerThread::TimerThread, this);
+	std::thread timerThread(&Thread::TimerThread, this);
 
 	while (1)
 	{
@@ -1171,7 +1171,7 @@ While creating a separate private function for an asynchronous API works, delega
 void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
 {
     // Is the caller executing on workerThread2?
-    if (workerThread2.GetThreadId() != WorkerThread::GetCurrentThreadId())
+    if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
     {
         // Create an asynchronous delegate and re-invoke the function call on workerThread2
         auto delegate = 
@@ -1201,7 +1201,7 @@ A blocking asynchronous API can be encapsulated within a class member function. 
 SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type systemMode)
 {
     // Is the caller executing on workerThread2?
-    if (workerThread2.GetThreadId() != WorkerThread::GetCurrentThreadId())
+    if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
     {
         // Create an asynchronous delegate and re-invoke the function call on workerThread2
         auto delegate =
@@ -1260,7 +1260,7 @@ m_timer.Start(1000);
 An example combining `std::async`/`std::future` and an asynchronous delegate to target a specific worker thread during communication transmission.
 
 ```cpp
-static WorkerThread comm_thread("CommunicationThread");
+static Thread comm_thread("CommunicationThread");
 
 // Assume send_data() is not thread-safe and may only be called on comm_thread context.
 // A random std::async thread from the pool is unacceptable and causes cross-threading.

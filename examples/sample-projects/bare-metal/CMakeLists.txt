@@ -23,8 +23,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Collect all .cpp and *.h source files in the src directory
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
 
-# Collect all header files in the src/Delegate directory
-file(GLOB Delegate_HEADERS "${CMAKE_SOURCE_DIR}/../../../src/delegate/*.h")
+# Collect all header files in the delegate directory
+file(GLOB Delegate_HEADERS 
+    "${DELEGATE_ROOT_DIR}/delegate-mq/*.h"
+    "${DELEGATE_ROOT_DIR}/delegate-mq/delegate/*.h"
+)
 
 # Organize Delegate headers into a "Delegate Files" folder in Visual Studio
 source_group("Delegate Files" FILES ${Delegate_HEADERS})

@@ -246,7 +246,7 @@ class AlarmSub
 A delegate container inserting and removing all delegate types.
 
 ```cpp
-WorkerThread workerThread1("WorkerThread1");
+Thread workerThread1("WorkerThread1");
 
 static int callCnt = 0;
 
@@ -378,7 +378,7 @@ void TestAllTargetTypes() {
 void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
 {
 	// Is the caller executing on workerThread2?
-	if (workerThread2.GetThreadId() != WorkerThread::GetCurrentThreadId())
+	if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
 	{
 		// Create an asynchronous delegate and re-invoke the function call on workerThread2
 		MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncAPI, workerThread2).AsyncInvoke(systemMode);

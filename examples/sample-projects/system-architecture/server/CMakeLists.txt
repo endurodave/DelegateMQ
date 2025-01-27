@@ -63,22 +63,16 @@ include_directories(
 )
 
 # Add an executable target
-add_executable(delegate_client_app ${SOURCES} ${Delegate_HEADERS})
+add_executable(delegate_server_app ${SOURCES} ${Delegate_HEADERS})
 
-add_compile_definitions(CLIENT_APP)
+add_compile_definitions(SERVER_APP)
 
 # Add subdirectories to build
 add_subdirectory(../common ${CMAKE_BINARY_DIR}/common)
 add_subdirectory(${DELEGATE_ROOT_DIR}/delegate-mq/predef/os ${CMAKE_BINARY_DIR}/predef/os)
 add_subdirectory(${DELEGATE_ROOT_DIR}/delegate-mq/predef/util ${CMAKE_BINARY_DIR}/predef/util)
 
-add_compile_definitions(STDTHREAD_THREAD)
-include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/os/stdlib)
-
-add_compile_definitions(MSGSERIALIZE_SERIALIZE)
-include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/serialize/serialize)
-
-target_link_libraries(delegate_client_app PRIVATE 
+target_link_libraries(delegate_server_app PRIVATE 
     ../${VCPKG_ROOT_DIR}/lib/libzmq-mt-4_3_5
     os_lib
     util_lib
@@ -86,9 +80,9 @@ target_link_libraries(delegate_client_app PRIVATE
 )
 
 if (ENABLE_ALLOCATOR)
-    include_directories(${DELEGATE_ROOT_DIR}/allocator)
-    add_subdirectory(${DELEGATE_ROOT_DIR}/allocator ${CMAKE_BINARY_DIR}/allocator)
-    target_link_libraries(delegate_client_app PRIVATE allocator_lib)
+    include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/allocator)
+    add_subdirectory(${DELEGATE_ROOT_DIR}//delegate-mq/predef/allocator ${CMAKE_BINARY_DIR}/allocator)
+    target_link_libraries(delegate_server_app PRIVATE allocator_lib)
     add_compile_definitions(USE_ALLOCATOR)
 endif()
 
@@ -97,7 +91,7 @@ file(GLOB ZMQ_BIN_FILES "${VCPKG_ROOT_DIR}/bin/libzmq*.dll" "${VCPKG_ROOT_DIR}/b
 
 # Copy each DLL file to the build output directory
 foreach(DLL_FILE ${ZMQ_BIN_FILES})
-    add_custom_command(TARGET delegate_client_app POST_BUILD
+    add_custom_command(TARGET delegate_server_app POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${DLL_FILE}  # Copy the DLL file
         "${CMAKE_BINARY_DIR}/Debug"  # Destination directory
