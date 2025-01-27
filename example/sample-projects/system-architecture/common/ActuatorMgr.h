@@ -9,10 +9,10 @@
 
 #include "DelegateLib.h"
 #include "Thread.h"
-#include "msg_serialize.h"
-#include "transport.h"
+#include "Serializer.h"
+#include "Transport.h"
 #include "Timer.h"
-#include "data.h"
+#include "Data.h"
 
 using namespace DelegateLib;
 using namespace std;
@@ -22,7 +22,6 @@ class Receiver
 {
 public:
     Receiver(DelegateRemoteId id) :
-        m_id(id),
         m_thread("Receiver"),
         m_argStream(ios::in | ios::out | ios::binary)
     {
@@ -63,7 +62,7 @@ private:
     void Poll()
     {
         // Get incoming data
-        auto arg_data = m_transport.Receive(m_id);
+        auto arg_data = m_transport.Receive();
 
         // Incoming remote delegate data arrived?
         if (!arg_data.str().empty())
@@ -79,7 +78,6 @@ private:
         cout << data.msg << " " << data.dataPoints[0].y << " " << data.dataPoints[0].y << endl;
     }
 
-    DelegateRemoteId m_id = INVALID_REMOTE_ID;
     Thread m_thread;
     Timer m_recvTimer;
 

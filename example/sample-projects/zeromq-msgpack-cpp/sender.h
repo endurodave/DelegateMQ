@@ -8,9 +8,9 @@
 #include "DelegateLib.h"
 #include "Thread.h"
 #include "Timer.h"
-#include "dispatcher.h"
-#include "serializer.h"
-#include "transport.h"
+#include "Dispatcher.h"
+#include "Serializer.h"
+#include "Transport.h"
 #include "data.h"
 
 using namespace DelegateLib;

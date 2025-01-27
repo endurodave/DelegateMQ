@@ -55,8 +55,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/delegate-mq/predef/os
     ${CMAKE_SOURCE_DIR}/src/delegate-mq/predef/serialize
     ${CMAKE_SOURCE_DIR}/src/delegate-mq/predef/util
-    ${CMAKE_SOURCE_DIR}/tests/unit-tests
-    ${CMAKE_SOURCE_DIR}/example/sample-code
+    ${CMAKE_SOURCE_DIR}/test/unit-tests
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/src/delegate-mq/predef/os/stdlib)

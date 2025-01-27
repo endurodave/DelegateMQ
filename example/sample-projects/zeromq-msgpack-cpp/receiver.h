@@ -9,8 +9,8 @@
 
 #include "DelegateLib.h"
 #include "Thread.h"
-#include "serializer.h"
-#include "transport.h"
+#include "Serializer.h"
+#include "Transport.h"
 #include "Timer.h"
 #include "data.h"
 
