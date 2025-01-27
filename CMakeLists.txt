@@ -67,8 +67,8 @@ add_executable(delegate_app ${SOURCES} ${Delegate_HEADERS})
 # Add subdirectories to build
 add_subdirectory(src/delegate-mq/predef/os)
 add_subdirectory(src/delegate-mq/predef/util)
-add_subdirectory(tests/unit-tests)
-add_subdirectory(examples/sample-code)
+add_subdirectory(test/unit-tests)
+add_subdirectory(example/sample-code)
 
 target_link_libraries(delegate_app PRIVATE 
     os_lib

@@ -4,11 +4,11 @@ import subprocess
 # Define the subdirectories where CMake should be run
 subdirs = [
     ".",
-    "examples/sample-projects/bare-metal",
-    "examples/sample-projects/system-architecture/client",
-    "examples/sample-projects/system-architecture/server",
-    "examples/sample-projects/zeromq-msgpack-cpp",
-    "examples/sample-projects/zeromq-serializer"
+    "example/sample-projects/bare-metal",
+    "example/sample-projects/system-architecture/client",
+    "example/sample-projects/system-architecture/server",
+    "example/sample-projects/zeromq-msgpack-cpp",
+    "example/sample-projects/zeromq-serializer"
 ]
 
 # Define the CMake generator and architecture options
