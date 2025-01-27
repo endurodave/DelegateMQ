@@ -48,10 +48,12 @@
 /// fails within `operator()(Args... args)`. Alternatively, define `USE_ASSERTS` to use `assert`
 /// as opposed to exceptions. All other delegate class functions do not throw exceptions.
 /// 
-/// Github responsitory location:  
+/// Github repository location:  
 /// https://github.com/endurodave/cpp-async-delegate
 ///
-/// See README.md, DETAILS.md, and source code Doxygen comments for more information.
+/// See README.md, DETAILS.md, EXAMPLES.md, and source code Doxygen comments for more information.
+
+namespace DelegateLib { const char* Version(); }
 
 #include "DelegateOpt.h"
 #include "MulticastDelegateSafe.h"
