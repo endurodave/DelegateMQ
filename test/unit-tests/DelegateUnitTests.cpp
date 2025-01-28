@@ -1,7 +1,6 @@
 #include "DelegateLib.h"
 #include "UnitTestCommon.h"
 #include <iostream>
-#include "Thread.h"
 #ifdef WIN32
 #include <Windows.h>
 #endif

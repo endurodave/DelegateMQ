@@ -3,8 +3,6 @@
 
 #include "BindingProperty.h"
 #include "DelegateLib.h"
-#include "Thread.h"
-#include "AsyncInvoke.h"
 #include <iostream>
 #include <functional>
 #include <string>

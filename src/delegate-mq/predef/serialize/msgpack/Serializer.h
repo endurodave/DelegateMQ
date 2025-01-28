@@ -9,7 +9,7 @@
 /// complex data objects including build-in and user defined data types.
 
 #include "msgpack.hpp"
-#include "ISerializer.h"
+#include "delegate/ISerializer.h"
 #include <iostream>
 
 // make_serialized serializes each remote function argument

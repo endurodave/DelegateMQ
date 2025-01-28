@@ -4,7 +4,6 @@
 
 #include "AsyncFuture.h"
 #include "DelegateLib.h"
-#include "Thread.h"
 #include <iostream>
 #include <future>
 #include <chrono>

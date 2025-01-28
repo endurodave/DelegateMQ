@@ -1,7 +1,6 @@
 #include "DelegateLib.h"
 #include "UnitTestCommon.h"
 #include <iostream>
-#include "Thread.h"
 #include <random>
 #include <chrono>
 #include <cstring>

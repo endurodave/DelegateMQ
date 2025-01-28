@@ -3,8 +3,6 @@
 
 #include "Command.h"
 #include "DelegateLib.h"
-#include "Thread.h"
-#include "AsyncInvoke.h"
 #include <iostream>
 
 using namespace DelegateLib;

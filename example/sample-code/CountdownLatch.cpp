@@ -5,7 +5,6 @@
 
 #include "CountdownLatch.h"
 #include "DelegateLib.h"
-#include "Thread.h"
 #include <iostream>
 #include <chrono>
 #include <latch>

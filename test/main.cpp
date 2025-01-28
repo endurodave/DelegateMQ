@@ -14,8 +14,6 @@
 #include "Command.h"
 #include "BindingProperty.h"
 #include "RemoteCommunication.h"
-#include "Thread.h"
-#include "Timer.h"
 #include <iostream>
 #include <chrono>
 #include <thread>

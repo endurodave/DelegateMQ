@@ -8,7 +8,7 @@
 /// Example of serializer relying upon the serialize class to binary serialize
 /// complex data objects including build-in and user defined data types.
 
-#include "ISerializer.h"
+#include "delegate/ISerializer.h"
 #include "msg_serialize.h"
 #include <iostream>
 

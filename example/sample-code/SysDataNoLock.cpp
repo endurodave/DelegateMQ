@@ -1,5 +1,4 @@
 #include "SysDataNoLock.h"
-#include "Thread.h"
 
 Thread workerThread2("WorkerThread2");
 

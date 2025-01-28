@@ -8,10 +8,6 @@
 /// @brief ZeroMQ with remote delegates examples. 
 
 #include "DelegateLib.h"
-#include "Thread.h"
-#include "Serializer.h"
-#include "Transport.h"
-#include "Timer.h"
 #include "data.h"
 
 using namespace DelegateLib;

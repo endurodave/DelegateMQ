@@ -4,8 +4,7 @@
 // @see https://github.com/endurodave/StdWorkerThread
 // David Lafreniere, Feb 2017.
 
-#include "DelegateOpt.h"
-#include "IThread.h"
+#include "delegate/IThread.h"
 #include <thread>
 #include <queue>
 #include <mutex>

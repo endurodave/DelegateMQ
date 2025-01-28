@@ -3,7 +3,6 @@
 
 #include "ProducerConsumer.h"
 #include "DelegateLib.h"
-#include "Thread.h"
 #include <queue>
 #include <iostream>
 

@@ -4,7 +4,7 @@
 #include <functional>
 #include <memory>
 #include <cstdint>
-#include "Fault.h"
+#include "DelegateLib.h"
 
 namespace UnitTestData
 {

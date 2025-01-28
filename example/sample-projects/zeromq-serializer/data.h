@@ -5,7 +5,7 @@
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
 
-#include "msg_serialize.h"
+#include "DelegateLib.h"
 #include <string.h>
 #include <iostream>
 

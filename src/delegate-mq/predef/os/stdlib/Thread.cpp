@@ -1,7 +1,7 @@
-#include "DelegateOpt.h"
 #include "Thread.h"
 #include "ThreadMsg.h"
-#include "Timer.h"
+#include "predef/util/Timer.h"
+#include "predef/util/Fault.h"
 
 #ifdef WIN32
 #include <Windows.h>

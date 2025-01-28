@@ -3,7 +3,6 @@
 #include <iostream>
 #include <set>
 #include <cstring>
-#include "Thread.h"
 
 using namespace DelegateLib;
 using namespace std;

@@ -1,6 +1,8 @@
 #ifndef _ASYNC_INVOKE_H
 #define _ASYNC_INVOKE_H
 
+class Thread;
+
 /// @file
 /// @brief Helper functions to simplify invoking a free or member function
 /// on the user-specified thread of control using a single line of code.

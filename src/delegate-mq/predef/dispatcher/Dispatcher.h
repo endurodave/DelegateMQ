@@ -5,8 +5,8 @@
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
 
-#include "Transport.h"
-#include "IDispatcher.h"
+#include "delegate/IDispatcher.h"
+#include "predef/transport/msgpack/Transport.h"
 #include <sstream>
 
 /// @brief Dispatcher sends data to the transport for transmission to the endpoint.

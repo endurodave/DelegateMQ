@@ -8,15 +8,14 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Set default if USE_STDTHREAD_THREAD option if not defined
+# Set default if USE_THREAD option if not defined
 if (NOT DEFINED USE_THREAD)
-    set(USE_THREAD "STDTHREAD_THREAD" CACHE STRING "Select the thread model for the delegate")
+    set(USE_THREAD "THREAD_STDLIB" CACHE STRING "Select the thread for the delegate")
 endif()
 
 # Select library build options
-if (USE_THREAD STREQUAL "STDTHREAD_THREAD")
-    add_compile_definitions(STDTHREAD_THREAD)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq/predef/os/stdlib)
+if (USE_THREAD STREQUAL "THREAD_STDLIB")
+    add_compile_definitions(THREAD_STDLIB)
     file(GLOB SUBDIR_SOURCES "delegate-mq/predef/os/stdlib/*.cpp") 
     set(SOURCES ${SOURCES} ${SUBDIR_SOURCES})
 else()
@@ -25,15 +24,15 @@ endif()
 
 # Set default if USE_SERIALIZE option if not defined
 if (NOT DEFINED USE_SERIALIZE)
-    set(USE_SERIALIZE "SERIALIZE_SERIALIZE" CACHE STRING "Select the serialize model for the delegate")
+    set(USE_SERIALIZE "SERIALIZE_SERIALIZE" CACHE STRING "Select the serialize for the delegate")
 endif()
 
 if (USE_SERIALIZE STREQUAL "SERIALIZE_SERIALIZE")
-    add_compile_definitions(MSGPACK_SERIALIZE)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq/predef/serialize/serialize)
-elseif (USE_SERIALIZE STREQUAL "MSGPACK_SERIALIZE")
-    add_compile_definitions(MSGSERIALIZE_SERIALIZE)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq/predef/serialize/msgpack)
+    add_compile_definitions(SERIALIZE_SERIALIZE)
+elseif (USE_SERIALIZE STREQUAL "SERIALIZE_MSGPACK")
+    add_compile_definitions(SERIALIZE_MSGPACK)
+    set(MSGPACK_INCLUDE "../../msgpack-c/include")
+    include_directories(${MSGPACK_INCLUDE})
 else()
     message(FATAL_ERROR "Must select a delegate serialize option.")
 endif()
@@ -44,14 +43,10 @@ set(SOURCES ${SOURCES} ${SUBDIR_SOURCES})
 # Add subdirectories to include path
 include_directories( 
     ${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq
-    ${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq/delegate
-    ${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq/predef/os
-    ${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq/predef/serialize
-    ${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq/predef/util
 )
 
 # Create the library target (delegate_mq) as a static library
-add_library(delegate_mq STATIC delegate-mq/DelegateLib.cpp ${SOURCES})
+add_library(delegate_mq STATIC ${SOURCES})
 
 # Optionally handle allocator
 if (ENABLE_ALLOCATOR)

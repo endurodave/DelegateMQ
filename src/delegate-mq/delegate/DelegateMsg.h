@@ -4,7 +4,6 @@
 /// @file
 /// @brief Delegate inter-thread message base class. 
 
-#include "Fault.h"
 #include "IInvoker.h"
 #include "DelegateOpt.h"
 #include "Semaphore.h"

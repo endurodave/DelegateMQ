@@ -7,8 +7,6 @@
 
 #include "AsyncMethodInvocation.h"
 #include "DelegateLib.h"
-#include "Thread.h"
-#include "AsyncInvoke.h"
 #include <iostream>
 #include <thread>
 #include <future>

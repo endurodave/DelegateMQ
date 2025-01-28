@@ -3,7 +3,7 @@
 
 // Delegate.h
 // @see https://github.com/endurodave/cpp-async-delegate
-// David Lafreniere, Aug 2020.
+// David Lafreniere, 2025.
 
 /// @file
 /// @brief DelegateLib.h is a single include to obtain all delegate functionality. 
@@ -53,13 +53,43 @@
 ///
 /// See README.md, DETAILS.md, EXAMPLES.md, and source code Doxygen comments for more information.
 
-namespace DelegateLib { const char* Version(); }
+#include "delegate/DelegateOpt.h"
+#include "delegate/MulticastDelegateSafe.h"
+#include "delegate/UnicastDelegate.h"
+#include "delegate/DelegateAsync.h"
+#include "delegate/DelegateAsyncWait.h"
+#include "delegate/DelegateRemote.h"
 
-#include "DelegateOpt.h"
-#include "MulticastDelegateSafe.h"
-#include "UnicastDelegate.h"
-#include "DelegateAsync.h"
-#include "DelegateAsyncWait.h"
-#include "DelegateRemote.h"
+#if defined(THREAD_STDLIB)
+    #include "predef/os/stdlib/Thread.h"
+    #include "predef/os/stdlib/ThreadMsg.h"
+#elif defined(THREAD_NONE)
+    // Create a custom application-specific thread
+#else
+    #error "Thread implemention not found."
+#endif
+
+#if defined(SERIALIZE_MSGPACK)
+    #include "predef/serialize/msgpack/Serializer.h"
+#elif defined(SERIALIZE_SERIALIZE)
+    #include "predef/serialize/serialize/Serializer.h"
+#elif defined(SERIALIZE_NONE)
+    // Create a custom application-sepcific serializer
+#else
+    #error "Serialize implementation not found."
+#endif
+
+#if defined(TRANSPORT_MSGPACK)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/msgpack/Transport.h"
+#elif defined(TRANSPORT_NONE)
+    // Create a custom application-specific transport
+#else
+    #error "Transport implementation not found."
+#endif
+
+#include "predef/util/Fault.h"
+#include "predef/util/Timer.h"
+#include "predef/util/AsyncInvoke.h"
 
 #endif

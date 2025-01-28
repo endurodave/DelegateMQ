@@ -3,7 +3,6 @@
 
 #include "Proactor.h"
 #include "DelegateLib.h"
-#include "Thread.h"
 #include <iostream>
 #include <fstream>
 #include <string>
