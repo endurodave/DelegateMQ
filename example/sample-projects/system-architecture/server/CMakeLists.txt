@@ -16,6 +16,8 @@ add_compile_definitions(THREAD_STDLIB)
 add_compile_definitions(SERIALIZE_MSGPACK)
 add_compile_definitions(TRANSPORT_MSGPACK)
 
+add_compile_definitions(SERVER_APP)
+
 # Collect all .cpp and *.h source files in the src directory
 file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 
