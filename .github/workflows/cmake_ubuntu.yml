@@ -43,4 +43,4 @@ jobs:
         files: build/coverage_filtered.info  # Path to the filtered coverage file
 
     - name: Run delegate_app
-      run: ./build/delegate_app  # Run the built executable (to run the tests)
+      run: ./build/delegate_app/delegate_app  # Run the built executable (to run the tests)

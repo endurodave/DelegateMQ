@@ -23,4 +23,4 @@ jobs:
       run: cmake --build build  # Build the project using CMake
 
     - name: Run delegate_app
-      run: ./build/delegate_app  # Run the built executable
+      run: ./build/delegate_app/delegate_app  # Run the built executable
