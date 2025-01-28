@@ -328,7 +328,7 @@ static void DelegateFreeRemoteTests()
     
     {
         Dispatcher dispatcher;
-        Serializer<void(Class* c)> serializer;
+        Remote::Serializer<void(Class* c)> serializer;
 
         // Remote invoke does not copy Class object when passed to func
         Class classInstance;
@@ -383,7 +383,7 @@ static void DelegateFreeRemoteTests()
     xostringstream os(ios::in | ios::out | ios::binary);
 
     {
-        Serializer<void(int)> serializer;
+        Remote::Serializer<void(int)> serializer;
         DelegateFreeRemote<void(int)> delegateRemote(FreeFuncInt, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -397,7 +397,7 @@ static void DelegateFreeRemoteTests()
     }
 
     {
-        Serializer<void(int&)> serializer;
+        Remote::Serializer<void(int&)> serializer;
         DelegateFreeRemote<void(int&)> delegateRemote(FreeFuncIntRef, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -412,7 +412,7 @@ static void DelegateFreeRemoteTests()
     }
 
     {
-        Serializer<void(int*)> serializer;
+        Remote::Serializer<void(int*)> serializer;
         DelegateFreeRemote<void(int*)> delegateRemote(FreeFuncIntPtr, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -428,7 +428,7 @@ static void DelegateFreeRemoteTests()
 
 #if 0  // Pointer-to-pointer argument not supported
     {
-        Serializer<void(int**)> serializer;
+        Remote::Serializer<void(int**)> serializer;
         DelegateFreeRemote<void(int**)> delegateRemote(FreeFuncIntPtrPtr, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -445,7 +445,7 @@ static void DelegateFreeRemoteTests()
 #endif
 
     {
-        Serializer<void(RemoteData&)> serializer;
+        Remote::Serializer<void(RemoteData&)> serializer;
         DelegateFreeRemote<void(RemoteData&)> delegateRemote(FreeFuncRemoteData, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -460,7 +460,7 @@ static void DelegateFreeRemoteTests()
     }
 
     {
-        Serializer<void(RemoteData*)> serializer;
+        Remote::Serializer<void(RemoteData*)> serializer;
         DelegateFreeRemote<void(RemoteData*)> delegateRemote(FreeFuncRemoteDataPtr, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -635,7 +635,7 @@ static void DelegateMemberRemoteTests()
     xostringstream os(ios::in | ios::out | ios::binary);
 
     {
-        Serializer<void(int)> serializer;
+        Remote::Serializer<void(int)> serializer;
         DelegateMemberRemote<RemoteClass, void(int)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncInt, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -649,7 +649,7 @@ static void DelegateMemberRemoteTests()
     }
 
     {
-        Serializer<void(int&)> serializer;
+        Remote::Serializer<void(int&)> serializer;
         DelegateMemberRemote<RemoteClass, void(int&)> delegateRemote(&remoteClass, &RemoteClass::MmberFuncIntRef, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -664,7 +664,7 @@ static void DelegateMemberRemoteTests()
     }
 
     {
-        Serializer<void(int*)> serializer;
+        Remote::Serializer<void(int*)> serializer;
         DelegateMemberRemote<RemoteClass, void(int*)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncIntPtr, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -679,7 +679,7 @@ static void DelegateMemberRemoteTests()
     }
 
     {
-        Serializer<void(RemoteData&)> serializer;
+        Remote::Serializer<void(RemoteData&)> serializer;
         DelegateMemberRemote<RemoteClass, void(RemoteData&)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncRemoteData, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -694,7 +694,7 @@ static void DelegateMemberRemoteTests()
     }
 
     {
-        Serializer<void(RemoteData*)> serializer;
+        Remote::Serializer<void(RemoteData*)> serializer;
         DelegateMemberRemote<RemoteClass, void(RemoteData*)> delegateRemote(&remoteClass, &RemoteClass::MemberFuncRemoteDataPtr, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -834,7 +834,7 @@ static void DelegateMemberSpRemoteTests()
     xostringstream os(ios::in | ios::out | ios::binary);
 
     {
-        Serializer<void(int)> serializer;
+        Remote::Serializer<void(int)> serializer;
         DelegateFunctionRemote<void(int)> delegateRemote(LambdaFuncInt, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -848,7 +848,7 @@ static void DelegateMemberSpRemoteTests()
     }
 
     {
-        Serializer<void(int&)> serializer;
+        Remote::Serializer<void(int&)> serializer;
         DelegateFunctionRemote<void(int&)> delegateRemote(LambdaFuncIntRef, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -863,7 +863,7 @@ static void DelegateMemberSpRemoteTests()
     }
 
     {
-        Serializer<void(int*)> serializer;
+        Remote::Serializer<void(int*)> serializer;
         DelegateFunctionRemote<void(int*)> delegateRemote(LambdaFuncIntPtr, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -878,7 +878,7 @@ static void DelegateMemberSpRemoteTests()
     }
 
     {
-        Serializer<void(RemoteData&)> serializer;
+        Remote::Serializer<void(RemoteData&)> serializer;
         DelegateFunctionRemote<void(RemoteData&)> delegateRemote(LambdaFuncRemoteData, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -893,7 +893,7 @@ static void DelegateMemberSpRemoteTests()
     }
 
     {
-        Serializer<void(RemoteData*)> serializer;
+        Remote::Serializer<void(RemoteData*)> serializer;
         DelegateFunctionRemote<void(RemoteData*)> delegateRemote(LambdaFuncRemoteDataPtr, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -1018,7 +1018,7 @@ static void DelegateFunctionRemoteTests()
     auto remoteClass = std::make_shared<RemoteClass>();
 
     {
-        Serializer<void(int)> serializer;
+        Remote::Serializer<void(int)> serializer;
         DelegateMemberRemote<RemoteClass, void(int)> delegateRemote(remoteClass, &RemoteClass::MemberFuncInt, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -1032,7 +1032,7 @@ static void DelegateFunctionRemoteTests()
     }
 
     {
-        Serializer<void(int&)> serializer;
+        Remote::Serializer<void(int&)> serializer;
         DelegateMemberRemote<RemoteClass, void(int&)> delegateRemote(remoteClass, &RemoteClass::MmberFuncIntRef, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetDispatcher(&dispatcher);
@@ -1047,7 +1047,7 @@ static void DelegateFunctionRemoteTests()
     }
 
     {
-        Serializer<void(int*)> serializer;
+        Remote::Serializer<void(int*)> serializer;
         DelegateMemberRemote<RemoteClass, void(int*)> delegateRemote(remoteClass, &RemoteClass::MemberFuncIntPtr, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -1062,7 +1062,7 @@ static void DelegateFunctionRemoteTests()
     }
 
     {
-        Serializer<void(RemoteData&)> serializer;
+        Remote::Serializer<void(RemoteData&)> serializer;
         DelegateMemberRemote<RemoteClass, void(RemoteData&)> delegateRemote(remoteClass, &RemoteClass::MemberFuncRemoteData, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
@@ -1077,7 +1077,7 @@ static void DelegateFunctionRemoteTests()
     }
 
     {
-        Serializer<void(RemoteData*)> serializer;
+        Remote::Serializer<void(RemoteData*)> serializer;
         DelegateMemberRemote<RemoteClass, void(RemoteData*)> delegateRemote(remoteClass, &RemoteClass::MemberFuncRemoteDataPtr, REMOTE_ID);
         delegateRemote.SetErrorHandler(MakeDelegate(errorHandler));
         delegateRemote.SetStream(&os);
