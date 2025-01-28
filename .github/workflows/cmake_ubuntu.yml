@@ -28,7 +28,7 @@ jobs:
     - name: Run delegate_app to execute tests
       run: |
         cd build
-        ./delegate_app  # Run your app to execute tests
+        ./build/build/delegate_app/delegate_app  # Run your app to execute tests
         
         # Collect code coverage data
         lcov --capture --directory . --output-file coverage.info
