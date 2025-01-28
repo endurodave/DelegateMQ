@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_compile_definitions(THREAD_STDLIB)
 add_compile_definitions(SERIALIZE_SERIALIZE)
-add_compile_definitions(TRANSPORT_NONE) #TODO
+add_compile_definitions(TRANSPORT_NONE)
 
 # Collect all .cpp and *.h source files 
 file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
@@ -48,22 +48,18 @@ add_executable(delegate_app ${SOURCES} ${Delegate_HEADERS})
 # Specify the directory containing the pre-built delegate_mq.lib
 set(LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 
-# Check if the delegate_mq.lib exists in the specified directory
-if (NOT EXISTS "${LIBRARY_DIR}/delegate_mq.lib")
-    message(FATAL_ERROR "Error: delegate_mq.lib not found in ${LIBRARY_DIR}. Please ensure the library is pre-built and available.")
-else()
-    message(STATUS "Found delegate_mq.lib in ${LIBRARY_DIR}")
-endif()
-
 # Link the library directory
 link_directories(${LIBRARY_DIR})
 
 # Link against the pre-built delegate_mq.lib
 target_link_libraries(delegate_app PRIVATE 
-    ${LIBRARY_DIR}/delegate_mq.lib
+    ${LIBRARY_DIR}/delegate_mq.lib 
     unit_tests_lib
     sample_code_lib
 )
+
+# Make delegate_app depend on delegate_mq (ensure it is built first)
+add_dependencies(delegate_app delegate_mq)
 
 # Add subdirectories for unit tests and sample code
 add_subdirectory(unit-tests)
