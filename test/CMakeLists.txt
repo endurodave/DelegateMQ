@@ -45,15 +45,9 @@ include_directories(
 # Add an executable target
 add_executable(delegate_app ${SOURCES} ${Delegate_HEADERS})
 
-# Specify the directory containing the pre-built delegate_mq.lib
-set(LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
-
-# Link the library directory
-link_directories(${LIBRARY_DIR})
-
 # Link against the pre-built delegate_mq.lib
 target_link_libraries(delegate_app PRIVATE 
-    ${LIBRARY_DIR}/delegate_mq.lib 
+    delegate_mq
     unit_tests_lib
     sample_code_lib
 )
