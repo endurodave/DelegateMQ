@@ -6,13 +6,13 @@
 /// https://github.com/endurodave/Async-SQLite
 
 #include "AsyncMethodInvocation.h"
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <iostream>
 #include <thread>
 #include <future>
 #include <chrono>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 namespace Example

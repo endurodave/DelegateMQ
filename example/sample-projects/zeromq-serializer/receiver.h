@@ -7,10 +7,10 @@
 /// 
 /// @brief ZeroMQ with remote delegates examples. 
 
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include "data.h"
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 /// @brief Receiver receives data from the Sender.

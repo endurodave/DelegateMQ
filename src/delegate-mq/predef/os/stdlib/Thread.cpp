@@ -8,7 +8,7 @@
 #endif
 
 using namespace std;
-using namespace DelegateLib;
+using namespace DelegateMQ;
 
 #define MSG_DISPATCH_DELEGATE	1
 #define MSG_EXIT_THREAD			2
@@ -107,7 +107,7 @@ void Thread::ExitThread()
 //----------------------------------------------------------------------------
 // DispatchDelegate
 //----------------------------------------------------------------------------
-void Thread::DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> msg)
+void Thread::DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg)
 {
 	if (m_thread == nullptr)
 		throw std::invalid_argument("Thread pointer is null");

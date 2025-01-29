@@ -643,7 +643,7 @@ if (myDelegate)
 
 # Delegate Library
 
-A single include `DelegateLib.h` provides access to all delegate library features. The library is wrapped within a `DelegateLib` namespace. The table below shows the delegate class hierarchy.
+A single include `DelegateMQ.h` provides access to all delegate library features. The library is wrapped within a `DelegateMQ` namespace. The table below shows the delegate class hierarchy.
 
 ```cpp
 // Delegates
@@ -833,7 +833,7 @@ if (thread) {
 `DispatchDelegate()` inserts a message into the thread message queue. `Thread` class uses a underlying `std::thread`. `Thread` is an implementation detail; create a unique `DispatchDelegate()` function based on the platform operating system API.
 
 ```cpp
-void Thread::DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> msg)
+void Thread::DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg)
 {
 	if (m_thread == nullptr)
 		throw std::invalid_argument("Thread pointer is null");

@@ -1,4 +1,4 @@
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include "SysData.h"
 #include "SysDataNoLock.h"
 #include "ProducerConsumer.h"
@@ -25,7 +25,7 @@
 // David Lafreniere, 2025.
 
 using namespace std;
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std::chrono;
 
 /// The main file examples namespace

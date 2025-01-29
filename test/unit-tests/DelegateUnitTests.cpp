@@ -1,11 +1,11 @@
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include "UnitTestCommon.h"
 #include <iostream>
 #ifdef WIN32
 #include <Windows.h>
 #endif
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 
 Thread testThread("DelegateUnitTestsThread");
 

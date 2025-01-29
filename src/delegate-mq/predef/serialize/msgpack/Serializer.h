@@ -37,7 +37,7 @@ struct Serializer; // Not defined
 
 // Serialize all target function argument data
 template<class RetType, class... Args>
-class Serializer<RetType(Args...)> : public DelegateLib::ISerializer<RetType(Args...)>
+class Serializer<RetType(Args...)> : public DelegateMQ::ISerializer<RetType(Args...)>
 {
 public:
     virtual std::ostream& write(std::ostream& os, Args... args) override {

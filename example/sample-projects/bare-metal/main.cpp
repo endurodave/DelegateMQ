@@ -2,12 +2,12 @@
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
 
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <iostream>
 #include <sstream>
 #include <chrono>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 // The "transport" is simplely a shared std::stringstream

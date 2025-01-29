@@ -13,7 +13,7 @@
 
 class ThreadMsg;
 
-class Thread : public DelegateLib::IThread
+class Thread : public DelegateMQ::IThread
 {
 public:
 	/// Constructor
@@ -41,7 +41,7 @@ public:
 	/// Get size of thread message queue.
 	size_t GetQueueSize();
 
-	virtual void DispatchDelegate(std::shared_ptr<DelegateLib::DelegateMsg> msg);
+	virtual void DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg);
 
 private:
 	Thread(const Thread&) = delete;

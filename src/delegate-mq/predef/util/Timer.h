@@ -1,11 +1,11 @@
 #ifndef _TIMER_H
 #define _TIMER_H
 
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <mutex>
 #include <list>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 
 /// @brief A timer class provides periodic timer callbacks on the client's 
 /// thread of control. Timer is thread safe.

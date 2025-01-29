@@ -61,7 +61,7 @@
 #include <any>
 #include <chrono>
 
-namespace DelegateLib {
+namespace DelegateMQ {
 
 #undef max  // Prevent compiler error on next line if max is defined
 constexpr auto WAIT_INFINITE = std::chrono::milliseconds::max();

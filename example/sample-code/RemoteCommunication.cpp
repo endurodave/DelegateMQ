@@ -3,12 +3,12 @@
 /// a shared std::stringstream for ease of testing.
 
 #include "RemoteCommunication.h"
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <iostream>
 #include <sstream>
 #include <chrono>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 namespace Example

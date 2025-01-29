@@ -8,7 +8,7 @@
 #include "MulticastDelegate.h"
 #include <mutex>
 
-namespace DelegateLib {
+namespace DelegateMQ {
 
 template <class R>
 struct MulticastDelegateSafe; // Not defined

@@ -5,7 +5,7 @@
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
 
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <string.h>
 #include <iostream>
 

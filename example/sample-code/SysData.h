@@ -1,11 +1,11 @@
 #ifndef _SYS_DATA_H
 #define _SYS_DATA_H
 
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <mutex>
 #include "SysDataTypes.h"
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 
 /// @brief SysData stores common data accessible by any system thread. This class
 /// is thread-safe.

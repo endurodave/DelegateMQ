@@ -1,11 +1,11 @@
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include "UnitTestCommon.h"
 #include <iostream>
 #include <set>
 #include <cstring>
 #include <thread>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 using namespace UnitTestData;
 

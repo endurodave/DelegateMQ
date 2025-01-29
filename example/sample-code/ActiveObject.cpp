@@ -3,10 +3,10 @@
 /// An example of asynchronous method invocation.
 
 #include "ActiveObject.h"
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <iostream>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 namespace Example

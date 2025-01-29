@@ -5,10 +5,10 @@
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
 
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include "data.h"
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 /// @brief Sender is an active object with a thread. The thread sends data to the 

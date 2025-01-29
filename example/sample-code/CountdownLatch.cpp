@@ -4,12 +4,12 @@
 #if defined(_MSVC_LANG) && _MSVC_LANG >= 202002L || __cplusplus >= 202002L
 
 #include "CountdownLatch.h"
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <iostream>
 #include <chrono>
 #include <latch>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 namespace Example

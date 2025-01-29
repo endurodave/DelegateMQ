@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <memory>
 
-namespace DelegateLib {
+namespace DelegateMQ {
 
 template <class R>
 struct MulticastDelegate; // Not defined

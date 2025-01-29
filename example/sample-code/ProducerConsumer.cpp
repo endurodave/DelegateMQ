@@ -2,11 +2,11 @@
 /// @brief Implement the consumer-producer pattern using asynchronous delegates. 
 
 #include "ProducerConsumer.h"
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <queue>
 #include <iostream>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 namespace Example

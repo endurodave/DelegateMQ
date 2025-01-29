@@ -24,7 +24,7 @@
 #include "DelegateOpt.h"
 
 /// The delegate library namespace
-namespace DelegateLib {
+namespace DelegateMQ {
 
 /// @brief Non-template base class for all delegates.
 class DelegateBase {

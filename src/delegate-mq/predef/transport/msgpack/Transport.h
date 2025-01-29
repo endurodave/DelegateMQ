@@ -78,7 +78,7 @@ public:
         zmq_send(m_zmq, os.str().c_str(), length, 0);
     }
 
-    std::stringstream Receive(DelegateLib::DelegateRemoteId& id)
+    std::stringstream Receive(DelegateMQ::DelegateRemoteId& id)
     {
         std::stringstream is(std::ios::in | std::ios::out | std::ios::binary);
 

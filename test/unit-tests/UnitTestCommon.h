@@ -4,7 +4,7 @@
 #include <functional>
 #include <memory>
 #include <cstdint>
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 
 namespace UnitTestData
 {

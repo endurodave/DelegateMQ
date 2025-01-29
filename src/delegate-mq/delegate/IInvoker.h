@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace DelegateLib {
+namespace DelegateMQ {
 
 class DelegateMsg;
 

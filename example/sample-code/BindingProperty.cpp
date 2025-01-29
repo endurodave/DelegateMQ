@@ -2,12 +2,12 @@
 /// @brief Implement the binding property design pattern using delegates. 
 
 #include "BindingProperty.h"
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <iostream>
 #include <functional>
 #include <string>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 namespace Example

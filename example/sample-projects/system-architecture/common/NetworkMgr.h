@@ -5,30 +5,27 @@
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
 
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
+#include "DataPackage.h"
 #include <msgpack.hpp>
 #include <map>
+#include <mutex>
 
-static const DelegateRemoteId SENSOR_DATA = 1;
+static const DelegateRemoteId DATA_PACKAGE_ID = 1;
 
 class MsgHeader
 {
 public:
-    DelegateLib::DelegateRemoteId id = 0;
+    DelegateMQ::DelegateRemoteId id = 0;
     MSGPACK_DEFINE(id);
 };
 
-class SensorData
-{
-public:
-    float value = 0;
-    MSGPACK_DEFINE(value);
-};
-
+// NetworkMgr sends and receives data using a delegate transport implemented
+// using ZeroMQ library.
 class NetworkMgr
 {
 public:
-    static MulticastDelegateSafe<void(SensorData&)> SensorDataRecv;
+    static MulticastDelegateSafe<void(DataPackage&)> DataPackageRecv;
 
     static NetworkMgr& Instance()
     {
@@ -40,7 +37,7 @@ public:
 
     void Stop();
 
-    void SendSensorData(SensorData& data);
+    void SendDataPackage(DataPackage& data);
 
 private:
     NetworkMgr();
@@ -51,21 +48,20 @@ private:
 
     void ErrorHandler(DelegateError, DelegateErrorAux);
 
-    void RecvSensorData(SensorData& data);
+    void RecvSensorData(DataPackage& data);
 
     Thread m_thread;
     Timer m_recvTimer;
 
     xostringstream m_argStream;
-    Transport m_transport;
+    Transport m_transportSend;
+    Transport m_transportRecv;
     Dispatcher m_dispatcher;
 
-    std::map<DelegateLib::DelegateRemoteId, DelegateLib::IRemoteInvoker*> m_receiveIdMap;
+    std::map<DelegateMQ::DelegateRemoteId, DelegateMQ::IRemoteInvoker*> m_receiveIdMap;
 
-    Serializer<void(SensorData&)> m_sensorDataSer;
-    DelegateMemberRemote<NetworkMgr, void(SensorData&)> m_sensorDataDel;
-
-
+    Serializer<void(DataPackage&)> m_dataPackageSer;
+    DelegateMemberRemote<NetworkMgr, void(DataPackage&)> m_dataPackageDel;
 };
 
 #endif

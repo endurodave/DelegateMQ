@@ -3,12 +3,12 @@
 /// delegates allows the main thread to continue while the specified target thread completes. 
 
 #include "AsyncFuture.h"
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <iostream>
 #include <future>
 #include <chrono>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 namespace Example

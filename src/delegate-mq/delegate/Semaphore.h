@@ -1,5 +1,5 @@
-#ifndef _DELEGATELIB_SEMAPHORE_H
-#define _DELEGATELIB_SEMAPHORE_H
+#ifndef _DELEGATE_SEMAPHORE_H
+#define _DELEGATE_SEMAPHORE_H
 
 /// @file
 /// @brief Delegate library semaphore wrapper class. 
@@ -12,7 +12,7 @@
 // Fix compiler error on Windows
 #undef max
 
-namespace DelegateLib {
+namespace DelegateMQ {
 
 /// @brief A semaphore wrapper class. 
 class Semaphore

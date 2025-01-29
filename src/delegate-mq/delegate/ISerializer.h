@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-namespace DelegateLib {
+namespace DelegateMQ {
 
 template <class R>
 struct ISerializer; // Not defined

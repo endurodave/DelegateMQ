@@ -2,7 +2,7 @@
 /// @brief Implement the proactor design pattern using delegates.
 
 #include "Proactor.h"
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -10,7 +10,7 @@
 #include <functional>
 #include <memory>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 namespace Example

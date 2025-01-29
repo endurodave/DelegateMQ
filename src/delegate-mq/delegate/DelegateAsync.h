@@ -53,7 +53,7 @@
 #include "IInvoker.h"
 #include <tuple>
 
-namespace DelegateLib {
+namespace DelegateMQ {
 
 namespace trait
 {

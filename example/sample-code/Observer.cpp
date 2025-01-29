@@ -2,10 +2,10 @@
 /// @brief Implement a observer pattern using delegates. 
 
 #include "Observer.h"
-#include "DelegateLib.h"
+#include "DelegateMQ.h"
 #include <iostream>
 
-using namespace DelegateLib;
+using namespace DelegateMQ;
 using namespace std;
 
 namespace Example

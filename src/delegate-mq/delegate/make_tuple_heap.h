@@ -23,7 +23,7 @@
 #include <type_traits>
 #include "DelegateOpt.h"
 
-namespace DelegateLib 
+namespace DelegateMQ 
 {
 // std::shared_ptr reference arguments are not allowed with asynchronous delegates as the behavior is 
 // undefined. In other words:

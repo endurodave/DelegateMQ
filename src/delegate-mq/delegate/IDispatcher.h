@@ -5,7 +5,7 @@
 /// @brief Delegate dispatcher interface class. 
 /// 
 
-namespace DelegateLib {
+namespace DelegateMQ {
 
 // Remote identifier shared between sender and receiver remotes
 typedef short DelegateRemoteId;

@@ -1,15 +1,16 @@
-#ifndef _DELEGATE_LIB_H
-#define _DELEGATE_LIB_H
+#ifndef _DELEGATE_MQ_H
+#define _DELEGATE_MQ_H
 
 // Delegate.h
 // @see https://github.com/endurodave/cpp-async-delegate
 // David Lafreniere, 2025.
 
 /// @file
-/// @brief DelegateLib.h is a single include to obtain all delegate functionality. 
+/// @brief DelegateMQ.h is a single include to obtain all delegate functionality. 
 ///
 /// A C++ delegate library capable of invoking any callable function either synchronously   
-/// or asynchronously on a user specified thread of control.
+/// or asynchronously on a user specified thread of control. It is also capable of calling
+/// a function remotely over any transport protocol.
 /// 
 /// Asynchronous function calls support both non-blocking and blocking modes with a timeout. 
 /// The library supports all types of target functions, including free functions, class 
