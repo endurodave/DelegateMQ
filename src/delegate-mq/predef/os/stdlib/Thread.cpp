@@ -36,6 +36,8 @@ bool Thread::CreateThread()
 {
 	if (!m_thread)
 	{
+		m_threadStartFuture = m_threadStartPromise.get_future();
+
 		m_thread = std::unique_ptr<std::thread>(new thread(&Thread::Process, this));
 
 #ifdef WIN32
@@ -50,6 +52,8 @@ bool Thread::CreateThread()
 			// Handle error if needed
 		}
 #endif
+		// Wait for the thread to enter the Process method
+		m_threadStartFuture.get();
 	}
 	return true;
 }
@@ -146,6 +150,9 @@ void Thread::Process()
 {
     m_timerExit = false;
     std::thread timerThread(&Thread::TimerThread, this);
+
+	// Signal that the thread has started processing to notify CreateThread
+	m_threadStartPromise.set_value();
 
 	while (1)
 	{

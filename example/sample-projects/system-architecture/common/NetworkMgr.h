@@ -54,8 +54,11 @@ private:
     Timer m_recvTimer;
 
     xostringstream m_argStream;
+
+    // Transport using ZeroMQ library. Only call transport from NetworkMsg thread.
     Transport m_transportSend;
     Transport m_transportRecv;
+
     Dispatcher m_dispatcher;
 
     std::map<DelegateMQ::DelegateRemoteId, DelegateMQ::IRemoteInvoker*> m_receiveIdMap;

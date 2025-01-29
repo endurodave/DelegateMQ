@@ -82,8 +82,8 @@ public:
     {
         std::stringstream is(std::ios::in | std::ios::out | std::ios::binary);
 
-        char buffer[256];
-        int size = zmq_recv(m_zmq, buffer, 255, 0);
+        char buffer[2048];
+        int size = zmq_recv(m_zmq, buffer, 255, ZMQ_DONTWAIT);
         if (size == -1) {
             // Check if the error is due to a timeout
             if (zmq_errno() == EAGAIN) {

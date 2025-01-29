@@ -10,6 +10,7 @@
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
+#include <future>
 
 class ThreadMsg;
 
@@ -59,6 +60,10 @@ private:
 	std::condition_variable m_cv;
     std::atomic<bool> m_timerExit;
 	const std::string THREAD_NAME;
+
+	// Promise and future to synchronize thread start
+	std::promise<void> m_threadStartPromise;
+	std::future<void> m_threadStartFuture;
 };
 
 #endif 

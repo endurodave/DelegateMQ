@@ -40,11 +40,6 @@ int main()
 
     pollThread.CreateThread();
 
-    // TODO: solve startup problem. All threads must be started.
-    // Maybe CreateThread() waits for signal from main loop before 
-    // returning. 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-
     // Generate remote test data on worker thread
     MakeDelegate(&PollData, pollThread, WAIT_INFINITE).AsyncInvoke();
 

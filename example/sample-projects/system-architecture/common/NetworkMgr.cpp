@@ -56,16 +56,15 @@ void NetworkMgr::Stop()
 {
     m_recvTimer.Stop();
     m_thread.ExitThread();
-    m_recvTimer.Stop();
 }
 
 void NetworkMgr::SendDataPackage(DataPackage& data)
 {
-    // Reinvoke SendDataPackage call onto m_thread if necessary
+    // Reinvoke SendDataPackage call onto NetworkMgr thread
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-        MakeDelegate(this, &NetworkMgr::SendDataPackage, m_thread)(data);
+        return MakeDelegate(this, &NetworkMgr::SendDataPackage, m_thread)(data);
 
-    // Send data to remote. Invoke remote delegate on m_thread context only.
+    // Send data to remote. 
     m_dataPackageDel(data);
 }
 

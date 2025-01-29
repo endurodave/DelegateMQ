@@ -11,7 +11,6 @@ class DataPackage
 public:
     std::vector<ActuatorState> actuators;
     std::vector<SensorData> sensors;
-    int temp = 0;
 
     MSGPACK_DEFINE(actuators, sensors);
 };
