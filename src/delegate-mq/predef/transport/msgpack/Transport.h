@@ -5,6 +5,7 @@
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
 
+#include "predef/dispatcher/MsgHeader.h"
 #include <thread>
 #include <chrono>
 #include <zmq.h>
@@ -78,16 +79,15 @@ public:
         zmq_send(m_zmq, os.str().c_str(), length, 0);
     }
 
-    std::stringstream Receive(DelegateMQ::DelegateRemoteId& id)
+    std::stringstream Receive(MsgHeader& header)
     {
         std::stringstream is(std::ios::in | std::ios::out | std::ios::binary);
 
-        char buffer[2048];
-        int size = zmq_recv(m_zmq, buffer, 255, ZMQ_DONTWAIT);
+        int size = zmq_recv(m_zmq, buffer, BUFFER_SIZE, ZMQ_DONTWAIT);
         if (size == -1) {
             // Check if the error is due to a timeout
             if (zmq_errno() == EAGAIN) {
-                std::cout << "Receive timeout!" << std::endl;
+                //std::cout << "Receive timeout!" << std::endl;
             }
             return is;
         }
@@ -96,17 +96,24 @@ public:
         is.write(buffer, size);
         is.seekg(0);  
 
-        // Skip the first 4 bytes: 2 bytes for 0x55AA and 2 bytes for the DelegateRemoteId
-        const short MARKER = 0x55AA;
-        short syncMarker;
-        is.read(reinterpret_cast<char*>(&syncMarker), sizeof(syncMarker));  // Read 2 bytes for sync marker
-        if (syncMarker != MARKER) {
+        uint16_t marker = 0;
+        is.read(reinterpret_cast<char*>(&marker), sizeof(marker));
+        header.SetMarker(marker);
+
+        if (header.GetMarker() != MsgHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
-            return is;  // Optionally handle this case more gracefully
+            return is;  // TODO: Optionally handle this case more gracefully
         }
 
-        // Read the DelegateRemoteId (2 bytes)
+        // Read the DelegateRemoteId (2 bytes) into the `id` variable
+        uint16_t id = 0;
         is.read(reinterpret_cast<char*>(&id), sizeof(id));
+        header.SetId(id);
+
+        // Read seqNum (again using the getter for byte swapping)
+        uint16_t seqNum = 0;
+        is.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
+        header.SetSeqNum(seqNum);
 
         // Now `is` contains the rest of the data, which can be read or processed
         return is;
@@ -115,6 +122,9 @@ public:
 private:
     void* m_zmqContext = nullptr;
     void* m_zmq = nullptr;
+
+    static const int BUFFER_SIZE = 2048;
+    char buffer[BUFFER_SIZE];
 };
 
 #endif

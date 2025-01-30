@@ -3,13 +3,14 @@
 
 /// @file
 /// @brief Delegate dispatcher interface class. 
-/// 
+
+#include <cstdint>
 
 namespace DelegateMQ {
 
 // Remote identifier shared between sender and receiver remotes
-typedef short DelegateRemoteId;
-const short INVALID_REMOTE_ID = -1;
+typedef uint16_t DelegateRemoteId;
+const uint16_t INVALID_REMOTE_ID = -1;
 
 /// @brief Delegate interface class to dispatch serialized function argument data
 /// to a remote destination. Implemented by the application if using remote delegates.

@@ -7,7 +7,9 @@
 
 #include "delegate/IDispatcher.h"
 #include "predef/transport/msgpack/Transport.h"
+#include "MsgHeader.h"
 #include <sstream>
+#include <mutex>
 
 /// @brief Dispatcher sends data to the transport for transmission to the endpoint.
 class Dispatcher : public DelegateMQ::IDispatcher
@@ -31,21 +33,35 @@ public:
     {
         std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        // Prepend marker (0x55AA as a short)
-        const short MARKER = 0x55AA;
-        ss.write(reinterpret_cast<const char*>(&MARKER), sizeof(MARKER));
+        MsgHeader header(id, GetSeqNum());
 
-        // Prepend DelegateRemoteId
-        ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
+        // Write each header value using the getters from MsgHeader
+        auto marker = header.GetMarker();  // Store the result in a variable
+        ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
 
-        // insert delegate arguments
+        auto id_value = header.GetId();  // Store the result in a variable
+        ss.write(reinterpret_cast<const char*>(&id_value), sizeof(id_value));
+
+        auto seqNum = header.GetSeqNum();  // Store the result in a variable
+        ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
+
+        // Insert delegate arguments from the stream (os)
         ss << os.rdbuf();
+
         if (m_transport)
             m_transport->Send(ss);
         return 0;
     }
 
 private:
+    int16_t GetSeqNum()
+    {
+        static std::atomic<int16_t> seqNum(0);
+
+        // Atomically increment and return the previous value
+        return seqNum.fetch_add(1, std::memory_order_relaxed);
+    }
+
     Transport* m_transport = nullptr;
 };
 

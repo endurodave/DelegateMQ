@@ -13,13 +13,6 @@
 
 static const DelegateRemoteId DATA_PACKAGE_ID = 1;
 
-class MsgHeader
-{
-public:
-    DelegateMQ::DelegateRemoteId id = 0;
-    MSGPACK_DEFINE(id);
-};
-
 // NetworkMgr sends and receives data using a delegate transport implemented
 // using ZeroMQ library.
 class NetworkMgr
@@ -34,9 +27,9 @@ public:
     }
 
     void Start();
-
     void Stop();
-
+    void SendStart();
+    void SendStop();
     void SendDataPackage(DataPackage& data);
 
 private:

@@ -20,7 +20,18 @@ static Thread receiveThread("ReceiveThread");
 void DataPackageRecv(DataPackage& data)
 {
     std::cout << "Actuators: " << data.actuators.size() << std::endl;
+    for (const auto& actuator : data.actuators) {
+        std::cout << "Actuator ID: " << actuator.id
+            << ", Position: " << actuator.position
+            << ", Voltage: " << actuator.voltage << std::endl;
+    }
+
     std::cout << "Sensors: " << data.sensors.size() << std::endl;
+    for (const auto& sensor : data.sensors) {
+        std::cout << "Sensor ID: " << sensor.id
+            << ", Supply Voltage: " << sensor.supplyV
+            << ", Reading Voltage: " << sensor.readingV << std::endl;
+    }
 }
 
 void PollData()
@@ -52,7 +63,7 @@ int main()
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    // Register to receive local and remote data
+    // Register to receive local and remote data updates
     DataMgr::DataPackageRecv += MakeDelegate(&DataPackageRecv, receiveThread);
 
     // TODO: Send message to server to start data collection

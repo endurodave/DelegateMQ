@@ -58,6 +58,16 @@ void NetworkMgr::Stop()
     m_thread.ExitThread();
 }
 
+void NetworkMgr::SendStart()
+{
+    //TODO
+}
+
+void NetworkMgr::SendStop()
+{
+    //TODO
+}
+
 void NetworkMgr::SendDataPackage(DataPackage& data)
 {
     // Reinvoke SendDataPackage call onto NetworkMgr thread
@@ -72,13 +82,13 @@ void NetworkMgr::SendDataPackage(DataPackage& data)
 void NetworkMgr::Poll()
 {
     // Get incoming data
-    DelegateRemoteId id = INVALID_REMOTE_ID;
-    auto arg_data = m_transportRecv.Receive(id);
-
+    MsgHeader header;
+    auto arg_data = m_transportRecv.Receive(header);
+     
     // Incoming remote delegate data arrived?
     if (!arg_data.str().empty())
     {
-        auto receiveDelegate = m_receiveIdMap[id];
+        auto receiveDelegate = m_receiveIdMap[header.GetId()];
         if (receiveDelegate)
         {
             // Invoke the receiver target function with the sender's argument data
