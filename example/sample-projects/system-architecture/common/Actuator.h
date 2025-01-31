@@ -25,6 +25,7 @@ public:
 
     ActuatorState& GetState() 
     { 
+        // Simulate data changing
         m_state.voltage += 0.1f;
         return m_state; 
     }

@@ -36,13 +36,13 @@ public:
         MsgHeader header(id, GetSeqNum());
 
         // Write each header value using the getters from MsgHeader
-        auto marker = header.GetMarker();  // Store the result in a variable
+        auto marker = header.GetMarker();
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
 
-        auto id_value = header.GetId();  // Store the result in a variable
+        auto id_value = header.GetId();
         ss.write(reinterpret_cast<const char*>(&id_value), sizeof(id_value));
 
-        auto seqNum = header.GetSeqNum();  // Store the result in a variable
+        auto seqNum = header.GetSeqNum();
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
 
         // Insert delegate arguments from the stream (os)
@@ -54,9 +54,9 @@ public:
     }
 
 private:
-    int16_t GetSeqNum()
+    uint16_t GetSeqNum()
     {
-        static std::atomic<int16_t> seqNum(0);
+        static std::atomic<uint16_t> seqNum(0);
 
         // Atomically increment and return the previous value
         return seqNum.fetch_add(1, std::memory_order_relaxed);

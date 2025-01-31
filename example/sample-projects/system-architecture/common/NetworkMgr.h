@@ -7,17 +7,20 @@
 
 #include "DelegateMQ.h"
 #include "DataPackage.h"
+#include "Command.h"
 #include <msgpack.hpp>
 #include <map>
 #include <mutex>
 
 static const DelegateRemoteId DATA_PACKAGE_ID = 1;
+static const DelegateRemoteId COMMAND_ID = 2;
 
 // NetworkMgr sends and receives data using a delegate transport implemented
 // using ZeroMQ library.
 class NetworkMgr
 {
 public:
+    static MulticastDelegateSafe<void(Command&)> CommandRecv;
     static MulticastDelegateSafe<void(DataPackage&)> DataPackageRecv;
 
     static NetworkMgr& Instance()
@@ -28,9 +31,12 @@ public:
 
     void Start();
     void Stop();
-    void SendStart();
-    void SendStop();
+    void SendCommand(Command& command);
     void SendDataPackage(DataPackage& data);
+
+    // Generic send function
+    template <typename T>
+    void SendMessage(T& message);
 
 private:
     NetworkMgr();
@@ -41,6 +47,7 @@ private:
 
     void ErrorHandler(DelegateError, DelegateErrorAux);
 
+    void RecvCommand(Command& command);
     void RecvSensorData(DataPackage& data);
 
     Thread m_thread;
@@ -49,12 +56,14 @@ private:
     xostringstream m_argStream;
 
     // Transport using ZeroMQ library. Only call transport from NetworkMsg thread.
-    Transport m_transportSend;
-    Transport m_transportRecv;
+    Transport m_transport;
 
     Dispatcher m_dispatcher;
 
     std::map<DelegateMQ::DelegateRemoteId, DelegateMQ::IRemoteInvoker*> m_receiveIdMap;
+
+    Serializer<void(Command&)> m_commandSer;
+    DelegateMemberRemote<NetworkMgr, void(Command&)> m_commandDel;
 
     Serializer<void(DataPackage&)> m_dataPackageSer;
     DelegateMemberRemote<NetworkMgr, void(DataPackage&)> m_dataPackageDel;

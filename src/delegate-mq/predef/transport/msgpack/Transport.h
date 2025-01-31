@@ -19,31 +19,54 @@ class Transport
 public:
     enum class Type 
     {
-        SUB,  // Subscriber
-        PUB   // Publisher
+        PAIR_CLIENT,
+        PAIR_SERVER,
+        PUB,
+        SUB
     };
 
     int Create(Type type, const char* addr)
     {
         m_zmqContext = zmq_ctx_new();
 
-        if (type == Type::PUB)
+        if (type == Type::PAIR_CLIENT)
+        {
+            m_zmqContext = zmq_ctx_new();
+
+            // Create a PAIR socket and connect the client to the server address
+            m_zmq = zmq_socket(m_zmqContext, ZMQ_PAIR);
+            int rc = zmq_connect(m_zmq, addr);
+            if (rc != 0) {
+                perror("zmq_connect failed");
+                return 1;
+            }
+        }
+        else if (type == Type::PAIR_SERVER)
+        {
+            m_zmqContext = zmq_ctx_new();
+
+            // Create a PAIR socket and bind the server to an address
+            m_zmq = zmq_socket(m_zmqContext, ZMQ_PAIR);
+            int rc = zmq_bind(m_zmq, addr);
+            if (rc != 0) {
+                perror("zmq_bind failed");
+                return 1;
+            }
+        }
+        else if (type == Type::PUB)
         {
             // Create a PUB socket
             m_zmq = zmq_socket(m_zmqContext, ZMQ_PUB);
-
-            // Bind the socket to a TCP port
             int rc = zmq_bind(m_zmq, addr);
             if (rc != 0) {
                 perror("zmq_bind failed");  // TODO
                 return 1;
             }
         }
-        else
+        else if (type == Type::SUB)
         {
             // Create a SUB socket
             m_zmq = zmq_socket(m_zmqContext, ZMQ_SUB);
-
             int rc = zmq_connect(m_zmq, addr);
             if (rc != 0) {
                 perror("zmq_connect failed");
@@ -56,6 +79,12 @@ public:
             // Set the receive timeout to 1000 milliseconds (1 second)
             int timeout = 1000; // 1 second
             zmq_setsockopt(m_zmq, ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
+        }
+        else
+        {
+            // Handle other types, if needed
+            perror("Invalid socket type");
+            return 1;
         }
         return 0;
     }
@@ -76,7 +105,17 @@ public:
             return;
 
         // Send delegate argument data using ZeroMQ
-        zmq_send(m_zmq, os.str().c_str(), length, 0);
+        int err = zmq_send(m_zmq, os.str().c_str(), length, 0);
+        if (err == -1)
+        {
+            auto e = zmq_errno();
+            auto s = zmq_strerror(zmq_errno());
+            std::cerr << "zmq_send failed with error: " << zmq_strerror(zmq_errno()) << std::endl;
+        }
+        else
+        {
+            std::cout << "Message sent successfully. Length: " << length << std::endl;
+        }
     }
 
     std::stringstream Receive(MsgHeader& header)

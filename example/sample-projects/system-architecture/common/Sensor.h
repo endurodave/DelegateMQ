@@ -30,6 +30,7 @@ public:
 
     SensorData& GetSensorData() 
     { 
+        // Simulate data changing
         m_data.readingV += 0.1f;
         m_data.supplyV += 0.1f;
         return m_data; 

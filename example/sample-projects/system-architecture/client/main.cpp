@@ -6,17 +6,12 @@
 
 #include "NetworkMgr.h"
 #include "DataMgr.h"
+#include "ClientApp.h"
 #include <thread>
 
-// Client sensors
-static Actuator actuator3(3);
-static Actuator actuator4(4);
-static Sensor sensor3(3);
-static Sensor sensor4(4);
-
-static Thread pollThread("PollThread");
 static Thread receiveThread("ReceiveThread");
 
+// Receive all local and remote data callback
 void DataPackageRecv(DataPackage& data)
 {
     std::cout << "Actuators: " << data.actuators.size() << std::endl;
@@ -34,45 +29,28 @@ void DataPackageRecv(DataPackage& data)
     }
 }
 
-void PollData()
-{
-    int cnt = 0;
-    while (cnt++ < 30)
-    {
-        // Collect sensor and actuator data
-        DataPackage dataPackage;
-        dataPackage.actuators.push_back(actuator3.GetState());
-        dataPackage.actuators.push_back(actuator4.GetState());
-        dataPackage.sensors.push_back(sensor3.GetSensorData());
-        dataPackage.sensors.push_back(sensor4.GetSensorData());
-
-        // Set data collected locally
-        DataMgr::Instance().SetDataPackage(dataPackage);
-
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-}
-
 int main()
 {
+    std::cout << "Client start!" << std::endl;
+
     NetworkMgr::Instance().Start();
     DataMgr::Instance();
+    ClientApp::Instance();
 
-    pollThread.CreateThread();
     receiveThread.CreateThread();
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-
-    // Register to receive local and remote data updates
+    // Register to receive local and remote data updates on receiveThread
     DataMgr::DataPackageRecv += MakeDelegate(&DataPackageRecv, receiveThread);
 
-    // TODO: Send message to server to start data collection
+    // Start all data collection
+    ClientApp::Instance().Start();
 
-    // Generate local test data on worker thread
-    MakeDelegate(&PollData, pollThread, WAIT_INFINITE).AsyncInvoke();
+    // Let client and server communicate
+    std::this_thread::sleep_for(std::chrono::seconds(30));
+
+    ClientApp::Instance().Stop();
 
     NetworkMgr::Instance().Stop();
-    pollThread.ExitThread();
     receiveThread.ExitThread();
     return 0;
 }

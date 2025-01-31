@@ -7,6 +7,7 @@
 using namespace DelegateMQ;
 using namespace std;
 
+MulticastDelegateSafe<void(Command&)> NetworkMgr::CommandRecv;
 MulticastDelegateSafe<void(DataPackage&)> NetworkMgr::DataPackageRecv;
 
 NetworkMgr::NetworkMgr() :
@@ -20,21 +21,23 @@ NetworkMgr::NetworkMgr() :
     m_dataPackageDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
     m_dataPackageDel = MakeDelegate(this, &NetworkMgr::RecvSensorData, DATA_PACKAGE_ID);
 
-    // Set the transport
+    m_commandDel.SetStream(&m_argStream);
+    m_commandDel.SetSerializer(&m_commandSer);
+    m_commandDel.SetDispatcher(&m_dispatcher);
+    m_commandDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
+    m_commandDel = MakeDelegate(this, &NetworkMgr::RecvCommand, COMMAND_ID);
+
 #ifdef SERVER_APP
-    m_transportSend.Create(Transport::Type::PUB, "tcp://*:5555");
-    m_dispatcher.SetTransport(&m_transportSend);
-
-    m_transportRecv.Create(Transport::Type::SUB, "tcp://localhost:5556");
+    m_transport.Create(Transport::Type::PAIR_SERVER, "tcp://*:5555");
 #else
-    m_transportRecv.Create(Transport::Type::SUB, "tcp://localhost:5555");
-
-    m_transportSend.Create(Transport::Type::PUB, "tcp://*:5556");
-    m_dispatcher.SetTransport(&m_transportSend);
-
-    // Client receive async delegates
-    m_receiveIdMap[DATA_PACKAGE_ID] = &m_dataPackageDel;
+    m_transport.Create(Transport::Type::PAIR_CLIENT, "tcp://localhost:5555");
 #endif
+
+    m_dispatcher.SetTransport(&m_transport);
+
+    // Set receive async delegates into map
+    m_receiveIdMap[COMMAND_ID] = &m_commandDel;
+    m_receiveIdMap[DATA_PACKAGE_ID] = &m_dataPackageDel;
 
     // Create the receiver thread
     m_thread.CreateThread();
@@ -58,14 +61,14 @@ void NetworkMgr::Stop()
     m_thread.ExitThread();
 }
 
-void NetworkMgr::SendStart()
+void NetworkMgr::SendCommand(Command& command)
 {
-    //TODO
-}
+    // Reinvoke SendDataPackage call onto NetworkMgr thread
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::SendCommand, m_thread)(command);
 
-void NetworkMgr::SendStop()
-{
-    //TODO
+    // Send data to remote. 
+    m_commandDel(command);
 }
 
 void NetworkMgr::SendDataPackage(DataPackage& data)
@@ -83,7 +86,7 @@ void NetworkMgr::Poll()
 {
     // Get incoming data
     MsgHeader header;
-    auto arg_data = m_transportRecv.Receive(header);
+    auto arg_data = m_transport.Receive(header);
      
     // Incoming remote delegate data arrived?
     if (!arg_data.str().empty())
@@ -105,6 +108,11 @@ void NetworkMgr::ErrorHandler(DelegateError, DelegateErrorAux)
 {
     // Handle communication error as necessary
     ASSERT_TRUE(0);
+}
+
+void NetworkMgr::RecvCommand(Command& command)
+{
+    CommandRecv(command);
 }
 
 void NetworkMgr::RecvSensorData(DataPackage& data)
