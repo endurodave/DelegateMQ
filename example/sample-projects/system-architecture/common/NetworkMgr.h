@@ -20,6 +20,8 @@ static const DelegateRemoteId COMMAND_ID = 2;
 class NetworkMgr
 {
 public:
+    // Resister with delegate to receive callbacks
+    static MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> Error;
     static MulticastDelegateSafe<void(Command&)> CommandRecv;
     static MulticastDelegateSafe<void(DataPackage&)> DataPackageRecv;
 
@@ -45,7 +47,7 @@ private:
     // Poll called periodically on m_thread context
     void Poll();
 
-    void ErrorHandler(DelegateError, DelegateErrorAux);
+    void ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux);
 
     void RecvCommand(Command& command);
     void RecvSensorData(DataPackage& data);

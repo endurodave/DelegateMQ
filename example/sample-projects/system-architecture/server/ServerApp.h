@@ -44,6 +44,7 @@ private:
 
         // Register for incoming client commands
         NetworkMgr::CommandRecv += MakeDelegate(this, &ServerApp::CommandRecv, m_thread);
+        NetworkMgr::Error += MakeDelegate(this, &ServerApp::ErrorHandler, m_thread);
     }
 
     ~ServerApp()
@@ -62,6 +63,11 @@ private:
 
         // Send data to remote client
         NetworkMgr::Instance().SendDataPackage(dataPackage);
+    }
+
+    void ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
+    {
+        std::cout << "ServerApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
     Thread m_thread;

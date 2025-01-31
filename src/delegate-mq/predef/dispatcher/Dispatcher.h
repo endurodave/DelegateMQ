@@ -49,8 +49,11 @@ public:
         ss << os.rdbuf();
 
         if (m_transport)
-            m_transport->Send(ss);
-        return 0;
+        {
+            int err = m_transport->Send(ss);
+            return err;
+        }
+        return -1;
     }
 
 private:

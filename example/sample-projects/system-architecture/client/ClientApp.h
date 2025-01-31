@@ -47,6 +47,8 @@ private:
         m_sensor4(4)
     {
         m_thread.CreateThread();
+
+        NetworkMgr::Error += MakeDelegate(this, &ClientApp::ErrorHandler, m_thread);
     }
 
     ~ClientApp()
@@ -66,6 +68,11 @@ private:
 
         // Set data collected locally
         DataMgr::Instance().SetDataPackage(dataPackage);
+    }
+
+    void ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
+    {
+        std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
     Thread m_thread;

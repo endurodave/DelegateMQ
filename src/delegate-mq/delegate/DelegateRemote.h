@@ -746,17 +746,17 @@ public:
                 m_serializer->write(*m_stream, std::forward<Args>(args)...);
 
                 if (m_stream->fail() || m_stream->bad()) {
-                    RaiseError(DelegateError::ERR_STREAM_FAIL);
+                    RaiseError(m_id, DelegateError::ERR_STREAM_FAIL);
                 }
                 else if (m_stream->eof()) {
-                    RaiseError(DelegateError::ERR_STREAM_EMPTY);
+                    RaiseError(m_id, DelegateError::ERR_STREAM_EMPTY);
                 }
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
                         int error = m_dispatcher->Dispatch(*m_stream, m_id);
                         if (error)
-                            RaiseError(DelegateError::ERR_DISPATCH_ERROR, error);
+                            RaiseError(m_id, DelegateError::ERR_DISPATCH_ERROR, error);
                     }
                 }
             }
@@ -792,7 +792,7 @@ public:
     /// @return `true` if target function invoked; `false` if error. 
     virtual bool Invoke(std::istream& is) override {
         if (!m_serializer) {
-            RaiseError(DelegateError::ERR_NO_SERIALIZER);
+            RaiseError(m_id, DelegateError::ERR_NO_SERIALIZER);
             return false;
         }
 
@@ -911,14 +911,14 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(const Delegate<void(DelegateError, DelegateErrorAux)>& errorHandler) {
+    void SetErrorHandler(const Delegate<void(DelegateRemoteId, DelegateError, DelegateErrorAux)>& errorHandler) {
         m_errorHandler = errorHandler;  // Copy
     }
 
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, DelegateErrorAux)>&& errorHandler) {
+    void SetErrorHandler(Delegate<void(DelegateRemoteId, DelegateError, DelegateErrorAux)>&& errorHandler) {
         m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
@@ -933,17 +933,18 @@ public:
 
 private:
     /// @brief Raise an error and callback registered error handler
+    /// @param[in] id Remote delegate identifier.
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
-    void RaiseError(DelegateError error, DelegateErrorAux auxCode = 0) {
-        m_errorHandler(error, auxCode);
+    void RaiseError(DelegateRemoteId id, DelegateError error, DelegateErrorAux auxCode = 0) {
+        m_errorHandler(id, error, auxCode);
     }
 
     /// The delegate unique remote identifier
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
 
     /// A pointer to a error handler callback
-    UnicastDelegate<void(DelegateError, DelegateErrorAux)> m_errorHandler;
+    UnicastDelegate<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> m_errorHandler;
 
     /// A pointer to the delegate dispatcher
     IDispatcher* m_dispatcher = nullptr;

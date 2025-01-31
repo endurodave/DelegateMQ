@@ -59,7 +59,7 @@ public:
             m_zmq = zmq_socket(m_zmqContext, ZMQ_PUB);
             int rc = zmq_bind(m_zmq, addr);
             if (rc != 0) {
-                perror("zmq_bind failed");  // TODO
+                perror("zmq_bind failed"); 
                 return 1;
             }
         }
@@ -98,24 +98,20 @@ public:
         m_zmqContext = nullptr;
     }
 
-    void Send(std::stringstream& os) 
+    int Send(std::stringstream& os) 
     {
         size_t length = os.str().length();
         if (os.bad() || os.fail() || length <= 0)
-            return;
+            return -1;
 
         // Send delegate argument data using ZeroMQ
         int err = zmq_send(m_zmq, os.str().c_str(), length, 0);
         if (err == -1)
         {
-            auto e = zmq_errno();
-            auto s = zmq_strerror(zmq_errno());
             std::cerr << "zmq_send failed with error: " << zmq_strerror(zmq_errno()) << std::endl;
+            return zmq_errno();
         }
-        else
-        {
-            std::cout << "Message sent successfully. Length: " << length << std::endl;
-        }
+        return 0;
     }
 
     std::stringstream Receive(MsgHeader& header)

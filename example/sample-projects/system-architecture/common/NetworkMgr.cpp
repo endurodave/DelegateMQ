@@ -7,6 +7,7 @@
 using namespace DelegateMQ;
 using namespace std;
 
+MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::Error;
 MulticastDelegateSafe<void(Command&)> NetworkMgr::CommandRecv;
 MulticastDelegateSafe<void(DataPackage&)> NetworkMgr::DataPackageRecv;
 
@@ -104,10 +105,9 @@ void NetworkMgr::Poll()
     }
 }
 
-void NetworkMgr::ErrorHandler(DelegateError, DelegateErrorAux)
+void NetworkMgr::ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
 {
-    // Handle communication error as necessary
-    ASSERT_TRUE(0);
+    Error(id, error, aux);
 }
 
 void NetworkMgr::RecvCommand(Command& command)
