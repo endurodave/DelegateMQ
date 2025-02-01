@@ -627,7 +627,7 @@ static void DelegateMemberRemoteTests()
         arr[i](TEST_INT);
     delete[] arr;
 
-    std::function<void(DelegateError, int)> errorHandler = [](DelegateError error, int code) {
+    std::function<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> errorHandler = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {
         ASSERT_TRUE(false);
     };
     Dispatcher dispatcher;
@@ -1010,7 +1010,7 @@ static void DelegateFunctionRemoteTests()
     auto errorDel4 = MakeDelegate(Error4, REMOTE_ID);
 #endif
 
-    std::function<void(DelegateError, int)> errorHandler = [](DelegateError error, int code) {
+    std::function<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> errorHandler = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {
         ASSERT_TRUE(false);
     };
     Dispatcher dispatcher;

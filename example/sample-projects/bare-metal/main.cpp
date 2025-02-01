@@ -153,8 +153,8 @@ public:
 
     ~Sender()
     {
-        m_thread.ExitThread();
         m_sendTimer.Stop();
+        m_thread.ExitThread();
     }
 
     // Send data to the remote

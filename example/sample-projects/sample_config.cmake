@@ -1,6 +1,8 @@
 # Specify the minimum CMake version required
 cmake_minimum_required(VERSION 3.10)
 
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../src ${CMAKE_CURRENT_LIST_DIR}/../../build/delegate_mq)
+
 # Root directory for delegate library source code
 set(DELEGATE_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}/../..")
 if(NOT EXISTS "${DELEGATE_ROOT_DIR}")

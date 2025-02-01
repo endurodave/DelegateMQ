@@ -68,7 +68,7 @@ public:
     }
 
 private:
-    void ErrorHandler(DelegateError, DelegateErrorAux)
+    void ErrorHandler(DelegateRemoteId, DelegateError, DelegateErrorAux)
     {
         ASSERT_TRUE(0);
     }

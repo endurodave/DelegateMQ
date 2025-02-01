@@ -8,12 +8,7 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Set default if USE_THREAD option if not defined
-if (NOT DEFINED USE_THREAD)
-    set(USE_THREAD "THREAD_STDLIB" CACHE STRING "Select the thread for the delegate")
-endif()
-
-# Select library build options
+# Select library build option
 if (USE_THREAD STREQUAL "THREAD_STDLIB")
     add_compile_definitions(THREAD_STDLIB)
     file(GLOB SUBDIR_SOURCES "delegate-mq/predef/os/stdlib/*.cpp") 
@@ -22,19 +17,36 @@ else()
     message(FATAL_ERROR "Must select a delegate thread option.")
 endif()
 
-# Set default if USE_SERIALIZE option if not defined
-if (NOT DEFINED USE_SERIALIZE)
-    set(USE_SERIALIZE "SERIALIZE_SERIALIZE" CACHE STRING "Select the serialize for the delegate")
-endif()
-
+# Select the serialization build option
 if (USE_SERIALIZE STREQUAL "SERIALIZE_SERIALIZE")
     add_compile_definitions(SERIALIZE_SERIALIZE)
 elseif (USE_SERIALIZE STREQUAL "SERIALIZE_MSGPACK")
     add_compile_definitions(SERIALIZE_MSGPACK)
     set(MSGPACK_INCLUDE "../../msgpack-c/include")
     include_directories(${MSGPACK_INCLUDE})
+
+    if (IS_DIRECTORY ${VCPKG_ROOT_DIR})
+        include_directories(${VCPKG_ROOT_DIR}/include)
+    else()
+        message(FATAL_ERROR "Cannot find VCPKG_ROOT_DIR directory.")
+    endif()
+elseif (USE_SERIALIZE STREQUAL "SERIALIZE_NONE")
 else()
     message(FATAL_ERROR "Must select a delegate serialize option.")
+endif()
+
+# Select the serialization build option
+if (USE_TRANSPORT STREQUAL "TRANSPORT_MSGPACK")
+    add_compile_definitions(TRANSPORT_MSGPACK)
+    set(MSGPACK_INCLUDE "../../msgpack-c/include")
+    include_directories(${MSGPACK_INCLUDE})
+
+    if (IS_DIRECTORY ${VCPKG_ROOT_DIR})
+        include_directories(${VCPKG_ROOT_DIR}/include)
+    else()
+        message(FATAL_ERROR "Cannot find VCPKG_ROOT_DIR directory.")
+endif()
+elseif (USE_SERIALIZE STREQUAL "TRANSPORT_NONE")
 endif()
 
 file(GLOB SUBDIR_SOURCES "delegate-mq/predef/util/*.cpp") 
