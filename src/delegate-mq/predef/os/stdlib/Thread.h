@@ -54,6 +54,8 @@ private:
     /// Entry point for timer thread
     void TimerThread();
 
+	void SetThreadName(std::thread::native_handle_type handle, const std::string& name);
+
 	std::unique_ptr<std::thread> m_thread;
 	std::queue<std::shared_ptr<ThreadMsg>> m_queue;
 	std::mutex m_mutex;

@@ -6,7 +6,7 @@
 /// David Lafreniere, 2025.
 
 #include "delegate/IDispatcher.h"
-#include "predef/transport/msgpack/Transport.h"
+#include "predef/transport/zeromq/Transport.h"
 #include "MsgHeader.h"
 #include <sstream>
 #include <mutex>
@@ -18,8 +18,6 @@ public:
     Dispatcher() = default;
     ~Dispatcher()
     {
-        if (m_transport)
-            m_transport->Close();
         m_transport = nullptr;
     }
 

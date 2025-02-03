@@ -13,12 +13,11 @@
 using namespace DelegateMQ;
 using namespace std;
 
-// DataMgr collects data from local and remote data sources. Locally SetDataPackage()
-// is called to update data. Remotely data arrives via NetworkMgr::DataPackageRecv 
-// delegate callback.
+// DataMgr collects data from local and remote data sources. 
 class DataMgr
 {
 public:
+    // Register with delegate to receive callbacks when data is received
     static MulticastDelegateSafe<void(DataPackage&)> DataPackageRecv;
 
     static DataMgr& Instance()
@@ -27,9 +26,15 @@ public:
         return instance;
     }
 
-    void SetDataPackage(DataPackage& dataPackage) { LocalDataPackageUpdate(dataPackage); }
+    void SetDataPackage(DataPackage& dataPackage) 
+    { 
+        LocalDataPackageUpdate(dataPackage); 
+    }
 
-    DataPackage GetDataPackage() { return GetCombindedDataPackage(); }
+    DataPackage GetDataPackage() 
+    { 
+        return GetCombindedDataPackage(); 
+    }
 
 private:
     DataMgr() : m_thread("DataMgr")
@@ -46,6 +51,7 @@ private:
         m_thread.ExitThread();
     }
 
+    // Get all remote and local data packages
     DataPackage GetCombindedDataPackage()
     {
         std::lock_guard<std::mutex> lk(m_mutex);

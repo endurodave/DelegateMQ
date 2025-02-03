@@ -5,7 +5,8 @@
 #include "Actuator.h"
 #include "Sensor.h"
 
-// Server application subsystem reads data and sends to a client
+// Server application subsystem reads data commands and sends to a 
+// remote client using delegates.
 class ServerApp
 {
 public:
@@ -15,6 +16,7 @@ public:
         return instance;
     }
 
+    // Receive and handle client commands
     void CommandRecv(Command& command)
     {
         if (command.action == Command::Action::START)

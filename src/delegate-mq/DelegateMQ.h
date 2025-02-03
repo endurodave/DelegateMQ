@@ -82,7 +82,7 @@
 
 #if defined(TRANSPORT_MSGPACK)
     #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/msgpack/Transport.h"
+    #include "predef/transport/zeromq/Transport.h"
 #elif defined(TRANSPORT_NONE)
     // Create a custom application-specific transport
 #else

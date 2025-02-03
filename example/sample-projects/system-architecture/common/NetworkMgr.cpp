@@ -15,7 +15,22 @@ NetworkMgr::NetworkMgr() :
     m_thread("NetworkMgr"),
     m_argStream(ios::in | ios::out | ios::binary)
 {
-    // Set the delegate interfaces
+    // Create the receiver thread
+    m_thread.CreateThread();
+}
+
+NetworkMgr::~NetworkMgr()
+{
+    m_thread.ExitThread();
+}
+
+void NetworkMgr::Create()
+{
+    // Reinvoke call onto NetworkMgr thread
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::Create, m_thread)();
+
+    // Setup the remote delegate interfaces
     m_dataPackageDel.SetStream(&m_argStream);
     m_dataPackageDel.SetSerializer(&m_dataPackageSer);
     m_dataPackageDel.SetDispatcher(&m_dispatcher);
@@ -34,23 +49,19 @@ NetworkMgr::NetworkMgr() :
     m_transport.Create(Transport::Type::PAIR_CLIENT, "tcp://localhost:5555");
 #endif
 
+    // Set the transport used by the dispatcher
     m_dispatcher.SetTransport(&m_transport);
 
     // Set receive async delegates into map
     m_receiveIdMap[COMMAND_ID] = &m_commandDel;
     m_receiveIdMap[DATA_PACKAGE_ID] = &m_dataPackageDel;
-
-    // Create the receiver thread
-    m_thread.CreateThread();
-}
-
-NetworkMgr::~NetworkMgr()
-{
-    m_thread.ExitThread();
 }
 
 void NetworkMgr::Start()
 {
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::Start, m_thread)();
+
     // Start a timer to poll data
     m_recvTimer.Expired = MakeDelegate(this, &NetworkMgr::Poll, m_thread);
     m_recvTimer.Start(std::chrono::milliseconds(50));
@@ -58,13 +69,17 @@ void NetworkMgr::Start()
 
 void NetworkMgr::Stop()
 {
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::Stop, m_thread)();
+
     m_recvTimer.Stop();
-    m_thread.ExitThread();
+    m_dispatcher.SetTransport(nullptr);
+    m_transport.Close();
+    //m_transport.Destroy();
 }
 
 void NetworkMgr::SendCommand(Command& command)
 {
-    // Reinvoke SendDataPackage call onto NetworkMgr thread
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
         return MakeDelegate(this, &NetworkMgr::SendCommand, m_thread)(command);
 
@@ -74,7 +89,6 @@ void NetworkMgr::SendCommand(Command& command)
 
 void NetworkMgr::SendDataPackage(DataPackage& data)
 {
-    // Reinvoke SendDataPackage call onto NetworkMgr thread
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
         return MakeDelegate(this, &NetworkMgr::SendDataPackage, m_thread)(data);
 

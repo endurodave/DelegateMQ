@@ -40,18 +40,9 @@ bool Thread::CreateThread()
 
 		m_thread = std::unique_ptr<std::thread>(new thread(&Thread::Process, this));
 
-#ifdef WIN32
-		// Get the thread's native Windows handle
 		auto handle = m_thread->native_handle();
+		SetThreadName(handle, THREAD_NAME);
 
-		// Set the thread name so it shows in the Visual Studio Debug Location toolbar
-		std::wstring wstr(THREAD_NAME.begin(), THREAD_NAME.end());
-		HRESULT hr = SetThreadDescription(handle, wstr.c_str());
-		if (FAILED(hr))
-		{
-			// Handle error if needed
-		}
-#endif
 		// Wait for the thread to enter the Process method
 		m_threadStartFuture.get();
 	}
@@ -84,6 +75,22 @@ size_t Thread::GetQueueSize()
 {
 	lock_guard<mutex> lock(m_mutex);
 	return m_queue.size();
+}
+
+//----------------------------------------------------------------------------
+// SetThreadName
+//----------------------------------------------------------------------------
+void Thread::SetThreadName(std::thread::native_handle_type handle, const std::string& name)
+{
+#ifdef WIN32
+	// Set the thread name so it shows in the Visual Studio Debug Location toolbar
+	std::wstring wstr(name.begin(), name.end());
+	HRESULT hr = SetThreadDescription(handle, wstr.c_str());
+	if (FAILED(hr))
+	{
+		// Handle error if needed
+	}
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -148,8 +155,11 @@ void Thread::TimerThread()
 //----------------------------------------------------------------------------
 void Thread::Process()
 {
-    m_timerExit = false;
+	m_timerExit = false;
     std::thread timerThread(&Thread::TimerThread, this);
+
+	auto handle = timerThread.native_handle();
+	SetThreadName(handle, THREAD_NAME + "Timer");
 
 	// Signal that the thread has started processing to notify CreateThread
 	m_threadStartPromise.set_value();

@@ -6,7 +6,7 @@
 #include "Sensor.h"
 #include "DataPackage.h"
 
-// Client application subsystem reads data and sends to DataMgr
+// ClientApp reads data locally and sends to DataMgr for storage. 
 class ClientApp
 {
 public:

@@ -92,9 +92,15 @@ public:
     void Close()
     {
         // Close the subscriber socket and context
-        zmq_close(m_zmq);
+        if (m_zmq)
+            zmq_close(m_zmq);
         m_zmq = nullptr;
-        zmq_ctx_destroy(m_zmqContext);
+    }
+
+    void Destroy()
+    {
+        if (m_zmqContext)
+            zmq_ctx_destroy(m_zmqContext);
         m_zmqContext = nullptr;
     }
 
@@ -105,7 +111,7 @@ public:
             return -1;
 
         // Send delegate argument data using ZeroMQ
-        int err = zmq_send(m_zmq, os.str().c_str(), length, 0);
+        int err = zmq_send(m_zmq, os.str().c_str(), length, ZMQ_DONTWAIT);
         if (err == -1)
         {
             std::cerr << "zmq_send failed with error: " << zmq_strerror(zmq_errno()) << std::endl;

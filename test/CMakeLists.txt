@@ -9,8 +9,15 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set (VCPKG_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../vcpkg/installed/x64-windows")
+set (DELEGATE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
+
+# Set delegate library build options
+set (USE_THREAD "THREAD_STDLIB")
 add_compile_definitions(THREAD_STDLIB)
+set (USE_SERIALIZE "SERIALIZE_SERIALIZE")
 add_compile_definitions(SERIALIZE_SERIALIZE)
+set (USE_TRANSPORT "TRANSPORT_NONE")
 add_compile_definitions(TRANSPORT_NONE)
 
 # Collect all .cpp and *.h source files 
