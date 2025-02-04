@@ -6,10 +6,10 @@ else()
     message(FATAL_ERROR "Common.cmake not found.")
 endif()
 
-if(EXISTS "${DELEGATE_ROOT_DIR}/FindExternal.cmake")
-    include ("${DELEGATE_ROOT_DIR}/FindExternal.cmake")
+if(EXISTS "${DELEGATE_ROOT_DIR}/External.cmake")
+    include ("${DELEGATE_ROOT_DIR}/External.cmake")
 else()
-    message(FATAL_ERROR "FindExternal.cmake not found.")
+    message(FATAL_ERROR "External.cmake not found.")
 endif()
 
 if(EXISTS "${DELEGATE_ROOT_DIR}/Macros.cmake")

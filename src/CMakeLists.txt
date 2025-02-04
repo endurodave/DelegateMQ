@@ -5,7 +5,7 @@ set (DELEGATE_APP "delegate_app")
 set (DELEGATE_LIB "delegate_mq")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
-include("${CMAKE_SOURCE_DIR}/DelegateConfig.cmake")
+include("${CMAKE_SOURCE_DIR}/Config.cmake")
 
 # Set build options
 set (USE_THREAD "THREAD_STDLIB")    # TODO NEED ALL THESE?

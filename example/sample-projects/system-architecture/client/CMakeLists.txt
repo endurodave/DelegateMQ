@@ -5,7 +5,7 @@ set (DELEGATE_APP "delegate_client_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 #add_compile_definitions(CLIENT_APP)
 
-include("${CMAKE_SOURCE_DIR}/../../../../DelegateConfig.cmake")
+include("${CMAKE_SOURCE_DIR}/../../../../Config.cmake")
 
 # Set delegate library build options
 add_compile_definitions(THREAD_STDLIB)
