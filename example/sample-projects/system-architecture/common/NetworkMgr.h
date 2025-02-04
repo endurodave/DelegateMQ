@@ -6,8 +6,8 @@
 /// David Lafreniere, 2025.
 
 #include "DelegateMQ.h"
-#include "DataPackage.h"
-#include "Command.h"
+#include "DataMsg.h"
+#include "CommandMsg.h"
 #include <msgpack.hpp>
 #include <map>
 #include <mutex>
@@ -21,9 +21,9 @@ class NetworkMgr
 {
 public:
     // Resister with delegate to receive callbacks
-    static MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> Error;
-    static MulticastDelegateSafe<void(Command&)> CommandRecv;
-    static MulticastDelegateSafe<void(DataPackage&)> DataPackageRecv;
+    static MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> ErrorCb;
+    static MulticastDelegateSafe<void(CommandMsg&)> CommandMsgCb;
+    static MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
 
     static NetworkMgr& Instance()
     {
@@ -35,11 +35,11 @@ public:
     void Start();
     void Stop();
 
-    // Send command to the remote
-    void SendCommand(Command& command);
+    // Send command message to the remote
+    void SendCommandMsg(CommandMsg& command);
 
-    // Send data package to the remote
-    void SendDataPackage(DataPackage& data);
+    // Send data message to the remote
+    void SendDataMsg(DataMsg& data);
 
 private:
     NetworkMgr();
@@ -52,8 +52,8 @@ private:
     void ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux);
 
     // Incoming message handlers
-    void RecvCommand(Command& command);
-    void RecvSensorData(DataPackage& data);
+    void RecvCommandMsg(CommandMsg& command);
+    void RecvDataMsg(DataMsg& data);
 
     // NetworkApp thread of control
     Thread m_thread;
@@ -74,12 +74,12 @@ private:
     std::map<DelegateMQ::DelegateRemoteId, DelegateMQ::IRemoteInvoker*> m_receiveIdMap;
 
     // Receive commands via remote delegate
-    Serializer<void(Command&)> m_commandSer;
-    DelegateMemberRemote<NetworkMgr, void(Command&)> m_commandDel;
+    Serializer<void(CommandMsg&)> m_commandMsgSer;
+    DelegateMemberRemote<NetworkMgr, void(CommandMsg&)> m_commandMsgDel;
 
     // Receive data package via remote delegate
-    Serializer<void(DataPackage&)> m_dataPackageSer;
-    DelegateMemberRemote<NetworkMgr, void(DataPackage&)> m_dataPackageDel;
+    Serializer<void(DataMsg&)> m_dataMsgSer;
+    DelegateMemberRemote<NetworkMgr, void(DataMsg&)> m_dataMsgDel;
 };
 
 #endif

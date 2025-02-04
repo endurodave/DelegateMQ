@@ -1,31 +1,22 @@
 # Specify the minimum CMake version required
 cmake_minimum_required(VERSION 3.10)
 
-# Project name and language (C or C++)
+set (DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
-# Set C++ standard 
-# C++17 minimum required
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+include("${CMAKE_SOURCE_DIR}/../../../DelegateConfig.cmake")
 
-set (VCPKG_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../vcpkg/installed/x64-windows")
-set (DELEGATE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
-
-# Set delegate library build options
+# Set build options
 set (USE_THREAD "THREAD_STDLIB")
-add_compile_definitions(THREAD_STDLIB)
 set (USE_SERIALIZE "SERIALIZE_NONE")
-add_compile_definitions(SERIALIZE_NONE)
 set (USE_TRANSPORT "TRANSPORT_NONE")
+
+add_compile_definitions(THREAD_STDLIB)
+add_compile_definitions(SERIALIZE_NONE)
 add_compile_definitions(TRANSPORT_NONE)
 
-include(../sample_config.cmake)
-
 # Collect all .cpp and *.h source files in the src directory
-file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-
-set(DELEGATE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
+file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
 
 # Collect all header files in the delegate directory
 file(GLOB Delegate_HEADERS 
@@ -42,13 +33,13 @@ include_directories(
 )
 
 # Add an executable target
-add_executable(delegate_app ${SOURCES} ${Delegate_HEADERS})
+add_executable(${DELEGATE_APP} ${SOURCES} ${Delegate_HEADERS})
 
 # Link the library directory
-link_directories(${LIBRARY_DIR})
+link_directories(${DELEGATE_LIB_DIR})
 
 # Link against the pre-built delegate_mq.lib
-target_link_libraries(delegate_app PRIVATE 
-    ${LIBRARY_DIR}/delegate_mq.lib
+target_link_libraries(${DELEGATE_APP} PRIVATE 
+    ${DELEGATE_LIB_DIR}/${DELEGATE_LIB_NAME}
 )
 

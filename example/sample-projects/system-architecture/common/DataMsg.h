@@ -1,12 +1,12 @@
-#ifndef DATA_PACKAGE_H
-#define DATA_PACKAGE_H
+#ifndef DATA_MSG_H
+#define DATA_MSG_H
 
 #include "Actuator.h"
 #include "Sensor.h"
 #include <msgpack.hpp>
 #include <vector>
 
-class DataPackage
+class DataMsg
 {
 public:
     std::vector<ActuatorState> actuators;

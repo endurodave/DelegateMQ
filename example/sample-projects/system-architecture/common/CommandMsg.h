@@ -1,10 +1,10 @@
-#ifndef COMMAND_H
-#define COMMAND_H
+#ifndef COMMAND_MSG_H
+#define COMMAND_MSG_H
 
 #include <msgpack.hpp>
 #include <chrono>
 
-class Command
+class CommandMsg
 {
 public:
     enum class Action { START, STOP };
@@ -16,7 +16,7 @@ public:
 };
 
 // Specialize the msgpack serialization for Command::Action
-MSGPACK_ADD_ENUM(Command::Action);
+MSGPACK_ADD_ENUM(CommandMsg::Action);
 
 
 #endif

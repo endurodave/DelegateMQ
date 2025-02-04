@@ -1,33 +1,19 @@
 # Specify the minimum CMake version required
 cmake_minimum_required(VERSION 3.10)
 
-# Project name and language (C or C++)
+set (DELEGATE_APP "delegate_server_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
-
-# Set C++ standard 
-# C++17 minimum required
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
 add_compile_definitions(SERVER_APP)
 
-set (VCPKG_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../vcpkg/installed/x64-windows")
-set (DELEGATE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
+include("${CMAKE_SOURCE_DIR}/../../../../DelegateConfig.cmake")
 
 # Set delegate library build options
-set (USE_THREAD "THREAD_STDLIB")
 add_compile_definitions(THREAD_STDLIB)
-set (USE_SERIALIZE "SERIALIZE_MSGPACK")
 add_compile_definitions(SERIALIZE_MSGPACK)
-set (USE_TRANSPORT "TRANSPORT_MSGPACK")
 add_compile_definitions(TRANSPORT_MSGPACK)
 
-include(../../sample_config.cmake)
-
 # Collect all .cpp and *.h source files in the src directory
-file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-
-set(DELEGATE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
+file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
 
 # Collect all header files in the delegate directory
 file(GLOB Delegate_HEADERS 
@@ -41,7 +27,7 @@ source_group("Delegate Files" FILES ${Delegate_HEADERS})
 # Add subdirectories to include path
 include_directories( 
     ${CMAKE_SOURCE_DIR}/../common
-    ${DELEGATE_ROOT_DIR}/../src/delegate-mq
+    ${DELEGATE_ROOT_DIR}/src/delegate-mq
     ${VCPKG_ROOT_DIR}/include
     ${MSGPACK_INCLUDE_DIR}
 )
@@ -49,31 +35,17 @@ include_directories(
 add_subdirectory("../common" "${CMAKE_BINARY_DIR}/common")
 
 # Add an executable target
-add_executable(delegate_server_app ${SOURCES} ${Delegate_HEADERS})
-
-# Specify the directory containing the pre-built delegate_mq.lib
-set(LIBRARY_DIR ${DELEGATE_ROOT_DIR}/../lib)
+add_executable(${DELEGATE_APP} ${SOURCES} ${Delegate_HEADERS})
 
 # Link the library directory
-link_directories(${LIBRARY_DIR})
+link_directories(${DELEGATE_LIB_DIR})
 
 # Link against the pre-built delegate_mq.lib
-target_link_libraries(delegate_server_app PRIVATE 
+target_link_libraries(${DELEGATE_APP} PRIVATE 
     common_lib
-    ${LIBRARY_DIR}/delegate_mq.lib
-    ${VCPKG_ROOT_DIR}/lib/libzmq-mt-4_3_5.lib
+    ${DELEGATE_LIB_DIR}/${DELEGATE_LIB_NAME}
+    ${ZMQ_LIB_DIR}/${ZMQ_LIB_NAME}
 )
 
-# Get .dll files in the vcpkg bin directory
-file(GLOB ZMQ_BIN_FILES "${VCPKG_ROOT_DIR}/bin/libzmq*.dll" "${VCPKG_ROOT_DIR}/bin/libzmq*.pdb")
-
-# Copy each DLL file to the build output directory
-foreach(DLL_FILE ${ZMQ_BIN_FILES})
-    add_custom_command(TARGET delegate_server_app POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${DLL_FILE}  # Copy the DLL file
-        "${CMAKE_BINARY_DIR}/Debug"  # Destination directory
-        COMMENT "Copying ${DLL_FILE} to build output"
-    )
-endforeach()
+copy_vcpkg_dlls(${VCPKG_ROOT_DIR} ${DELEGATE_APP})
 

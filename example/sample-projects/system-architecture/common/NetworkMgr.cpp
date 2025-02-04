@@ -7,9 +7,9 @@
 using namespace DelegateMQ;
 using namespace std;
 
-MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::Error;
-MulticastDelegateSafe<void(Command&)> NetworkMgr::CommandRecv;
-MulticastDelegateSafe<void(DataPackage&)> NetworkMgr::DataPackageRecv;
+MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::ErrorCb;
+MulticastDelegateSafe<void(CommandMsg&)> NetworkMgr::CommandMsgCb;
+MulticastDelegateSafe<void(DataMsg&)> NetworkMgr::DataMsgCb;
 
 NetworkMgr::NetworkMgr() :
     m_thread("NetworkMgr"),
@@ -31,17 +31,17 @@ void NetworkMgr::Create()
         return MakeDelegate(this, &NetworkMgr::Create, m_thread)();
 
     // Setup the remote delegate interfaces
-    m_dataPackageDel.SetStream(&m_argStream);
-    m_dataPackageDel.SetSerializer(&m_dataPackageSer);
-    m_dataPackageDel.SetDispatcher(&m_dispatcher);
-    m_dataPackageDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_dataPackageDel = MakeDelegate(this, &NetworkMgr::RecvSensorData, DATA_PACKAGE_ID);
+    m_dataMsgDel.SetStream(&m_argStream);
+    m_dataMsgDel.SetSerializer(&m_dataMsgSer);
+    m_dataMsgDel.SetDispatcher(&m_dispatcher);
+    m_dataMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
+    m_dataMsgDel = MakeDelegate(this, &NetworkMgr::RecvDataMsg, DATA_PACKAGE_ID);
 
-    m_commandDel.SetStream(&m_argStream);
-    m_commandDel.SetSerializer(&m_commandSer);
-    m_commandDel.SetDispatcher(&m_dispatcher);
-    m_commandDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_commandDel = MakeDelegate(this, &NetworkMgr::RecvCommand, COMMAND_ID);
+    m_commandMsgDel.SetStream(&m_argStream);
+    m_commandMsgDel.SetSerializer(&m_commandMsgSer);
+    m_commandMsgDel.SetDispatcher(&m_dispatcher);
+    m_commandMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
+    m_commandMsgDel = MakeDelegate(this, &NetworkMgr::RecvCommandMsg, COMMAND_ID);
 
 #ifdef SERVER_APP
     m_transport.Create(Transport::Type::PAIR_SERVER, "tcp://*:5555");
@@ -53,8 +53,8 @@ void NetworkMgr::Create()
     m_dispatcher.SetTransport(&m_transport);
 
     // Set receive async delegates into map
-    m_receiveIdMap[COMMAND_ID] = &m_commandDel;
-    m_receiveIdMap[DATA_PACKAGE_ID] = &m_dataPackageDel;
+    m_receiveIdMap[COMMAND_ID] = &m_commandMsgDel;
+    m_receiveIdMap[DATA_PACKAGE_ID] = &m_dataMsgDel;
 }
 
 void NetworkMgr::Start()
@@ -78,22 +78,22 @@ void NetworkMgr::Stop()
     //m_transport.Destroy();
 }
 
-void NetworkMgr::SendCommand(Command& command)
+void NetworkMgr::SendCommandMsg(CommandMsg& command)
 {
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-        return MakeDelegate(this, &NetworkMgr::SendCommand, m_thread)(command);
+        return MakeDelegate(this, &NetworkMgr::SendCommandMsg, m_thread)(command);
 
     // Send data to remote. 
-    m_commandDel(command);
+    m_commandMsgDel(command);
 }
 
-void NetworkMgr::SendDataPackage(DataPackage& data)
+void NetworkMgr::SendDataMsg(DataMsg& data)
 {
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-        return MakeDelegate(this, &NetworkMgr::SendDataPackage, m_thread)(data);
+        return MakeDelegate(this, &NetworkMgr::SendDataMsg, m_thread)(data);
 
     // Send data to remote. 
-    m_dataPackageDel(data);
+    m_dataMsgDel(data);
 }
 
 // Poll called periodically on m_thread context
@@ -121,16 +121,16 @@ void NetworkMgr::Poll()
 
 void NetworkMgr::ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
 {
-    Error(id, error, aux);
+    ErrorCb(id, error, aux);
 }
 
-void NetworkMgr::RecvCommand(Command& command)
+void NetworkMgr::RecvCommandMsg(CommandMsg& command)
 {
-    CommandRecv(command);
+    CommandMsgCb(command);
 }
 
-void NetworkMgr::RecvSensorData(DataPackage& data)
+void NetworkMgr::RecvDataMsg(DataMsg& data)
 {
-    DataPackageRecv(data);
+    DataMsgCb(data);
 }
 

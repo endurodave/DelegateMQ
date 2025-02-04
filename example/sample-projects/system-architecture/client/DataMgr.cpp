@@ -1,3 +1,3 @@
 #include "DataMgr.h"
 
-MulticastDelegateSafe<void(DataPackage&)> DataMgr::DataPackageRecv;
+MulticastDelegateSafe<void(DataMsg&)> DataMgr::DataMsgCb;

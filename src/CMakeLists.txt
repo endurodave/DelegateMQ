@@ -1,28 +1,25 @@
 # Specify the minimum CMake version required
 cmake_minimum_required(VERSION 3.10)
 
-# Project name and language (C or C++)
+set (DELEGATE_APP "delegate_app")
+set (DELEGATE_LIB "delegate_mq")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
-# Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+include("${CMAKE_SOURCE_DIR}/DelegateConfig.cmake")
 
-set (VCPKG_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../vcpkg/installed/x64-windows")
-set (DELEGATE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
-
-# Set delegate library build options
-set (USE_THREAD "THREAD_STDLIB")
-add_compile_definitions(THREAD_STDLIB)
+# Set build options
+set (USE_THREAD "THREAD_STDLIB")    # TODO NEED ALL THESE?
 set (USE_SERIALIZE "SERIALIZE_SERIALIZE")
-add_compile_definitions(SERIALIZE_SERIALIZE)
 set (USE_TRANSPORT "TRANSPORT_NONE")
+
+add_compile_definitions(THREAD_STDLIB)
+add_compile_definitions(SERIALIZE_SERIALIZE)
 add_compile_definitions(TRANSPORT_NONE)
 
 # Select library build option
 if (USE_THREAD STREQUAL "THREAD_STDLIB")
     add_compile_definitions(THREAD_STDLIB)
-    file(GLOB SUBDIR_SOURCES "delegate-mq/predef/os/stdlib/*.cpp") 
+    file(GLOB SUBDIR_SOURCES "delegate-mq/predef/os/stdlib/*.cpp")
     set(SOURCES ${SOURCES} ${SUBDIR_SOURCES})
 else()
     message(FATAL_ERROR "Must select a delegate thread option.")
@@ -33,9 +30,6 @@ if (USE_SERIALIZE STREQUAL "SERIALIZE_SERIALIZE")
     add_compile_definitions(SERIALIZE_SERIALIZE)
 elseif (USE_SERIALIZE STREQUAL "SERIALIZE_MSGPACK")
     add_compile_definitions(SERIALIZE_MSGPACK)
-    set(MSGPACK_INCLUDE "../../msgpack-c/include")
-    include_directories(${MSGPACK_INCLUDE})
-
     if (IS_DIRECTORY ${VCPKG_ROOT_DIR})
         include_directories(${VCPKG_ROOT_DIR}/include)
     else()
@@ -49,15 +43,12 @@ endif()
 # Select the serialization build option
 if (USE_TRANSPORT STREQUAL "TRANSPORT_MSGPACK")
     add_compile_definitions(TRANSPORT_MSGPACK)
-    set(MSGPACK_INCLUDE "../../msgpack-c/include")
-    include_directories(${MSGPACK_INCLUDE})
-
     if (IS_DIRECTORY ${VCPKG_ROOT_DIR})
         include_directories(${VCPKG_ROOT_DIR}/include)
     else()
         message(FATAL_ERROR "Cannot find VCPKG_ROOT_DIR directory.")
 endif()
-elseif (USE_SERIALIZE STREQUAL "TRANSPORT_NONE")
+    elseif (USE_SERIALIZE STREQUAL "TRANSPORT_NONE")
 endif()
 
 file(GLOB SUBDIR_SOURCES "delegate-mq/predef/util/*.cpp") 
@@ -65,22 +56,22 @@ set(SOURCES ${SOURCES} ${SUBDIR_SOURCES})
 
 # Add subdirectories to include path
 include_directories( 
-    ${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq
+    ${DELEGATE_ROOT_DIR}/src/delegate-mq
 )
 
 # Create the library target (delegate_mq) as a static library
-add_library(delegate_mq STATIC ${SOURCES})
+add_library(${DELEGATE_LIB} STATIC ${SOURCES})
 
 # Optionally handle allocator
 if (ENABLE_ALLOCATOR)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq/predef/allocator)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/delegate-mq/predef/allocator ${CMAKE_BINARY_DIR}/allocator)
-    target_link_libraries(delegate_mq PRIVATE allocator_lib)
+    include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/allocator)
+    add_subdirectory(${DELEGATE_ROOT_DIR}/delegate-mq/predef/allocator ${CMAKE_BINARY_DIR}/allocator)
+    target_link_libraries(${DELEGATE_LIB} PRIVATE allocator_lib)
     add_compile_definitions(USE_ALLOCATOR)
 endif()
 
 # Post-build action to copy the built library to the ../lib directory
-add_custom_command(TARGET delegate_mq POST_BUILD
+add_custom_command(TARGET ${DELEGATE_LIB} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/../lib
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:delegate_mq> ${CMAKE_CURRENT_SOURCE_DIR}/../lib
     COMMENT "Copying delegate_mq to ../lib"

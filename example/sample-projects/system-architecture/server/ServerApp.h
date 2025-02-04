@@ -17,14 +17,14 @@ public:
     }
 
     // Receive and handle client commands
-    void CommandRecv(Command& command)
+    void CommandMsgRecv(CommandMsg& command)
     {
-        if (command.action == Command::Action::START)
+        if (command.action == CommandMsg::Action::START)
         {
             m_pollTimer.Expired = MakeDelegate(this, &ServerApp::PollData, m_thread);
             m_pollTimer.Start(std::chrono::milliseconds(command.pollTime));
         }
-        else if (command.action == Command::Action::STOP)
+        else if (command.action == CommandMsg::Action::STOP)
         {
             m_pollTimer.Stop();
         }
@@ -45,8 +45,8 @@ private:
         m_thread.CreateThread();
 
         // Register for incoming client commands
-        NetworkMgr::CommandRecv += MakeDelegate(this, &ServerApp::CommandRecv, m_thread);
-        NetworkMgr::Error += MakeDelegate(this, &ServerApp::ErrorHandler, m_thread);
+        NetworkMgr::CommandMsgCb += MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread);
+        NetworkMgr::ErrorCb += MakeDelegate(this, &ServerApp::ErrorHandler, m_thread);
     }
 
     ~ServerApp()
@@ -57,14 +57,14 @@ private:
     void PollData()
     {
         // Collect sensor and actuator data
-        DataPackage dataPackage;
-        dataPackage.actuators.push_back(m_actuator1.GetState());
-        dataPackage.actuators.push_back(m_actuator2.GetState());
-        dataPackage.sensors.push_back(m_sensor1.GetSensorData());
-        dataPackage.sensors.push_back(m_sensor2.GetSensorData());
+        DataMsg dataMsg;
+        dataMsg.actuators.push_back(m_actuator1.GetState());
+        dataMsg.actuators.push_back(m_actuator2.GetState());
+        dataMsg.sensors.push_back(m_sensor1.GetSensorData());
+        dataMsg.sensors.push_back(m_sensor2.GetSensorData());
 
         // Send data to remote client
-        NetworkMgr::Instance().SendDataPackage(dataPackage);
+        NetworkMgr::Instance().SendDataMsg(dataMsg);
     }
 
     void ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)

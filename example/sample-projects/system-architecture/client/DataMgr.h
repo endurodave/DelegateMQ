@@ -6,7 +6,7 @@
 /// David Lafreniere, 2025.
 
 #include "DelegateMQ.h"
-#include "DataPackage.h"
+#include "DataMsg.h"
 #include "NetworkMgr.h"
 #include <mutex>
 
@@ -18,7 +18,7 @@ class DataMgr
 {
 public:
     // Register with delegate to receive callbacks when data is received
-    static MulticastDelegateSafe<void(DataPackage&)> DataPackageRecv;
+    static MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
 
     static DataMgr& Instance()
     {
@@ -26,14 +26,14 @@ public:
         return instance;
     }
 
-    void SetDataPackage(DataPackage& dataPackage) 
+    void SetDataMsg(DataMsg& data) 
     { 
-        LocalDataPackageUpdate(dataPackage); 
+        LocalDataMsgUpdate(data); 
     }
 
-    DataPackage GetDataPackage() 
+    DataMsg GetDataMsg() 
     { 
-        return GetCombindedDataPackage(); 
+        return GetCombindedDataMsg(); 
     }
 
 private:
@@ -43,7 +43,7 @@ private:
         m_thread.CreateThread();
 
         // Register to receive remote data updates
-        NetworkMgr::DataPackageRecv += MakeDelegate(this, &DataMgr::RemoteDataPackageUpdate, m_thread);
+        NetworkMgr::DataMsgCb += MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread);
     }
 
     ~DataMgr()
@@ -52,48 +52,48 @@ private:
     }
 
     // Get all remote and local data packages
-    DataPackage GetCombindedDataPackage()
+    DataMsg GetCombindedDataMsg()
     {
         std::lock_guard<std::mutex> lk(m_mutex);
 
         // Combine local and remote data
-        DataPackage totalData;
-        totalData.actuators.insert(totalData.actuators.end(), m_localDataPackage.actuators.begin(), m_localDataPackage.actuators.end());
-        totalData.sensors.insert(totalData.sensors.end(), m_localDataPackage.sensors.begin(), m_localDataPackage.sensors.end());
-        totalData.actuators.insert(totalData.actuators.end(), m_remoteDataPackage.actuators.begin(), m_remoteDataPackage.actuators.end());
-        totalData.sensors.insert(totalData.sensors.end(), m_remoteDataPackage.sensors.begin(), m_remoteDataPackage.sensors.end());
+        DataMsg totalData;
+        totalData.actuators.insert(totalData.actuators.end(), m_localDataMsg.actuators.begin(), m_localDataMsg.actuators.end());
+        totalData.sensors.insert(totalData.sensors.end(), m_localDataMsg.sensors.begin(), m_localDataMsg.sensors.end());
+        totalData.actuators.insert(totalData.actuators.end(), m_remoteDataMsg.actuators.begin(), m_remoteDataMsg.actuators.end());
+        totalData.sensors.insert(totalData.sensors.end(), m_remoteDataMsg.sensors.begin(), m_remoteDataMsg.sensors.end());
 
         return totalData;
     }
 
-    void LocalDataPackageUpdate(DataPackage& dataPackage)
+    void LocalDataMsgUpdate(DataMsg& dataMsg)
     {
         {
             std::lock_guard<std::mutex> lk(m_mutex);
-            m_localDataPackage = dataPackage;
+            m_localDataMsg = dataMsg;
         }
 
         // Nofity all subscribers new data arrived
-        DataPackageRecv(GetCombindedDataPackage());
+        DataMsgCb(GetCombindedDataMsg());
     }
 
-    void RemoteDataPackageUpdate(DataPackage& dataPackage)
+    void RemoteDataMsgUpdate(DataMsg& dataMsg)
     {
         {
             std::lock_guard<std::mutex> lk(m_mutex);
-            m_remoteDataPackage = dataPackage;
+            m_remoteDataMsg = dataMsg;
         }
 
         // Nofity all subscribers new data arrived
-        DataPackageRecv(GetCombindedDataPackage());
+        DataMsgCb(GetCombindedDataMsg());
     }
 
     Thread m_thread;
     Timer m_timer;
     std::mutex m_mutex;
 
-    DataPackage m_localDataPackage;
-    DataPackage m_remoteDataPackage;
+    DataMsg m_localDataMsg;
+    DataMsg m_remoteDataMsg;
 };
 
 #endif

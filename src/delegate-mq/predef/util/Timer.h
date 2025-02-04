@@ -1,7 +1,7 @@
 #ifndef _TIMER_H
 #define _TIMER_H
 
-#include "DelegateMQ.h"
+#include "../../delegate/UnicastDelegate.h"
 #include <mutex>
 #include <list>
 

@@ -20,7 +20,7 @@
 static Thread receiveThread("ReceiveThread");
 
 // Receive all local and remote data callback
-void DataPackageRecv(DataPackage& data)
+void DataMsgRecv(DataMsg& data)
 {
     std::cout << "Actuators: " << data.actuators.size() << std::endl;
     for (const auto& actuator : data.actuators) {
@@ -49,7 +49,7 @@ int main()
     receiveThread.CreateThread();
 
     // Register to receive local and remote data updates on receiveThread
-    DataMgr::DataPackageRecv += MakeDelegate(&DataPackageRecv, receiveThread);
+    DataMgr::DataMsgCb += MakeDelegate(&DataMsgRecv, receiveThread);
 
     // Start all data collection
     ClientApp::Instance().Start();

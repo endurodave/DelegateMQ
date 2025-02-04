@@ -4,7 +4,7 @@
 #include "DelegateMQ.h"
 #include "Actuator.h"
 #include "Sensor.h"
-#include "DataPackage.h"
+#include "DataMsg.h"
 
 // ClientApp reads data locally and sends to DataMgr for storage. 
 class ClientApp
@@ -19,10 +19,10 @@ public:
     void Start()
     {
         // Send message to start remote data collection
-        Command command;
-        command.action = Command::Action::START;
+        CommandMsg command;
+        command.action = CommandMsg::Action::START;
         command.pollTime = 250;
-        NetworkMgr::Instance().SendCommand(command);
+        NetworkMgr::Instance().SendCommandMsg(command);
 
         // Start local data collection
         m_pollTimer.Expired = MakeDelegate(this, &ClientApp::PollData, m_thread);
@@ -31,9 +31,9 @@ public:
 
     void Stop()
     {
-        Command command;
-        command.action = Command::Action::STOP;
-        NetworkMgr::Instance().SendCommand(command);
+        CommandMsg command;
+        command.action = CommandMsg::Action::STOP;
+        NetworkMgr::Instance().SendCommandMsg(command);
 
         m_pollTimer.Stop();
     }
@@ -48,7 +48,7 @@ private:
     {
         m_thread.CreateThread();
 
-        NetworkMgr::Error += MakeDelegate(this, &ClientApp::ErrorHandler, m_thread);
+        NetworkMgr::ErrorCb += MakeDelegate(this, &ClientApp::ErrorHandler, m_thread);
     }
 
     ~ClientApp()
@@ -60,14 +60,14 @@ private:
     void PollData()
     {
         // Collect sensor and actuator data
-        DataPackage dataPackage;
-        dataPackage.actuators.push_back(m_actuator3.GetState());
-        dataPackage.actuators.push_back(m_actuator4.GetState());
-        dataPackage.sensors.push_back(m_sensor3.GetSensorData());
-        dataPackage.sensors.push_back(m_sensor4.GetSensorData());
+        DataMsg dataMsg;
+        dataMsg.actuators.push_back(m_actuator3.GetState());
+        dataMsg.actuators.push_back(m_actuator4.GetState());
+        dataMsg.sensors.push_back(m_sensor3.GetSensorData());
+        dataMsg.sensors.push_back(m_sensor4.GetSensorData());
 
         // Set data collected locally
-        DataMgr::Instance().SetDataPackage(dataPackage);
+        DataMgr::Instance().SetDataMsg(dataMsg);
     }
 
     void ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
