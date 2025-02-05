@@ -7,11 +7,6 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 
 include("${CMAKE_SOURCE_DIR}/Config.cmake")
 
-# Set delegate library build options
-set (USE_THREAD "THREAD_STDLIB")  # TODO NEED ALL THESE?
-set (USE_SERIALIZE "SERIALIZE_SERIALIZE")
-set (USE_TRANSPORT "TRANSPORT_NONE")
-
 # Set delegate application build options
 add_compile_definitions(THREAD_STDLIB)
 add_compile_definitions(SERIALIZE_SERIALIZE)
@@ -57,7 +52,7 @@ target_link_libraries(${DELEGATE_APP} PRIVATE
 )
 
 # Make delegate_app depend on delegate_mq (ensure it is built first)
-add_dependencies(${DELEGATE_APP} delegate_mq)
+add_dependencies(${DELEGATE_APP} ${DELEGATE_LIB})
 
 # Add subdirectories for unit tests and sample code
 add_subdirectory(unit-tests)

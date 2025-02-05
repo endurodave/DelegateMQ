@@ -13,6 +13,7 @@
 /// actuators. Start both applications to run sample. 
 
 #include "NetworkMgr.h"
+#include "AlarmMgr.h"
 #include "ServerApp.h"
 #include <thread>
 
@@ -22,6 +23,7 @@ int main()
 
     NetworkMgr::Instance().Create();
     NetworkMgr::Instance().Start();
+    AlarmMgr::Instance();
     ServerApp::Instance();
 
     // Let client and server communicate

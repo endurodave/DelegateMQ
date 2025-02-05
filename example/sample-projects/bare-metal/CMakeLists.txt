@@ -7,10 +7,6 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 include("${CMAKE_SOURCE_DIR}/../../../Config.cmake")
 
 # Set build options
-set (USE_THREAD "THREAD_STDLIB")
-set (USE_SERIALIZE "SERIALIZE_NONE")
-set (USE_TRANSPORT "TRANSPORT_NONE")
-
 add_compile_definitions(THREAD_STDLIB)
 add_compile_definitions(SERIALIZE_NONE)
 add_compile_definitions(TRANSPORT_NONE)

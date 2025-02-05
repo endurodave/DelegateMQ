@@ -70,7 +70,7 @@ private:
         DataMgr::Instance().SetDataMsg(dataMsg);
     }
 
-    void ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
+    void ErrorHandler(DelegateMQ::DelegateRemoteId id, DelegateMQ::DelegateError error, DelegateMQ::DelegateErrorAux aux)
     {
         std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }

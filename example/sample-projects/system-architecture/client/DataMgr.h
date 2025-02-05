@@ -10,15 +10,12 @@
 #include "NetworkMgr.h"
 #include <mutex>
 
-using namespace DelegateMQ;
-using namespace std;
-
 // DataMgr collects data from local and remote data sources. 
 class DataMgr
 {
 public:
     // Register with delegate to receive callbacks when data is received
-    static MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
+    static DelegateMQ::MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
 
     static DataMgr& Instance()
     {

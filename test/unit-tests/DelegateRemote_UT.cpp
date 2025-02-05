@@ -176,12 +176,12 @@ namespace Remote
     class Serializer<RetType(Args...)> : public ISerializer<RetType(Args...)>
     {
     public:
-        virtual std::ostream& write(std::ostream& os, Args... args) override {
+        virtual std::ostream& Write(std::ostream& os, Args... args) override {
             make_serialized(os, args...);
             return os;
         }
 
-        virtual std::istream& read(std::istream& is, Args&... args) override {
+        virtual std::istream& Read(std::istream& is, Args&... args) override {
             make_unserialized(is, args...);
             return is;
         }
@@ -376,7 +376,7 @@ static void DelegateFreeRemoteTests()
         arr[i](TEST_INT);
     delete[] arr;
 
-    std::function<void(DelegateError, int)> errorHandler = [](DelegateError error, int code) {
+    std::function<void(DelegateRemoteId, DelegateError, int)> errorHandler = [](DelegateRemoteId id, DelegateError error, int code) {
         ASSERT_TRUE(false);
     };
     Dispatcher dispatcher;
@@ -808,7 +808,7 @@ static void DelegateMemberSpRemoteTests()
         arr[i](TEST_INT);
     delete[] arr;
 
-    std::function<void(DelegateError, int)> errorHandler = [](DelegateError error, int code) {
+    std::function<void(DelegateRemoteId, DelegateError, int)> errorHandler = [](DelegateRemoteId id, DelegateError error, int code) {
         ASSERT_TRUE(false);
     };
     static std::function<void(int)> LambdaFuncInt = +[](int i) {

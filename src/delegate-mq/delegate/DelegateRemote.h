@@ -20,7 +20,7 @@
 /// `RetType operator()(Args... args)` - called by the sender to initiate the remote function call. 
 /// Use `SetErrorHandler()` to catch invoke errors. Clone() may throw `std::bad_alloc` unless 
 /// `USE_ASSERTS`. All other delegate class functions do not throw exceptions.
-///
+/// 
 /// `void Invoke(std::istream& is)` - called by the receiver to invoke the target function. 
 /// 
 /// Limitations:
@@ -57,7 +57,10 @@ enum class DelegateError {
     ERR_STREAM_FAIL = 1,
     ERR_STREAM_EMPTY = 2,
     ERR_NO_SERIALIZER = 3,
-    ERR_DISPATCH_ERROR = 4
+    ERR_SERIALIZE = 4,
+    ERR_DESERIALIZE = 5,
+    ERR_NO_DISPATCHER = 6,
+    ERR_DISPATCH = 7
 };
 
 typedef int DelegateErrorAux;
@@ -283,23 +286,34 @@ public:
         }
         else {
             if (m_serializer && m_stream) {
-                // Serialize all target function arguments into a stream
-                m_serializer->write(*m_stream, std::forward<Args>(args)...);
+                try {
+                    // Serialize all target function arguments into a stream
+                    m_serializer->Write(*m_stream, std::forward<Args>(args)...);
+                } catch (std::exception&) {
+                    RaiseError(m_id, DelegateError::ERR_SERIALIZE);
+                }
 
                 if (m_stream->fail() || m_stream->bad()) {
-                    RaiseError(DelegateError::ERR_STREAM_FAIL);
+                    RaiseError(m_id, DelegateError::ERR_STREAM_FAIL);
                 }
                 else if (m_stream->eof()) {
-                    RaiseError(DelegateError::ERR_STREAM_EMPTY);
+                    RaiseError(m_id, DelegateError::ERR_STREAM_EMPTY);
                 }
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
-                        int error = m_dispatcher->Dispatch(*m_stream, m_id);
-                        if (error)
-                            RaiseError(DelegateError::ERR_DISPATCH_ERROR, error);
+                        try {
+                            int error = m_dispatcher->Dispatch(*m_stream, m_id);
+                            if (error)
+                                RaiseError(m_id, DelegateError::ERR_DISPATCH, error);
+                        } catch (std::exception&) {
+                            RaiseError(m_id, DelegateError::ERR_DISPATCH);
+                        }
+                    } else {
+                        RaiseError(m_id, DelegateError::ERR_NO_DISPATCHER);
                     }
                 }
+
             }
 
             // Do not wait for remote to invoke function call
@@ -333,93 +347,97 @@ public:
     /// @return `true` if target function invoked; `false` if error. 
     virtual bool Invoke(std::istream& is) override {
         if (!m_serializer) {
-            RaiseError(DelegateError::ERR_NO_SERIALIZER);
+            RaiseError(m_id, DelegateError::ERR_NO_SERIALIZER);
             return false;
         }
 
         // Invoke the delegate function synchronously
         m_sync = true;
 
-        if constexpr (ArgCnt::value == 0) {
-            BaseType::operator()();
-        }
-        else if constexpr (ArgCnt::value == 1) {
-            using Arg1 = ArgTypeOf<0, Args...>;
+        try {
+            if constexpr (ArgCnt::value == 0) {
+                BaseType::operator()();
+            }
+            else if constexpr (ArgCnt::value == 1) {
+                using Arg1 = ArgTypeOf<0, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            Arg1 a1 = rp1.Get();
+                RemoteArg<Arg1> rp1;
+                Arg1 a1 = rp1.Get();
 
-            m_serializer->read(is, a1);
-            operator()(a1);
-        }
-        else if constexpr (ArgCnt::value == 2) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
+                m_serializer->Read(is, a1);
+                operator()(a1);
+            }
+            else if constexpr (ArgCnt::value == 2) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
 
-            m_serializer->read(is, a1, a2);
-            operator()(a1, a2);
-        }
-        else if constexpr (ArgCnt::value == 3) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
-            using Arg3 = ArgTypeOf<2, Args...>;
+                m_serializer->Read(is, a1, a2);
+                operator()(a1, a2);
+            }
+            else if constexpr (ArgCnt::value == 3) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
+                using Arg3 = ArgTypeOf<2, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            RemoteArg<Arg3> rp3;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
-            Arg3 a3 = rp3.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                RemoteArg<Arg3> rp3;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
+                Arg3 a3 = rp3.Get();
 
-            m_serializer->read(is, a1, a2, a3);
-            operator()(a1, a2, a3);
-        }
-        else if constexpr (ArgCnt::value == 4) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
-            using Arg3 = ArgTypeOf<2, Args...>;
-            using Arg4 = ArgTypeOf<3, Args...>;
+                m_serializer->Read(is, a1, a2, a3);
+                operator()(a1, a2, a3);
+            }
+            else if constexpr (ArgCnt::value == 4) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
+                using Arg3 = ArgTypeOf<2, Args...>;
+                using Arg4 = ArgTypeOf<3, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            RemoteArg<Arg3> rp3;
-            RemoteArg<Arg4> rp4;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
-            Arg3 a3 = rp3.Get();
-            Arg4 a4 = rp4.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                RemoteArg<Arg3> rp3;
+                RemoteArg<Arg4> rp4;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
+                Arg3 a3 = rp3.Get();
+                Arg4 a4 = rp4.Get();
 
-            m_serializer->read(is, a1, a2, a3, a4);
-            operator()(a1, a2, a3, a4);
-        }
-        else if constexpr (ArgCnt::value == 5) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
-            using Arg3 = ArgTypeOf<2, Args...>;
-            using Arg4 = ArgTypeOf<3, Args...>;
-            using Arg5 = ArgTypeOf<4, Args...>;
+                m_serializer->Read(is, a1, a2, a3, a4);
+                operator()(a1, a2, a3, a4);
+            }
+            else if constexpr (ArgCnt::value == 5) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
+                using Arg3 = ArgTypeOf<2, Args...>;
+                using Arg4 = ArgTypeOf<3, Args...>;
+                using Arg5 = ArgTypeOf<4, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            RemoteArg<Arg3> rp3;
-            RemoteArg<Arg4> rp4;
-            RemoteArg<Arg5> rp5;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
-            Arg3 a3 = rp3.Get();
-            Arg4 a4 = rp4.Get();
-            Arg5 a5 = rp5.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                RemoteArg<Arg3> rp3;
+                RemoteArg<Arg4> rp4;
+                RemoteArg<Arg5> rp5;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
+                Arg3 a3 = rp3.Get();
+                Arg4 a4 = rp4.Get();
+                Arg5 a5 = rp5.Get();
 
-            m_serializer->read(is, a1, a2, a3, a4, a5);
-            operator()(a1, a2, a3, a4, a5);
-        }
-        else {
-            static_assert(ArgCnt::value <= 5, "Too many target function arguments");
+                m_serializer->Read(is, a1, a2, a3, a4, a5);
+                operator()(a1, a2, a3, a4, a5);
+            }
+            else {
+                static_assert(ArgCnt::value <= 5, "Too many target function arguments");
+            }
+        } catch (std::exception&) {
+            RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
         }
 
         return true;
@@ -452,14 +470,14 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(const Delegate<void(DelegateError, DelegateErrorAux)>& errorHandler) {
+    void SetErrorHandler(const Delegate<void(DelegateRemoteId, DelegateError, DelegateErrorAux)>& errorHandler) {
         m_errorHandler = errorHandler;  // Copy
     }
 
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, DelegateErrorAux)>&& errorHandler) {
+    void SetErrorHandler(Delegate<void(DelegateRemoteId, DelegateError, DelegateErrorAux)>&& errorHandler) {
         m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
@@ -476,15 +494,20 @@ private:
     /// @brief Raise an error and callback registered error handler
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
-    void RaiseError(DelegateError error, DelegateErrorAux auxCode = 0) {
-        m_errorHandler(error, auxCode);
+    /// @throws std::runtime_error If no error handler is registered.
+    void RaiseError(DelegateRemoteId id, DelegateError error, DelegateErrorAux auxCode = 0) {
+        if (m_errorHandler) {
+            m_errorHandler(id, error, auxCode);
+        } else {
+            throw std::runtime_error("Delegate remote error.");
+        }
     }
 
     /// The delegate unique remote identifier
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
 
     /// A pointer to a error handler callback
-    UnicastDelegate<void(DelegateError, DelegateErrorAux)> m_errorHandler;
+    UnicastDelegate<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> m_errorHandler;
 
     /// A pointer to the delegate dispatcher
     IDispatcher* m_dispatcher = nullptr;
@@ -742,8 +765,12 @@ public:
         }
         else {
             if (m_serializer && m_stream) {
-                // Serialize all target function arguments into a stream
-                m_serializer->write(*m_stream, std::forward<Args>(args)...);
+                try {
+                    // Serialize all target function arguments into a stream
+                    m_serializer->Write(*m_stream, std::forward<Args>(args)...);
+                } catch (std::exception&) {
+                    RaiseError(m_id, DelegateError::ERR_SERIALIZE);
+                }
 
                 if (m_stream->fail() || m_stream->bad()) {
                     RaiseError(m_id, DelegateError::ERR_STREAM_FAIL);
@@ -754,11 +781,18 @@ public:
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
-                        int error = m_dispatcher->Dispatch(*m_stream, m_id);
-                        if (error)
-                            RaiseError(m_id, DelegateError::ERR_DISPATCH_ERROR, error);
+                        try {
+                            int error = m_dispatcher->Dispatch(*m_stream, m_id);
+                            if (error)
+                                RaiseError(m_id, DelegateError::ERR_DISPATCH, error);
+                        } catch (std::exception&) {
+                            RaiseError(m_id, DelegateError::ERR_DISPATCH);
+                        }
+                    } else {
+                        RaiseError(m_id, DelegateError::ERR_NO_DISPATCHER);
                     }
                 }
+
             }
 
             // Do not wait for remote to invoke function call
@@ -799,86 +833,90 @@ public:
         // Invoke the delegate function synchronously
         m_sync = true;
 
-        if constexpr (ArgCnt::value == 0) {
-            BaseType::operator()();
-        }
-        else if constexpr (ArgCnt::value == 1) {
-            using Arg1 = ArgTypeOf<0, Args...>;
+        try {
+            if constexpr (ArgCnt::value == 0) {
+                BaseType::operator()();
+            }
+            else if constexpr (ArgCnt::value == 1) {
+                using Arg1 = ArgTypeOf<0, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            Arg1 a1 = rp1.Get();
+                RemoteArg<Arg1> rp1;
+                Arg1 a1 = rp1.Get();
 
-            m_serializer->read(is, a1);
-            operator()(a1);
-        }
-        else if constexpr (ArgCnt::value == 2) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
+                m_serializer->Read(is, a1);
+                operator()(a1);
+            }
+            else if constexpr (ArgCnt::value == 2) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
 
-            m_serializer->read(is, a1, a2);
-            operator()(a1, a2);
-        }
-        else if constexpr (ArgCnt::value == 3) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
-            using Arg3 = ArgTypeOf<2, Args...>;
+                m_serializer->Read(is, a1, a2);
+                operator()(a1, a2);
+            }
+            else if constexpr (ArgCnt::value == 3) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
+                using Arg3 = ArgTypeOf<2, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            RemoteArg<Arg3> rp3;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
-            Arg3 a3 = rp3.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                RemoteArg<Arg3> rp3;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
+                Arg3 a3 = rp3.Get();
 
-            m_serializer->read(is, a1, a2, a3);
-            operator()(a1, a2, a3);
-        }
-        else if constexpr (ArgCnt::value == 4) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
-            using Arg3 = ArgTypeOf<2, Args...>;
-            using Arg4 = ArgTypeOf<3, Args...>;
+                m_serializer->Read(is, a1, a2, a3);
+                operator()(a1, a2, a3);
+            }
+            else if constexpr (ArgCnt::value == 4) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
+                using Arg3 = ArgTypeOf<2, Args...>;
+                using Arg4 = ArgTypeOf<3, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            RemoteArg<Arg3> rp3;
-            RemoteArg<Arg4> rp4;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
-            Arg3 a3 = rp3.Get();
-            Arg4 a4 = rp4.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                RemoteArg<Arg3> rp3;
+                RemoteArg<Arg4> rp4;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
+                Arg3 a3 = rp3.Get();
+                Arg4 a4 = rp4.Get();
 
-            m_serializer->read(is, a1, a2, a3, a4);
-            operator()(a1, a2, a3, a4);
-        }
-        else if constexpr (ArgCnt::value == 5) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
-            using Arg3 = ArgTypeOf<2, Args...>;
-            using Arg4 = ArgTypeOf<3, Args...>;
-            using Arg5 = ArgTypeOf<4, Args...>;
+                m_serializer->Read(is, a1, a2, a3, a4);
+                operator()(a1, a2, a3, a4);
+            }
+            else if constexpr (ArgCnt::value == 5) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
+                using Arg3 = ArgTypeOf<2, Args...>;
+                using Arg4 = ArgTypeOf<3, Args...>;
+                using Arg5 = ArgTypeOf<4, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            RemoteArg<Arg3> rp3;
-            RemoteArg<Arg4> rp4;
-            RemoteArg<Arg5> rp5;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
-            Arg3 a3 = rp3.Get();
-            Arg4 a4 = rp4.Get();
-            Arg5 a5 = rp5.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                RemoteArg<Arg3> rp3;
+                RemoteArg<Arg4> rp4;
+                RemoteArg<Arg5> rp5;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
+                Arg3 a3 = rp3.Get();
+                Arg4 a4 = rp4.Get();
+                Arg5 a5 = rp5.Get();
 
-            m_serializer->read(is, a1, a2, a3, a4, a5);
-            operator()(a1, a2, a3, a4, a5);
-        }
-        else {
-            static_assert(ArgCnt::value <= 5, "Too many target function arguments");
+                m_serializer->Read(is, a1, a2, a3, a4, a5);
+                operator()(a1, a2, a3, a4, a5);
+            }
+            else {
+                static_assert(ArgCnt::value <= 5, "Too many target function arguments");
+            }
+        } catch (std::exception&) {
+            RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
         }
 
         return true;
@@ -933,11 +971,15 @@ public:
 
 private:
     /// @brief Raise an error and callback registered error handler
-    /// @param[in] id Remote delegate identifier.
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
+    /// @throws std::runtime_error If no error handler is registered.
     void RaiseError(DelegateRemoteId id, DelegateError error, DelegateErrorAux auxCode = 0) {
-        m_errorHandler(id, error, auxCode);
+        if (m_errorHandler) {
+            m_errorHandler(id, error, auxCode);
+        } else {
+            throw std::runtime_error("Delegate remote error.");
+        }
     }
 
     /// The delegate unique remote identifier
@@ -1143,23 +1185,34 @@ public:
         }
         else {
             if (m_serializer && m_stream) {
-                // Serialize all target function arguments into a stream
-                m_serializer->write(*m_stream, std::forward<Args>(args)...);
+                try {
+                    // Serialize all target function arguments into a stream
+                    m_serializer->Write(*m_stream, std::forward<Args>(args)...);
+                } catch (std::exception&) {
+                    RaiseError(m_id, DelegateError::ERR_SERIALIZE);
+                }
 
                 if (m_stream->fail() || m_stream->bad()) {
-                    RaiseError(DelegateError::ERR_STREAM_FAIL);
+                    RaiseError(m_id, DelegateError::ERR_STREAM_FAIL);
                 }
                 else if (m_stream->eof()) {
-                    RaiseError(DelegateError::ERR_STREAM_EMPTY);
+                    RaiseError(m_id, DelegateError::ERR_STREAM_EMPTY);
                 }
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
-                        int error = m_dispatcher->Dispatch(*m_stream, m_id);
-                        if (error)
-                            RaiseError(DelegateError::ERR_DISPATCH_ERROR, error);
+                        try {
+                            int error = m_dispatcher->Dispatch(*m_stream, m_id);
+                            if (error)
+                                RaiseError(m_id, DelegateError::ERR_DISPATCH, error);
+                        } catch (std::exception&) {
+                            RaiseError(m_id, DelegateError::ERR_DISPATCH);
+                        }
+                    } else {
+                        RaiseError(m_id, DelegateError::ERR_NO_DISPATCHER);
                     }
                 }
+
             }
 
             // Do not wait for remote to invoke function call
@@ -1193,93 +1246,97 @@ public:
     /// @return `true` if target function invoked; `false` if error. 
     virtual bool Invoke(std::istream& is) override {
         if (!m_serializer) {
-            RaiseError(DelegateError::ERR_NO_SERIALIZER);
+            RaiseError(m_id, DelegateError::ERR_NO_SERIALIZER);
             return false;
         }
 
         // Invoke the delegate function synchronously
         m_sync = true;
 
-        if constexpr (ArgCnt::value == 0) {
-            BaseType::operator()();
-        }
-        else if constexpr (ArgCnt::value == 1) {
-            using Arg1 = ArgTypeOf<0, Args...>;
+        try {
+            if constexpr (ArgCnt::value == 0) {
+                BaseType::operator()();
+            }
+            else if constexpr (ArgCnt::value == 1) {
+                using Arg1 = ArgTypeOf<0, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            Arg1 a1 = rp1.Get();
+                RemoteArg<Arg1> rp1;
+                Arg1 a1 = rp1.Get();
 
-            m_serializer->read(is, a1);
-            operator()(a1);
-        }
-        else if constexpr (ArgCnt::value == 2) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
+                m_serializer->Read(is, a1);
+                operator()(a1);
+            }
+            else if constexpr (ArgCnt::value == 2) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
 
-            m_serializer->read(is, a1, a2);
-            operator()(a1, a2);
-        }
-        else if constexpr (ArgCnt::value == 3) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
-            using Arg3 = ArgTypeOf<2, Args...>;
+                m_serializer->Read(is, a1, a2);
+                operator()(a1, a2);
+            }
+            else if constexpr (ArgCnt::value == 3) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
+                using Arg3 = ArgTypeOf<2, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            RemoteArg<Arg3> rp3;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
-            Arg3 a3 = rp3.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                RemoteArg<Arg3> rp3;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
+                Arg3 a3 = rp3.Get();
 
-            m_serializer->read(is, a1, a2, a3);
-            operator()(a1, a2, a3);
-        }
-        else if constexpr (ArgCnt::value == 4) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
-            using Arg3 = ArgTypeOf<2, Args...>;
-            using Arg4 = ArgTypeOf<3, Args...>;
+                m_serializer->Read(is, a1, a2, a3);
+                operator()(a1, a2, a3);
+            }
+            else if constexpr (ArgCnt::value == 4) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
+                using Arg3 = ArgTypeOf<2, Args...>;
+                using Arg4 = ArgTypeOf<3, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            RemoteArg<Arg3> rp3;
-            RemoteArg<Arg4> rp4;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
-            Arg3 a3 = rp3.Get();
-            Arg4 a4 = rp4.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                RemoteArg<Arg3> rp3;
+                RemoteArg<Arg4> rp4;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
+                Arg3 a3 = rp3.Get();
+                Arg4 a4 = rp4.Get();
 
-            m_serializer->read(is, a1, a2, a3, a4);
-            operator()(a1, a2, a3, a4);
-        }
-        else if constexpr (ArgCnt::value == 5) {
-            using Arg1 = ArgTypeOf<0, Args...>;
-            using Arg2 = ArgTypeOf<1, Args...>;
-            using Arg3 = ArgTypeOf<2, Args...>;
-            using Arg4 = ArgTypeOf<3, Args...>;
-            using Arg5 = ArgTypeOf<4, Args...>;
+                m_serializer->Read(is, a1, a2, a3, a4);
+                operator()(a1, a2, a3, a4);
+            }
+            else if constexpr (ArgCnt::value == 5) {
+                using Arg1 = ArgTypeOf<0, Args...>;
+                using Arg2 = ArgTypeOf<1, Args...>;
+                using Arg3 = ArgTypeOf<2, Args...>;
+                using Arg4 = ArgTypeOf<3, Args...>;
+                using Arg5 = ArgTypeOf<4, Args...>;
 
-            RemoteArg<Arg1> rp1;
-            RemoteArg<Arg2> rp2;
-            RemoteArg<Arg3> rp3;
-            RemoteArg<Arg4> rp4;
-            RemoteArg<Arg5> rp5;
-            Arg1 a1 = rp1.Get();
-            Arg2 a2 = rp2.Get();
-            Arg3 a3 = rp3.Get();
-            Arg4 a4 = rp4.Get();
-            Arg5 a5 = rp5.Get();
+                RemoteArg<Arg1> rp1;
+                RemoteArg<Arg2> rp2;
+                RemoteArg<Arg3> rp3;
+                RemoteArg<Arg4> rp4;
+                RemoteArg<Arg5> rp5;
+                Arg1 a1 = rp1.Get();
+                Arg2 a2 = rp2.Get();
+                Arg3 a3 = rp3.Get();
+                Arg4 a4 = rp4.Get();
+                Arg5 a5 = rp5.Get();
 
-            m_serializer->read(is, a1, a2, a3, a4, a5);
-            operator()(a1, a2, a3, a4, a5);
-        }
-        else {
-            static_assert(ArgCnt::value <= 5, "Too many target function arguments");
+                m_serializer->Read(is, a1, a2, a3, a4, a5);
+                operator()(a1, a2, a3, a4, a5);
+            }
+            else {
+                static_assert(ArgCnt::value <= 5, "Too many target function arguments");
+            }
+        } catch (std::exception&) {
+            RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
         }
 
         return true;
@@ -1312,14 +1369,14 @@ public:
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(const Delegate<void(DelegateError, DelegateErrorAux)>& errorHandler) {
+    void SetErrorHandler(const Delegate<void(DelegateRemoteId, DelegateError, DelegateErrorAux)>& errorHandler) {
         m_errorHandler = errorHandler;  // Copy
     }
 
     /// @brief Set the error handler
     /// @param[in] errorHandler The delegate error handler called when 
     /// an error is detected.
-    void SetErrorHandler(Delegate<void(DelegateError, DelegateErrorAux)>&& errorHandler) {
+    void SetErrorHandler(Delegate<void(DelegateRemoteId, DelegateError, DelegateErrorAux)>&& errorHandler) {
         m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
@@ -1336,15 +1393,20 @@ private:
     /// @brief Raise an error and callback registered error handler
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
-    void RaiseError(DelegateError error, DelegateErrorAux auxCode = 0) {
-        m_errorHandler(error, auxCode);
+    /// @throws std::runtime_error If no error handler is registered.
+    void RaiseError(DelegateRemoteId id, DelegateError error, DelegateErrorAux auxCode = 0) {
+        if (m_errorHandler) {
+            m_errorHandler(id, error, auxCode);
+        } else {
+            throw std::runtime_error("Delegate remote error.");
+        }
     }
 
     /// The delegate unique remote identifier
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
 
     /// A pointer to a error handler callback
-    UnicastDelegate<void(DelegateError, DelegateErrorAux)> m_errorHandler;
+    UnicastDelegate<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> m_errorHandler;
 
     /// A pointer to the delegate dispatcher
     IDispatcher* m_dispatcher = nullptr;

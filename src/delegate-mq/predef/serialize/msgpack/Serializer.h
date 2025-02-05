@@ -24,12 +24,14 @@ void make_serialized(msgpack::sbuffer& buffer, Arg1& arg1, Args... args) {
 
 // make_unserialized serializes each remote function argument
 template<typename... Ts>
-void make_unserialized(msgpack::unpacked& unpacked) { }
+void make_unserialized(msgpack::unpacker& unpacker) { }
 
 template<typename Arg1, typename... Args>
-void make_unserialized(msgpack::unpacked& unpacked, Arg1& arg1, Args... args) {
-    arg1 = unpacked.get().as<Arg1>();
-    make_unserialized(unpacked, args...);
+void make_unserialized(msgpack::unpacker& unpacker, Arg1& arg1, Args&&... args) {
+    msgpack::object_handle oh;
+    unpacker.next(oh);
+    arg1 = oh.get().as<Arg1>();
+    make_unserialized(unpacker, args...);
 }
 
 template <class R>
@@ -40,18 +42,20 @@ template<class RetType, class... Args>
 class Serializer<RetType(Args...)> : public DelegateMQ::ISerializer<RetType(Args...)>
 {
 public:
-    virtual std::ostream& write(std::ostream& os, Args... args) override {
+    virtual std::ostream& Write(std::ostream& os, Args... args) override {
         msgpack::sbuffer buffer;
         make_serialized(buffer, args...);
         os.write(buffer.data(), buffer.size());
         return os;
     }
 
-    virtual std::istream& read(std::istream& is, Args&... args) override {
+    virtual std::istream& Read(std::istream& is, Args&... args) override {
         std::string buffer_data((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
-        msgpack::unpacked unpacked;
-        msgpack::unpack(unpacked, buffer_data.data(), buffer_data.size());
-        make_unserialized(unpacked, args...);
+        msgpack::unpacker unpacker;
+        unpacker.reserve_buffer(buffer_data.size());
+        std::memcpy(unpacker.buffer(), buffer_data.data(), buffer_data.size());
+        unpacker.buffer_consumed(buffer_data.size());
+        make_unserialized(unpacker, args...);
         return is;
     }
 };

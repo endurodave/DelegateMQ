@@ -3,6 +3,7 @@
 #include <chrono>
 
 using namespace std;
+using namespace DelegateMQ;
 
 std::mutex Timer::m_lock;
 bool Timer::m_timerStopped = false;

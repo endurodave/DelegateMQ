@@ -56,6 +56,20 @@ private:
 
     void PollData()
     {
+        static int errCnt = 0;
+
+        // Periodically send alarm to client
+        if (errCnt++ % 10 == 0)
+        {
+            AlarmMsg msg;
+            msg.alarm = AlarmMsg::Alarm::ACTUATOR_ERROR;
+            msg.source = AlarmMsg::Source::SERVER;
+            AlarmNote note;
+            note.note = "Server alarm!";
+
+            AlarmMgr::Instance().SetAlarm(msg, note);
+        }
+
         // Collect sensor and actuator data
         DataMsg dataMsg;
         dataMsg.actuators.push_back(m_actuator1.GetState());
@@ -67,7 +81,7 @@ private:
         NetworkMgr::Instance().SendDataMsg(dataMsg);
     }
 
-    void ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
+    void ErrorHandler(DelegateMQ::DelegateRemoteId id, DelegateMQ::DelegateError error, DelegateMQ::DelegateErrorAux aux)
     {
         std::cout << "ServerApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }

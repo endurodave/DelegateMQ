@@ -13,6 +13,7 @@
 /// actuators. Start both applications to run sample. 
 
 #include "NetworkMgr.h"
+#include "AlarmMgr.h"
 #include "DataMgr.h"
 #include "ClientApp.h"
 #include <thread>
@@ -43,6 +44,7 @@ int main()
 
     NetworkMgr::Instance().Create();
     NetworkMgr::Instance().Start();
+    AlarmMgr::Instance();
     DataMgr::Instance();
     ClientApp::Instance();
 

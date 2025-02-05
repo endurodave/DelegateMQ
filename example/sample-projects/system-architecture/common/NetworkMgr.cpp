@@ -8,6 +8,7 @@ using namespace DelegateMQ;
 using namespace std;
 
 MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::ErrorCb;
+MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)> NetworkMgr::AlarmMsgCb;
 MulticastDelegateSafe<void(CommandMsg&)> NetworkMgr::CommandMsgCb;
 MulticastDelegateSafe<void(DataMsg&)> NetworkMgr::DataMsgCb;
 
@@ -31,17 +32,23 @@ void NetworkMgr::Create()
         return MakeDelegate(this, &NetworkMgr::Create, m_thread)();
 
     // Setup the remote delegate interfaces
+    m_alarmMsgDel.SetStream(&m_argStream);
+    m_alarmMsgDel.SetSerializer(&m_alarmMsgSer);
+    m_alarmMsgDel.SetDispatcher(&m_dispatcher);
+    m_alarmMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
+    m_alarmMsgDel = MakeDelegate(this, &NetworkMgr::RecvAlarmMsg, ALARM_MSG_ID);
+
     m_dataMsgDel.SetStream(&m_argStream);
     m_dataMsgDel.SetSerializer(&m_dataMsgSer);
     m_dataMsgDel.SetDispatcher(&m_dispatcher);
     m_dataMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_dataMsgDel = MakeDelegate(this, &NetworkMgr::RecvDataMsg, DATA_PACKAGE_ID);
+    m_dataMsgDel = MakeDelegate(this, &NetworkMgr::RecvDataMsg, DATA_MSG_ID);
 
     m_commandMsgDel.SetStream(&m_argStream);
     m_commandMsgDel.SetSerializer(&m_commandMsgSer);
     m_commandMsgDel.SetDispatcher(&m_dispatcher);
     m_commandMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_commandMsgDel = MakeDelegate(this, &NetworkMgr::RecvCommandMsg, COMMAND_ID);
+    m_commandMsgDel = MakeDelegate(this, &NetworkMgr::RecvCommandMsg, COMMAND_MSG_ID);
 
 #ifdef SERVER_APP
     m_transport.Create(Transport::Type::PAIR_SERVER, "tcp://*:5555");
@@ -53,8 +60,9 @@ void NetworkMgr::Create()
     m_dispatcher.SetTransport(&m_transport);
 
     // Set receive async delegates into map
-    m_receiveIdMap[COMMAND_ID] = &m_commandMsgDel;
-    m_receiveIdMap[DATA_PACKAGE_ID] = &m_dataMsgDel;
+    m_receiveIdMap[ALARM_MSG_ID] = &m_alarmMsgDel;
+    m_receiveIdMap[COMMAND_MSG_ID] = &m_commandMsgDel;
+    m_receiveIdMap[DATA_MSG_ID] = &m_dataMsgDel;
 }
 
 void NetworkMgr::Start()
@@ -76,6 +84,15 @@ void NetworkMgr::Stop()
     m_dispatcher.SetTransport(nullptr);
     m_transport.Close();
     //m_transport.Destroy();
+}
+
+void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note)
+{
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::SendAlarmMsg, m_thread)(msg, note);
+
+    // Send alarm to remote. 
+    m_alarmMsgDel(msg, note);
 }
 
 void NetworkMgr::SendCommandMsg(CommandMsg& command)
@@ -122,6 +139,11 @@ void NetworkMgr::Poll()
 void NetworkMgr::ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
 {
     ErrorCb(id, error, aux);
+}
+
+void NetworkMgr::RecvAlarmMsg(AlarmMsg& msg, AlarmNote& note)
+{
+    AlarmMsgCb(msg, note);
 }
 
 void NetworkMgr::RecvCommandMsg(CommandMsg& command)

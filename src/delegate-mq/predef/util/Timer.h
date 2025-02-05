@@ -5,15 +5,13 @@
 #include <mutex>
 #include <list>
 
-using namespace DelegateMQ;
-
 /// @brief A timer class provides periodic timer callbacks on the client's 
 /// thread of control. Timer is thread safe.
 class Timer 
 {
 public:
 	/// Client's register with Expired to get timer callbacks
-	UnicastDelegate<void(void)> Expired;
+	DelegateMQ::UnicastDelegate<void(void)> Expired;
 
 	/// Constructor
 	Timer(void);

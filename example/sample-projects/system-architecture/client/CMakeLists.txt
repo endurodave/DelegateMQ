@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set (DELEGATE_APP "delegate_client_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
-#add_compile_definitions(CLIENT_APP)
+add_compile_definitions(CLIENT_APP)
 
 include("${CMAKE_SOURCE_DIR}/../../../../Config.cmake")
 
