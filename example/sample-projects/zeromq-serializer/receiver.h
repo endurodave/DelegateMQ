@@ -71,9 +71,9 @@ private:
     }
 
     // Receiver target function called when sender remote delegate is invoked
-    void DataUpdate(Data& data)
+    void DataUpdate(Data& data, DataAux& dataAux)
     {
-        cout << data.msg << " " << data.dataPoints[0].y << " " << data.dataPoints[0].y << endl;
+        cout << data.msg << " " << data.dataPoints[0].y << " " << data.dataPoints[0].y << " " << dataAux.auxMsg << endl;
     }
 
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
@@ -82,10 +82,10 @@ private:
 
     xostringstream m_argStream;
     Transport m_transport;
-    Serializer<void(Data&)> m_serializer;
+    Serializer<void(Data&, DataAux&)> m_serializer;
 
     // Receiver remote delegate
-    DelegateMemberRemote<Receiver, void(Data&)> m_recvDelegate;
+    DelegateMemberRemote<Receiver, void(Data&, DataAux&)> m_recvDelegate;
 };
 
 #endif

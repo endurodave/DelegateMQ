@@ -30,3 +30,15 @@ std::istream& Data::read(serialize& ms, std::istream& is)
     return is;
 }
 
+std::ostream& DataAux::write(serialize& ms, std::ostream& os)
+{
+    ms.write(os, auxMsg);
+    return os;
+}
+
+std::istream& DataAux::read(serialize& ms, std::istream& is)
+{
+    ms.read(is, auxMsg);
+    return is;
+}
+

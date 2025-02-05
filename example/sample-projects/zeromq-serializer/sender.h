@@ -64,7 +64,10 @@ public:
         }
         data.msg = "Data Message:";
 
-        m_sendDelegate(data);
+        DataAux dataAux;
+        dataAux.auxMsg = "Aux Message";
+
+        m_sendDelegate(data, dataAux);
     }
 
 private:
@@ -79,10 +82,10 @@ private:
     xostringstream m_argStream;
     Dispatcher m_dispatcher;
     Transport m_transport;
-    Serializer<void(Data&)> m_serializer;
+    Serializer<void(Data&, DataAux&)> m_serializer;
 
     // Sender remote delegate
-    DelegateMemberRemote<Sender, void(Data&)> m_sendDelegate;
+    DelegateMemberRemote<Sender, void(Data&, DataAux&)> m_sendDelegate;
 
     int x = 0;
     int y = 0;

@@ -27,7 +27,7 @@ template<typename... Ts>
 void make_unserialized(serialize& ser, std::istream& is) { }
 
 template<typename Arg1, typename... Args>
-void make_unserialized(serialize& ser, std::istream& is, Arg1& arg1, Args... args) {
+void make_unserialized(serialize& ser, std::istream& is, Arg1& arg1, Args&&... args) {
     ser.read(is, arg1);
     make_unserialized(ser, is, args...);
 }

@@ -30,4 +30,13 @@ public:
     virtual std::istream& read(serialize& ms, std::istream& is) override;
 };
 
+class DataAux : public serialize::I
+{
+public:
+    std::string auxMsg;
+
+    virtual std::ostream& write(serialize& ms, std::ostream& os) override;
+    virtual std::istream& read(serialize& ms, std::istream& is) override;
+};
+
 #endif
