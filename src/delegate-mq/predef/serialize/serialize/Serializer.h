@@ -40,12 +40,12 @@ template<class RetType, class... Args>
 class Serializer<RetType(Args...)> : public DelegateMQ::ISerializer<RetType(Args...)>
 {
 public:
-    virtual std::ostream& write(std::ostream& os, Args... args) override {
+    virtual std::ostream& Write(std::ostream& os, Args... args) override {
         make_serialized(m_ser, os, args...);
         return os;
     }
 
-    virtual std::istream& read(std::istream& is, Args&... args) override {
+    virtual std::istream& Read(std::istream& is, Args&... args) override {
         make_unserialized(m_ser, is, args...);
         return is;
     }
