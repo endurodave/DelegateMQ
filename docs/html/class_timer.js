@@ -5,5 +5,5 @@ var class_timer =
     [ "Enabled", "class_timer.html#ae8745c16000c1a3248837d9d96d2c566", null ],
     [ "Start", "class_timer.html#a96bbd3b89729b8bfd09751dd594477e6", null ],
     [ "Stop", "class_timer.html#a6379e797f968aaee6ac3bb12dc6b81c5", null ],
-    [ "Expired", "class_timer.html#a5ab24da76b0875ede34107513ac9cdf6", null ]
+    [ "Expired", "class_timer.html#a95ebbb7c93e2eab3fc5883bdcc618b89", null ]
 ];

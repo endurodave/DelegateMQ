@@ -102,87 +102,89 @@ $(function(){initNavTree('_async_invoke_8h_source.html',''); initResizable(true)
 <a href="_async_invoke_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef _ASYNC_INVOKE_H</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define _ASYNC_INVOKE_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">template</span> &lt;<span class="keyword">class </span>Func, <span class="keyword">class</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="_async_invoke_8h.html#af6f56064e063e7375cd2e765e9785398">   22</a></span><span class="keyword">auto</span> <a class="code hl_function" href="_async_invoke_8h.html#af6f56064e063e7375cd2e765e9785398">AsyncInvoke</a>(Func func, <a class="code hl_class" href="class_worker_thread.html">WorkerThread</a>&amp; thread, <span class="keyword">const</span> std::chrono::milliseconds&amp; timeout, Args&amp;&amp;... args) {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="comment">// Deduce return type of func</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">using </span>RetType = <span class="keyword">decltype</span>(func(std::forward&lt;Args&gt;(args)...));</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="comment">// Is the calling function executing on the requested thread?</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (thread.<a class="code hl_function" href="class_worker_thread.html#a072c9f946424b91f0fdef5260d7b59aa">GetThreadId</a>() != <a class="code hl_function" href="class_worker_thread.html#ac9627a136d18c9214284496f104f9429">WorkerThread::GetCurrentThreadId</a>()) {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="comment">// Create a delegate that points to func to invoke on thread</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">auto</span> delegate = <a class="code hl_function" href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">DelegateLib::MakeDelegate</a>(func, thread, timeout);</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="comment">// Invoke the delegate target function asynchronously and wait for function call to complete</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">auto</span> retVal = delegate.AsyncInvoke(std::forward&lt;Args&gt;(args)...);</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="comment">// Target function has a return value?</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_void&lt;RetType&gt;::value == <span class="keyword">false</span>) {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="comment">// Did async function call succeed?</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <span class="keywordflow">if</span> (retVal.has_value()) {</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                <span class="comment">// Return the return value to caller</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                <span class="keywordflow">return</span> std::any_cast&lt;RetType&gt;(retVal.value());</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            }</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                <span class="keywordflow">return</span> RetType();</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            }</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        }</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    }</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="comment">// Invoke target function synchronously</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> std::invoke(func, std::forward&lt;Args&gt;(args)...);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">class </span><a class="code hl_class" href="class_thread.html">Thread</a>;</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">template</span> &lt;<span class="keyword">class </span>Func, <span class="keyword">class</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="_async_invoke_8h.html#a05707757f68e2f853116cdcaed699d0a">   24</a></span><span class="keyword">auto</span> <a class="code hl_function" href="_async_invoke_8h.html#a05707757f68e2f853116cdcaed699d0a">AsyncInvoke</a>(Func func, <a class="code hl_class" href="class_thread.html">Thread</a>&amp; thread, <span class="keyword">const</span> std::chrono::milliseconds&amp; timeout, Args&amp;&amp;... args) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="comment">// Deduce return type of func</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">using </span>RetType = <span class="keyword">decltype</span>(func(std::forward&lt;Args&gt;(args)...));</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="comment">// Is the calling function executing on the requested thread?</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (thread.<a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>() != <a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>()) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="comment">// Create a delegate that points to func to invoke on thread</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">auto</span> delegate = <a class="code hl_function" href="namespace_delegate_m_q.html#a1087b41a3217d76f1744f5c83dbe9d72">DelegateMQ::MakeDelegate</a>(func, thread, timeout);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="comment">// Invoke the delegate target function asynchronously and wait for function call to complete</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">auto</span> retVal = delegate.AsyncInvoke(std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="comment">// Target function has a return value?</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_void&lt;RetType&gt;::value == <span class="keyword">false</span>) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="comment">// Did async function call succeed?</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keywordflow">if</span> (retVal.has_value()) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                <span class="comment">// Return the return value to caller</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                <span class="keywordflow">return</span> std::any_cast&lt;RetType&gt;(retVal.value());</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                <span class="keywordflow">return</span> RetType();</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="comment">// Invoke target function synchronously</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> std::invoke(func, std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
 </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">template</span> &lt;<span class="keyword">class </span>TClass, <span class="keyword">class </span>Func, <span class="keyword">class</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="_async_invoke_8h.html#a21ec12c716c12df5e4e7fe8dfe467395">   62</a></span><span class="keyword">auto</span> <a class="code hl_function" href="_async_invoke_8h.html#af6f56064e063e7375cd2e765e9785398">AsyncInvoke</a>(TClass tclass, Func func, <a class="code hl_class" href="class_worker_thread.html">WorkerThread</a>&amp; thread, <span class="keyword">const</span> std::chrono::milliseconds&amp; timeout, Args&amp;&amp;... args) {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="comment">// Deduce return type of func</span></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">using </span>RetType = <span class="keyword">decltype</span>((tclass-&gt;*func)(std::forward&lt;Args&gt;(args)...));</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="comment">// Is the calling function executing on the requested thread?</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (thread.<a class="code hl_function" href="class_worker_thread.html#a072c9f946424b91f0fdef5260d7b59aa">GetThreadId</a>() != <a class="code hl_function" href="class_worker_thread.html#ac9627a136d18c9214284496f104f9429">WorkerThread::GetCurrentThreadId</a>()) {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="comment">// Create a delegate that points to func to invoke on thread</span></div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keyword">auto</span> delegate = <a class="code hl_function" href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">DelegateLib::MakeDelegate</a>(tclass, func, thread, timeout);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="comment">// Invoke the delegate target function asynchronously and wait for function call to complete</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">auto</span> retVal = delegate.AsyncInvoke(std::forward&lt;Args&gt;(args)...);</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="comment">// Target function has a return value?</span></div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_void&lt;RetType&gt;::value == <span class="keyword">false</span>) {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="comment">// Did async function call succeed?</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">if</span> (retVal.has_value()) {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="comment">// Return the return value to caller</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                <span class="keywordflow">return</span> std::any_cast&lt;RetType&gt;(retVal.value());</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            }</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                <span class="keywordflow">return</span> RetType();</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            }</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        }</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="comment">// Invoke target function synchronously</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">return</span> std::invoke(func, tclass, std::forward&lt;Args&gt;(args)...);</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> RetType();</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">template</span> &lt;<span class="keyword">class </span>TClass, <span class="keyword">class </span>Func, <span class="keyword">class</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="_async_invoke_8h.html#a198c6443999a45a9650b5f1e06d50bf3">   64</a></span><span class="keyword">auto</span> <a class="code hl_function" href="_async_invoke_8h.html#a05707757f68e2f853116cdcaed699d0a">AsyncInvoke</a>(TClass tclass, Func func, <a class="code hl_class" href="class_thread.html">Thread</a>&amp; thread, <span class="keyword">const</span> std::chrono::milliseconds&amp; timeout, Args&amp;&amp;... args) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="comment">// Deduce return type of func</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">using </span>RetType = <span class="keyword">decltype</span>((tclass-&gt;*func)(std::forward&lt;Args&gt;(args)...));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment">// Is the calling function executing on the requested thread?</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (thread.<a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>() != <a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>()) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="comment">// Create a delegate that points to func to invoke on thread</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">auto</span> delegate = <a class="code hl_function" href="namespace_delegate_m_q.html#a1087b41a3217d76f1744f5c83dbe9d72">DelegateMQ::MakeDelegate</a>(tclass, func, thread, timeout);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="comment">// Invoke the delegate target function asynchronously and wait for function call to complete</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keyword">auto</span> retVal = delegate.AsyncInvoke(std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="comment">// Target function has a return value?</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_void&lt;RetType&gt;::value == <span class="keyword">false</span>) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="comment">// Did async function call succeed?</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">if</span> (retVal.has_value()) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                <span class="comment">// Return the return value to caller</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                <span class="keywordflow">return</span> std::any_cast&lt;RetType&gt;(retVal.value());</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                <span class="keywordflow">return</span> RetType();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="comment">// Invoke target function synchronously</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> std::invoke(func, tclass, std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> RetType();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
 </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="a_async_invoke_8h_html_af6f56064e063e7375cd2e765e9785398"><div class="ttname"><a href="_async_invoke_8h.html#af6f56064e063e7375cd2e765e9785398">AsyncInvoke</a></div><div class="ttdeci">auto AsyncInvoke(Func func, WorkerThread &amp;thread, const std::chrono::milliseconds &amp;timeout, Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> AsyncInvoke.h:22</div></div>
-<div class="ttc" id="aclass_worker_thread_html"><div class="ttname"><a href="class_worker_thread.html">WorkerThread</a></div><div class="ttdef"><b>Definition</b> WorkerThreadStd.h:18</div></div>
-<div class="ttc" id="aclass_worker_thread_html_a072c9f946424b91f0fdef5260d7b59aa"><div class="ttname"><a href="class_worker_thread.html#a072c9f946424b91f0fdef5260d7b59aa">WorkerThread::GetThreadId</a></div><div class="ttdeci">std::thread::id GetThreadId()</div><div class="ttdoc">Get the ID of this thread instance.</div><div class="ttdef"><b>Definition</b> WorkerThreadStd.cpp:60</div></div>
-<div class="ttc" id="aclass_worker_thread_html_ac9627a136d18c9214284496f104f9429"><div class="ttname"><a href="class_worker_thread.html#ac9627a136d18c9214284496f104f9429">WorkerThread::GetCurrentThreadId</a></div><div class="ttdeci">static std::thread::id GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div><div class="ttdef"><b>Definition</b> WorkerThreadStd.cpp:71</div></div>
-<div class="ttc" id="anamespace_delegate_lib_html_a4815e70cd651512c838e354bf81a0c80"><div class="ttname"><a href="namespace_delegate_lib.html#a4815e70cd651512c838e354bf81a0c80">DelegateLib::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:670</div></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="a_async_invoke_8h_html_a05707757f68e2f853116cdcaed699d0a"><div class="ttname"><a href="_async_invoke_8h.html#a05707757f68e2f853116cdcaed699d0a">AsyncInvoke</a></div><div class="ttdeci">auto AsyncInvoke(Func func, Thread &amp;thread, const std::chrono::milliseconds &amp;timeout, Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> AsyncInvoke.h:24</div></div>
+<div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdef"><b>Definition</b> Thread.h:18</div></div>
+<div class="ttc" id="aclass_thread_html_a2294b75a90c36b4f14e32ae8d975a0fb"><div class="ttname"><a href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">Thread::GetThreadId</a></div><div class="ttdeci">std::thread::id GetThreadId()</div><div class="ttdoc">Get the ID of this thread instance.</div><div class="ttdef"><b>Definition</b> Thread.cpp:55</div></div>
+<div class="ttc" id="aclass_thread_html_aafe48fc7ef98b9e6adcf7b188a30e35a"><div class="ttname"><a href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a></div><div class="ttdeci">static std::thread::id GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div><div class="ttdef"><b>Definition</b> Thread.cpp:66</div></div>
+<div class="ttc" id="anamespace_delegate_m_q_html_a1087b41a3217d76f1744f5c83dbe9d72"><div class="ttname"><a href="namespace_delegate_m_q.html#a1087b41a3217d76f1744f5c83dbe9d72">DelegateMQ::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:670</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_fd8b95245ffcce776715f180c056b450.html">port</a></li><li class="navelem"><a class="el" href="_async_invoke_8h.html">AsyncInvoke.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_18b86b2e3f1aa2f223a127151285ad7d.html">predef</a></li><li class="navelem"><a class="el" href="dir_56109d0ba843c5a0bae722c3feb08e89.html">util</a></li><li class="navelem"><a class="el" href="_async_invoke_8h.html">AsyncInvoke.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

@@ -27,24 +27,20 @@ var NAVTREE =
   [ "Delegates", "index.html", [
     [ "Asynchronous Delegates in C++", "index.html#autotoc_md0", null ],
     [ "Design Documentation", "index.html#autotoc_md1", null ],
-    [ "Delegate Library Interfaces", "index.html#autotoc_md2", null ],
-    [ "Quick Start", "index.html#autotoc_md3", [
-      [ "Basic Examples", "index.html#autotoc_md4", null ],
-      [ "Publish/Subscribe Example", "index.html#autotoc_md5", [
-        [ "Publisher", "index.html#autotoc_md6", null ],
-        [ "Subscriber", "index.html#autotoc_md7", null ]
+    [ "Quick Start", "index.html#autotoc_md2", [
+      [ "Basic Examples", "index.html#autotoc_md3", null ],
+      [ "Publish/Subscribe Example", "index.html#autotoc_md4", [
+        [ "Publisher", "index.html#autotoc_md5", null ],
+        [ "Subscriber", "index.html#autotoc_md6", null ]
       ] ],
-      [ "All Delegate Types Example", "index.html#autotoc_md8", null ],
-      [ "Asynchronous API Example", "index.html#autotoc_md9", null ]
+      [ "All Delegate Types Example", "index.html#autotoc_md7", null ],
+      [ "Asynchronous API Example", "index.html#autotoc_md8", null ]
     ] ],
-    [ "Delegate Classes", "index.html#autotoc_md10", null ],
-    [ "Project Build", "index.html#autotoc_md11", [
-      [ "Windows Visual Studio", "index.html#autotoc_md12", null ],
-      [ "Linux Make", "index.html#autotoc_md13", null ]
-    ] ],
-    [ "Related Repositories", "index.html#autotoc_md14", [
-      [ "Alternative Implementations", "index.html#autotoc_md15", null ],
-      [ "Projects Using Delegates", "index.html#autotoc_md16", null ]
+    [ "Delegate Classes", "index.html#autotoc_md9", null ],
+    [ "Project Build", "index.html#autotoc_md10", null ],
+    [ "Related Repositories", "index.html#autotoc_md11", [
+      [ "Alternative Implementations", "index.html#autotoc_md12", null ],
+      [ "Projects Using Delegates", "index.html#autotoc_md13", null ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -65,6 +61,7 @@ var NAVTREE =
         [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ],
+        [ "Enumerations", "functions_enum.html", null ],
         [ "Related Symbols", "functions_rela.html", null ]
       ] ]
     ] ],
@@ -83,11 +80,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"class_delegate_lib_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a1539d9effc50d7af8624b05b3ec37139",
-"class_delegate_lib_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#aa26e80dc355d468498afff49fe33762e",
-"class_delegate_lib_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ae589e1362362d65dde18b4d53d3a1fbc",
-"class_delegate_lib_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a63e6c6400891774615483ef099d719d7",
-"functions_u.html"
+"class_delegate_m_q_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a4dc6e662bdd92b5056f7b84d46f886e6",
+"class_delegate_m_q_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a01ae6f44d1a88cd818392727fd1a37f3",
+"class_delegate_m_q_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a0244c8c751345f3b48028e2214d04284",
+"class_delegate_m_q_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a9a27d2382f8793379e7fafa0d0f13d71",
+"functions_e.html",
+"xallocator_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

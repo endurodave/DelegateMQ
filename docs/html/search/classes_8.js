@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['semaphore_0',['Semaphore',['../class_delegate_lib_1_1_semaphore.html',1,'DelegateLib']]],
-  ['stl_5fallocator_1',['stl_allocator',['../classstl__allocator.html',1,'']]],
-  ['stl_5fallocator_3c_20void_20_3e_2',['stl_allocator&lt; void &gt;',['../classstl__allocator_3_01void_01_4.html',1,'']]],
-  ['sysdataclient_3',['SysDataClient',['../class_main_1_1_sys_data_client.html',1,'Main']]]
+  ['unicastdelegate_0',['UnicastDelegate',['../struct_delegate_m_q_1_1_unicast_delegate.html',1,'DelegateMQ']]],
+  ['unicastdelegate_3c_20rettype_28args_2e_2e_2e_29_3e_1',['UnicastDelegate&lt; RetType(Args...)&gt;',['../class_delegate_m_q_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html',1,'DelegateMQ']]],
+  ['unicastdelegate_3c_20void_28delegateremoteid_2c_20delegateerror_2c_20delegateerroraux_29_3e_2',['UnicastDelegate&lt; void(DelegateRemoteId, DelegateError, DelegateErrorAux)&gt;',['../struct_delegate_m_q_1_1_unicast_delegate.html',1,'DelegateMQ']]],
+  ['unicastdelegate_3c_20void_28void_29_3e_3',['UnicastDelegate&lt; void(void)&gt;',['../struct_delegate_m_q_1_1_unicast_delegate.html',1,'DelegateMQ']]]
 ];

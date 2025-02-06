@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['reference_0',['reference',['../classstl__allocator.html#af5a899e568d23ab5bb9150b4700a9cb1',1,'stl_allocator']]]
+  ['sharedptr_0',['SharedPtr',['../class_delegate_m_q_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#adf6f8fbd170887b05cdccf3fa7d3fb41',1,'DelegateMQ::DelegateMember&lt; TClass, RetType(Args...)&gt;::SharedPtr'],['../class_delegate_m_q_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#acaad33b12bb340572f6e1443deb2d274',1,'DelegateMQ::DelegateMemberAsync&lt; TClass, RetType(Args...)&gt;::SharedPtr'],['../class_delegate_m_q_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a262e94c0bad168948f056aabf606a56a',1,'DelegateMQ::DelegateMemberAsyncWait&lt; TClass, RetType(Args...)&gt;::SharedPtr'],['../class_delegate_m_q_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a3da8d26b85fb2bd1fd3312f490ca3228',1,'DelegateMQ::DelegateMemberRemote&lt; TClass, RetType(Args...)&gt;::SharedPtr']]],
+  ['size_5ftype_1',['size_type',['../classstl__allocator.html#a930b16fc926331c16d5e37810357f8b1',1,'stl_allocator']]]
 ];

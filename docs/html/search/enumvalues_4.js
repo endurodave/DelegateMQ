@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['timer_0',['Timer',['../namespace_example.html#a138503238c4f38364226c21bf8d00505aefb4777327e6f704fb1519c1882f93ec',1,'Example']]]
+  ['map_0',['MAP',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a5af1a3a285c2bdee4192223e31e1f833',1,'serialize']]]
 ];

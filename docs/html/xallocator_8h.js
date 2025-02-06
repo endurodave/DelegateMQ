@@ -1,6 +1,5 @@
 var xallocator_8h =
 [
-    [ "XALLOCATOR", "xallocator_8h.html#a5e800c556290ed548055177c33a66f5c", null ],
     [ "xalloc_destroy", "xallocator_8h.html#ab15c84ed4c7ef8268c3e1e3ca40ac261", null ],
     [ "xalloc_init", "xallocator_8h.html#a2ef0f77be4ef8dcbed8bfc80791d29a7", null ],
     [ "xalloc_stats", "xallocator_8h.html#a9afc43dc6a9e7f37b31984837bce5e6e", null ],

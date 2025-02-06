@@ -73,7 +73,7 @@ namespace serialize_traits
 #endif  // CHECK_UNSUPPORTED_CONTAINER
 
 /// @brief The serialize class binary serializes and deserializes C++ objects.
-/// @detail Each class need to implement the serialize::I abstract interface
+/// @details Each class need to implement the serialize::I abstract interface
 /// to allow binary serialization to any stream. A default constructor is required
 /// for the serialized object. Most container elements can be stored by value or 
 /// by pointer. C++ containers supported are:

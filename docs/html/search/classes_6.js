@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['multicastdelegate_0',['MulticastDelegate',['../struct_delegate_lib_1_1_multicast_delegate.html',1,'DelegateLib']]],
-  ['multicastdelegate_3c_20rettype_28args_2e_2e_2e_29_3e_1',['MulticastDelegate&lt; RetType(Args...)&gt;',['../class_delegate_lib_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html',1,'DelegateLib']]],
-  ['multicastdelegatesafe_2',['MulticastDelegateSafe',['../struct_delegate_lib_1_1_multicast_delegate_safe.html',1,'DelegateLib']]],
-  ['multicastdelegatesafe_3c_20rettype_28args_2e_2e_2e_29_3e_3',['MulticastDelegateSafe&lt; RetType(Args...)&gt;',['../class_delegate_lib_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html',1,'DelegateLib']]],
-  ['multicastdelegatesafe_3c_20void_28const_20std_3a_3ashared_5fptr_3c_20const_20main_3a_3acoordinates_20_3e_29_3e_4',['MulticastDelegateSafe&lt; void(const std::shared_ptr&lt; const Main::Coordinates &gt;)&gt;',['../struct_delegate_lib_1_1_multicast_delegate_safe.html',1,'DelegateLib']]]
+  ['semaphore_0',['Semaphore',['../class_delegate_m_q_1_1_semaphore.html',1,'DelegateMQ']]],
+  ['serialize_1',['serialize',['../classserialize.html',1,'']]],
+  ['serializer_2',['Serializer',['../struct_serializer.html',1,'']]],
+  ['serializer_3c_20rettype_28args_2e_2e_2e_29_3e_3',['Serializer&lt; RetType(Args...)&gt;',['../class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html',1,'']]],
+  ['stl_5fallocator_4',['stl_allocator',['../classstl__allocator.html',1,'']]],
+  ['stl_5fallocator_3c_20void_20_3e_5',['stl_allocator&lt; void &gt;',['../classstl__allocator_3_01void_01_4.html',1,'']]]
 ];

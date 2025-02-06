@@ -109,19 +109,19 @@ $(function(){initNavTree('_async_invoke_8h.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:af6f56064e063e7375cd2e765e9785398" id="r_af6f56064e063e7375cd2e765e9785398"><td class="memTemplParams" colspan="2">template&lt;class Func , class... Args&gt; </td></tr>
-<tr class="memitem:af6f56064e063e7375cd2e765e9785398"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af6f56064e063e7375cd2e765e9785398">AsyncInvoke</a> (Func func, <a class="el" href="class_worker_thread.html">WorkerThread</a> &amp;thread, const std::chrono::milliseconds &amp;timeout, Args &amp;&amp;... args)</td></tr>
-<tr class="separator:af6f56064e063e7375cd2e765e9785398"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21ec12c716c12df5e4e7fe8dfe467395" id="r_a21ec12c716c12df5e4e7fe8dfe467395"><td class="memTemplParams" colspan="2">template&lt;class TClass , class Func , class... Args&gt; </td></tr>
-<tr class="memitem:a21ec12c716c12df5e4e7fe8dfe467395"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a21ec12c716c12df5e4e7fe8dfe467395">AsyncInvoke</a> (TClass tclass, Func func, <a class="el" href="class_worker_thread.html">WorkerThread</a> &amp;thread, const std::chrono::milliseconds &amp;timeout, Args &amp;&amp;... args)</td></tr>
-<tr class="separator:a21ec12c716c12df5e4e7fe8dfe467395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05707757f68e2f853116cdcaed699d0a" id="r_a05707757f68e2f853116cdcaed699d0a"><td class="memTemplParams" colspan="2">template&lt;class Func , class... Args&gt; </td></tr>
+<tr class="memitem:a05707757f68e2f853116cdcaed699d0a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a05707757f68e2f853116cdcaed699d0a">AsyncInvoke</a> (Func func, <a class="el" href="class_thread.html">Thread</a> &amp;thread, const std::chrono::milliseconds &amp;timeout, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:a05707757f68e2f853116cdcaed699d0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a198c6443999a45a9650b5f1e06d50bf3" id="r_a198c6443999a45a9650b5f1e06d50bf3"><td class="memTemplParams" colspan="2">template&lt;class TClass , class Func , class... Args&gt; </td></tr>
+<tr class="memitem:a198c6443999a45a9650b5f1e06d50bf3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a198c6443999a45a9650b5f1e06d50bf3">AsyncInvoke</a> (TClass tclass, Func func, <a class="el" href="class_thread.html">Thread</a> &amp;thread, const std::chrono::milliseconds &amp;timeout, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:a198c6443999a45a9650b5f1e06d50bf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Helper functions to simplify invoking a free or member function on the user-specified thread of control using a single line of code. Particually useful for creating asynhronous APIs (see AsyncAPI.cpp). </p>
 <p>size_t send_data(const std::string&amp; data) { return AsyncInvoke(send_data_private, comm_thread, WAIT_INFINITE, data); } </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="af6f56064e063e7375cd2e765e9785398" name="af6f56064e063e7375cd2e765e9785398"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af6f56064e063e7375cd2e765e9785398">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[1/2]</span></h2>
+<a id="a05707757f68e2f853116cdcaed699d0a" name="a05707757f68e2f853116cdcaed699d0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05707757f68e2f853116cdcaed699d0a">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -136,7 +136,7 @@ template&lt;class Func , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_worker_thread.html">WorkerThread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_thread.html">Thread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -162,8 +162,8 @@ template&lt;class Func , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a21ec12c716c12df5e4e7fe8dfe467395" name="a21ec12c716c12df5e4e7fe8dfe467395"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a21ec12c716c12df5e4e7fe8dfe467395">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[2/2]</span></h2>
+<a id="a198c6443999a45a9650b5f1e06d50bf3" name="a198c6443999a45a9650b5f1e06d50bf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a198c6443999a45a9650b5f1e06d50bf3">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -183,7 +183,7 @@ template&lt;class TClass , class Func , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_worker_thread.html">WorkerThread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
+          <td class="paramtype"><a class="el" href="class_thread.html">Thread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -215,7 +215,7 @@ template&lt;class TClass , class Func , class... Args&gt; </div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_fd8b95245ffcce776715f180c056b450.html">port</a></li><li class="navelem"><a class="el" href="_async_invoke_8h.html">AsyncInvoke.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_18b86b2e3f1aa2f223a127151285ad7d.html">predef</a></li><li class="navelem"><a class="el" href="dir_56109d0ba843c5a0bae722c3feb08e89.html">util</a></li><li class="navelem"><a class="el" href="_async_invoke_8h.html">AsyncInvoke.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
