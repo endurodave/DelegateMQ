@@ -44,6 +44,7 @@ namespace UnitTestData
 		}
 
 		static int m_construtorCnt;
+		XALLOCATOR
 	};
 
 	std::ostream& operator<<(std::ostream& os, const Class& data);
@@ -63,6 +64,7 @@ namespace UnitTestData
 	class Base {
 	public:
 		virtual int Func() { return 0; }
+		XALLOCATOR
 	};
 
 	class Derive : public Base {
@@ -158,6 +160,7 @@ namespace UnitTestData
 		int MemberFuncWithReturn0() { return TEST_INT; }
 
 		static void StaticFunc0() { }
+		XALLOCATOR
 	};
 
 	class TestClass1
@@ -184,6 +187,7 @@ namespace UnitTestData
 		static void StaticFuncStructConstPtr1(const StructParam* s) { ASSERT_TRUE(s->val == TEST_INT); }
 		static void StaticFuncStructRef1(StructParam& s) { ASSERT_TRUE(s.val == TEST_INT); }
 		static void StaticFuncStructConstRef1(const StructParam& s) { ASSERT_TRUE(s.val == TEST_INT); }
+		XALLOCATOR
 	};
 
 	class TestClass2
@@ -205,6 +209,7 @@ namespace UnitTestData
 		static void StaticFuncStructConstPtr2(const StructParam* s, int i) { ASSERT_TRUE(s->val == TEST_INT); }
 		static void StaticFuncStructRef2(StructParam& s, int i) { ASSERT_TRUE(s.val == TEST_INT); }
 		static void StaticFuncStructConstRef2(const StructParam& s, int i) { ASSERT_TRUE(s.val == TEST_INT); }
+		XALLOCATOR
 	};
 }
 

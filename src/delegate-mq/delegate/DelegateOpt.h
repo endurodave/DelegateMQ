@@ -5,10 +5,10 @@
 /// @brief Delegate library options header file.
 
 // Define this macro to switch between assert or exception handling
-//#define USE_ASSERTS  // Comment this out to use asserts
+//#define USE_ASSERTS  // Uncomment to use asserts
 
 // Define the macro to use the fixed block allocator
-//#define USE_ALLOCATOR   // Comment this out to use allocator
+//#define USE_ALLOCATOR   // Uncomment to use allocator
 
 #ifdef USE_ASSERTS
     #include <cassert>

@@ -109,6 +109,7 @@ namespace Main
     class TestClass
     {
     public:
+        TestClass() {}
         ~TestClass() {}
 
         void StaticFuncInt(int value)
@@ -196,6 +197,7 @@ namespace Main
     class Base {
     public:
         virtual void display(std::string msg) { cout << "Base: " << msg << endl; }
+        XALLOCATOR
     };
 
     class Derived : public Base {

@@ -21,9 +21,13 @@ namespace Example
             std::lock_guard<std::mutex> lk(m_mutex);
             m_ss << os.rdbuf();
         }
-        static std::stringstream& Receive() {
+        static std::stringstream Receive() {
             std::lock_guard<std::mutex> lk(m_mutex);
-            return m_ss;
+            std::stringstream copy;
+            copy.str(m_ss.str());  // Copy the content from m_ss to the new stringstream
+            m_ss.str("");          // Clear the original stringstream's content
+            m_ss.clear();          // Reset any error flags
+            return copy;           // Return the moved stringstream
         }
     private:
         // Simulate send/recv data using a stream
@@ -151,7 +155,7 @@ namespace Example
 
             // Start a timer to send data
             m_sendTimer.Expired = MakeDelegate(this, &Sender::Send, m_thread);
-            m_sendTimer.Start(std::chrono::milliseconds(50));
+            m_sendTimer.Start(std::chrono::milliseconds(100));
         }
 
         ~Sender()
@@ -212,7 +216,7 @@ namespace Example
         void Poll()
         {
             // Get incoming data
-            auto& arg_data = Transport::Receive();
+            auto arg_data = Transport::Receive();
 
             // Incoming remote delegate data arrived?
             if (!arg_data.str().empty())
@@ -225,6 +229,11 @@ namespace Example
         // Receiver target function called when sender remote delegate is invoked
         void DataUpdate(Data& data)
         {
+            if (data.x != 1)
+            {
+                int h = 0;
+                h++;
+            }
             cout << "Receiver::DataUpdate: " << data.x;
             cout << " " << data.y;
             cout << " " << data.msg;
