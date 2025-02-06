@@ -15,8 +15,17 @@ The C++ delegates library can invoke any callable function synchronously, asynch
 - [Delegates Background](#delegates-background)
   - [`std::function`](#stdfunction)
   - [`std::async` and `std::future`](#stdasync-and-stdfuture)
-  - [`Delegate` vs. `std::async` Feature Comparisons](#delegate-vs-stdasync-feature-comparisons)
-- [Using the Code](#using-the-code)
+  - [`DelegateMQ` vs. `std::async` Feature Comparisons](#delegatemq-vs-stdasync-feature-comparisons)
+- [DelegateMQ Build](#delegatemq-build)
+  - [Build Options](#build-options)
+  - [Example Projects](#example-projects)
+    - [`bare-metal`](#bare-metal)
+    - [`zeromq-serializer`](#zeromq-serializer)
+    - [`zeromq-msgpack-cpp`](#zeromq-msgpack-cpp)
+    - [`system-architecture`](#system-architecture)
+- [DelegateMQ Dependencies](#delegatemq-dependencies)
+  - [Interface Details](#interface-details)
+- [DelegateMQ Usage](#delegatemq-usage)
   - [Delegates](#delegates)
   - [Delegate Containers](#delegate-containers)
   - [Synchronous Delegates](#synchronous-delegates)
@@ -29,18 +38,18 @@ The C++ delegates library can invoke any callable function synchronously, asynch
   - [Caution Using `std::bind`](#caution-using-stdbind)
   - [Caution Using Raw Object Pointers](#caution-using-raw-object-pointers)
   - [Usage Summary](#usage-summary)
-- [Delegate Library](#delegate-library)
+- [DelegateMQ Library](#delegatemq-library)
   - [Heap Template Parameter Pack](#heap-template-parameter-pack)
     - [Argument Heap Copy](#argument-heap-copy)
     - [Bypassing Argument Heap Copy](#bypassing-argument-heap-copy)
     - [Array Argument Heap Copy](#array-argument-heap-copy)
-- [Delegate Library Interfaces](#delegate-library-interfaces)
+- [DelegateMQ Interfaces](#delegatemq-interfaces)
   - [`IThread`](#ithread)
     - [Send `DelegateMsg`](#send-delegatemsg)
     - [Receive `DelegateMsg`](#receive-delegatemsg)
   - [`ISerializer`](#iserializer)
   - [`IDispatcher`](#idispatcher)
-- [Examples](#examples)
+- [DelegateMQ Examples](#delegatemq-examples)
   - [Callback Example](#callback-example)
   - [Register Callback Example](#register-callback-example)
   - [Asynchronous API No Locks Example](#asynchronous-api-no-locks-example)
@@ -49,14 +58,13 @@ The C++ delegates library can invoke any callable function synchronously, asynch
   - [Timer Example](#timer-example)
   - [`std::async` Thread Targeting Example](#stdasync-thread-targeting-example)
   - [More Examples](#more-examples)
-- [Testing](#testing)
+- [DelegateMQ Tests](#delegatemq-tests)
   - [Unit Tests](#unit-tests)
   - [Valgrind Memory Tests](#valgrind-memory-tests)
     - [Heap Memory Test Results](#heap-memory-test-results)
     - [Fixed-Block Memory Allocator Test Results](#fixed-block-memory-allocator-test-results)
 - [Library Comparison](#library-comparison)
 - [References](#references)
-
 
 # Introduction
 
@@ -144,7 +152,7 @@ The delegate library's asynchronous features differ from `std::async` in that th
 
 In short, the delegate library offers features that are not natively available in the C++ standard library to ease multi-threaded application development.
 
- ## `Delegate` vs. `std::async` Feature Comparisons
+ ## `DelegateMQ` vs. `std::async` Feature Comparisons
 
 | Feature | `Delegate` | `DelegateAsync` | `DelegateAsyncWait` | `std::async` |
 | ---- | ----| ---- | ---- | ---- |
@@ -167,7 +175,82 @@ In short, the delegate library offers features that are not natively available i
 <sup>3</sup> `std::function` cannot resolve difference between functions with matching signature `std::function` instances (e.g `void Class:One(int)` and `void Class::Two(int)` are equal).  
 <sup>4</sup> `MulticastDelegateSafe<>` a thread-safe container used to hold and invoke a collection of delegates.
 
-# Using the Code
+# DelegateMQ Build
+
+[CMake](https://cmake.org/) is used to create the project files in the `build` directory. Executes all unit tests and examples with not external dependencies.
+
+`cmake -B build`
+
+## Build Options
+
+The build options are contained within the files below.
+
+| File Name | Settings |
+| --- | --- |
+| `DelegateOpt.h` | `USE_ASSERTS` enable macro to use asserts instead of exceptions.<br>`USE_ALLOCATOR` enable macro to use a fixed-block allocator instead of the global heap. |
+| `External.cmake` | Update directory locations for external libraries such as MessagePack and ZeroMQ. |
+
+## Example Projects
+
+Remote delegate example projects are located within the `example/sample-projects` directory. Build the root project first, then one or more of the subprojects below.
+
+### `bare-metal`
+
+Remote delegate example with no external libraries. 
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
+| `IDispatcher` | Shared sender/receiver `std::stringstream`.
+
+### `zeromq-serializer`
+
+Remote delegate example using ZeroMQ and `serialize`.
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | `serialize` class.  
+| `IDispatcher` | ZeroMQ library.
+
+### `zeromq-msgpack-cpp`
+
+Remote delegate example using ZeroMQ and MessagePack libraries.
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | MessagePack library.  
+| `IDispatcher` | ZeroMQ library.
+
+### `system-architecture`
+
+Remote delegate example showing a complex system architecture using ZeroMQ and MessagePack libraries. Execute the client and server projects to run the example.
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | MessagePack library. | 
+| `IDispatcher` | ZeroMQ library. |
+
+# DelegateMQ Dependencies
+
+The `DelegateMQ` library external dependencies are based upon on the intended use.
+
+| Delegate Use | External Dependency |
+| --- | --- |
+| Synchronous Delegates | None. Include `DelegateMQ.h` an nothing more. |
+| Asynchronous Delegates | Implement `IThread::DispatchDelegate()` interface. Default cross-platform [Thread](https://github.com/endurodave/StdWorkerThread) class available based on C++ thread-support library.
+| Remote Delegates | Implement `ISerializer::Read()` and `ISerializer::Write()` interfaces. [MessagePack](https://github.com/msgpack/msgpack-c/tree/cpp_master) library and [serialize](https://github.com/endurodave/MessageSerialize) class implementations available.<br>Implement `IDispatcher::Dispatch()` interface. [ZeroMQ](https://github.com/zeromq) implementation available. |
+
+## Interface Details
+
+Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Complete example code offer ready-made solutions or create your own.
+
+| Class | Interface | Notes
+| --- | --- | ---
+| `Delegate` | n/a | No interfaces; use as-is without external dependencies.
+| `DelegateAsync`<br>`DelegateAsyncWait` | `IThread` | `IThread` used to send a delegate and argument data through an OS message queue.
+| `DelegateRemote` | `ISerializer`<br>`IDispatcher` | `ISerializer` used to serialize callable argument data.<br>`IDispatcher` used to send serialized argument data to a remote endpoint.
+
+# DelegateMQ Usage
 
 The delegate library is comprised of delegates and delegate containers. 
 
@@ -422,14 +505,14 @@ public:
     /// @param[out] os The output stream
     /// @param[in] args The target function arguments 
     /// @return The input stream
-    virtual std::ostream& write(std::ostream& os, Args... args) = 0;
+    virtual std::ostream& Write(std::ostream& os, Args... args) = 0;
 
     /// Inheriting class implements the read function to unserialize data
     /// from transport. 
     /// @param[in] is The input stream
     /// @param[out] args The target function arguments 
     /// @return The input stream
-    virtual std::istream& read(std::istream& is, Args&... args) = 0;
+    virtual std::istream& Read(std::istream& is, Args&... args) = 0;
 };
 
 /// @brief Delegate interface class to dispatch serialized function argument data
@@ -483,7 +566,7 @@ delegateRemote.Invoke(recv_stream);
 
 ## Fixed-Block Memory Allocator
 
-The delegate library optionally uses a fixed-block memory allocator when `USE_ALLOCATOR` is defined. See `DelegateOpt.h`, `CMakeLists.txt`, and the `Allocator` directory for more details. The allocator design is available in the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
+The delegate library optionally uses a fixed-block memory allocator when `USE_ALLOCATOR` is defined. See `DelegateOpt.h` for more details. The allocator design is available in the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
 
 `std::function` used within class `DelegateFunction` may use the heap under certain conditions. Implement a custom `xfunction` similar to the `xlist` concept within `xlist.h` using the `xallocator` fixed-block allocator if deemed necessary.
 
@@ -641,7 +724,7 @@ if (myDelegate)
 }
 ```
 
-# Delegate Library
+# DelegateMQ Library
 
 A single include `DelegateMQ.h` provides access to all delegate library features. The library is wrapped within a `DelegateMQ` namespace. The table below shows the delegate class hierarchy.
 
@@ -793,7 +876,7 @@ delegateArrayFunc(cArray);
 
 There is no way to asynchronously pass a C-style array by value. Avoid C-style arrays if possible when using asynchronous delegates to avoid confusion and mistakes.
 
-# Delegate Library Interfaces
+# DelegateMQ Interfaces
 
 ## `IThread`
 
@@ -952,14 +1035,14 @@ public:
     /// @param[out] os The output stream
     /// @param[in] args The target function arguments 
     /// @return The input stream
-    virtual std::ostream& write(std::ostream& os, Args... args) = 0;
+    virtual std::ostream& Write(std::ostream& os, Args... args) = 0;
 
     /// Inheriting class implements the read function to unserialize data
     /// from transport. 
     /// @param[in] is The input stream
     /// @param[out] args The target function arguments 
     /// @return The input stream
-    virtual std::istream& read(std::istream& is, Args&... args) = 0;
+    virtual std::istream& Read(std::istream& is, Args&... args) = 0;
 };
 ```
 
@@ -988,7 +1071,7 @@ public:
 };
 ```
 
-# Examples
+# DelegateMQ Examples
 
 ## Callback Example
 
@@ -1298,7 +1381,7 @@ void AsyncFutureExample()
 
 See the `examples` directory for additional examples.
 
-# Testing
+# DelegateMQ Tests
 
 The current master branch build passes all unit tests and Valgrind memory tests.
 

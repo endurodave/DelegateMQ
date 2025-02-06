@@ -30,7 +30,9 @@ delegates(123);
 
 In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, callbacks, asynchronous APIs, or when you need to pass functions as arguments.
 
-Synchronous and asynchronous delegates are available. Asynchronous variants handle both non-blocking and blocking modes with a timeout. The library supports all types of target functions, including free functions, class member functions, static class functions, lambdas, and `std::function`. It is capable of handling any function signature, regardless of the number of arguments or return value. All argument types are supported, including by value, pointers, pointers to pointers, and references. The delegate library takes care of the intricate details of function invocation across thread boundaries. 
+Synchronous and asynchronous delegates are available. Asynchronous variants handle both non-blocking and blocking modes with a timeout. The library supports all types of target functions, including free functions, class member functions, static class functions, lambdas, and `std::function`. It is capable of handling any function signature, regardless of the number of arguments or return value. All argument types are supported, including by value, pointers, pointers to pointers, and references. The delegate library takes care of the intricate details of function invocation across thread boundaries.
+
+Remote delegates extend function invocation across processes or processors using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callable endpoints with any function signature. Concrete examples include [MessagePack](https://msgpack.org/index.html) and [ZeroMQ](https://zeromq.org/), among others.
 
 It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to `nullptr`. Const correctness is maintained; stored const objects can only be called by const member functions.
 
@@ -54,7 +56,7 @@ Typical use cases are:
 
 The delegate library's asynchronous features differ from `std::async` in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into an event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.
 
-In short, the delegate library offers features that are not natively available in the C++ standard library to ease multi-threaded application development.
+In short, the delegate library offers features that are not natively available in the C++ standard library to ease multi-threaded and multi-processor application development.
 
 Originally published on CodeProject at: <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a>
 
@@ -67,16 +69,6 @@ Originally published on CodeProject at: <a href="https://www.codeproject.com/Art
  See [Doxygen Documentation](https://endurodave.github.io/cpp-async-delegate/html/index.html) for source code documentation. 
 
  See [Unit Test Code Coverage](https://app.codecov.io/gh/endurodave/cpp-async-delegate) test results.
-
-# Delegate Library Interfaces 
-
-Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Complete example code offer ready-made solutions or allow you to create your own.
-
-| Class | Interface | Notes
-| --- | --- | ---
-| `Delegate` | n/a | No interfaces; use as-is without external dependencies.
-| `DelegateAsync`<br>`DelegateAsyncWait` | `IThread` | `IThread` used to send a delegate and argument data through an OS message queue.
-| `DelegateRemote` | `ISerializer`<br>`IDispatcher` | `ISerializer` used to serialize callable argument data.<br>`IDispatcher` used to send serialized argument data to a remote endpoint.
 
 # Quick Start
 
@@ -454,31 +446,9 @@ MulticastDelegate<>
 
 <a href="https://www.cmake.org">CMake</a> is used to create the build files. CMake is free and open-source software. Windows, Linux and other toolchains are supported. Example CMake console commands executed inside the project root directory: 
 
-## Windows Visual Studio
+`cmake -B build -S .`
 
-`cmake -G "Visual Studio 17 2022" -A Win32 -B build -S .`
-
-`cmake -G "Visual Studio 17 2022" -A x64 -B build -S .`
-
-`cmake -G "Visual Studio 17 2022" -A x64 -B build -S . -DENABLE_ALLOCATOR=ON`
-
-After executed, open the Visual Studio project from within the `build` directory.
-
-<img src="docs/Figure3.jpg" alt="Figure 3: Visual Studio Build" style="width:100%;">
-
-**Figure 3: Visual Studio Build**
-
-## Linux Make
-
-`cmake -G "Unix Makefiles" -B build -S .`
-
-`cmake -G "Unix Makefiles" -B build -S . -DENABLE_ALLOCATOR=ON`
-
-After executed, build the software from within the `build` directory using the command `make`. Run the console app using `./DelegateApp`.
-
-<img src="docs/Figure4.jpg" alt="Figure 4: Linux Makefile Build" style="width:70%;">
-
-**Figure 4: Linux Makefile Build**
+The `examples` directory has more projects.
 
 # Related Repositories
 
