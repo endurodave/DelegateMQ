@@ -64,7 +64,7 @@ Originally published on CodeProject at: <a href="https://www.codeproject.com/Art
 
  See [Design Details](docs/DETAILS.md) for implementation design documentation and more examples.
 
- See [Sample Projects](examples/sample-projects/EXAMPLES.md) for information on example projects.
+ See [Sample Projects](example/sample-projects/EXAMPLES.md) for information on example projects.
 
  See [Doxygen Documentation](https://endurodave.github.io/cpp-async-delegate/html/index.html) for source code documentation. 
 
