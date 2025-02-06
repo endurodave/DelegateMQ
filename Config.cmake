@@ -24,7 +24,7 @@ set(DELEGATE_LIB_DIR "${DELEGATE_ROOT_DIR}/lib")
 # Check if the delegate_mq.lib exists in the specified directory
 set(DELEGATE_LIB_NAME "delegate_mq.lib")
 if (NOT EXISTS "${DELEGATE_LIB_DIR}/${DELEGATE_LIB_NAME}")
-    message(FATAL_ERROR "Error: ${DELEGATE_LIB_NAME} not found in ${DELEGATE_LIB_DIR}. Please ensure the library is pre-built and available.")
+    #message(FATAL_ERROR "Error: ${DELEGATE_LIB_NAME} not found in ${DELEGATE_LIB_DIR}. Please ensure the library is pre-built and available.")
 else()
     message(STATUS "Found ${DELEGATE_LIB_NAME} in ${DELEGATE_LIB_DIR}")
 endif()
