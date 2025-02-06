@@ -32,8 +32,8 @@ The C++ delegates library can invoke any callable function synchronously, asynch
   - [Asynchronous Non-Blocking Delegates](#asynchronous-non-blocking-delegates)
   - [Asynchronous Blocking Delegates](#asynchronous-blocking-delegates)
   - [Remote Delegates](#remote-delegates)
-  - [Fixed-Block Memory Allocator](#fixed-block-memory-allocator)
   - [Error Handling](#error-handling)
+  - [Fixed-Block Memory Allocator](#fixed-block-memory-allocator)
   - [Function Argument Copy](#function-argument-copy)
   - [Caution Using `std::bind`](#caution-using-stdbind)
   - [Caution Using Raw Object Pointers](#caution-using-raw-object-pointers)
@@ -563,16 +563,17 @@ std::istream& recv_stream;
 // Receiver invokes the remote target function
 delegateRemote.Invoke(recv_stream);
 ```
+## Error Handling
+
+The delegate library uses dynamic memory to send asynchronous delegate messages to the target thread. By default, out-of-memory failures throw a `std::bad_alloc` exception. Optionally, if `USE_ASSERTS` is defined, exceptions are not thrown, and an assert is triggered instead. See `DelegateOpt.h` for more details.
+
+Remote delegate error handling is captured by registering a callback with  `SetErrorHandler()`. 
 
 ## Fixed-Block Memory Allocator
 
 The delegate library optionally uses a fixed-block memory allocator when `USE_ALLOCATOR` is defined. See `DelegateOpt.h` for more details. The allocator design is available in the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
 
 `std::function` used within class `DelegateFunction` may use the heap under certain conditions. Implement a custom `xfunction` similar to the `xlist` concept within `xlist.h` using the `xallocator` fixed-block allocator if deemed necessary.
-
-## Error Handling
-
-The delegate library uses dynamic memory to send asynchronous delegate messages to the target thread. By default, out-of-memory failures throw a `std::bad_alloc` exception. Optionally, if `USE_ASSERTS` is defined, exceptions are not thrown, and an assert is triggered instead. See `DelegateOpt.h` for more details.
 
 ## Function Argument Copy
 

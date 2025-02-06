@@ -2,7 +2,6 @@
 #define COMMAND_MSG_H
 
 #include <msgpack.hpp>
-#include <chrono>
 
 class CommandMsg
 {

@@ -19,17 +19,17 @@ set(MSGPACK_INCLUDE_DIR "${DELEGATE_ROOT_DIR}/../msgpack-c/include")
 # ***** END TARGET BUILD OPTIONS *****
 
 if(NOT EXISTS "${VCPKG_ROOT_DIR}")
-    #message(FATAL_ERROR "${VCPKG_ROOT_DIR} Directory does not exist. Update VCPKG_ROOT_DIR to the correct directory.")
+    message(FATAL_ERROR "${VCPKG_ROOT_DIR} Directory does not exist. Update VCPKG_ROOT_DIR to the correct directory.")
 endif()
 
 if (NOT EXISTS "${ZMQ_LIB_DIR}/${ZMQ_LIB_NAME}")
-    #message(FATAL_ERROR "Error: ${ZMQ_LIB_NAME} not found in ${ZMQ_LIB_DIR}. Please ensure the library is available.")
+    message(FATAL_ERROR "Error: ${ZMQ_LIB_NAME} not found in ${ZMQ_LIB_DIR}. Please ensure the library is available.")
 else()
     message(STATUS "Found ${ZMQ_LIB_NAME} in ${ZMQ_LIB_DIR}")
 endif()
 
 if(NOT EXISTS "${MSGPACK_INCLUDE_DIR}")
-    #message(FATAL_ERROR "${MSGPACK_INCLUDE_DIR} Directory does not exist. Update MSGPACK_INCLUDE_DIR to the correct directory.")
+    message(FATAL_ERROR "${MSGPACK_INCLUDE_DIR} Directory does not exist. Update MSGPACK_INCLUDE_DIR to the correct directory.")
 endif()
 
 
