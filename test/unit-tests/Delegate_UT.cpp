@@ -25,6 +25,7 @@ namespace Sync
     {
     public:
         TestReturn Func() { return TestReturn{}; }
+        void Func(TestReturn& tr) {}
     };
 }
 using namespace Sync;
@@ -288,6 +289,10 @@ static void DelegateMemberTests()
     ASSERT_TRUE(TestReturn::val == 0);
     testRet();
     ASSERT_TRUE(TestReturn::val == 1);
+
+    // Temporary object function argument not allowed
+    //DelegateMember<TestReturnClass, void(TestReturn&)> testArg;
+    //testArg(TestReturn());
 
     Class c2;
     DelegateMember<Class, std::unique_ptr<int>(int)> delUnique;

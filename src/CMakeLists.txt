@@ -11,6 +11,8 @@ include("${CMAKE_SOURCE_DIR}/Config.cmake")
 set (USE_THREAD "THREAD_STDLIB")
 set (USE_SERIALIZE "SERIALIZE_SERIALIZE")
 set (USE_TRANSPORT "TRANSPORT_NONE")
+#set (USE_ALLOCATOR "ALLOCATOR_XALLOCATOR")
+set (USE_ALLOCATOR "ALLOCATOR_HEAP")
 
 # Select library build option
 if (USE_THREAD STREQUAL "THREAD_STDLIB")
@@ -47,6 +49,9 @@ endif()
     elseif (USE_SERIALIZE STREQUAL "TRANSPORT_NONE")
 endif()
 
+file(GLOB SUBDIR_SOURCES "delegate-mq/predef/allocator/*.cpp") 
+set(SOURCES ${SOURCES} ${SUBDIR_SOURCES})
+
 file(GLOB SUBDIR_SOURCES "delegate-mq/predef/util/*.cpp") 
 set(SOURCES ${SOURCES} ${SUBDIR_SOURCES})
 
@@ -57,14 +62,6 @@ include_directories(
 
 # Create the library target (delegate_mq) as a static library
 add_library(${DELEGATE_LIB} STATIC ${SOURCES})
-
-# Optionally handle allocator
-if (ENABLE_ALLOCATOR)
-    include_directories(${DELEGATE_ROOT_DIR}/delegate-mq/predef/allocator)
-    add_subdirectory(${DELEGATE_ROOT_DIR}/delegate-mq/predef/allocator ${CMAKE_BINARY_DIR}/allocator)
-    target_link_libraries(${DELEGATE_LIB} PRIVATE allocator_lib)
-    add_compile_definitions(USE_ALLOCATOR)
-endif()
 
 # Post-build action to copy the built library to the ../lib directory
 add_custom_command(TARGET ${DELEGATE_LIB} POST_BUILD

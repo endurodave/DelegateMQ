@@ -1,8 +1,8 @@
 #ifndef _XALLOCATOR_H
 #define _XALLOCATOR_H
 
+#include <cstdint>
 #include <stddef.h>
-#include "DataTypes.h"
 
 // @see https://github.com/endurodave/xallocator
 // David Lafreniere
@@ -28,7 +28,7 @@ public:
 	XallocInitDestroy();
 	~XallocInitDestroy();
 private:
-	static INT refCount;
+	static int32_t refCount;
 };
 static XallocInitDestroy xallocInitDestroy;
 #endif	// AUTOMATIC_XALLOCATOR_INIT_DESTROY
@@ -70,32 +70,34 @@ void *xrealloc(void *ptr, size_t size);
 /// Output allocator statistics to the standard output
 void xalloc_stats();
 
-// Macro to overload new/delete with xalloc/xfree. Add macro to any class to enable
-// fixed-block memory allocation. Add to a base class provides fixed-block memory
-// for the base and all derived classes.
-#define XALLOCATOR \
-    public: \
-        void* operator new(size_t size) { \
-            return xmalloc(size); \
-        } \
-        void* operator new(size_t size, void* mem) { \
-            return mem; \
-        } \
-        void* operator new(size_t size, const std::nothrow_t& nt) { \
-            return xmalloc(size); \
-        } \
-        void* operator new[](size_t size) { \
-            return xmalloc(size); \
-        } \
-        void operator delete(void* pObject) { \
-            xfree(pObject); \
-        } \
-        void operator delete(void* pObject, const std::nothrow_t& nt) { \
-            xfree(pObject); \
-        } \
-        void operator delete[](void* pData) { \
-            xfree(pData); \
-        }
+#ifdef USE_ALLOCATOR
+    // Macro to overload new/delete with xalloc/xfree. Add macro to any class to enable
+    // fixed-block memory allocation. Add to a base class provides fixed-block memory
+    // for the base and all derived classes.
+    #define XALLOCATOR \
+        public: \
+            void* operator new(size_t size) { \
+                return xmalloc(size); \
+            } \
+            void* operator new(size_t size, void* mem) { \
+                return mem; \
+            } \
+            void* operator new(size_t size, const std::nothrow_t& nt) { \
+                return xmalloc(size); \
+            } \
+            void* operator new[](size_t size) { \
+                return xmalloc(size); \
+            } \
+            void operator delete(void* pObject) { \
+                xfree(pObject); \
+            } \
+            void operator delete(void* pObject, const std::nothrow_t& nt) { \
+                xfree(pObject); \
+            } \
+            void operator delete[](void* pData) { \
+                xfree(pData); \
+            }
+#endif
 
 
 #ifdef __cplusplus 

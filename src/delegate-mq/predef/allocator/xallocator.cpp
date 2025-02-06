@@ -1,17 +1,17 @@
 #include "Allocator.h"
 #include "xallocator.h"
-#include "Fault.h"
+#include "predef/util/Fault.h"
 #include <cstring>
 #include <iostream>
 #include <mutex>
 
 using namespace std;
 
-#ifndef CHAR_BIT
-#define CHAR_BIT	8 
+#ifndef char_BIT
+#define char_BIT	8 
 #endif
 
-static BOOL _xallocInitialized = FALSE;
+static bool _xallocInitialized = false;
 
 // Define STATIC_POOLS to switch from heap blocks mode to static pools mode
 //#define STATIC_POOLS 
@@ -22,18 +22,18 @@ static BOOL _xallocInitialized = FALSE;
 	#define MAX_BLOCKS		32
 
 	// Create static storage for each static allocator instance
-	CHAR* _allocator8 [sizeof(AllocatorPool<CHAR[8], MAX_BLOCKS>)];
-	CHAR* _allocator16 [sizeof(AllocatorPool<CHAR[16], MAX_BLOCKS>)];
-	CHAR* _allocator32 [sizeof(AllocatorPool<CHAR[32], MAX_BLOCKS>)];
-	CHAR* _allocator64 [sizeof(AllocatorPool<CHAR[64], MAX_BLOCKS>)];
-	CHAR* _allocator128 [sizeof(AllocatorPool<CHAR[128], MAX_BLOCKS>)];
-	CHAR* _allocator256 [sizeof(AllocatorPool<CHAR[256], MAX_BLOCKS>)];
-	CHAR* _allocator396 [sizeof(AllocatorPool<CHAR[396], MAX_BLOCKS>)];
-	CHAR* _allocator512 [sizeof(AllocatorPool<CHAR[512], MAX_BLOCKS>)];
-	CHAR* _allocator768 [sizeof(AllocatorPool<CHAR[768], MAX_BLOCKS>)];
-	CHAR* _allocator1024 [sizeof(AllocatorPool<CHAR[1024], MAX_BLOCKS>)];
-	CHAR* _allocator2048 [sizeof(AllocatorPool<CHAR[2048], MAX_BLOCKS>)];	
-	CHAR* _allocator4096 [sizeof(AllocatorPool<CHAR[4096], MAX_BLOCKS>)];
+	char* _allocator8 [sizeof(AllocatorPool<char[8], MAX_BLOCKS>)];
+	char* _allocator16 [sizeof(AllocatorPool<char[16], MAX_BLOCKS>)];
+	char* _allocator32 [sizeof(AllocatorPool<char[32], MAX_BLOCKS>)];
+	char* _allocator64 [sizeof(AllocatorPool<char[64], MAX_BLOCKS>)];
+	char* _allocator128 [sizeof(AllocatorPool<char[128], MAX_BLOCKS>)];
+	char* _allocator256 [sizeof(AllocatorPool<char[256], MAX_BLOCKS>)];
+	char* _allocator396 [sizeof(AllocatorPool<char[396], MAX_BLOCKS>)];
+	char* _allocator512 [sizeof(AllocatorPool<char[512], MAX_BLOCKS>)];
+	char* _allocator768 [sizeof(AllocatorPool<char[768], MAX_BLOCKS>)];
+	char* _allocator1024 [sizeof(AllocatorPool<char[1024], MAX_BLOCKS>)];
+	char* _allocator2048 [sizeof(AllocatorPool<char[2048], MAX_BLOCKS>)];	
+	char* _allocator4096 [sizeof(AllocatorPool<char[4096], MAX_BLOCKS>)];
 
 	// Array of pointers to all allocator instances
 	static Allocator* _allocators[MAX_ALLOCATORS];
@@ -57,7 +57,7 @@ static BOOL _xallocInitialized = FALSE;
 // and xalloc_destroy() before main exits. In all other situations
 // XallocInitDestroy must be used to call xalloc_init() and xalloc_destroy().
 #ifdef AUTOMATIC_XALLOCATOR_INIT_DESTROY
-INT XallocInitDestroy::refCount = 0;
+int32_t XallocInitDestroy::refCount = 0;
 XallocInitDestroy::XallocInitDestroy() 
 { 
 	// Track how many static instances of XallocInitDestroy are created
@@ -81,7 +81,7 @@ template <class T>
 T nexthigher(T k) 
 {
     k--;
-    for (size_t i=1; i<sizeof(T)*CHAR_BIT; i<<=1)
+    for (size_t i=1; i<sizeof(T)*char_BIT; i<<=1)
         k |= (k >> i);
     return k+1;
 }
@@ -143,7 +143,7 @@ static inline void *get_block_ptr(void* block)
 /// if no allocator exists. 
 static inline Allocator* find_allocator(size_t size)
 {
-	for (INT i=0; i<MAX_ALLOCATORS; i++)
+	for (int i=0; i<MAX_ALLOCATORS; i++)
 	{
 		if (_allocators[i] == 0)
 			break;
@@ -159,7 +159,7 @@ static inline Allocator* find_allocator(size_t size)
 /// @param[in] allocator - An allocator instance
 static inline void insert_allocator(Allocator* allocator)
 {
-	for (INT i=0; i<MAX_ALLOCATORS; i++)
+	for (int i=0; i<MAX_ALLOCATORS; i++)
 	{
 		if (_allocators[i] == 0)
 		{
@@ -181,18 +181,18 @@ extern "C" void xalloc_init()
 	// For STATIC_POOLS mode, the allocators must be initialized before any other
 	// static user class constructor is run. Therefore, use placement new to initialize
 	// each allocator into the previously reserved static memory locations.
-	new (&_allocator8) AllocatorPool<CHAR[8], MAX_BLOCKS>();
-	new (&_allocator16) AllocatorPool<CHAR[16], MAX_BLOCKS>();
-	new (&_allocator32) AllocatorPool<CHAR[32], MAX_BLOCKS>();
-	new (&_allocator64) AllocatorPool<CHAR[64], MAX_BLOCKS>();
-	new (&_allocator128) AllocatorPool<CHAR[128], MAX_BLOCKS>();
-	new (&_allocator256) AllocatorPool<CHAR[256], MAX_BLOCKS>();
-	new (&_allocator396) AllocatorPool<CHAR[396], MAX_BLOCKS>();
-	new (&_allocator512) AllocatorPool<CHAR[512], MAX_BLOCKS>();
-	new (&_allocator768) AllocatorPool<CHAR[768], MAX_BLOCKS>();
-	new (&_allocator1024) AllocatorPool<CHAR[1024], MAX_BLOCKS>();
-	new (&_allocator2048) AllocatorPool<CHAR[2048], MAX_BLOCKS>();
-	new (&_allocator4096) AllocatorPool<CHAR[4096], MAX_BLOCKS>();
+	new (&_allocator8) AllocatorPool<char[8], MAX_BLOCKS>();
+	new (&_allocator16) AllocatorPool<char[16], MAX_BLOCKS>();
+	new (&_allocator32) AllocatorPool<char[32], MAX_BLOCKS>();
+	new (&_allocator64) AllocatorPool<char[64], MAX_BLOCKS>();
+	new (&_allocator128) AllocatorPool<char[128], MAX_BLOCKS>();
+	new (&_allocator256) AllocatorPool<char[256], MAX_BLOCKS>();
+	new (&_allocator396) AllocatorPool<char[396], MAX_BLOCKS>();
+	new (&_allocator512) AllocatorPool<char[512], MAX_BLOCKS>();
+	new (&_allocator768) AllocatorPool<char[768], MAX_BLOCKS>();
+	new (&_allocator1024) AllocatorPool<char[1024], MAX_BLOCKS>();
+	new (&_allocator2048) AllocatorPool<char[2048], MAX_BLOCKS>();
+	new (&_allocator4096) AllocatorPool<char[4096], MAX_BLOCKS>();
 
 	// Populate allocator array with all instances 
 	_allocators[0] = (Allocator*)&_allocator8;
@@ -219,13 +219,13 @@ extern "C" void xalloc_destroy()
 	get_mutex().lock();
 
 #ifdef STATIC_POOLS
-	for (INT i=0; i<MAX_ALLOCATORS; i++)
+	for (int i=0; i<MAX_ALLOCATORS; i++)
 	{
 		_allocators[i]->~Allocator();
 		_allocators[i] = 0;
 	}
 #else
-	for (INT i=0; i<MAX_ALLOCATORS; i++)
+	for (int i=0; i<MAX_ALLOCATORS; i++)
 	{
 		if (_allocators[i] == 0)
 			break;
@@ -359,7 +359,7 @@ extern "C" void xalloc_stats()
 {
 	get_mutex().lock();
 
-	for (INT i=0; i<MAX_ALLOCATORS; i++)
+	for (int i=0; i<MAX_ALLOCATORS; i++)
 	{
 		if (_allocators[i] == 0)
 			break;

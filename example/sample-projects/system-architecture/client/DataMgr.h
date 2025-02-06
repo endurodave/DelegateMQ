@@ -71,7 +71,8 @@ private:
         }
 
         // Nofity all subscribers new data arrived
-        DataMsgCb(GetCombindedDataMsg());
+        auto msg = GetCombindedDataMsg();
+        DataMsgCb(msg);
     }
 
     void RemoteDataMsgUpdate(DataMsg& dataMsg)
@@ -82,7 +83,8 @@ private:
         }
 
         // Nofity all subscribers new data arrived
-        DataMsgCb(GetCombindedDataMsg());
+        auto msg = GetCombindedDataMsg();
+        DataMsgCb(msg);
     }
 
     Thread m_thread;

@@ -4,6 +4,9 @@
 /// @file 
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
+/// 
+/// Transport callable argument data to/from a remote using ZeroMQ library. Update 
+/// BUFFER_SIZE below as necessary.
 
 #include "predef/dispatcher/MsgHeader.h"
 #include <thread>
@@ -164,7 +167,7 @@ private:
     void* m_zmqContext = nullptr;
     void* m_zmq = nullptr;
 
-    static const int BUFFER_SIZE = 2048;
+    static const int BUFFER_SIZE = 4096;
     char buffer[BUFFER_SIZE];
 };
 

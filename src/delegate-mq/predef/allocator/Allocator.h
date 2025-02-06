@@ -1,7 +1,7 @@
 #ifndef __ALLOCATOR_H
 #define __ALLOCATOR_H
 
-#include "DataTypes.h"
+#include <cstdint>
 #include <stddef.h>
 
 /// @see https://github.com/endurodave/Allocator
@@ -17,7 +17,7 @@ public:
 	///		to obtain memory from global heap. If not NULL, the objects argument 
 	///		defines the size of the memory block (size x objects = memory size in bytes).
 	///	@param[in]	name - optional allocator name string.
-    Allocator(size_t size, UINT objects=0, CHAR* memory = NULL, const CHAR* name=NULL);
+    Allocator(size_t size, uint32_t objects=0, char* memory = NULL, const char* name=NULL);
 
     /// Destructor
     ~Allocator();
@@ -33,7 +33,7 @@ public:
 
     /// Get the allocator name string.
     /// @return		A pointer to the allocator name or NULL if none was assigned.
-    const CHAR* GetName() { return m_name; }
+    const char* GetName() { return m_name; }
 
     /// Gets the fixed block memory size, in bytes, handled by the allocator.
     /// @return		The fixed block size in bytes.
@@ -41,19 +41,19 @@ public:
 
     /// Gets the maximum number of blocks created by the allocator.
     /// @return		The number of fixed memory blocks created.
-    UINT GetBlockCount() { return m_blockCnt; }
+    uint32_t GetBlockCount() { return m_blockCnt; }
 
     /// Gets the number of blocks in use.
     /// @return		The number of blocks in use by the application.
-    UINT GetBlocksInUse() { return m_blocksInUse; }
+    uint32_t GetBlocksInUse() { return m_blocksInUse; }
 
     /// Gets the total number of allocations for this allocator instance.
     /// @return		The total number of allocations.
-    UINT GetAllocations() { return m_allocations; }
+    uint32_t GetAllocations() { return m_allocations; }
 
     /// Gets the total number of deallocations for this allocator instance.
     /// @return		The total number of deallocations.
-    UINT GetDeallocations() { return m_deallocations; }
+    uint32_t GetDeallocations() { return m_deallocations; }
 	
 private:
     /// Push a memory block onto head of free-list.
@@ -73,20 +73,20 @@ private:
 
     const size_t m_blockSize;
     const size_t m_objectSize;
-    const UINT m_maxObjects;
+    const uint32_t m_maxObjects;
 	AllocatorMode m_allocatorMode;
     Block* m_pHead;
-    CHAR* m_pPool;
-    UINT m_poolIndex;
-    UINT m_blockCnt;
-    UINT m_blocksInUse;
-    UINT m_allocations;
-    UINT m_deallocations;
-    const CHAR* m_name;
+    char* m_pPool;
+    uint32_t m_poolIndex;
+    uint32_t m_blockCnt;
+    uint32_t m_blocksInUse;
+    uint32_t m_allocations;
+    uint32_t m_deallocations;
+    const char* m_name;
 };
 
 // Template class to create external memory pool
-template <class T, UINT Objects>
+template <class T, uint32_t Objects>
 class AllocatorPool : public Allocator
 {
 public:
@@ -94,7 +94,7 @@ public:
 	{
 	}
 private:
-	CHAR m_memory[sizeof(T) * Objects];
+	char m_memory[sizeof(T) * Objects];
 };
 
 // macro to provide header file interface

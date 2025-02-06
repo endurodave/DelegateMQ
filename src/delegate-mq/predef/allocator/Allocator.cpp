@@ -1,12 +1,11 @@
 #include "Allocator.h"
-#include "DataTypes.h"
 #include <new>
 #include <assert.h>
 
 //------------------------------------------------------------------------------
 // Constructor
 //------------------------------------------------------------------------------
-Allocator::Allocator(size_t size, UINT objects, CHAR* memory, const CHAR* name) :
+Allocator::Allocator(size_t size, uint32_t objects, char* memory, const char* name) :
     m_blockSize(size < sizeof(long*) ? sizeof(long*):size),
     m_objectSize(size),
     m_maxObjects(objects),
@@ -29,7 +28,7 @@ Allocator::Allocator(size_t size, UINT objects, CHAR* memory, const CHAR* name) 
 		}
 		else 
 		{
-			m_pPool = (CHAR*)new CHAR[m_blockSize * m_maxObjects];
+			m_pPool = (char*)new char[m_blockSize * m_maxObjects];
 			m_allocatorMode = HEAP_POOL;
 		}
 	}
@@ -49,7 +48,7 @@ Allocator::~Allocator()
 	else if (m_allocatorMode == HEAP_BLOCKS)
 	{
 		while(m_pHead)
-			delete [] (CHAR*)Pop();
+			delete [] (char*)Pop();
 	}
 }
 
@@ -89,7 +88,7 @@ void* Allocator::Allocate(size_t size)
         else
         {
         	m_blockCnt++;
-            pBlock = (void*)new CHAR[m_blockSize];
+            pBlock = (void*)new char[m_blockSize];
         }
     }
 

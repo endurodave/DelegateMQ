@@ -4,6 +4,8 @@
 /// @file 
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
+/// 
+/// Dispatch callable argument data to a remote endpoint.
 
 #include "delegate/IDispatcher.h"
 #include "predef/transport/zeromq/Transport.h"

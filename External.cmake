@@ -2,6 +2,7 @@
 # below based on the target build platform.
 
 # ***** BEGIN TARGET BUILD OPTIONS *****
+# Modify the options below for your target platform external libraries.
 
 # Set path to the vcpkg directory for support libraries (zmq.h)
 set(VCPKG_ROOT_DIR "${DELEGATE_ROOT_DIR}/../vcpkg/installed/x64-windows")

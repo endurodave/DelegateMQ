@@ -7,6 +7,9 @@
 // Define this macro to switch between assert or exception handling
 //#define USE_ASSERTS  // Comment this out to use asserts
 
+// Define the macro to use the fixed block allocator
+//#define USE_ALLOCATOR   // Comment this out to use allocator
+
 #ifdef USE_ASSERTS
     #include <cassert>
     // Use assert error handling. Change assert to a different error 
@@ -24,9 +27,9 @@
 // See master CMakeLists.txt for info on enabling the fixed-block allocator.
 #ifdef USE_ALLOCATOR
     // Use stl_allocator fixed-block allocator for dynamic storage allocation
-    #include "xlist.h"
-    #include "xsstream.h"
-    #include "stl_allocator.h"
+    #include "predef/allocator/xlist.h"
+    #include "predef/allocator/xsstream.h"
+    #include "predef/allocator/stl_allocator.h"
 #else
     #include <list>
     #include <sstream>
@@ -37,6 +40,7 @@
 
     typedef std::basic_ostringstream<char, std::char_traits<char>> xostringstream;
 
+    // Not using xallocator; define as nothing
     #define XALLOCATOR
 #endif
 

@@ -5,8 +5,8 @@
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
 /// 
-/// Example of serializer relying upon the serialize class to binary serialize
-/// complex data objects including build-in and user defined data types.
+/// Serialize callable argument data using serialize class for transport
+/// to a remote. Endinaness correctly handled by serialize class. 
 
 #include "delegate/ISerializer.h"
 #include "msg_serialize.h"
@@ -22,7 +22,7 @@ void make_serialized(serialize& ser, std::ostream& os, Arg1& arg1, Args... args)
     make_serialized(ser, os, args...);
 }
 
-// make_unserialized serializes each remote function argument
+// make_unserialized unserializes each remote function argument
 template<typename... Ts>
 void make_unserialized(serialize& ser, std::istream& is) { }
 
@@ -35,24 +35,24 @@ void make_unserialized(serialize& ser, std::istream& is, Arg1& arg1, Args&&... a
 template <class R>
 struct Serializer; // Not defined
 
-// Serialize all target function argument data
+// Serialize all target function argument data using serialize class
 template<class RetType, class... Args>
 class Serializer<RetType(Args...)> : public DelegateMQ::ISerializer<RetType(Args...)>
 {
 public:
+    // Write arguments to a stream
     virtual std::ostream& Write(std::ostream& os, Args... args) override {
-        make_serialized(m_ser, os, args...);
+        serialize ser;
+        make_serialized(ser, os, args...);
         return os;
     }
 
+    // Read arguments from a stream
     virtual std::istream& Read(std::istream& is, Args&... args) override {
-        make_unserialized(m_ser, is, args...);
+        serialize ser;
+        make_unserialized(ser, is, args...);
         return is;
     }
-
-private:
-    // The serialize class binary serializes data
-    serialize m_ser;
 };
 
 #endif

@@ -3,11 +3,9 @@
 # *** Windows ***
 # cmake -G "Visual Studio 17 2022" -A Win32 -B build -S .
 # cmake -G "Visual Studio 17 2022" -A x64 -B build -S .
-# cmake -G "Visual Studio 17 2022" -A x64 -B build -S . -DENABLE_ALLOCATOR=ON
 #
 # *** Linux ***
 # cmake -G "Unix Makefiles" -B build -S .
-# cmake -G "Unix Makefiles" -B build -S . -DENABLE_ALLOCATOR=ON
 # cmake -G "Unix Makefiles" -B build -S . -DTEST_COVERAGE=ON
 
 # Specify the minimum CMake version required
