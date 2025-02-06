@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 set (DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
+set (USE_EXTERNAL_LIB "ON")
 include("${CMAKE_SOURCE_DIR}/../../../Config.cmake")
 
 # Set delegate library build options

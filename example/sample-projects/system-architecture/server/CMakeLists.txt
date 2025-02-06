@@ -5,6 +5,7 @@ set (DELEGATE_APP "delegate_server_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 add_compile_definitions(SERVER_APP)
 
+set (USE_EXTERNAL_LIB "ON")
 include("${CMAKE_SOURCE_DIR}/../../../../Config.cmake")
 
 # Set delegate library build options

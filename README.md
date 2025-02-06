@@ -4,7 +4,7 @@
 [![conan Windows](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml)
 [![Codecov](https://codecov.io/gh/endurodave/cpp-async-delegate/branch/master/graph/badge.svg)](https://app.codecov.io/gh/endurodave/cpp-async-delegate)
 
-# Asynchronous Delegates in C++
+# Delegates in C++
 
 The C++ DelegateMQ library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. This concept unifies all function invocations to simplify multi-threaded and multi-processor development. Well-defined abstract interfaces and numerous concrete examples offer easy porting to any platform. It is a header-only template library that is thread-safe, unit-tested, and easy to use.
 
