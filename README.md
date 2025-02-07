@@ -32,8 +32,11 @@ In C++, a delegate function object encapsulates a callable entity, such as a fun
 
 Synchronous and asynchronous delegates are available. Asynchronous variants handle both non-blocking and blocking modes with a timeout. The library supports all types of target functions, including free functions, class member functions, static class functions, lambdas, and `std::function`. It is capable of handling any function signature, regardless of the number of arguments or return value. All argument types are supported, including by value, pointers, pointers to pointers, and references. The delegate library takes care of the intricate details of function invocation across thread boundaries.
 
-Remote delegates extend function invocation across processes or processors using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callable endpoints with any function signature. Concrete examples include [MessagePack](https://msgpack.org/index.html) and [ZeroMQ](https://zeromq.org/), among others.
+Remote delegates enable function invocation across processes or processors by using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callable endpoints with any function signature. Minimal effort is required to extend support to any new library. Concrete examples are provided using support libraries below. 
 
+* **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
+* **Transport:** [ZeroMQ](https://zeromq.org/), UDP, Data Pipe, memory buffer
+ 
 It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to `nullptr`. Const correctness is maintained; stored const objects can only be called by const member functions.
 
  A delegate instance can be:
@@ -56,7 +59,7 @@ Typical use cases are:
 
 The delegate library's asynchronous features differ from `std::async` in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into an event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.
 
-In short, the delegate library offers features that are not natively available in the C++ standard library to ease multi-threaded and multi-processor application development.
+n short, the delegate library aims to unify function invocation, simplifying multi-threaded and multi-processor application development. It provides well-defined interfaces to support expansion through architecture-specific threads, serialization, and transport mechanisms.
 
 Originally published on CodeProject at: <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a>
 
@@ -446,7 +449,7 @@ MulticastDelegate<>
 
 `cmake -B build -S .`
 
-The `examples` directory has more projects.
+The [Example Projects](docs/DETAILS.md#example-projects) for more example details.
 
 # Related Repositories
 

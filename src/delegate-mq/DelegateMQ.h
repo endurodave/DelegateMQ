@@ -72,6 +72,8 @@
 
 #if defined(SERIALIZE_MSGPACK)
     #include "predef/serialize/msgpack/Serializer.h"
+#elif defined(SERIALIZE_RAPIDJSON)
+    #include "predef/serialize/rapidjson/Serializer.h"
 #elif defined(SERIALIZE_SERIALIZE)
     #include "predef/serialize/serialize/Serializer.h"
 #elif defined(SERIALIZE_NONE)

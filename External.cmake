@@ -16,6 +16,10 @@ set(ZMQ_LIB_DIR "${VCPKG_ROOT_DIR}/lib")
 # https://github.com/msgpack/msgpack-c/tree/cpp_master
 set(MSGPACK_INCLUDE_DIR "${DELEGATE_ROOT_DIR}/../msgpack-c/include")
 
+# Set path to the RapidJSON C++ library
+# https://github.com/Tencent/rapidjson
+set(RAPIDJSON_INCLUDE_DIR "${DELEGATE_ROOT_DIR}/../rapidjson/include")
+
 # ***** END TARGET BUILD OPTIONS *****
 
 if(NOT EXISTS "${VCPKG_ROOT_DIR}")
@@ -30,6 +34,10 @@ endif()
 
 if(NOT EXISTS "${MSGPACK_INCLUDE_DIR}")
     message(FATAL_ERROR "${MSGPACK_INCLUDE_DIR} Directory does not exist. Update MSGPACK_INCLUDE_DIR to the correct directory.")
+endif()
+
+if(NOT EXISTS "${RAPIDJSON_INCLUDE_DIR}")
+    message(FATAL_ERROR "${RAPIDJSON_INCLUDE_DIR} Directory does not exist. Update RAPIDJSON_INCLUDE_DIR to the correct directory.")
 endif()
 
 

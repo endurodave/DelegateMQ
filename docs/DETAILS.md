@@ -19,14 +19,14 @@ The C++ delegates library can invoke any callable function synchronously, asynch
 - [DelegateMQ Build](#delegatemq-build)
   - [Build Options](#build-options)
   - [Example Projects](#example-projects)
-    - [`bare-metal`](#bare-metal)
-    - [`win32-pipe-serializer`](#win32-pipe-serializer)
-    - [`win32-upd-serializer`](#win32-upd-serializer)
-    - [`zeromq-serializer`](#zeromq-serializer)
-    - [`zeromq-msgpack-cpp`](#zeromq-msgpack-cpp)
-    - [`system-architecture`](#system-architecture)
+    - [bare-metal](#bare-metal)
+    - [win32-pipe-serializer](#win32-pipe-serializer)
+    - [win32-upd-serializer](#win32-upd-serializer)
+    - [zeromq-serializer](#zeromq-serializer)
+    - [zeromq-msgpack-cpp](#zeromq-msgpack-cpp)
+    - [zeromq-rapidjson](#zeromq-rapidjson)
+    - [system-architecture](#system-architecture)
 - [DelegateMQ Dependencies](#delegatemq-dependencies)
-  - [Interface Details](#interface-details)
 - [DelegateMQ Usage](#delegatemq-usage)
   - [Delegates](#delegates)
   - [Delegate Containers](#delegate-containers)
@@ -190,13 +190,15 @@ The build options are contained within the files below.
 | File Name | Settings |
 | --- | --- |
 | `DelegateOpt.h` | `USE_ASSERTS` enable macro to use asserts instead of exceptions.<br>`USE_ALLOCATOR` enable macro to use a fixed-block allocator instead of the global heap. |
-| `External.cmake` | Update directory locations for external libraries such as MessagePack and ZeroMQ. |
+| `External.cmake` | Update directory locations for external libraries such as MessagePack, RapidJSON and ZeroMQ. |
 
 ## Example Projects
 
-Remote delegate example projects are located within the `example/sample-projects` directory. Build the root project first, then one or more of the subprojects below.
+Remote delegate example projects are located within the `example/sample-projects` directory. **Build the root project first, then one or more of the subprojects below**.
 
-### `bare-metal`
+⚠️ Many remote delegate example projects have external library dependencies. Update `External.cmake` directory paths to locate libraries such as ZeroMQ, MessagePack and RapidJSON.
+
+### bare-metal
 
 Remote delegate example with no external libraries. 
 
@@ -205,7 +207,7 @@ Remote delegate example with no external libraries.
 | `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
 | `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
 
-### `win32-pipe-serializer`
+### win32-pipe-serializer
 
 Remote delegate example with Windows pipe and `serialize`. 
 
@@ -214,7 +216,7 @@ Remote delegate example with Windows pipe and `serialize`.
 | `ISerializer` | `serialize` class.
 | `IDispatcher` | Windows data pipe for dispatcher transport.
 
-### `win32-upd-serializer`
+### win32-upd-serializer
 
 Remote delegate example with Windows UDP socket and `serialize`. 
 
@@ -223,7 +225,7 @@ Remote delegate example with Windows UDP socket and `serialize`.
 | `ISerializer` | `serialize` class.
 | `IDispatcher` | Windows UDP socket for dispatcher transport.
 
-### `zeromq-serializer`
+### zeromq-serializer
 
 Remote delegate example using ZeroMQ and `serialize`.
 
@@ -232,7 +234,7 @@ Remote delegate example using ZeroMQ and `serialize`.
 | `ISerializer` | `serialize` class.  
 | `IDispatcher` | ZeroMQ library for dispatcher transport.
 
-### `zeromq-msgpack-cpp`
+### zeromq-msgpack-cpp
 
 Remote delegate example using ZeroMQ and MessagePack libraries.
 
@@ -241,9 +243,18 @@ Remote delegate example using ZeroMQ and MessagePack libraries.
 | `ISerializer` | MessagePack library.  
 | `IDispatcher` | ZeroMQ library for dispatcher transport.
 
-### `system-architecture`
+### zeromq-rapidjson
 
-Remote delegate example showing a complex system architecture using ZeroMQ and MessagePack libraries. Execute the client and server projects to run the example.
+Remote delegate example using ZeroMQ and RapidJSON libraries.
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | RapidJSON library.  
+| `IDispatcher` | ZeroMQ library for dispatcher transport.
+
+### system-architecture
+
+Remote delegate example showing a complex system architecture using ZeroMQ and MessagePack libraries. Subsystems communication and collaborate between threads and processes. Execute the client and server projects to run the example.
 
 | Interface | Implementation |
 | --- | --- |
@@ -252,23 +263,13 @@ Remote delegate example showing a complex system architecture using ZeroMQ and M
 
 # DelegateMQ Dependencies
 
-The `DelegateMQ` library external dependencies are based upon on the intended use.
+The `DelegateMQ` library external dependencies are based upon on the intended use. Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Complete example code offer ready-made solutions or create your own.
 
-| Delegate Use | External Dependency |
-| --- | --- |
-| Synchronous Delegates | None. Include `DelegateMQ.h` an nothing more. |
-| Asynchronous Delegates | Implement `IThread::DispatchDelegate()` interface. Default cross-platform [Thread](https://github.com/endurodave/StdWorkerThread) class available based on C++ thread-support library.
-| Remote Delegates | Implement `ISerializer::Read()` and `ISerializer::Write()` interfaces. [MessagePack](https://github.com/msgpack/msgpack-c/tree/cpp_master) library and [serialize](https://github.com/endurodave/MessageSerialize) class implementations available.<br>Implement `IDispatcher::Dispatch()` interface. [ZeroMQ](https://github.com/zeromq) implementation available. |
-
-## Interface Details
-
-Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Complete example code offer ready-made solutions or create your own.
-
-| Class | Interface | Notes
-| --- | --- | ---
-| `Delegate` | n/a | No interfaces; use as-is without external dependencies.
-| `DelegateAsync`<br>`DelegateAsyncWait` | `IThread` | `IThread` used to send a delegate and argument data through an OS message queue.
-| `DelegateRemote` | `ISerializer`<br>`IDispatcher` | `ISerializer` used to serialize callable argument data.<br>`IDispatcher` used to send serialized argument data to a remote endpoint.
+| Class | Interface | Usage | Notes
+| --- | --- | --- | --- |
+| `Delegate` | n/a | Synchronous Delegates | No interfaces; use as-is without external dependencies.
+| `DelegateAsync`<br>`DelegateAsyncWait` | `IThread` | Asynchronous Delegates | `IThread` used to send a delegate and argument data through an OS message queue.
+| `DelegateRemote` | `ISerializer`<br>`IDispatcher` | Remote Delegates | `ISerializer` used to serialize callable argument data.<br>`IDispatcher` used to send serialized argument data to a remote endpoint.
 
 # DelegateMQ Usage
 
