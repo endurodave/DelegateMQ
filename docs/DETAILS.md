@@ -20,6 +20,8 @@ The C++ delegates library can invoke any callable function synchronously, asynch
   - [Build Options](#build-options)
   - [Example Projects](#example-projects)
     - [`bare-metal`](#bare-metal)
+    - [`win32-pipe-serializer`](#win32-pipe-serializer)
+    - [`win32-upd-serializer`](#win32-upd-serializer)
     - [`zeromq-serializer`](#zeromq-serializer)
     - [`zeromq-msgpack-cpp`](#zeromq-msgpack-cpp)
     - [`system-architecture`](#system-architecture)
@@ -201,7 +203,25 @@ Remote delegate example with no external libraries.
 | Interface | Implementation |
 | --- | --- |
 | `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
-| `IDispatcher` | Shared sender/receiver `std::stringstream`.
+| `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
+
+### `win32-pipe-serializer`
+
+Remote delegate example with Windows pipe and `serialize`. 
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | `serialize` class.
+| `IDispatcher` | Windows data pipe for dispatcher transport.
+
+### `win32-upd-serializer`
+
+Remote delegate example with Windows UDP socket and `serialize`. 
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | `serialize` class.
+| `IDispatcher` | Windows UDP socket for dispatcher transport.
 
 ### `zeromq-serializer`
 
@@ -210,7 +230,7 @@ Remote delegate example using ZeroMQ and `serialize`.
 | Interface | Implementation |
 | --- | --- |
 | `ISerializer` | `serialize` class.  
-| `IDispatcher` | ZeroMQ library.
+| `IDispatcher` | ZeroMQ library for dispatcher transport.
 
 ### `zeromq-msgpack-cpp`
 
@@ -219,7 +239,7 @@ Remote delegate example using ZeroMQ and MessagePack libraries.
 | Interface | Implementation |
 | --- | --- |
 | `ISerializer` | MessagePack library.  
-| `IDispatcher` | ZeroMQ library.
+| `IDispatcher` | ZeroMQ library for dispatcher transport.
 
 ### `system-architecture`
 
@@ -228,7 +248,7 @@ Remote delegate example showing a complex system architecture using ZeroMQ and M
 | Interface | Implementation |
 | --- | --- |
 | `ISerializer` | MessagePack library. | 
-| `IDispatcher` | ZeroMQ library. |
+| `IDispatcher` | ZeroMQ library for dispatcher transport. |
 
 # DelegateMQ Dependencies
 
@@ -887,17 +907,17 @@ The `IThread` interface is used to send a delegate and argument data through a m
 class IThread
 {
 public:
-	/// Destructor
-	virtual ~IThread() = default;
+    /// Destructor
+    virtual ~IThread() = default;
 
-	/// Dispatch a DelegateMsg onto this thread. The implementer is responsible
-	/// for getting the DelegateMsg into an OS message queue. Once DelegateMsg
-	/// is on the correct thread of control, the DelegateInvoker::Invoke() function
-	/// must be called to execute the delegate. 
-	/// @param[in] msg - a pointer to the delegate message that must be created dynamically.
-	/// @pre Caller *must* create the DelegateMsg argument dynamically.
-	/// @post The destination thread calls Invoke().
-	virtual void DispatchDelegate(std::shared_ptr<DelegateMsg> msg) = 0;
+    /// Dispatch a DelegateMsg onto this thread. The implementer is responsible
+    /// for getting the DelegateMsg into an OS message queue. Once DelegateMsg
+    /// is on the correct thread of control, the DelegateInvoker::Invoke() function
+    /// must be called to execute the delegate. 
+    /// @param[in] msg - a pointer to the delegate message that must be created dynamically.
+    /// @pre Caller *must* create the DelegateMsg argument dynamically.
+    /// @post The destination thread calls Invoke().
+    virtual void DispatchDelegate(std::shared_ptr<DelegateMsg> msg) = 0;
 };
 ```
 
@@ -919,16 +939,16 @@ if (thread) {
 ```cpp
 void Thread::DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg)
 {
-	if (m_thread == nullptr)
-		throw std::invalid_argument("Thread pointer is null");
+    if (m_thread == nullptr)
+        throw std::invalid_argument("Thread pointer is null");
 
-	// Create a new ThreadMsg
+    // Create a new ThreadMsg
     std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_DISPATCH_DELEGATE, msg));
 
-	// Add dispatch delegate msg to queue and notify worker thread
-	std::unique_lock<std::mutex> lk(m_mutex);
-	m_queue.push(threadMsg);
-	m_cv.notify_one();
+    // Add dispatch delegate msg to queue and notify worker thread
+    std::unique_lock<std::mutex> lk(m_mutex);
+    m_queue.push(threadMsg);
+    m_cv.notify_one();
 }
 ```
 
@@ -946,10 +966,10 @@ void Thread::DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg)
 class IDelegateInvoker
 {
 public:
-	/// Called to invoke the bound target function by the destination thread of control.
-	/// @param[in] msg - the incoming delegate message.
-	/// @return `true` if function was invoked; `false` if failed. 
-	virtual bool Invoke(std::shared_ptr<DelegateMsg> msg) = 0;
+    /// Called to invoke the bound target function by the destination thread of control.
+    /// @param[in] msg - the incoming delegate message.
+    /// @return `true` if function was invoked; `false` if failed. 
+    virtual bool Invoke(std::shared_ptr<DelegateMsg> msg) = 0;
 };
 ```
 
@@ -958,57 +978,57 @@ The `Thread::Process()` thread loop is shown below. `Invoke()` is called for eac
 ```cpp
 void Thread::Process()
 {
-	m_timerExit = false;
-	std::thread timerThread(&Thread::TimerThread, this);
+    m_timerExit = false;
+    std::thread timerThread(&Thread::TimerThread, this);
 
-	while (1)
-	{
-		std::shared_ptr<ThreadMsg> msg;
-		{
-			// Wait for a message to be added to the queue
-			std::unique_lock<std::mutex> lk(m_mutex);
-			while (m_queue.empty())
-				m_cv.wait(lk);
+    while (1)
+    {
+        std::shared_ptr<ThreadMsg> msg;
+        {
+            // Wait for a message to be added to the queue
+            std::unique_lock<std::mutex> lk(m_mutex);
+            while (m_queue.empty())
+                m_cv.wait(lk);
 
-			if (m_queue.empty())
-				continue;
+            if (m_queue.empty())
+                continue;
 
-			msg = m_queue.front();
-			m_queue.pop();
-		}
+            msg = m_queue.front();
+            m_queue.pop();
+        }
 
-		switch (msg->GetId())
-		{
-			case MSG_DISPATCH_DELEGATE:
-			{
-				// Get pointer to DelegateMsg data from queue msg data
-				auto delegateMsg = msg->GetData();
-				ASSERT_TRUE(delegateMsg);
+        switch (msg->GetId())
+        {
+            case MSG_DISPATCH_DELEGATE:
+            {
+                // Get pointer to DelegateMsg data from queue msg data
+                auto delegateMsg = msg->GetData();
+                ASSERT_TRUE(delegateMsg);
 
-				auto invoker = delegateMsg->GetDelegateInvoker();
-				ASSERT_TRUE(invoker);
+                auto invoker = delegateMsg->GetDelegateInvoker();
+                ASSERT_TRUE(invoker);
 
-				// Invoke the delegate destination target function
-				bool success = invoker->Invoke(delegateMsg);
-				ASSERT_TRUE(success);
-				break;
-		    }
+                // Invoke the delegate destination target function
+                bool success = invoker->Invoke(delegateMsg);
+                ASSERT_TRUE(success);
+                break;
+            }
 
-			case MSG_TIMER:
-				Timer::ProcessTimers();
-				break;
+            case MSG_TIMER:
+                Timer::ProcessTimers();
+                break;
 
-			case MSG_EXIT_THREAD:
-			{
-				m_timerExit = true;
-				timerThread.join();
-				return;
-			}
+            case MSG_EXIT_THREAD:
+            {
+                m_timerExit = true;
+                timerThread.join();
+                return;
+            }
 
-			default:
-				throw std::invalid_argument("Invalid message ID");
-		}
-	}
+            default:
+                throw std::invalid_argument("Invalid message ID");
+        }
+    }
 }
 ```
 

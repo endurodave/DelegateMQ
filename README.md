@@ -76,14 +76,14 @@ Simple function definitions.
 
 ```cpp
 void FreeFunc(int value) {
-	cout << "FreeFuncInt " << value << endl;
+    cout << "FreeFuncInt " << value << endl;
 }
 
 class TestClass {
 public:
-	void MemberFunc(int value) {
-		cout << "MemberFunc " << value << endl;
-	}
+    void MemberFunc(int value) {
+        cout << "MemberFunc " << value << endl;
+    }
 };
 ```
 
@@ -368,23 +368,23 @@ void TestAllTargetTypes() {
 void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
 {
 	// Is the caller executing on workerThread2?
-	if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
-	{
-		// Create an asynchronous delegate and re-invoke the function call on workerThread2
-		MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncAPI, workerThread2).AsyncInvoke(systemMode);
-		return;
-	}
+    if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
+    {
+        // Create an asynchronous delegate and re-invoke the function call on workerThread2
+        MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncAPI, workerThread2).AsyncInvoke(systemMode);
+        return;
+    }
 
-	// Create the callback data
-	SystemModeChanged callbackData;
-	callbackData.PreviousSystemMode = m_systemMode;
-	callbackData.CurrentSystemMode = systemMode;
+    // Create the callback data
+    SystemModeChanged callbackData;
+    callbackData.PreviousSystemMode = m_systemMode;
+    callbackData.CurrentSystemMode = systemMode;
 
-	// Update the system mode
-	m_systemMode = systemMode;
+    // Update the system mode
+    m_systemMode = systemMode;
 
-	// Callback all registered subscribers
-	SystemModeChangedDelegate(callbackData);
+    // Callback all registered subscribers
+    SystemModeChangedDelegate(callbackData);
 }
 ```
 

@@ -9,8 +9,6 @@
 /// BUFFER_SIZE below as necessary.
 
 #include "predef/dispatcher/MsgHeader.h"
-#include <thread>
-#include <chrono>
 #include <zmq.h>
 #include <sstream>
 #include <cstdio>
@@ -159,7 +157,7 @@ public:
         is.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
-        // Now `is` contains the rest of the data, which can be read or processed
+        // Now `is` contains the rest of the remote argument data
         return is;
     }
 

@@ -80,9 +80,15 @@
     #error "Serialize implementation not found."
 #endif
 
-#if defined(TRANSPORT_MSGPACK)
+#if defined(TRANSPORT_ZEROMQ)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/zeromq/Transport.h"
+#elif defined(TRANSPORT_WIN32_PIPE)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/win32-pipe/Transport.h"
+#elif defined(TRANSPORT_WIN32_UDP)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/win32-udp/Transport.h"
 #elif defined(TRANSPORT_NONE)
     // Create a custom application-specific transport
 #else

@@ -10,7 +10,7 @@ include("${CMAKE_SOURCE_DIR}/../../../Config.cmake")
 # Set delegate library build options
 add_compile_definitions(THREAD_STDLIB)
 add_compile_definitions(SERIALIZE_MSGPACK)
-add_compile_definitions(TRANSPORT_MSGPACK)
+add_compile_definitions(TRANSPORT_ZEROMQ)
 
 # Collect all .cpp and *.h source files in the src directory
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")

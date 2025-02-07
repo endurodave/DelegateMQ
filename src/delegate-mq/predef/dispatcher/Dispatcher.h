@@ -8,7 +8,15 @@
 /// Dispatch callable argument data to a remote endpoint.
 
 #include "delegate/IDispatcher.h"
-#include "predef/transport/zeromq/Transport.h"
+#if defined(TRANSPORT_ZEROMQ)
+    #include "predef/transport/zeromq/Transport.h"
+#elif defined (TRANSPORT_WIN32_PIPE)
+    #include "predef/transport/win32-pipe/Transport.h"
+#elif defined (TRANSPORT_WIN32_UDP)
+    #include "predef/transport/win32-udp/Transport.h"
+#else
+    #error "Include a transport header."
+#endif
 #include "MsgHeader.h"
 #include <sstream>
 #include <mutex>
