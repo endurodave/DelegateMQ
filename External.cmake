@@ -4,12 +4,23 @@
 # ***** BEGIN TARGET BUILD OPTIONS *****
 # Modify the options below for your target platform external libraries.
 
-# Set path to the vcpkg directory for support libraries (zmq.h)
-set(VCPKG_ROOT_DIR "${DELEGATE_ROOT_DIR}/../vcpkg/installed/x64-windows")
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    message(STATUS "Building on Windows")
+    
+    # Set ZeroMQ library file name and directory
+    # https://github.com/zeromq
+    set(ZMQ_LIB_NAME "libzmq-mt-4_3_5.lib")     # Update to installed library version
+    
+    # Set path to the vcpkg directory for support libraries (zmq.h)
+    set(VCPKG_ROOT_DIR "${DELEGATE_ROOT_DIR}/../vcpkg/installed/x64-windows")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(STATUS "Building on Linux")
+    set(ZMQ_LIB_NAME "libzmq.a") 
+    set(VCPKG_ROOT_DIR "${DELEGATE_ROOT_DIR}/../vcpkg/installed/x64-linux")
+else()
+    message(FATAL_ERROR "Select directories based on build platform.")
+endif()
 
-# Set ZeroMQ library file name and directory
-# https://github.com/zeromq
-set(ZMQ_LIB_NAME "libzmq-mt-4_3_5.lib")     # Update to installed library version
 set(ZMQ_LIB_DIR "${VCPKG_ROOT_DIR}/lib")
 
 # Set path to the MessagePack C++ library (msgpack.hpp)
