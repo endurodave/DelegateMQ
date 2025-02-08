@@ -29,7 +29,8 @@ void make_unserialized(msgpack::unpacker& unpacker) { }
 template<typename Arg1, typename... Args>
 void make_unserialized(msgpack::unpacker& unpacker, Arg1& arg1, Args&&... args) {
     msgpack::object_handle oh;
-    unpacker.next(oh);
+    if (!unpacker.next(oh)) 
+        throw std::runtime_error("Error during MsgPack unpacking.");
     arg1 = oh.get().as<Arg1>();
     make_unserialized(unpacker, args...);
 }
@@ -52,12 +53,22 @@ public:
 
     // Read arguments from a stream
     virtual std::istream& Read(std::istream& is, Args&... args) override {
-        std::string buffer_data((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
-        msgpack::unpacker unpacker;
-        unpacker.reserve_buffer(buffer_data.size());
-        std::memcpy(unpacker.buffer(), buffer_data.data(), buffer_data.size());
-        unpacker.buffer_consumed(buffer_data.size());
-        make_unserialized(unpacker, args...);
+        try {
+            std::string buffer_data((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
+            msgpack::unpacker unpacker;
+            unpacker.reserve_buffer(buffer_data.size());
+            std::memcpy(unpacker.buffer(), buffer_data.data(), buffer_data.size());
+            unpacker.buffer_consumed(buffer_data.size());
+            make_unserialized(unpacker, args...);
+        }
+        catch (const msgpack::type_error& e) {
+            std::cerr << "Deserialize type conversion error: " << e.what() << std::endl;
+            throw;
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Deserialize error: " << e.what() << std::endl;
+            throw;
+        }
         return is;
     }
 };

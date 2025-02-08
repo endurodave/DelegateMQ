@@ -107,45 +107,50 @@ public:
 
     std::stringstream Receive(MsgHeader& header)
     {
-        std::stringstream is(std::ios::in | std::ios::out | std::ios::binary);
+        std::stringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         int clientAddrLen = sizeof(m_clientAddr);
         int size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, (sockaddr*)&m_clientAddr, &clientAddrLen);
         if (size == SOCKET_ERROR) 
         {
             std::cerr << "recvfrom failed." << std::endl;
-            return is;
+            return headerStream;
         }
 
         // Write the received data into the stringstream
-        is.write(m_buffer, size);
-        is.seekg(0);  
+        headerStream.write(m_buffer, size);
+        headerStream.seekg(0);  
 
         uint16_t marker = 0;
-        is.read(reinterpret_cast<char*>(&marker), sizeof(marker));
+        headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
         header.SetMarker(marker);
 
         if (header.GetMarker() != MsgHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
-            return is;  // TODO: Optionally handle this case more gracefully
+            return headerStream;  // TODO: Optionally handle this case more gracefully
         }
 
         // Read the DelegateRemoteId (2 bytes) into the `id` variable
         uint16_t id = 0;
-        is.read(reinterpret_cast<char*>(&id), sizeof(id));
+        headerStream.read(reinterpret_cast<char*>(&id), sizeof(id));
         header.SetId(id);
 
         // Read seqNum (again using the getter for byte swapping)
         uint16_t seqNum = 0;
-        is.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
+        headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
-        // Now `is` contains the rest of the remote argument data
-        return is;
+        std::stringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
+
+        // Write the remaining argument data to stream
+        argStream.write(m_buffer + MsgHeader::HEADER_SIZE, size - MsgHeader::HEADER_SIZE);
+
+        // argStream contains the serialized remote argument data
+        return argStream;
     }
 
 private:
-    SOCKET m_socket;  // TODO : invalid value?
+    SOCKET m_socket = INVALID_SOCKET;
     sockaddr_in m_serverAddr;
     sockaddr_in m_clientAddr;
 

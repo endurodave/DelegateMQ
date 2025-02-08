@@ -4,6 +4,8 @@
 /// @file 
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
+/// 
+/// serialize class serialized data classes for transport using remote delegates.
 
 #include "DelegateMQ.h"
 #include <string.h>

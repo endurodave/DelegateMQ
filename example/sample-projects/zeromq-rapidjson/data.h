@@ -4,6 +4,8 @@
 /// @file 
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
+/// 
+/// RapidJSON serialized data classes for transport using remote delegates.
 
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/document.h"

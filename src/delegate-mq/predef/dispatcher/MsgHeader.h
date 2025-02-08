@@ -13,6 +13,7 @@ class MsgHeader
 {
 public:
     static const uint16_t MARKER = 0x55AA;
+    static const size_t HEADER_SIZE = 6;
 
     // Constructor
     MsgHeader() = default;

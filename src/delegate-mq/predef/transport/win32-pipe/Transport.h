@@ -97,45 +97,55 @@ public:
 
     std::stringstream Receive(MsgHeader& header)
     {
-        std::stringstream is(std::ios::in | std::ios::out | std::ios::binary);
+        std::stringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         // Check if client connected
         BOOL connected = ConnectNamedPipe(m_hPipe, NULL) ?
             TRUE : (GetLastError() == ERROR_PIPE_CONNECTED);
         if (connected == FALSE)
-            return is;
+            return headerStream;
 
         DWORD size = 0;
         BOOL success = ReadFile(m_hPipe, m_buffer, BUFFER_SIZE, &size, NULL);
 
         if (success == FALSE || size <= 0)
-            return is;
+            return headerStream;
+
+        if (size <= MsgHeader::HEADER_SIZE) {
+            std::cerr << "Received data is too small to process." << std::endl;
+            return headerStream;
+        }
 
         // Write the received data into the stringstream
-        is.write(m_buffer, size);
-        is.seekg(0);  
+        headerStream.write(m_buffer, MsgHeader::HEADER_SIZE);
+        headerStream.seekg(0);
 
         uint16_t marker = 0;
-        is.read(reinterpret_cast<char*>(&marker), sizeof(marker));
+        headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
         header.SetMarker(marker);
 
         if (header.GetMarker() != MsgHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
-            return is;  // TODO: Optionally handle this case more gracefully
+            return headerStream;  // TODO: Optionally handle this case more gracefully
         }
 
         // Read the DelegateRemoteId (2 bytes) into the `id` variable
         uint16_t id = 0;
-        is.read(reinterpret_cast<char*>(&id), sizeof(id));
+        headerStream.read(reinterpret_cast<char*>(&id), sizeof(id));
         header.SetId(id);
 
         // Read seqNum (again using the getter for byte swapping)
         uint16_t seqNum = 0;
-        is.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
+        headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
+        std::stringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
+
+        // Write the remaining argument data to stream
+        argStream.write(m_buffer + MsgHeader::HEADER_SIZE, size - MsgHeader::HEADER_SIZE);
+
         // Now `is` contains the rest of the remote argument data
-        return is;
+        return argStream;
     }
 
 private:

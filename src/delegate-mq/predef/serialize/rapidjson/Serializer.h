@@ -5,7 +5,7 @@
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
 /// 
-/// Serialize callable argument data using serialize class for transport
+/// Serialize callable argument data using RapidJSON for transport
 /// to a remote. Endinaness correctly handled by serialize class. 
 
 #include "delegate/ISerializer.h"
@@ -43,14 +43,14 @@ class Serializer<RetType(Args...)> : public DelegateMQ::ISerializer<RetType(Args
 public:
     // Write arguments to a stream
     virtual std::ostream& Write(std::ostream& os, Args... args) override {
-        rapidjson::Document doc;
         rapidjson::StringBuffer sb;
         rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
 
-        //os << "[";
         make_serialized(writer, os, args...);
-        os << sb.GetString();
-        //os << "]" << std::ends;
+        if (writer.IsComplete())
+            os << sb.GetString();
+        else
+            os.setstate(std::ios::failbit);
         return os;
     }
 
@@ -63,12 +63,13 @@ public:
         is.seekg(current_pos, std::ios::beg);
 
         // Allocate storage buffer
-        char* buf = (char*)malloc(length);  // TODO: xmalloc
-        //ASSERT_TRUE(buf != NULL);     // TODO
+        char* buf = (char*)malloc(length+1);
+        if (!buf)
+            return is;
 
         // Copy into buffer 
         is.rdbuf()->sgetn(buf, length);
-        buf[length - MSG_HEADER_SIZE] = 0;
+        buf[length] = 0;   // null terminate incoming data
 
         //std::cout << buf;
 
@@ -79,7 +80,8 @@ public:
         // Check for parsing errors
         if (doc.HasParseError()) 
         {
-            // TODO: how return parsing error to caller? Update other serializers too
+            // Let caller know read failed
+            is.setstate(std::ios::failbit);
             std::cout << "Parse error: " << doc.GetParseError() << std::endl;
             std::cout << "Error offset: " << doc.GetErrorOffset() << std::endl;
             free(buf);
@@ -90,9 +92,6 @@ public:
         free(buf);
         return is;
     }
-private:
-    // Size of the MsgHeader bytes inserted into stream
-    const int MSG_HEADER_SIZE = 6;
 };
 
 #endif

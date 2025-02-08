@@ -54,11 +54,11 @@ namespace DelegateMQ {
 
 enum class DelegateError {
     SUCCESS = 0,
-    ERR_STREAM_FAIL = 1,
-    ERR_STREAM_EMPTY = 2,
-    ERR_NO_SERIALIZER = 3,
-    ERR_SERIALIZE = 4,
-    ERR_DESERIALIZE = 5,
+    ERR_STREAM_NOT_GOOD = 1,
+    ERR_NO_SERIALIZER = 2,
+    ERR_SERIALIZE = 3,
+    ERR_DESERIALIZE = 4,
+    ERR_DESERIALIZE_EXCEPTION = 5,
     ERR_NO_DISPATCHER = 6,
     ERR_DISPATCH = 7
 };
@@ -293,11 +293,8 @@ public:
                     RaiseError(m_id, DelegateError::ERR_SERIALIZE);
                 }
 
-                if (m_stream->fail() || m_stream->bad()) {
-                    RaiseError(m_id, DelegateError::ERR_STREAM_FAIL);
-                }
-                else if (m_stream->eof()) {
-                    RaiseError(m_id, DelegateError::ERR_STREAM_EMPTY);
+                if (!m_stream->good()) {
+                    RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
                 }
                 else {
                     // Dispatch delegate invocation to the remote destination
@@ -351,6 +348,10 @@ public:
             return false;
         }
 
+        if (!is.good()) {
+            RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
+        }
+
         // Invoke the delegate function synchronously
         m_sync = true;
 
@@ -365,7 +366,10 @@ public:
                 Arg1 a1 = rp1.Get();
 
                 m_serializer->Read(is, a1);
-                operator()(a1);
+                if (is.good())
+                    operator()(a1);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 2) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -377,7 +381,10 @@ public:
                 Arg2 a2 = rp2.Get();
 
                 m_serializer->Read(is, a1, a2);
-                operator()(a1, a2);
+                if (is.good())
+                    operator()(a1, a2);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 3) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -392,7 +399,10 @@ public:
                 Arg3 a3 = rp3.Get();
 
                 m_serializer->Read(is, a1, a2, a3);
-                operator()(a1, a2, a3);
+                if (is.good())
+                    operator()(a1, a2, a3);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 4) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -410,7 +420,10 @@ public:
                 Arg4 a4 = rp4.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4);
-                operator()(a1, a2, a3, a4);
+                if (is.good())
+                    operator()(a1, a2, a3, a4);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 5) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -431,13 +444,16 @@ public:
                 Arg5 a5 = rp5.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4, a5);
-                operator()(a1, a2, a3, a4, a5);
+                if (is.good())
+                    operator()(a1, a2, a3, a4, a5);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else {
                 static_assert(ArgCnt::value <= 5, "Too many target function arguments");
             }
         } catch (std::exception&) {
-            RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
+            RaiseError(m_id, DelegateError::ERR_DESERIALIZE_EXCEPTION);
         }
 
         return true;
@@ -772,11 +788,8 @@ public:
                     RaiseError(m_id, DelegateError::ERR_SERIALIZE);
                 }
 
-                if (m_stream->fail() || m_stream->bad()) {
-                    RaiseError(m_id, DelegateError::ERR_STREAM_FAIL);
-                }
-                else if (m_stream->eof()) {
-                    RaiseError(m_id, DelegateError::ERR_STREAM_EMPTY);
+                if (!m_stream->good()) {
+                    RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
                 }
                 else {
                     // Dispatch delegate invocation to the remote destination
@@ -830,6 +843,10 @@ public:
             return false;
         }
 
+        if (!is.good()) {
+            RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
+        }
+
         // Invoke the delegate function synchronously
         m_sync = true;
 
@@ -844,7 +861,10 @@ public:
                 Arg1 a1 = rp1.Get();
 
                 m_serializer->Read(is, a1);
-                operator()(a1);
+                if (is.good())
+                    operator()(a1);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 2) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -856,7 +876,10 @@ public:
                 Arg2 a2 = rp2.Get();
 
                 m_serializer->Read(is, a1, a2);
-                operator()(a1, a2);
+                if (is.good())
+                    operator()(a1, a2);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 3) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -871,7 +894,10 @@ public:
                 Arg3 a3 = rp3.Get();
 
                 m_serializer->Read(is, a1, a2, a3);
-                operator()(a1, a2, a3);
+                if (is.good())
+                    operator()(a1, a2, a3);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 4) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -889,7 +915,10 @@ public:
                 Arg4 a4 = rp4.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4);
-                operator()(a1, a2, a3, a4);
+                if (is.good())
+                    operator()(a1, a2, a3, a4);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 5) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -910,13 +939,16 @@ public:
                 Arg5 a5 = rp5.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4, a5);
-                operator()(a1, a2, a3, a4, a5);
+                if (is.good())
+                    operator()(a1, a2, a3, a4, a5);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else {
                 static_assert(ArgCnt::value <= 5, "Too many target function arguments");
             }
         } catch (std::exception&) {
-            RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
+            RaiseError(m_id, DelegateError::ERR_DESERIALIZE_EXCEPTION);
         }
 
         return true;
@@ -1192,11 +1224,8 @@ public:
                     RaiseError(m_id, DelegateError::ERR_SERIALIZE);
                 }
 
-                if (m_stream->fail() || m_stream->bad()) {
-                    RaiseError(m_id, DelegateError::ERR_STREAM_FAIL);
-                }
-                else if (m_stream->eof()) {
-                    RaiseError(m_id, DelegateError::ERR_STREAM_EMPTY);
+                if (!m_stream->good()) {
+                    RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
                 }
                 else {
                     // Dispatch delegate invocation to the remote destination
@@ -1250,6 +1279,10 @@ public:
             return false;
         }
 
+        if (!is.good()) {
+            RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
+        }
+
         // Invoke the delegate function synchronously
         m_sync = true;
 
@@ -1264,7 +1297,10 @@ public:
                 Arg1 a1 = rp1.Get();
 
                 m_serializer->Read(is, a1);
-                operator()(a1);
+                if (is.good())
+                    operator()(a1);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 2) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -1276,7 +1312,10 @@ public:
                 Arg2 a2 = rp2.Get();
 
                 m_serializer->Read(is, a1, a2);
-                operator()(a1, a2);
+                if (is.good())
+                    operator()(a1, a2);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 3) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -1291,7 +1330,10 @@ public:
                 Arg3 a3 = rp3.Get();
 
                 m_serializer->Read(is, a1, a2, a3);
-                operator()(a1, a2, a3);
+                if (is.good())
+                    operator()(a1, a2, a3);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 4) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -1309,7 +1351,10 @@ public:
                 Arg4 a4 = rp4.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4);
-                operator()(a1, a2, a3, a4);
+                if (is.good())
+                    operator()(a1, a2, a3, a4);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else if constexpr (ArgCnt::value == 5) {
                 using Arg1 = ArgTypeOf<0, Args...>;
@@ -1330,13 +1375,16 @@ public:
                 Arg5 a5 = rp5.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4, a5);
-                operator()(a1, a2, a3, a4, a5);
+                if (is.good())
+                    operator()(a1, a2, a3, a4, a5);
+                else
+                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
             }
             else {
                 static_assert(ArgCnt::value <= 5, "Too many target function arguments");
             }
         } catch (std::exception&) {
-            RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
+            RaiseError(m_id, DelegateError::ERR_DESERIALIZE_EXCEPTION);
         }
 
         return true;

@@ -73,7 +73,10 @@ private:
     // Receiver target function called when sender remote delegate is invoked
     void DataUpdate(Data& data)
     {
-        cout << data.msg << " " << data.dataPoints[0].y << " " << data.dataPoints[0].y << endl;
+        if (data.dataPoints.size() > 0)
+            cout << data.msg << " " << data.dataPoints[0].y << " " << data.dataPoints[0].y << endl;
+        else
+            cout << "DataUpdate incoming data error!" << endl;
     }
 
     DelegateRemoteId m_id;

@@ -59,7 +59,7 @@ Typical use cases are:
 
 The delegate library's asynchronous features differ from `std::async` in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into an event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.
 
-n short, the delegate library aims to unify function invocation, simplifying multi-threaded and multi-processor application development. It provides well-defined interfaces to support expansion through architecture-specific threads, serialization, and transport mechanisms.
+In short, the delegate library aims to unify function invocation, simplifying multi-threaded and multi-processor application development. It provides well-defined interfaces to support expansion through architecture-specific threads, serialization, and transport mechanisms.
 
 Originally published on CodeProject at: <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a>
 
