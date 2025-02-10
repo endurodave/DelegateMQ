@@ -153,19 +153,19 @@ namespace Remote
     void make_unserialized(std::istream& is) { }
 
     template<typename Arg1, typename... Args>
-    void make_unserialized(std::istream& is, Arg1& arg1, Args... args) {
+    void make_unserialized(std::istream& is, Arg1& arg1, Args&&... args) {
         is >> arg1;
         make_unserialized(is, args...);
     }
 
     template<typename Arg1, typename... Args>
-    void make_unserialized(std::istream& is, Arg1* arg1, Args... args) {
+    void make_unserialized(std::istream& is, Arg1* arg1, Args&&... args) {
         is >> *arg1;
         make_unserialized(is, args...);
     }
 
     template<typename Arg1, typename... Args>
-    void make_unserialized(std::istream& is, Arg1** arg1, Args... args) {
+    void make_unserialized(std::istream& is, Arg1** arg1, Args&&... args) {
         static_assert(!std::is_pointer_v<Arg1>, "Pointer-to-pointer argument not supported");
     }
 

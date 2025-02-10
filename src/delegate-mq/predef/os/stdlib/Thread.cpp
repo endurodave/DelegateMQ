@@ -1,6 +1,5 @@
 #include "Thread.h"
 #include "ThreadMsg.h"
-#include "predef/util/Timer.h"
 #include "predef/util/Fault.h"
 
 #ifdef WIN32
@@ -12,12 +11,11 @@ using namespace DelegateMQ;
 
 #define MSG_DISPATCH_DELEGATE	1
 #define MSG_EXIT_THREAD			2
-#define MSG_TIMER				3
 
 //----------------------------------------------------------------------------
 // Thread
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName) : m_thread(nullptr), m_timerExit(false), THREAD_NAME(threadName)
+Thread::Thread(const std::string& threadName) : m_thread(nullptr), THREAD_NAME(threadName)
 {
 }
 
@@ -133,34 +131,10 @@ void Thread::DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg)
 }
 
 //----------------------------------------------------------------------------
-// TimerThread
-//----------------------------------------------------------------------------
-void Thread::TimerThread()
-{
-    while (!m_timerExit)
-    {
-        std::this_thread::sleep_for(100ms);
-
-        std::shared_ptr<ThreadMsg> threadMsg (new ThreadMsg(MSG_TIMER, 0));
-
-        // Add timer msg to queue and notify worker thread
-        std::unique_lock<std::mutex> lk(m_mutex);
-        m_queue.push(threadMsg);
-        m_cv.notify_one();
-    }
-}
-
-//----------------------------------------------------------------------------
 // Process
 //----------------------------------------------------------------------------
 void Thread::Process()
 {
-	m_timerExit = false;
-    std::thread timerThread(&Thread::TimerThread, this);
-
-	auto handle = timerThread.native_handle();
-	SetThreadName(handle, THREAD_NAME + "Timer");
-
 	// Signal that the thread has started processing to notify CreateThread
 	m_threadStartPromise.set_value();
 
@@ -197,14 +171,8 @@ void Thread::Process()
 				break;
 			}
 
-            case MSG_TIMER:
-				Timer::ProcessTimers();
-				break;
-
 			case MSG_EXIT_THREAD:
 			{
-                m_timerExit = true;
-                timerThread.join();
                 return;
 			}
 

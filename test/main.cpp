@@ -28,6 +28,17 @@ using namespace std;
 using namespace DelegateMQ;
 using namespace std::chrono;
 
+std::atomic<bool> processTimerExit = false;
+static void ProcessTimers()
+{
+    while (!processTimerExit.load())
+    {
+        // Process all delegate-based timers
+        Timer::ProcessTimers();
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+}
+
 /// The main file examples namespace
 namespace Main
 {
@@ -266,6 +277,9 @@ int main(void)
     Timer timer;
     timer.Expired = MakeDelegate(&TimerExpiredCb, workerThread1);
     timer.Start(std::chrono::milliseconds(250));
+
+    // Start the thread that will run ProcessTimers
+    std::thread timerThread(ProcessTimers);
 
     // Create a delegate bound to a free function then invoke
     auto delegateFree = MakeDelegate(&FreeFuncInt);
@@ -611,6 +625,11 @@ int main(void)
 
     // Run all unit tests
     DelegateUnitTests();
+
+    // Ensure the timer thread completes before main exits
+    processTimerExit.store(true);
+    if (timerThread.joinable())
+        timerThread.join();  
 
     timer.Stop();
     timer.Expired.Clear();

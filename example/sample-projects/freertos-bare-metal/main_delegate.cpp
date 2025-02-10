@@ -1,11 +1,16 @@
 /// @file main.cpp
 /// @see https://github.com/endurodave/cpp-async-delegate
 /// David Lafreniere, 2025.
+/// 
+/// Test DelegateMQ with FreeRTOS. Test was created to run on Windows using 
+/// FreeRTOS Windows Port For Visual Studio.
+/// 
+/// Must build using 32-bit: 
+/// cmake -A Win32 -B build .
 
 #include "DelegateMQ.h"
 #include <iostream>
 #include <sstream>
-#include <chrono> // todo remove
 #include "FreeRTOS.h"
 #include "timers.h"
 
@@ -170,9 +175,11 @@ public:
     // Send data to the remote
     void Send()
     {
+        static int cnt = 0;
+
         Data data;
-        data.x = 1;
-        data.y = 2;
+        data.x = cnt++;
+        data.y = cnt++;
         data.msg = "Hello!";
 
         m_sendDelegate(data);

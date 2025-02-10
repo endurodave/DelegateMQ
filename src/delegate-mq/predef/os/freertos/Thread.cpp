@@ -1,6 +1,5 @@
 #include "Thread.h"
 #include "ThreadMsg.h"
-#include "predef/util/Timer.h"
 #include "predef/util/Fault.h"
 
 using namespace std;

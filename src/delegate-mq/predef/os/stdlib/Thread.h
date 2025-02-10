@@ -51,16 +51,12 @@ private:
 	/// Entry point for the thread
 	void Process();
 
-    /// Entry point for timer thread
-    void TimerThread();
-
 	void SetThreadName(std::thread::native_handle_type handle, const std::string& name);
 
 	std::unique_ptr<std::thread> m_thread;
 	std::queue<std::shared_ptr<ThreadMsg>> m_queue;
 	std::mutex m_mutex;
 	std::condition_variable m_cv;
-    std::atomic<bool> m_timerExit;
 	const std::string THREAD_NAME;
 
 	// Promise and future to synchronize thread start

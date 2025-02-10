@@ -7,9 +7,23 @@
 #include "sender.h"
 #include "receiver.h"
 
+std::atomic<bool> processTimerExit = false;
+static void ProcessTimers()
+{
+    while (!processTimerExit.load())
+    {
+        // Process all delegate-based timers
+        Timer::ProcessTimers();
+        std::this_thread::sleep_for(std::chrono::microseconds(50));
+    }
+}
+
 int main() 
 {
     const DelegateRemoteId id = 1;
+
+    // Start the thread that will run ProcessTimers
+    std::thread timerThread(ProcessTimers);
 
     // Create Sender and Receiver objects
     Sender sender(id);
@@ -23,6 +37,11 @@ int main()
 
     receiver.Stop();
     sender.Stop();
+
+    // Ensure the timer thread completes before main exits
+    processTimerExit.store(true);
+    if (timerThread.joinable())
+        timerThread.join();
 
     return 0;
 }

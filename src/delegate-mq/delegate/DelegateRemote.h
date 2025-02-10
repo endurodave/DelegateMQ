@@ -366,7 +366,7 @@ public:
                 Arg1 a1 = rp1.Get();
 
                 m_serializer->Read(is, a1);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -861,7 +861,7 @@ public:
                 Arg1 a1 = rp1.Get();
 
                 m_serializer->Read(is, a1);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -1297,7 +1297,7 @@ public:
                 Arg1 a1 = rp1.Get();
 
                 m_serializer->Read(is, a1);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);

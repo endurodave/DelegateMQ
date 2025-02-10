@@ -20,6 +20,17 @@
 
 static Thread receiveThread("ReceiveThread");
 
+std::atomic<bool> processTimerExit = false;
+static void ProcessTimers()
+{
+    while (!processTimerExit.load())
+    {
+        // Process all delegate-based timers
+        Timer::ProcessTimers();
+        std::this_thread::sleep_for(std::chrono::microseconds(50));
+    }
+}
+
 // Receive all local and remote data callback
 void DataMsgRecv(DataMsg& data)
 {
@@ -42,6 +53,9 @@ int main()
 {
     std::cout << "Client start!" << std::endl;
 
+    // Start the thread that will run ProcessTimers
+    std::thread timerThread(ProcessTimers);
+
     NetworkMgr::Instance().Create();
     NetworkMgr::Instance().Start();
     AlarmMgr::Instance();
@@ -63,5 +77,11 @@ int main()
 
     NetworkMgr::Instance().Stop();
     receiveThread.ExitThread();
+
+    // Ensure the timer thread completes before main exits
+    processTimerExit.store(true);
+    if (timerThread.joinable())
+        timerThread.join();  
+
     return 0;
 }

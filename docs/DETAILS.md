@@ -66,6 +66,7 @@ The DelegateMQ C++ library can invoke any callable function synchronously, async
   - [More Examples](#more-examples)
   - [Sample Projects](#sample-projects)
     - [bare-metal](#bare-metal)
+    - [freertos-bare-metal](#freertos-bare-metal)
     - [win32-pipe-serializer](#win32-pipe-serializer)
     - [win32-upd-serializer](#win32-upd-serializer)
     - [zeromq-serializer](#zeromq-serializer)
@@ -1564,6 +1565,15 @@ See the `examples/sample-projects` directory for example project. Most projects 
 ### bare-metal
 
 Remote delegate example with no external libraries. 
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
+| `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
+
+### freertos-bare-metal
+
+Remote delegate example using FreeRTOS and no external libraries. Tested using the FreeRTOS Windows port and Visual Studio. Must build as 32-bit application. See CMakeList.txt for details.
 
 | Interface | Implementation |
 | --- | --- |

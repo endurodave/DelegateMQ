@@ -21,7 +21,7 @@ file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DI
 list(APPEND SOURCES ${PREDEF_SOURCES})
 
 # Organize delegate source files within IDE (Visual Studio)
-source_group("Delegate Files" FILES ${DELEGATEMQ_SOURCES})
+source_group("Delegate Files" FILES ${DELEGATEMQ_SOURCES} ${PREDEF_SOURCES})
 
 # Check if the TEST_COVERAGE argument is passed
 option(TEST_COVERAGE "Enable code coverage" OFF)

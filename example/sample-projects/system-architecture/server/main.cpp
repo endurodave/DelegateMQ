@@ -17,9 +17,23 @@
 #include "ServerApp.h"
 #include <thread>
 
+std::atomic<bool> processTimerExit = false;
+static void ProcessTimers()
+{
+    while (!processTimerExit.load())
+    {
+        // Process all delegate-based timers
+        Timer::ProcessTimers();
+        std::this_thread::sleep_for(std::chrono::microseconds(50));
+    }
+}
+
 int main() 
 {
     std::cout << "Server start!" << std::endl;
+
+    // Start the thread that will run ProcessTimers
+    std::thread timerThread(ProcessTimers);
 
     NetworkMgr::Instance().Create();
     NetworkMgr::Instance().Start();
@@ -30,5 +44,11 @@ int main()
     std::this_thread::sleep_for(std::chrono::seconds(30));
 
     NetworkMgr::Instance().Stop();
+
+    // Ensure the timer thread completes before main exits
+    processTimerExit.store(true);
+    if (timerThread.joinable())
+        timerThread.join();
+
     return 0;
 }

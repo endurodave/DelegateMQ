@@ -9,6 +9,17 @@
 
 using namespace DelegateMQ;
 using namespace std;
+ 
+std::atomic<bool> processTimerExit = false;
+static void ProcessTimers()
+{
+    while (!processTimerExit.load())
+    {
+        // Process all delegate-based timers
+        Timer::ProcessTimers();
+        std::this_thread::sleep_for(std::chrono::microseconds(50));
+    }
+}
 
 // The "transport" is simplely a shared std::stringstream
 class Transport
@@ -70,19 +81,19 @@ template<typename... Ts>
 void make_unserialized(std::istream& is) { }
 
 template<typename Arg1, typename... Args>
-void make_unserialized(std::istream& is, Arg1& arg1, Args... args) {
+void make_unserialized(std::istream& is, Arg1& arg1, Args&&... args) {
     is >> arg1;
     make_unserialized(is, args...);
 }
 
 template<typename Arg1, typename... Args>
-void make_unserialized(std::istream& is, Arg1* arg1, Args... args) {
+void make_unserialized(std::istream& is, Arg1* arg1, Args&&... args) {
     is >> *arg1;
     make_unserialized(is, args...);
 }
 
 template<typename Arg1, typename... Args>
-void make_unserialized(std::istream& is, Arg1** arg1, Args... args) {
+void make_unserialized(std::istream& is, Arg1** arg1, Args&&... args) {
     static_assert(!std::is_pointer_v<Arg1>, "Pointer-to-pointer argument not supported");
 }
 
@@ -243,10 +254,19 @@ int main()
 {
     DelegateRemoteId id = 1;
 
+    // Start the thread that will run ProcessTimers
+    std::thread timerThread(ProcessTimers);
+
     Sender sender(id);
     Receiver receiver(id);
 
     // Wait here while sender and receiver communicate
-    this_thread::sleep_for(chrono::seconds(2));
+    this_thread::sleep_for(chrono::seconds(5));
+
+    // Ensure the timer thread completes before main exits
+    processTimerExit.store(true);
+    if (timerThread.joinable()) 
+        timerThread.join();  
+
     return 0;
 }
