@@ -118,11 +118,11 @@ The build options are contained within the files below.
 | File Name | Settings |
 | --- | --- |
 | `DelegateOpt.h` | `USE_ASSERTS` enable macro to use asserts instead of exceptions.<br>`USE_ALLOCATOR` enable macro to use a fixed-block allocator instead of the global heap. |
-| `External.cmake` | Update directory locations for external libraries such as MessagePack, RapidJSON and ZeroMQ. |
+| `External.cmake` | Update directory locations for external libraries such as MessagePack, RapidJSON, ZeroMQ, and FreeRTOS. |
 
 ## Example Projects
 
-Remote delegate example projects are located within the `example/sample-projects` directory. **Build the root repository project first before any `example/sample-projects` project**.
+Remote delegate example projects are located within the `example/sample-projects` directory.
 
 ## Examples Setup
 
@@ -135,9 +135,9 @@ Some remote delegate example projects have external library dependencies. Follow
    `./vcvpkg install zeromq`
 4. Clone [RapidJSON](https://github.com/Tencent/rapidjson).
 5. Clone [MessagePack C++](https://github.com/msgpack/msgpack-c/tree/cpp_master) `cpp_master` branch.
-6. Edit DelegateMQ `External.cmake` file and update external library directory locations.
-7. Build DelegateMQ root project so `lib` directory contains the prebuilt delegate library.
-8. Build any example subproject within the `example/sample-projects` directory.<br>
+6. Clone [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS).
+7. Edit DelegateMQ `External.cmake` file and update external library directory locations.
+9. Build any example subproject within the `example/sample-projects` directory.<br>
    `cmake -B build`
 
 See [Sample Projects](#sample-projects) for details regarding each sample project.

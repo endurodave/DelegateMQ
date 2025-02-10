@@ -1,7 +1,6 @@
 # External library definitions to support remote delegates. Update the options 
 # below based on the target build platform.
 
-# ***** BEGIN TARGET BUILD OPTIONS *****
 # Modify the options below for your target platform external libraries.
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -55,5 +54,5 @@ if(NOT EXISTS "${FREERTOS_ROOT_DIR}")
     message(FATAL_ERROR "${FREERTOS_ROOT_DIR} Directory does not exist. Update FREERTOS_ROOT_DIR to the correct directory.")
 endif()
 
-# ***** END TARGET BUILD OPTIONS *****
+
 
