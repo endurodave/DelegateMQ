@@ -6,7 +6,7 @@ set (DELEGATE_LIB "delegate_mq")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
 # Set build options
-set (USE_EXTERNAL_LIB "ON")
+set (USE_EXTERNAL_LIB "OFF")
 set (USE_ALLOCATOR "OFF")
 set (USE_UTIL "ON")
 set (USE_THREAD "THREAD_STDLIB")
