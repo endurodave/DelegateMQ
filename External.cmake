@@ -52,6 +52,18 @@ endif()
 set(FREERTOS_ROOT_DIR "${DELEGATE_ROOT_DIR}/../FreeRTOSv202212.00")
 if(NOT EXISTS "${FREERTOS_ROOT_DIR}")
     message(FATAL_ERROR "${FREERTOS_ROOT_DIR} Directory does not exist. Update FREERTOS_ROOT_DIR to the correct directory.")
+else()
+    # Collect FreeRTOS source files
+    file(GLOB FREERTOS_SOURCES 
+        "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/*.c"
+        "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/Include/*.h"
+    )
+    list(APPEND FREERTOS_SOURCES 
+        "${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/trcKernelPort.c"
+        "${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/trcSnapshotRecorder.c"
+        "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW/port.c"
+        "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MemMang/heap_5.c"
+    )
 endif()
 
 

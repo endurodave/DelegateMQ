@@ -20,14 +20,8 @@ file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
 # Collect DelegateMQ predef source files
 list(APPEND SOURCES ${PREDEF_SOURCES})
 
-# Collect all header files in the delegate directory
-file(GLOB Delegate_HEADERS 
-    "${DELEGATE_ROOT_DIR}/src/delegate-mq/*.h"
-    "${DELEGATE_ROOT_DIR}/src/delegate-mq/delegate/*.h"
-)
-
-# Organize delegate headers into a "Delegate Files" folder in Visual Studio
-source_group("Delegate Files" FILES ${Delegate_HEADERS})
+# Organize delegate source files within IDE (Visual Studio)
+source_group("Delegate Files" FILES ${DELEGATEMQ_SOURCES})
 
 # Add subdirectories to include path
 include_directories( 
@@ -35,5 +29,5 @@ include_directories(
 )
 
 # Add an executable target
-add_executable(${DELEGATE_APP} ${SOURCES} ${Delegate_HEADERS})
+add_executable(${DELEGATE_APP} ${SOURCES} ${DELEGATEMQ_SOURCES})
 

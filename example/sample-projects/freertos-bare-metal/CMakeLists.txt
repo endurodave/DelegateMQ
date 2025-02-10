@@ -4,6 +4,10 @@ cmake_minimum_required(VERSION 3.10)
 set (DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX C)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_GENERATOR_PLATFORM Win32)
+endif()
+
 # Set build options
 set (USE_EXTERNAL_LIB "ON")
 set (USE_ALLOCATOR "OFF")
@@ -20,23 +24,11 @@ file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.c*" "${CMAKE_SOURCE_DIR}/*.h")
 list(APPEND SOURCES ${PREDEF_SOURCES})
 
 # Collect FreeRTOS source files
-file(GLOB FREERTOS_SOURCES "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/*.c")
 list(APPEND SOURCES ${FREERTOS_SOURCES})
-list(APPEND SOURCES 
-    "${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/trcKernelPort.c"
-    "${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/trcSnapshotRecorder.c"
-    "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW/port.c"
-    "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MemMang/heap_5.c"
-)
 
-# Collect all header files in the delegate directory
-file(GLOB Delegate_HEADERS 
-    "${DELEGATE_ROOT_DIR}/src/delegate-mq/*.h"
-    "${DELEGATE_ROOT_DIR}/src/delegate-mq/delegate/*.h"
-)
-
-# Organize delegate headers into a "Delegate Files" folder in Visual Studio
-source_group("Delegate Files" FILES ${Delegate_HEADERS})
+# Organize delegate source files within IDE (Visual Studio)
+source_group("Delegate Files" FILES ${DELEGATEMQ_SOURCES})
+source_group("FreeRTOS Files" FILES ${FREERTOS_SOURCES})
 
 # Add subdirectories to include path
 include_directories(
@@ -50,7 +42,7 @@ include_directories(
 )
 
 # Add an executable target
-add_executable(${DELEGATE_APP} ${SOURCES} ${Delegate_HEADERS})
+add_executable(${DELEGATE_APP} ${SOURCES} ${DELEGATEMQ_SOURCES})
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 

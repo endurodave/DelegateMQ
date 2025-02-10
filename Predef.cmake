@@ -63,3 +63,9 @@ list(APPEND PREDEF_SOURCES ${THREAD_SOURCES})
 list(APPEND PREDEF_SOURCES ${OS_SOURCES})
 list(APPEND PREDEF_SOURCES ${ALLOCATOR_SOURCES})
 list(APPEND PREDEF_SOURCES ${UTIL_SOURCES})
+
+# Collect all DelegateMQ files
+file(GLOB DELEGATEMQ_SOURCES
+    "${DELEGATE_ROOT_DIR}/src/delegate-mq/*.h"
+    "${DELEGATE_ROOT_DIR}/src/delegate-mq/delegate/*.h"
+)

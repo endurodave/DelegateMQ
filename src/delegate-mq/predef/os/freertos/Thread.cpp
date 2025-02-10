@@ -8,12 +8,11 @@ using namespace DelegateMQ;
 
 #define MSG_DISPATCH_DELEGATE	1
 #define MSG_EXIT_THREAD			2
-#define MSG_TIMER				3
 
 //----------------------------------------------------------------------------
 // Thread
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName) : m_timerExit(false), THREAD_NAME(threadName)
+Thread::Thread(const std::string& threadName) : THREAD_NAME(threadName)
 {
 }
 
@@ -31,20 +30,18 @@ bool Thread::CreateThread()
 {
 	if (!m_thread)
 	{
-		// Create a default worker thread
+		// Create a worker thread
 		BaseType_t xReturn = xTaskCreate(
 			(TaskFunction_t)&Thread::Process,
 			THREAD_NAME.c_str(),
-			4096,
+			2046,
 			this,
 			configMAX_PRIORITIES - 1,// | portPRIVILEGE_BIT,
 			&m_thread);
-		//ASSERT_TRUE(xReturn == pdPASS); TODO
+		ASSERT_TRUE(xReturn == pdPASS);
 
-		// Wait for the thread to enter the Process method
-		//m_threadStartFuture.get(); TODO
-
-		m_queue = xQueueCreate(30, sizeof(std::shared_ptr<ThreadMsg>));
+		m_queue = xQueueCreate(30, sizeof(ThreadMsg*));
+		ASSERT_TRUE(m_queue != nullptr);
 	}
 	return true;
 }
@@ -77,23 +74,13 @@ void Thread::DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg)
 		throw std::invalid_argument("Queue pointer is null");
 
 	// Create a new ThreadMsg
-    std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_DISPATCH_DELEGATE, msg));
-	xQueueSend(m_queue, &threadMsg, portMAX_DELAY);
-}
-
-//----------------------------------------------------------------------------
-// TimerThread
-//----------------------------------------------------------------------------
-void Thread::TimerThread()
-{
-	// TODO: use freertos timer
-    while (!m_timerExit)
-    {
-		vTaskDelay(pdMS_TO_TICKS(100));
-
-        std::shared_ptr<ThreadMsg> threadMsg (new ThreadMsg(MSG_TIMER, 0));
-		xQueueSend(m_queue, &threadMsg, portMAX_DELAY);
-    }
+	ThreadMsg* threadMsg = new ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
+	if (xQueueSend(m_queue, &threadMsg, portMAX_DELAY) != pdPASS)
+	{
+		// Handle the case when the message was not successfully added to the queue
+		delete threadMsg;  // Ensure we don't leak memory if the send fails
+		throw std::runtime_error("Failed to send message to queue");
+	}
 }
 
 //----------------------------------------------------------------------------
@@ -102,46 +89,39 @@ void Thread::TimerThread()
 void Thread::Process(void* instance)
 {
 	Thread* thread = (Thread*)(instance);
-	// todo assert not null
+	ASSERT_TRUE(thread != nullptr);
 
-	thread->m_timerExit = false;
-    //std::thread timerThread(&Thread::TimerThread, this);
-
-	std::shared_ptr<ThreadMsg> msg;
-
+	ThreadMsg* msg = nullptr;
 	while (1)
 	{
 		if (xQueueReceive(thread->m_queue, &msg, portMAX_DELAY) == pdPASS)
 		{
 			switch (msg->GetId())
 			{
-			case MSG_DISPATCH_DELEGATE:
-			{
-				// Get pointer to DelegateMsg data from queue msg data
-				auto delegateMsg = msg->GetData();
-				//ASSERT_TRUE(delegateMsg);
+				case MSG_DISPATCH_DELEGATE:
+				{
+					// Get pointer to DelegateMsg data from queue msg data
+					auto delegateMsg = msg->GetData();
+					ASSERT_TRUE(delegateMsg);
 
-				auto invoker = delegateMsg->GetInvoker();
-				//ASSERT_TRUE(invoker);
+					auto invoker = delegateMsg->GetInvoker();
+					ASSERT_TRUE(invoker);
 
-				// Invoke the delegate destination target function
-				bool success = invoker->Invoke(delegateMsg);
-				//ASSERT_TRUE(success);
-				break;
-			}
+					// Invoke the delegate destination target function
+					bool success = invoker->Invoke(delegateMsg);
+					ASSERT_TRUE(success);
 
-			case MSG_TIMER:
-				//Timer::ProcessTimers(); TODO
-				break;
+					delete msg;
+					break;
+				}
 
-			case MSG_EXIT_THREAD:
-			{
-				thread->m_timerExit = true;
-				return;
-			}
+				case MSG_EXIT_THREAD:
+				{
+					return;
+				}
 
-			default:
-				throw std::invalid_argument("Invalid message ID");
+				default:
+					throw std::invalid_argument("Invalid message ID");
 			}
 		}
 	}

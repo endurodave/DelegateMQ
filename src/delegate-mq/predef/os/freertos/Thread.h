@@ -46,13 +46,9 @@ private:
 	/// Entry point for the thread
 	static void Process(void*);
 
-    /// Entry point for timer thread
-    void TimerThread();
-
 	TaskHandle_t m_thread = nullptr;
 	QueueHandle_t m_queue = nullptr;
 
-    std::atomic<bool> m_timerExit;
 	const std::string THREAD_NAME;
 };
 

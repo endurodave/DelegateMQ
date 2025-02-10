@@ -20,14 +20,8 @@ file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DI
 # Collect DelegateMQ predef source files
 list(APPEND SOURCES ${PREDEF_SOURCES})
 
-# Collect all delegate header files 
-file(GLOB Delegate_HEADERS 
-    "${DELEGATE_ROOT_DIR}/src/delegate-mq/*.h"
-    "${DELEGATE_ROOT_DIR}/src/delegate-mq/delegate/*.h"
-)
-
-# Organize delegate headers into a "Delegate Files" folder in Visual Studio
-source_group("Delegate Files" FILES ${Delegate_HEADERS})
+# Organize delegate source files within IDE (Visual Studio)
+source_group("Delegate Files" FILES ${DELEGATEMQ_SOURCES})
 
 # Check if the TEST_COVERAGE argument is passed
 option(TEST_COVERAGE "Enable code coverage" OFF)
@@ -47,7 +41,7 @@ include_directories(
 )
 
 # Add an executable target
-add_executable(${DELEGATE_APP} ${SOURCES} ${Delegate_HEADERS})
+add_executable(${DELEGATE_APP} ${SOURCES} ${DELEGATEMQ_SOURCES})
 
 target_link_libraries(${DELEGATE_APP} PRIVATE 
     unit_tests_lib

@@ -5,12 +5,21 @@
 #include "DelegateMQ.h"
 #include <iostream>
 #include <sstream>
-#include <chrono>
-
-//#include "Thread.h" // todo
+#include <chrono> // todo remove
+#include "FreeRTOS.h"
+#include "timers.h"
 
 using namespace DelegateMQ;
 using namespace std;
+
+#define mainTIMER_FREQUENCY_MS			pdMS_TO_TICKS( 50UL )
+static TimerHandle_t xTimer = nullptr;
+
+static void TimerCallback(TimerHandle_t xTimerHandle)
+{
+    // Process delegate-based timers
+    Timer::ProcessTimers();
+}
 
 // The "transport" is simplely a shared std::stringstream
 class Transport
@@ -241,14 +250,24 @@ private:
 
 extern "C" void main_delegate(void)
 {
-    Thread freertosThread("FreeRTOS");  // TODO: delete
-    freertosThread.CreateThread();
-
+    const TickType_t xTimerPeriod = mainTIMER_FREQUENCY_MS;
     DelegateRemoteId id = 1;
 
     Sender sender(id);
     Receiver receiver(id);
 
-    // Wait here while sender and receiver communicate
-    this_thread::sleep_for(chrono::seconds(2));
+    /* Create the software timer, but don't start it yet. */
+    xTimer = xTimerCreate("Timer",				/* The text name assigned to the software timer - for debug only as it is not used by the kernel. */
+        xTimerPeriod,		/* The period of the software timer in ticks. */
+        pdTRUE,			    /* xAutoReload is set to pdTRUE, so this timer goes off periodically with a period of xTimerPeriod ticks. */
+        NULL,				/* The timer's ID is not used. */
+        TimerCallback);     /* The function executed when the timer expires. */
+
+    xTimerStart(xTimer, 0); /* The scheduler has not started so use a block time of 0. */
+
+    /* Start the tasks and timer running. */
+    vTaskStartScheduler();
+
+    // This line should never run 
+    while (1);
 }

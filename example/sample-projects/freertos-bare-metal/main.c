@@ -221,7 +221,7 @@ int main(void)
 #if ( mainCREATE_SIMPLE_BLINKY_DEMO_ONLY == 1 )
     {
         //main_blinky();
-        main_delegate();
+        main_delegate();  // Run the delegate sample code
     }
 #else
     {
