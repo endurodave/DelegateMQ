@@ -5,15 +5,20 @@ set (DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 add_compile_definitions(SERVER_APP)
 
+# Set build options
+set (USE_EXTERNAL_LIB "ON")
+set (USE_ALLOCATOR "OFF")
+set (USE_UTIL "ON")
+set (USE_THREAD "THREAD_STDLIB")
+set (USE_SERIALIZE "SERIALIZE_SERIALIZE")
+set (USE_TRANSPORT "TRANSPORT_WIN32_UDP")
 include("${CMAKE_SOURCE_DIR}/../../../Config.cmake")
-
-# Set delegate library build options
-add_compile_definitions(THREAD_STDLIB)
-add_compile_definitions(SERIALIZE_SERIALIZE)
-add_compile_definitions(TRANSPORT_WIN32_UDP)
 
 # Collect all .cpp and *.h source files in the src directory
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
+
+# Collect DelegateMQ predef source files
+list(APPEND SOURCES ${PREDEF_SOURCES})
 
 # Collect all header files in the delegate directory
 file(GLOB Delegate_HEADERS 
@@ -31,12 +36,4 @@ include_directories(
 
 # Add an executable target
 add_executable(${DELEGATE_APP} ${SOURCES} ${Delegate_HEADERS})
-
-# Link the library directory
-link_directories(${DELEGATE_LIB_DIR})
-
-# Link against the pre-built delegate_mq.lib
-target_link_libraries(${DELEGATE_APP} PRIVATE 
-    ${DELEGATE_LIB_DIR}/${DELEGATE_LIB_NAME}
-)
 

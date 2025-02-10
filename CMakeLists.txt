@@ -14,6 +14,5 @@ cmake_minimum_required(VERSION 3.10)
 # Project name and language (C or C++)
 project(DelegateProject VERSION 1.0 LANGUAGES CXX)
 
-# Add subdirectories for building delegate_mq and delegate_app
-add_subdirectory(src ${CMAKE_BINARY_DIR}/delegate_mq)
+# Add subdirectory for building delegate_app
 add_subdirectory(test ${CMAKE_BINARY_DIR}/delegate_app)

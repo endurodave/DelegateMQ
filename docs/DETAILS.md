@@ -3,22 +3,68 @@
 [![conan Ubuntu](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml)
 [![conan Windows](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml)
 
-# Asynchronous Delegates in C++
+# Delegates in C++
 
-The C++ delegates library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. 
+The DelegateMQ C++ library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. 
 
 # Table of Contents
 
-- [Asynchronous Delegates in C++](#asynchronous-delegates-in-c)
+- [Delegates in C++](#delegates-in-c)
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
-- [Delegates Background](#delegates-background)
-  - [`std::function`](#stdfunction)
-  - [`std::async` and `std::future`](#stdasync-and-stdfuture)
-  - [`DelegateMQ` vs. `std::async` Feature Comparisons](#delegatemq-vs-stdasync-feature-comparisons)
-- [DelegateMQ Build](#delegatemq-build)
+- [Build](#build)
   - [Build Options](#build-options)
   - [Example Projects](#example-projects)
+  - [Examples Setup](#examples-setup)
+- [Quick Start](#quick-start)
+  - [Basic Examples](#basic-examples)
+  - [Publish/Subscribe Example](#publishsubscribe-example)
+    - [Publisher](#publisher)
+    - [Subscriber](#subscriber)
+  - [Asynchronous API Example](#asynchronous-api-example)
+- [Background](#background)
+- [Usage](#usage)
+  - [Delegates](#delegates)
+  - [Delegate Containers](#delegate-containers)
+  - [Synchronous Delegates](#synchronous-delegates)
+  - [Asynchronous Delegates](#asynchronous-delegates)
+    - [Non-Blocking](#non-blocking)
+    - [Blocking](#blocking)
+  - [Remote Delegates](#remote-delegates)
+  - [Error Handling](#error-handling)
+  - [Usage Summary](#usage-summary)
+- [Design Details](#design-details)
+  - [Library Dependencies](#library-dependencies)
+  - [Fixed-Block Memory Allocator](#fixed-block-memory-allocator)
+  - [Function Argument Copy](#function-argument-copy)
+  - [Caution Using `std::bind`](#caution-using-stdbind)
+  - [Caution Using Raw Object Pointers](#caution-using-raw-object-pointers)
+  - [Alternatives Considered](#alternatives-considered)
+    - [`std::function`](#stdfunction)
+    - [`std::async` and `std::future`](#stdasync-and-stdfuture)
+    - [`DelegateMQ` vs. `std::async` Feature Comparisons](#delegatemq-vs-stdasync-feature-comparisons)
+- [Library](#library)
+  - [Heap Template Parameter Pack](#heap-template-parameter-pack)
+    - [Argument Heap Copy](#argument-heap-copy)
+    - [Bypassing Argument Heap Copy](#bypassing-argument-heap-copy)
+    - [Array Argument Heap Copy](#array-argument-heap-copy)
+- [Interfaces](#interfaces)
+  - [`IThread`](#ithread)
+    - [Send `DelegateMsg`](#send-delegatemsg)
+    - [Receive `DelegateMsg`](#receive-delegatemsg)
+  - [`ISerializer`](#iserializer)
+  - [`IDispatcher`](#idispatcher)
+- [Examples](#examples)
+  - [Callback Example](#callback-example)
+  - [Register Callback Example](#register-callback-example)
+  - [Asynchronous API Examples](#asynchronous-api-examples)
+    - [No Locks](#no-locks)
+    - [Reinvoke](#reinvoke)
+    - [Blocking Reinvoke](#blocking-reinvoke)
+  - [Timer Example](#timer-example)
+  - [`std::async` Thread Targeting Example](#stdasync-thread-targeting-example)
+  - [More Examples](#more-examples)
+  - [Sample Projects](#sample-projects)
     - [bare-metal](#bare-metal)
     - [win32-pipe-serializer](#win32-pipe-serializer)
     - [win32-upd-serializer](#win32-upd-serializer)
@@ -26,41 +72,7 @@ The C++ delegates library can invoke any callable function synchronously, asynch
     - [zeromq-msgpack-cpp](#zeromq-msgpack-cpp)
     - [zeromq-rapidjson](#zeromq-rapidjson)
     - [system-architecture](#system-architecture)
-- [DelegateMQ Dependencies](#delegatemq-dependencies)
-- [DelegateMQ Usage](#delegatemq-usage)
-  - [Delegates](#delegates)
-  - [Delegate Containers](#delegate-containers)
-  - [Synchronous Delegates](#synchronous-delegates)
-  - [Asynchronous Non-Blocking Delegates](#asynchronous-non-blocking-delegates)
-  - [Asynchronous Blocking Delegates](#asynchronous-blocking-delegates)
-  - [Remote Delegates](#remote-delegates)
-  - [Error Handling](#error-handling)
-  - [Fixed-Block Memory Allocator](#fixed-block-memory-allocator)
-  - [Function Argument Copy](#function-argument-copy)
-  - [Caution Using `std::bind`](#caution-using-stdbind)
-  - [Caution Using Raw Object Pointers](#caution-using-raw-object-pointers)
-  - [Usage Summary](#usage-summary)
-- [DelegateMQ Library](#delegatemq-library)
-  - [Heap Template Parameter Pack](#heap-template-parameter-pack)
-    - [Argument Heap Copy](#argument-heap-copy)
-    - [Bypassing Argument Heap Copy](#bypassing-argument-heap-copy)
-    - [Array Argument Heap Copy](#array-argument-heap-copy)
-- [DelegateMQ Interfaces](#delegatemq-interfaces)
-  - [`IThread`](#ithread)
-    - [Send `DelegateMsg`](#send-delegatemsg)
-    - [Receive `DelegateMsg`](#receive-delegatemsg)
-  - [`ISerializer`](#iserializer)
-  - [`IDispatcher`](#idispatcher)
-- [DelegateMQ Examples](#delegatemq-examples)
-  - [Callback Example](#callback-example)
-  - [Register Callback Example](#register-callback-example)
-  - [Asynchronous API No Locks Example](#asynchronous-api-no-locks-example)
-  - [Asynchronous API Reinvoke Example](#asynchronous-api-reinvoke-example)
-  - [Asynchronous API Blocking Reinvoke Example](#asynchronous-api-blocking-reinvoke-example)
-  - [Timer Example](#timer-example)
-  - [`std::async` Thread Targeting Example](#stdasync-thread-targeting-example)
-  - [More Examples](#more-examples)
-- [DelegateMQ Tests](#delegatemq-tests)
+- [Tests](#tests)
   - [Unit Tests](#unit-tests)
   - [Valgrind Memory Tests](#valgrind-memory-tests)
     - [Heap Memory Test Results](#heap-memory-test-results)
@@ -70,11 +82,7 @@ The C++ delegates library can invoke any callable function synchronously, asynch
 
 # Introduction
 
-In other languages, delegates are first-class features, allowing developers to use these well-understood constructs. However, in C++, a delegate is not natively available. This doesn't stop us, as programmers, from attempting to emulate the ease with which a delegate can store and invoke any callable function.
-
-Delegates typically support synchronous execution, meaning the bound function is executed within the caller's thread of control when invoked. In multi-threaded applications, it is ideal to specify both the target function and the thread on which it should execute, without imposing restrictions on the function signature. The library handles the complexities of transferring the delegate and all argument data to the destination thread. The goal is to introduce a C++ delegate library with a consistent API that supports both synchronous and asynchronous invocations for any callable function.
-
-The features of the modern C++ delegate library are:
+The DelegateMQ C++ library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. This concept unifies all function invocations to simplify multi-threaded and multi-processor development. Well-defined abstract interfaces and numerous concrete examples offer easy porting to any platform. It is a header-only template library that is thread-safe, unit-tested, and easy to use.
 
 1. **Header-Only Library** – implemented using a small number of header files
 2. **Any Compiler** – standard C++17 code for any compiler
@@ -97,89 +105,9 @@ The features of the modern C++ delegate library are:
 19. **No External Libraries** – delegate does not rely upon external libraries
 20. **Ease of Use** – function signature template arguments (e.g., `DelegateFree<void(TestStruct*)>`)
 
-The delegate implementation greatly simplifies multithreaded application development by executing the delegate function with all of its arguments on the specified thread of control. The framework manages all the low-level operations needed to safely invoke any function signature on the target thread. CMake build files allow experimentation on Windows, Linux, and other platforms.
+# Build
 
-# Delegates Background
-
-If you're not familiar with a delegate, the concept is quite simple. A delegate can be thought of as a super function pointer. In C++, there 's no pointer type capable of pointing to all the possible function variations: instance member, virtual, const, static, free (global), and lambda. A function pointer can't point to instance member functions, and pointers to member functions have all sorts of limitations. However, delegate classes can, in a type-safe way, point to any function provided the function signature matches. In short, a delegate points to any function with a matching signature to support anonymous function invocation.
-
-In practice, while a delegate is useful, a multicast version significantly expands its utility. The ability to bind more than one function pointer and sequentially invoke all registrars' makes for an effective publisher/subscriber mechanism. Publisher code exposes a delegate container and one or more anonymous subscribers register with the publisher for callback notifications.
-
-The problem with callbacks on a multithreaded system, whether it be a delegate-based or function pointer based, is that the callback occurs synchronously. Care must be taken that a callback from another thread of control is not invoked on code that isn't thread-safe. Multithreaded application development is hard. It 's hard for the original designer; it 's hard because engineers of various skill levels must maintain the code; it 's hard because bugs manifest themselves in difficult ways. Ideally, an architectural solution helps to minimize errors and eases application development.
-
-A remote delegate takes the concept further and allows invoking an endpoint function located in a separate process or processor. Extremely configurable using custom serializer and dispatcher interfaces to store callable argument data and send to a remote system.
-
-This C++ delegate implementation is full featured and allows calling any function, even instance member functions, with any arguments either synchronously or asynchronously. The delegate library makes binding to and invoking any function a snap.
-
-## `std::function`
-
-`std::function` compares the function signature, not the underlying callable instance. The example below demonstrates this limitation.
-
-```cpp
-#include <iostream>
-#include <vector>
-#include <functional>
-
-class Test {
-public:
-    void Func(int i) { }
-    void Func2(int i) { }
-};
-
-void main() {
-    Test t1, t2;
-
-    // Create std::function objects for different instances
-    std::function<void(int)> f1 = std::bind(&Test::Func, &t1, std::placeholders::_1);
-    std::function<void(int)> f2 = std::bind(&Test::Func2, &t2, std::placeholders::_1);
-
-    // Store them in a std::vector
-    std::vector<std::function<void(int)>> funcs;
-    funcs.push_back(f1);
-    funcs.push_back(f2);
-
-    // std::function can't determine difference!
-    if (funcs[0].target_type() == funcs[1].target_type())
-        std::cout << "Wrong!" << std::endl;
-
-    return 0;
-}
-```
-
-The delegate library prevents this error. See [Caution Using `std::bind`](#caution-using-stdbind) for more information.
-
-## `std::async` and `std::future`
-
-The delegate library's asynchronous features differ from `std::async` in that the caller-specified thread of control is used to invoke the target function bound to the delegate. The asynchronous variants copy the argument data into the event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.
-
-In short, the delegate library offers features that are not natively available in the C++ standard library to ease multi-threaded application development.
-
- ## `DelegateMQ` vs. `std::async` Feature Comparisons
-
-| Feature | `Delegate` | `DelegateAsync` | `DelegateAsyncWait` | `std::async` |
-| ---- | ----| ---- | ---- | ---- |
-| Callable | Yes | Yes | Yes | Yes |
-| Synchronous Call | Yes | No | No | No |
-| Asynchronous Call | No | Yes | Yes | Yes |
-| Asynchronous Blocking Call | No | No | Yes | Yes |
-| Asynchronous Wait Timeout | No | No | Yes | No |
-| Specify Target Thread | n/a | Yes | Yes | No |
-| Copyable | Yes | Yes | Yes | Yes |
-| Equality | Yes | Yes | Yes | Yes |
-| Compare with `nullptr` | Yes | Yes | Yes | No |
-| Callable Argument Copy | No | Yes<sup>1</sup> | No | No |
-| Dangling `Arg&`/`Arg*` Possible | No | No | No | Yes<sup>2</sup> |
-| Callable Ambiguity | No | No | No | Yes<sup>3</sup> |
-| Thread-Safe Container <sup>4</sup> | Yes | Yes | Yes | No |
-
-<sup>1</sup> `DelegateAsync<>` function call operator copies all function data arguments using a copy constructor for safe transport to the target thread.   
-<sup>2</sup> `std::async` could fail if dangling reference or pointer function argument is accessed. Delegates copy argument data when needed to prevent this failure mode.  
-<sup>3</sup> `std::function` cannot resolve difference between functions with matching signature `std::function` instances (e.g `void Class:One(int)` and `void Class::Two(int)` are equal).  
-<sup>4</sup> `MulticastDelegateSafe<>` a thread-safe container used to hold and invoke a collection of delegates.
-
-# DelegateMQ Build
-
-[CMake](https://cmake.org/) is used to create the project files in the `build` directory. Executes all unit tests and examples with not external dependencies.
+[CMake](https://cmake.org/) is used to create the project files in the `build` directory. The repository root project executes all unit tests and examples with no external code or library dependencies.
 
 `cmake -B build`
 
@@ -194,86 +122,229 @@ The build options are contained within the files below.
 
 ## Example Projects
 
-Remote delegate example projects are located within the `example/sample-projects` directory. **Build the root project first, then one or more of the subprojects below**.
+Remote delegate example projects are located within the `example/sample-projects` directory. **Build the root repository project first before any `example/sample-projects` project**.
 
-⚠️ Many remote delegate example projects have external library dependencies. Update `External.cmake` directory paths to locate libraries such as ZeroMQ, MessagePack and RapidJSON.
+## Examples Setup
 
-### bare-metal
+Some remote delegate example projects have external library dependencies. Follow the setup instructions below to build and run any sample project.
 
-Remote delegate example with no external libraries. 
+1. Install [vcpkg](https://github.com/microsoft/vcpkg).
+2. Install [Boost](https://www.boost.org/) using vcpkg. DelegateMQ does not use Boost, but some external libraries below require.<br>
+   `./vcpkg install boost`
+3. Install [ZeroMQ](https://zeromq.org/) using vcpkg.<br>
+   `./vcvpkg install zeromq`
+4. Clone [RapidJSON](https://github.com/Tencent/rapidjson).
+5. Clone [MessagePack C++](https://github.com/msgpack/msgpack-c/tree/cpp_master) `cpp_master` branch.
+6. Edit DelegateMQ `External.cmake` file and update external library directory locations.
+7. Build DelegateMQ root project so `lib` directory contains the prebuilt delegate library.
+8. Build any example subproject within the `example/sample-projects` directory.<br>
+   `cmake -B build`
 
-| Interface | Implementation |
-| --- | --- |
-| `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
-| `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
+See [Sample Projects](#sample-projects) for details regarding each sample project.
 
-### win32-pipe-serializer
+# Quick Start
 
-Remote delegate example with Windows pipe and `serialize`. 
+## Basic Examples
 
-| Interface | Implementation |
-| --- | --- |
-| `ISerializer` | `serialize` class.
-| `IDispatcher` | Windows data pipe for dispatcher transport.
+Simple function definitions.
 
-### win32-upd-serializer
+```cpp
+void FreeFunc(int value) {
+    cout << "FreeFuncInt " << value << endl;
+}
 
-Remote delegate example with Windows UDP socket and `serialize`. 
+class TestClass {
+public:
+    void MemberFunc(int value) {
+        cout << "MemberFunc " << value << endl;
+    }
+};
+```
 
-| Interface | Implementation |
-| --- | --- |
-| `ISerializer` | `serialize` class.
-| `IDispatcher` | Windows UDP socket for dispatcher transport.
+Create delegates and invoke. Function template overloaded `MakeDelegate()` function is typically used to create a delegate instance. 
 
-### zeromq-serializer
+```cpp
+// Create a delegate bound to a free function then invoke synchronously
+auto delegateFree = MakeDelegate(&FreeFunc);
+delegateFree(123);
 
-Remote delegate example using ZeroMQ and `serialize`.
+// Create a delegate bound to a member function then invoke synchronously
+TestClass testClass;
+auto delegateMember = MakeDelegate(&testClass, &TestClass::MemberFunc);
+delegateMember(123);
 
-| Interface | Implementation |
-| --- | --- |
-| `ISerializer` | `serialize` class.  
-| `IDispatcher` | ZeroMQ library for dispatcher transport.
+// Create a delegate bound to a member function then invoke asynchronously (non-blocking)
+auto delegateMemberAsync = MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread);
+delegateMemberAsync(123);
 
-### zeromq-msgpack-cpp
+// Create a delegate bound to a member function then invoke asynchronously blocking
+auto delegateMemberAsyncWait = MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread, WAIT_INFINITE);
+delegateMemberAsyncWait(123);
+```
 
-Remote delegate example using ZeroMQ and MessagePack libraries.
+Create a delegate container, insert a delegate instance and invoke asynchronously. 
 
-| Interface | Implementation |
-| --- | --- |
-| `ISerializer` | MessagePack library.  
-| `IDispatcher` | ZeroMQ library for dispatcher transport.
+```cpp
+// Create a thread-safe multicast delegate container that accepts Delegate<void(int)> delegates
+MulticastDelegateSafe<void(int)> delegateSafe;
 
-### zeromq-rapidjson
+// Add a delegate to the container that will invoke on workerThread1
+delegateSafe += MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread1);
 
-Remote delegate example using ZeroMQ and RapidJSON libraries.
+// Asynchronously invoke the delegate target member function TestClass::MemberFunc()
+delegateSafe(123);
 
-| Interface | Implementation |
-| --- | --- |
-| `ISerializer` | RapidJSON library.  
-| `IDispatcher` | ZeroMQ library for dispatcher transport.
+// Remove the delegate from the container
+delegateSafe -= MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread1);
+```
 
-### system-architecture
+Invoke a lambda using a delegate. 
 
-Remote delegate example showing a complex system architecture using ZeroMQ and MessagePack libraries. Subsystems communication and collaborate between threads and processes. Execute the client and server projects to run the example.
+```cpp
+DelegateFunction<int(int)> delFunc([](int x) -> int { return x + 5; });
+int retVal = delFunc(8);
+```
+Asynchronously invoke `LambdaFunc1` on `workerThread1` and block waiting for the return value. 
 
-| Interface | Implementation |
-| --- | --- |
-| `ISerializer` | MessagePack library. | 
-| `IDispatcher` | ZeroMQ library for dispatcher transport. |
+```cpp
+std::function LambdaFunc1 = [](int i) -> int {
+    cout << "Called LambdaFunc1 " << i << std::endl;
+    return ++i;
+};
 
-# DelegateMQ Dependencies
+// Asynchronously invoke lambda on workerThread1 and wait for the return value
+auto lambdaDelegate1 = MakeDelegate(LambdaFunc1, workerThread1, WAIT_INFINITE);
+int lambdaRetVal2 = lambdaDelegate1(123);
+```
 
-The `DelegateMQ` library external dependencies are based upon on the intended use. Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Complete example code offer ready-made solutions or create your own.
+Asynchronously invoke `AddFunc` on `workerThread1` using `std::async` and do other work while waiting for the return value. 
 
-| Class | Interface | Usage | Notes
-| --- | --- | --- | --- |
-| `Delegate` | n/a | Synchronous Delegates | No interfaces; use as-is without external dependencies.
-| `DelegateAsync`<br>`DelegateAsyncWait` | `IThread` | Asynchronous Delegates | `IThread` used to send a delegate and argument data through an OS message queue.
-| `DelegateRemote` | `ISerializer`<br>`IDispatcher` | Remote Delegates | `ISerializer` used to serialize callable argument data.<br>`IDispatcher` used to send serialized argument data to a remote endpoint.
+```cpp
+// Long running function 
+std::function AddFunc = [](int a, int b) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    return a + b;
+};
 
-# DelegateMQ Usage
+// Create async delegate with lambda target function
+auto addDelegate = MakeDelegate(AddFunc, workerThread1, WAIT_INFINITE);
 
-The delegate library is comprised of delegates and delegate containers. 
+// Using std::async, invokes AddFunc on workerThread1
+std::future<int> result = std::async(std::launch::async, addDelegate, 5, 3);
+
+cout << "Do work while waiting for AddFunc to complete." << endl;
+
+// Wait for AddFunc return value
+int sum = result.get();
+cout << "AddFunc return value: " << sum << " ";
+```
+
+## Publish/Subscribe Example
+
+A simple publish/subscribe example using asynchronous delegates.
+
+### Publisher
+
+Typically a delegate is inserted into a delegate container. <code>AlarmCd</code> is a delegate container. 
+
+<img src="Figure1.jpg" alt="Figure 1: AlarmCb Delegate Container" style="width:50%;">  
+
+**Figure 1: AlarmCb Delegate Container**
+
+1. <code>MulticastDelegateSafe</code> - the delegate container type.
+2. <code>void(int, const string&)</code> - the function signature accepted by the delegate container. Any function matching can be inserted, such as a class member, static or lambda function.
+3. <code>AlarmCb</code> - the delegate container name. 
+
+Invoke delegate container to notify subscribers.
+
+```cpp
+MulticastDelegateSafe<void(int, const string&)> AlarmCb;
+
+void NotifyAlarmSubscribers(int alarmId, const string& note)
+{
+    // Invoke delegate to generate callback(s) to subscribers
+    AlarmCb(alarmId, note);
+}
+```
+### Subscriber
+
+Typically a subscriber registers with a delegate container instance to receive callbacks, either synchronously or asynchronously.
+
+<img src="Figure2.jpg" alt="Figure 2: Insert into AlarmCb Delegate Container" style="width:65%;">
+
+**Figure 2: Insert into AlarmCb Delegate Container**
+
+1. <code>AlarmCb</code> - the publisher delegate container instance.
+2. <code>+=</code> - add a function target to the container. 
+3. <code>MakeDelegate</code> - creates a delegate instance.
+4. <code>&alarmSub</code> - the subscriber object pointer.
+5. <code>&AlarmSub::MemberAlarmCb</code> - the subscriber callback member function.
+6. <code>workerThread1</code> - the thread the callback will be invoked on. Adding a thread argument changes the callback type from synchronous to asynchronous.
+
+Create a function conforming to the delegate signature. Insert a callable functions into the delegate container.
+
+```cpp
+class AlarmSub
+{
+    void AlarmSub()
+    {
+        // Register to receive callbacks on workerThread1
+        AlarmCb += MakeDelegate(this, &AlarmSub::HandleAlarmCb, workerThread1);
+    }
+
+    void ~AlarmSub()
+    {
+        // Unregister from callbacks
+        AlarmCb -= MakeDelegate(this, &AlarmSub::HandleAlarmCb, workerThread1);
+    }
+
+    void HandleAlarmCb(int alarmId, const string& note)
+    {
+        // Handle callback here. Called on workerThread1 context.
+    }
+}
+```
+## Asynchronous API Example
+
+`SetSystemModeAsyncAPI()` is an asynchronous function call that re-invokes on `workerThread2` if necessary. 
+
+```cpp
+void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
+{
+    // Is the caller executing on workerThread2?
+    if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
+    {
+        // Create an asynchronous delegate and re-invoke the function call on workerThread2
+        MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncAPI, workerThread2).AsyncInvoke(systemMode);
+        return;
+    }
+
+    // Create the callback data
+    SystemModeChanged callbackData;
+    callbackData.PreviousSystemMode = m_systemMode;
+    callbackData.CurrentSystemMode = systemMode;
+
+    // Update the system mode
+    m_systemMode = systemMode;
+
+    // Callback all registered subscribers
+    SystemModeChangedDelegate(callbackData);
+}
+```
+
+# Background
+
+If you're not familiar with a delegate, the concept is quite simple. A delegate can be thought of as a super function pointer. In C++, there 's no pointer type capable of pointing to all the possible function variations: instance member, virtual, const, static, free (global), and lambda. A function pointer can't point to instance member functions, and pointers to member functions have all sorts of limitations. However, delegate classes can, in a type-safe way, point to any function provided the function signature matches. In short, a delegate points to any function with a matching signature to support anonymous function invocation.
+
+In practice, while a delegate is useful, a multicast version significantly expands its utility. The ability to bind more than one function pointer and sequentially invoke all registrars' makes for an effective publisher/subscriber mechanism. Publisher code exposes a delegate container and one or more anonymous subscribers register with the publisher for callback notifications.
+
+The problem with callbacks on a multithreaded system, whether it be a delegate-based or function pointer based, is that the callback occurs synchronously. Care must be taken that a callback from another thread of control is not invoked on code that isn't thread-safe. Multithreaded application development is hard. It 's hard for the original designer; it 's hard because engineers of various skill levels must maintain the code; it 's hard because bugs manifest themselves in difficult ways. Ideally, an architectural solution helps to minimize errors and eases application development.
+
+A remote delegate takes the concept further and allows invoking an endpoint function located in a separate process or processor. Extremely configurable using custom serializer and dispatcher interfaces to store callable argument data and send to a remote system.
+
+# Usage
+
+The DelegateMQ library is comprised of delegates and delegate containers. 
 
 ## Delegates 
 
@@ -416,8 +487,9 @@ Removal is with `Clear()` or assign `nullptr`.
 delegateF.Clear();
 delegateF = nullptr;
 ```
+## Asynchronous Delegates
 
-## Asynchronous Non-Blocking Delegates
+### Non-Blocking
 
 Create an asynchronous delegate by adding an extra thread argument to `MakeDelegate()`.
 
@@ -451,7 +523,7 @@ delegateH += MakeDelegate(&testClass, &TestClass::MemberFuncStdString, workerThr
 delegateH("Hello world", 2020);
 ```
 
-## Asynchronous Blocking Delegates
+### Blocking
 
 Create an asynchronous blocking delegate by adding an thread and timeout arguments to `MakeDelegate()`.
 
@@ -586,91 +658,9 @@ delegateRemote.Invoke(recv_stream);
 ```
 ## Error Handling
 
-The delegate library uses dynamic memory to send asynchronous delegate messages to the target thread. By default, out-of-memory failures throw a `std::bad_alloc` exception. Optionally, if `USE_ASSERTS` is defined, exceptions are not thrown, and an assert is triggered instead. See `DelegateOpt.h` for more details.
+The DelegateMQ library uses dynamic memory to send asynchronous delegate messages to the target thread. By default, out-of-memory failures throw a `std::bad_alloc` exception. Optionally, if `USE_ASSERTS` is defined, exceptions are not thrown, and an assert is triggered instead. See `DelegateOpt.h` for more details.
 
 Remote delegate error handling is captured by registering a callback with  `SetErrorHandler()`. 
-
-## Fixed-Block Memory Allocator
-
-The delegate library optionally uses a fixed-block memory allocator when `USE_ALLOCATOR` is defined. See `DelegateOpt.h` for more details. The allocator design is available in the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
-
-`std::function` used within class `DelegateFunction` may use the heap under certain conditions. Implement a custom `xfunction` similar to the `xlist` concept within `xlist.h` using the `xallocator` fixed-block allocator if deemed necessary.
-
-## Function Argument Copy
-
-The behavior of the delegate library when invoking asynchronous non-blocking delegates (e.g. `DelegateAsyncFree<>`) is to copy arguments into heap memory for safe transport to the destination thread. All arguments (if any) are duplicated. If your data is not plain old data (POD) and cannot be bitwise copied, ensure you implement an appropriate copy constructor to handle the copying.
-
-Since argument data is duplicated, an outgoing pointer argument passed to a function invoked using an asynchronous non-blocking delegate is not updated. A copy of the pointed to data is sent to the destination target thread, and the source thread continues without waiting for the target to be invoked.
-
-Synchronous and asynchronous blocking delegates, on the other hand, do not copy the target function's arguments when invoked. Outgoing pointer arguments passed through an asynchronous blocking delegate (e.g., `DelegateAsyncFreeWait<>`) behave exactly as if the native target function were called directly.
-
-## Caution Using `std::bind`
-
-`std::function` compares the function signature, not the underlying callable instance. The example below demonstrates this limitation. 
-
-```cpp
-// Example shows std::function target limitations. Not a normal usage case.
-// Use MakeDelegate() to create delegates works correctly with delegate 
-// containers.
-Test t1, t2;
-std::function<void(int)> f1 = std::bind(&Test::Func, &t1, std::placeholders::_1);
-std::function<void(int)> f2 = std::bind(&Test::Func2, &t2, std::placeholders::_1);
-MulticastDelegateSafe<void(int)> safe;
-safe += MakeDelegate(f1);
-safe += MakeDelegate(f2);
-safe -= MakeDelegate(f2);   // Should remove f2, not f1!
-```
-
-To avoid this issue, use `MakeDelegate()`. In this case, `MakeDelegate()` binds to `Test::Func` using `DelegateMember<>`, not `DelegateFunction<>`, which prevents the error above.
-
-```cpp
-// Corrected example
-Test t1, t2;
-MulticastDelegateSafe<void(int)> safe;
-safe += MakeDelegate(&t1, &Test::Func);
-safe += MakeDelegate(&t2, &Test::Func2);
-safe -= MakeDelegate(&t2, &Test::Func2);   // Works correctly!
-```
-
-## Caution Using Raw Object Pointers
-
-Certain asynchronous delegate usage patterns can cause a callback invocation to occur on a deleted object. The problem is this: an object function is bound to a delegate and invoked asynchronously, but before the invocation occurs on the target thread, the target object is deleted. In other words, it is possible for an object bound to a delegate to be deleted before the target thread message queue has had a chance to invoke the callback. The following code exposes the issue:
-
-```cpp
-// Example of a bug where the testClassHeap is deleted before the asynchronous delegate
-// is invoked on the workerThread1. In other words, by the time workerThread1 calls
-// the bound delegate function the testClassHeap instance is deleted and no longer valid.
-TestClass* testClassHeap = new TestClass();
-auto delegateMemberAsync = 
-       MakeDelegate(testClassHeap, &TestClass::MemberFuncStdString, workerThread1);
-delegateMemberAsync("Function async invoked on deleted object. Bug!", 2020);
-delegateMemberAsync.Clear();
-delete testClassHeap;
-```
-
-The example above is contrived, but it does clearly show that nothing prevents an object being deleted while waiting for the asynchronous invocation to occur. In many embedded system architectures, the registrations might occur on singleton objects or objects that have a lifetime that spans the entire execution. In this way, the application's usage pattern prevents callbacks into deleted objects. However, if objects pop into existence, temporarily subscribe to a delegate for callbacks, then get deleted later the possibility of a latent delegate stuck in a message queue could invoke a function on a deleted object.
-
-A smart pointer solves this complex object lifetime issue. A `DelegateMemberAsync` delegate binds using a `std::shared_ptr` instead of a raw object pointer. Now that the delegate has a shared pointer, the danger of the object being prematurely deleted is eliminated. The shared pointer will only delete the object pointed to once all references are no longer in use. In the code snippet below, all references to `testClassSp` are removed by the client code yet the delegate's copy placed into the queue prevents `TestClass` deletion until after the asynchronous delegate callback occurs.
-
-```cpp
-// Example of the smart pointer function version of the delegate. The testClassSp instance
-// is only deleted after workerThread1 invokes the callback function thus solving the bug.
-std::shared_ptr<TestClass> testClassSp(new TestClass());
-auto delegateMemberSpAsync = MakeDelegate
-     (testClassSp, &TestClass::MemberFuncStdString, workerThread1);
-delegateMemberSpAsync("Function async invoked using smart pointer. Bug solved!", 2020);
-delegateMemberSpAsync.Clear();
-testClassSp.reset();
-```
-
-This technique can be used to call an object function, and then the object automatically deletes after the callback occurs. Using the above example, create a shared pointer instance, bind a delegate, and invoke the delegate. Now `testClassSp` can go out of scope and `TestClass::MemberFuncStdString` will still be safely called on `workerThread1`. The `TestClass` instance will delete by way of `std::shared_ptr<TestClass>` once the smart pointer reference count goes to 0 after the callback completes without any extra programmer involvement.
-
-```cpp
-std::shared_ptr<TestClass> testClassSp(new TestClass());
-auto delegateMemberSpAsync =
-    MakeDelegate(testClassSp, &TestClass::MemberFuncStdString, workerThread1);
-delegateMemberSpAsync("testClassSp deletes after delegate invokes", 2020);
-```
 
 ## Usage Summary
 
@@ -746,7 +736,169 @@ if (myDelegate)
 }
 ```
 
-# DelegateMQ Library
+# Design Details
+
+## Library Dependencies
+
+The `DelegateMQ` library external dependencies are based upon on the intended use. Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Complete example code offer ready-made solutions or create your own.
+
+| Class | Interface | Usage | Notes
+| --- | --- | --- | --- |
+| `Delegate` | n/a | Synchronous Delegates | No interfaces; use as-is without external dependencies.
+| `DelegateAsync`<br>`DelegateAsyncWait` | `IThread` | Asynchronous Delegates | `IThread` used to send a delegate and argument data through an OS message queue.
+| `DelegateRemote` | `ISerializer`<br>`IDispatcher` | Remote Delegates | `ISerializer` used to serialize callable argument data.<br>`IDispatcher` used to send serialized argument data to a remote endpoint.
+
+## Fixed-Block Memory Allocator
+
+The DelegateMQ library optionally uses a fixed-block memory allocator when `USE_ALLOCATOR` is defined. See `DelegateOpt.h` for more details. The allocator design is available in the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
+
+`std::function` used within class `DelegateFunction` may use the heap under certain conditions. Implement a custom `xfunction` similar to the `xlist` concept within `xlist.h` using the `xallocator` fixed-block allocator if deemed necessary.
+
+## Function Argument Copy
+
+The behavior of the DelegateMQ library when invoking asynchronous non-blocking delegates (e.g. `DelegateAsyncFree<>`) is to copy arguments into heap memory for safe transport to the destination thread. All arguments (if any) are duplicated. If your data is not plain old data (POD) and cannot be bitwise copied, ensure you implement an appropriate copy constructor to handle the copying.
+
+Since argument data is duplicated, an outgoing pointer argument passed to a function invoked using an asynchronous non-blocking delegate is not updated. A copy of the pointed to data is sent to the destination target thread, and the source thread continues without waiting for the target to be invoked.
+
+Synchronous and asynchronous blocking delegates, on the other hand, do not copy the target function's arguments when invoked. Outgoing pointer arguments passed through an asynchronous blocking delegate (e.g., `DelegateAsyncFreeWait<>`) behave exactly as if the native target function were called directly.
+
+## Caution Using `std::bind`
+
+`std::function` compares the function signature, not the underlying callable instance. The example below demonstrates this limitation. 
+
+```cpp
+// Example shows std::function target limitations. Not a normal usage case.
+// Use MakeDelegate() to create delegates works correctly with delegate 
+// containers.
+Test t1, t2;
+std::function<void(int)> f1 = std::bind(&Test::Func, &t1, std::placeholders::_1);
+std::function<void(int)> f2 = std::bind(&Test::Func2, &t2, std::placeholders::_1);
+MulticastDelegateSafe<void(int)> safe;
+safe += MakeDelegate(f1);
+safe += MakeDelegate(f2);
+safe -= MakeDelegate(f2);   // Should remove f2, not f1!
+```
+
+To avoid this issue, use `MakeDelegate()`. In this case, `MakeDelegate()` binds to `Test::Func` using `DelegateMember<>`, not `DelegateFunction<>`, which prevents the error above.
+
+```cpp
+// Corrected example
+Test t1, t2;
+MulticastDelegateSafe<void(int)> safe;
+safe += MakeDelegate(&t1, &Test::Func);
+safe += MakeDelegate(&t2, &Test::Func2);
+safe -= MakeDelegate(&t2, &Test::Func2);   // Works correctly!
+```
+
+## Caution Using Raw Object Pointers
+
+Certain asynchronous delegate usage patterns can cause a callback invocation to occur on a deleted object. The problem is this: an object function is bound to a delegate and invoked asynchronously, but before the invocation occurs on the target thread, the target object is deleted. In other words, it is possible for an object bound to a delegate to be deleted before the target thread message queue has had a chance to invoke the callback. The following code exposes the issue:
+
+```cpp
+// Example of a bug where the testClassHeap is deleted before the asynchronous delegate
+// is invoked on the workerThread1. In other words, by the time workerThread1 calls
+// the bound delegate function the testClassHeap instance is deleted and no longer valid.
+TestClass* testClassHeap = new TestClass();
+auto delegateMemberAsync = 
+       MakeDelegate(testClassHeap, &TestClass::MemberFuncStdString, workerThread1);
+delegateMemberAsync("Function async invoked on deleted object. Bug!", 2020);
+delegateMemberAsync.Clear();
+delete testClassHeap;
+```
+
+The example above is contrived, but it does clearly show that nothing prevents an object being deleted while waiting for the asynchronous invocation to occur. In many embedded system architectures, the registrations might occur on singleton objects or objects that have a lifetime that spans the entire execution. In this way, the application's usage pattern prevents callbacks into deleted objects. However, if objects pop into existence, temporarily subscribe to a delegate for callbacks, then get deleted later the possibility of a latent delegate stuck in a message queue could invoke a function on a deleted object.
+
+A smart pointer solves this complex object lifetime issue. A `DelegateMemberAsync` delegate binds using a `std::shared_ptr` instead of a raw object pointer. Now that the delegate has a shared pointer, the danger of the object being prematurely deleted is eliminated. The shared pointer will only delete the object pointed to once all references are no longer in use. In the code snippet below, all references to `testClassSp` are removed by the client code yet the delegate's copy placed into the queue prevents `TestClass` deletion until after the asynchronous delegate callback occurs.
+
+```cpp
+// Example of the smart pointer function version of the delegate. The testClassSp instance
+// is only deleted after workerThread1 invokes the callback function thus solving the bug.
+std::shared_ptr<TestClass> testClassSp(new TestClass());
+auto delegateMemberSpAsync = MakeDelegate
+     (testClassSp, &TestClass::MemberFuncStdString, workerThread1);
+delegateMemberSpAsync("Function async invoked using smart pointer. Bug solved!", 2020);
+delegateMemberSpAsync.Clear();
+testClassSp.reset();
+```
+
+This technique can be used to call an object function, and then the object automatically deletes after the callback occurs. Using the above example, create a shared pointer instance, bind a delegate, and invoke the delegate. Now `testClassSp` can go out of scope and `TestClass::MemberFuncStdString` will still be safely called on `workerThread1`. The `TestClass` instance will delete by way of `std::shared_ptr<TestClass>` once the smart pointer reference count goes to 0 after the callback completes without any extra programmer involvement.
+
+```cpp
+std::shared_ptr<TestClass> testClassSp(new TestClass());
+auto delegateMemberSpAsync =
+    MakeDelegate(testClassSp, &TestClass::MemberFuncStdString, workerThread1);
+delegateMemberSpAsync("testClassSp deletes after delegate invokes", 2020);
+```
+
+## Alternatives Considered
+
+### `std::function`
+
+`std::function` compares the function signature, not the underlying callable instance. The example below demonstrates this limitation.
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <functional>
+
+class Test {
+public:
+    void Func(int i) { }
+    void Func2(int i) { }
+};
+
+void main() {
+    Test t1, t2;
+
+    // Create std::function objects for different instances
+    std::function<void(int)> f1 = std::bind(&Test::Func, &t1, std::placeholders::_1);
+    std::function<void(int)> f2 = std::bind(&Test::Func2, &t2, std::placeholders::_1);
+
+    // Store them in a std::vector
+    std::vector<std::function<void(int)>> funcs;
+    funcs.push_back(f1);
+    funcs.push_back(f2);
+
+    // std::function can't determine difference!
+    if (funcs[0].target_type() == funcs[1].target_type())
+        std::cout << "Wrong!" << std::endl;
+
+    return 0;
+}
+```
+
+The delegate library prevents this error. See [Caution Using `std::bind`](#caution-using-stdbind) for more information.
+
+### `std::async` and `std::future`
+
+The DelegateMQ library's asynchronous features differ from `std::async` in that the caller-specified thread of control is used to invoke the target function bound to the delegate. The asynchronous variants copy the argument data into the event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.
+
+In short, the DelegateMQ library offers features that are not natively available in the C++ standard library to ease multi-threaded application development.
+
+ ### `DelegateMQ` vs. `std::async` Feature Comparisons
+
+| Feature | `Delegate` | `DelegateAsync` | `DelegateAsyncWait` | `std::async` |
+| ---- | ----| ---- | ---- | ---- |
+| Callable | Yes | Yes | Yes | Yes |
+| Synchronous Call | Yes | No | No | No |
+| Asynchronous Call | No | Yes | Yes | Yes |
+| Asynchronous Blocking Call | No | No | Yes | Yes |
+| Asynchronous Wait Timeout | No | No | Yes | No |
+| Specify Target Thread | n/a | Yes | Yes | No |
+| Copyable | Yes | Yes | Yes | Yes |
+| Equality | Yes | Yes | Yes | Yes |
+| Compare with `nullptr` | Yes | Yes | Yes | No |
+| Callable Argument Copy | No | Yes<sup>1</sup> | No | No |
+| Dangling `Arg&`/`Arg*` Possible | No | No | No | Yes<sup>2</sup> |
+| Callable Ambiguity | No | No | No | Yes<sup>3</sup> |
+| Thread-Safe Container <sup>4</sup> | Yes | Yes | Yes | No |
+
+<sup>1</sup> `DelegateAsync<>` function call operator copies all function data arguments using a copy constructor for safe transport to the target thread.   
+<sup>2</sup> `std::async` could fail if dangling reference or pointer function argument is accessed. Delegates copy argument data when needed to prevent this failure mode.  
+<sup>3</sup> `std::function` cannot resolve difference between functions with matching signature `std::function` instances (e.g `void Class:One(int)` and `void Class::Two(int)` are equal).  
+<sup>4</sup> `MulticastDelegateSafe<>` a thread-safe container used to hold and invoke a collection of delegates.
+
+# Library
 
 A single include `DelegateMQ.h` provides access to all delegate library features. The library is wrapped within a `DelegateMQ` namespace. The table below shows the delegate class hierarchy.
 
@@ -898,7 +1050,7 @@ delegateArrayFunc(cArray);
 
 There is no way to asynchronously pass a C-style array by value. Avoid C-style arrays if possible when using asynchronous delegates to avoid confusion and mistakes.
 
-# DelegateMQ Interfaces
+# Interfaces
 
 ## `IThread`
 
@@ -1035,7 +1187,7 @@ void Thread::Process()
 
 ## `ISerializer`
 
-The `ISerializer` interface is used to serializes argument data for sending to a remote destination endpoint. Each target function built-in or user defined argument is serialized and deserialized based on the system requirements. Custom serialization such as [MessagePack](https://msgpack.org/index.html). The `examples` folder contains sample projects.
+The `ISerializer` interface is used to serializes argument data for sending to a remote destination endpoint. Each target function built-in or user defined argument is serialized and deserialized based on the system requirements. Custom serialization such as [MessagePack](https://msgpack.org/index.html). The `examples/sample-projects` folder contains sample projects.
 
 ```cpp
 template <class R>
@@ -1070,7 +1222,7 @@ public:
 
 ## `IDispatcher`
 
-The `IDispatcher` interface is used to dispatch the target function argument data to a remote destination endpoint. Custom dispatchers such as sockets, named pipes, or `ZeroMQ` is supported. The `examples` folder contains sample projects.
+The `IDispatcher` interface is used to dispatch the target function argument data to a remote destination endpoint. Custom dispatchers such as sockets, named pipes, or `ZeroMQ` is supported. The `examples/sample-projects` folder contains sample projects.
 
 ```cpp
 /// @brief Delegate interface class to dispatch serialized function argument data
@@ -1093,7 +1245,7 @@ public:
 };
 ```
 
-# DelegateMQ Examples
+# Examples
 
 ## Callback Example
 
@@ -1181,7 +1333,9 @@ SysData::GetInstance().SetSystemMode(SystemMode::STARTING);
 SysData::GetInstance().SetSystemMode(SystemMode::NORMAL);
 ```
 
-## Asynchronous API No Locks Example
+## Asynchronous API Examples
+
+### No Locks
 
 `SysDataNoLock` is an alternate implementation that uses a private `MulticastDelegateSafe<>` for setting the system mode asynchronously and without locks.
 
@@ -1268,7 +1422,7 @@ void SysDataNoLock::SetSystemModePrivate(SystemMode::Type systemMode)
 }
 ```
 
-## Asynchronous API Reinvoke Example
+### Reinvoke
 
 While creating a separate private function for an asynchronous API works, delegates allow you to simply reinvoke the same function on a different thread. A quick check determines if the caller is executing on the desired thread. If not, a temporary asynchronous delegate is created on the stack and invoked. The delegate and all original function arguments are duplicated on the heap, and the function is then reinvoked on `workerThread2`.
 
@@ -1298,7 +1452,7 @@ void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
 }
 ```
 
-## Asynchronous API Blocking Reinvoke Example
+### Blocking Reinvoke
 
 A blocking asynchronous API can be encapsulated within a class member function. The following function sets the current mode on `workerThread2` and returns the previous mode. If the caller is not executing on `workerThread2`, a blocking delegate is created and invoked on that thread. To the caller, the function appears synchronous, but the delegate ensures the function is executed on the correct thread before returning.
 
@@ -1401,9 +1555,76 @@ void AsyncFutureExample()
 ```
 ## More Examples
 
-See the `examples` directory for additional examples.
+See the `examples/sample-code` directory for additional examples.
 
-# DelegateMQ Tests
+## Sample Projects
+
+See the `examples/sample-projects` directory for example project. Most projects run on Windows or Linux. Others are Windows-only.
+
+### bare-metal
+
+Remote delegate example with no external libraries. 
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
+| `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
+
+### win32-pipe-serializer
+
+Remote delegate example with Windows pipe and `serialize`. 
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | `serialize` class.
+| `IDispatcher` | Windows data pipe for dispatcher transport.
+
+### win32-upd-serializer
+
+Remote delegate example with Windows UDP socket and `serialize`. 
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | `serialize` class.
+| `IDispatcher` | Windows UDP socket for dispatcher transport.
+
+### zeromq-serializer
+
+Remote delegate example using ZeroMQ and `serialize`.
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | `serialize` class.  
+| `IDispatcher` | ZeroMQ library for dispatcher transport.
+
+### zeromq-msgpack-cpp
+
+Remote delegate example using ZeroMQ and MessagePack libraries.
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | MessagePack library.  
+| `IDispatcher` | ZeroMQ library for dispatcher transport.
+
+### zeromq-rapidjson
+
+Remote delegate example using ZeroMQ and RapidJSON libraries.
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | RapidJSON library.  
+| `IDispatcher` | ZeroMQ library for dispatcher transport.
+
+### system-architecture
+
+Remote delegate example showing a complex system architecture using ZeroMQ and MessagePack libraries. Subsystems communication and collaborate between threads and processes. Execute the client and server projects to run the example.
+
+| Interface | Implementation |
+| --- | --- |
+| `ISerializer` | MessagePack library. | 
+| `IDispatcher` | ZeroMQ library for dispatcher transport. |
+
+# Tests
 
 The current master branch build passes all unit tests and Valgrind memory tests.
 
@@ -1417,7 +1638,7 @@ Build and execute runs all the unit tests contained within the `tests\UnitTests`
 
 ### Heap Memory Test Results
 
-The delegate library Valgrind test results using the heap.
+The DelegateMQ library Valgrind test results using the heap.
 
 ```
 ==1779805== HEAP SUMMARY:
@@ -1432,7 +1653,7 @@ The delegate library Valgrind test results using the heap.
 
 ### Fixed-Block Memory Allocator Test Results
 
-Test results with the `ENABLE_ALLOCATOR` fixed-block allocator build option enabled. Notice the fixed-block runtime uses 22MB verses 50MB for the heap build. Heap storage *recycling* mode was used by the fixed-block allocator. See [stl_allocator](https://github.com/endurodave/stl_allocator) and [xallocator](https://github.com/endurodave/xallocator) for information about the memory allocators.
+Test results with the fixed-block allocator. Notice the fixed-block runtime uses 22MB verses 50MB for the heap build. Heap storage *recycling* mode was used by the fixed-block allocator. See [stl_allocator](https://github.com/endurodave/stl_allocator) and [xallocator](https://github.com/endurodave/xallocator) for information about the memory allocators.
 
 ```
 ==1780037== HEAP SUMMARY:
@@ -1457,7 +1678,7 @@ The table below summarizes the various asynchronous function invocation implemen
 
 # References
 
-Repositories utilizing the delegate library within different multithreaded applications.
+Repositories utilizing the DelegateMQ library within different multithreaded applications.
 
 * <a href="https://github.com/endurodave/AsyncStateMachine">Asynchronous State Machine Design in C++</a> - an asynchronous C++ state machine implemented using an asynchronous delegate library.
 * <a href="https://github.com/endurodave/IntegrationTestFramework">Integration Test Framework using Google Test and Delegates</a> - a multi-threaded C++ software integration test framework using Google Test and Delegate libraries.

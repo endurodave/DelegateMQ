@@ -4,15 +4,20 @@ cmake_minimum_required(VERSION 3.10)
 set (DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
-include("${CMAKE_SOURCE_DIR}/../../../Config.cmake")
-
 # Set build options
-add_compile_definitions(THREAD_STDLIB)
-add_compile_definitions(SERIALIZE_NONE)
-add_compile_definitions(TRANSPORT_NONE)
+set (USE_EXTERNAL_LIB "OFF")
+set (USE_ALLOCATOR "OFF")
+set (USE_UTIL "ON")
+set (USE_THREAD "THREAD_STDLIB")
+set (USE_SERIALIZE "SERIALIZE_NONE")
+set (USE_TRANSPORT "TRANSPORT_NONE")
+include("${CMAKE_SOURCE_DIR}/../../../Config.cmake")
 
 # Collect all .cpp and *.h source files in the src directory
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
+
+# Collect DelegateMQ predef source files
+list(APPEND SOURCES ${PREDEF_SOURCES})
 
 # Collect all header files in the delegate directory
 file(GLOB Delegate_HEADERS 
@@ -31,11 +36,5 @@ include_directories(
 # Add an executable target
 add_executable(${DELEGATE_APP} ${SOURCES} ${Delegate_HEADERS})
 
-# Link the library directory
-link_directories(${DELEGATE_LIB_DIR})
 
-# Link against the pre-built delegate_mq.lib
-target_link_libraries(${DELEGATE_APP} PRIVATE 
-    ${DELEGATE_LIB_DIR}/${DELEGATE_LIB_NAME}
-)
 

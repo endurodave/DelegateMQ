@@ -64,6 +64,9 @@
 #if defined(THREAD_STDLIB)
     #include "predef/os/stdlib/Thread.h"
     #include "predef/os/stdlib/ThreadMsg.h"
+#elif defined(THREAD_FREERTOS)
+    #include "predef/os/freertos/Thread.h"
+    #include "predef/os/freertos/ThreadMsg.h"
 #elif defined(THREAD_NONE)
     // Create a custom application-specific thread
 #else

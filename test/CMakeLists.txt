@@ -5,15 +5,20 @@ set (DELEGATE_APP "delegate_app")
 set (DELEGATE_LIB "delegate_mq")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
+# Set build options
+set (USE_EXTERNAL_LIB "ON")
+set (USE_ALLOCATOR "OFF")
+set (USE_UTIL "ON")
+set (USE_THREAD "THREAD_STDLIB")
+set (USE_SERIALIZE "SERIALIZE_SERIALIZE")
+set (USE_TRANSPORT "TRANSPORT_NONE")
 include("${CMAKE_SOURCE_DIR}/Config.cmake")
-
-# Set delegate application build options
-add_compile_definitions(THREAD_STDLIB)
-add_compile_definitions(SERIALIZE_SERIALIZE)
-add_compile_definitions(TRANSPORT_NONE)
 
 # Collect all .cpp and *.h source files 
 file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+
+# Collect DelegateMQ predef source files
+list(APPEND SOURCES ${PREDEF_SOURCES})
 
 # Collect all delegate header files 
 file(GLOB Delegate_HEADERS 
@@ -44,15 +49,10 @@ include_directories(
 # Add an executable target
 add_executable(${DELEGATE_APP} ${SOURCES} ${Delegate_HEADERS})
 
-# Link against the pre-built delegate_mq.lib
 target_link_libraries(${DELEGATE_APP} PRIVATE 
-    ${DELEGATE_LIB}
     unit_tests_lib
     sample_code_lib
 )
-
-# Make delegate_app depend on delegate_mq (ensure it is built first)
-add_dependencies(${DELEGATE_APP} ${DELEGATE_LIB})
 
 # Add subdirectories for unit tests and sample code
 add_subdirectory(unit-tests)

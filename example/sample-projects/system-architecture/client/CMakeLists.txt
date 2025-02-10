@@ -5,16 +5,20 @@ set (DELEGATE_APP "delegate_client_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 add_compile_definitions(CLIENT_APP)
 
+# Set build options
 set (USE_EXTERNAL_LIB "ON")
+set (USE_ALLOCATOR "OFF")
+set (USE_UTIL "ON")
+set (USE_THREAD "THREAD_STDLIB")
+set (USE_SERIALIZE "SERIALIZE_MSGPACK")
+set (USE_TRANSPORT "TRANSPORT_ZEROMQ")
 include("${CMAKE_SOURCE_DIR}/../../../../Config.cmake")
-
-# Set delegate library build options
-add_compile_definitions(THREAD_STDLIB)
-add_compile_definitions(SERIALIZE_MSGPACK)
-add_compile_definitions(TRANSPORT_ZEROMQ)
 
 # Collect all .cpp and *.h source files in the src directory
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
+
+# Collect DelegateMQ predef source files
+list(APPEND SOURCES ${PREDEF_SOURCES})
 
 # Collect all header files in the delegate directory
 file(GLOB Delegate_HEADERS 
@@ -38,13 +42,8 @@ add_subdirectory("../common" "${CMAKE_BINARY_DIR}/common")
 # Add an executable target
 add_executable(${DELEGATE_APP} ${SOURCES} ${Delegate_HEADERS})
 
-# Link the library directory
-link_directories(${DELEGATE_LIB_DIR})
-
-# Link against the pre-built delegate_mq.lib
 target_link_libraries(${DELEGATE_APP} PRIVATE 
     common_lib
-    ${DELEGATE_LIB_DIR}/${DELEGATE_LIB_NAME}
     ${ZMQ_LIB_DIR}/${ZMQ_LIB_NAME}
 )
 
