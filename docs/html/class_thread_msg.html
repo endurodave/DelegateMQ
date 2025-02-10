@@ -107,10 +107,16 @@ $(function(){initNavTree('class_thread_msg.html',''); initResizable(true); });
   
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="_thread_msg_8h_source.html">ThreadMsg.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="freertos_2_thread_msg_8h_source.html">ThreadMsg.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ac8620c85ca127e184590e9f8d346a2e0" id="r_ac8620c85ca127e184590e9f8d346a2e0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8620c85ca127e184590e9f8d346a2e0">ThreadMsg</a> (int id, std::shared_ptr&lt; <a class="el" href="class_delegate_m_q_1_1_delegate_msg.html">DelegateMQ::DelegateMsg</a> &gt; data)</td></tr>
+<tr class="separator:ac8620c85ca127e184590e9f8d346a2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbfb9a9191a8bab76541077c3303d593" id="r_abbfb9a9191a8bab76541077c3303d593"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abbfb9a9191a8bab76541077c3303d593">GetId</a> () const</td></tr>
+<tr class="separator:abbfb9a9191a8bab76541077c3303d593"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a004af6056abc79aa297104e8f0cb7004" id="r_a004af6056abc79aa297104e8f0cb7004"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="class_delegate_m_q_1_1_delegate_msg.html">DelegateMQ::DelegateMsg</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a004af6056abc79aa297104e8f0cb7004">GetData</a> ()</td></tr>
+<tr class="separator:a004af6056abc79aa297104e8f0cb7004"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8620c85ca127e184590e9f8d346a2e0" id="r_ac8620c85ca127e184590e9f8d346a2e0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8620c85ca127e184590e9f8d346a2e0">ThreadMsg</a> (int id, std::shared_ptr&lt; <a class="el" href="class_delegate_m_q_1_1_delegate_msg.html">DelegateMQ::DelegateMsg</a> &gt; data)</td></tr>
 <tr class="separator:ac8620c85ca127e184590e9f8d346a2e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbfb9a9191a8bab76541077c3303d593" id="r_abbfb9a9191a8bab76541077c3303d593"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abbfb9a9191a8bab76541077c3303d593">GetId</a> () const</td></tr>
@@ -123,7 +129,46 @@ Public Member Functions</h2></td></tr>
  </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ac8620c85ca127e184590e9f8d346a2e0" name="ac8620c85ca127e184590e9f8d346a2e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8620c85ca127e184590e9f8d346a2e0">&#9670;&#160;</a></span>ThreadMsg()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8620c85ca127e184590e9f8d346a2e0">&#9670;&#160;</a></span>ThreadMsg() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ThreadMsg::ThreadMsg </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="class_delegate_m_q_1_1_delegate_msg.html">DelegateMQ::DelegateMsg</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructor </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">id</td><td>- a unique identifier for the thread messsage </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>- a pointer to the messsage data to be typecast by the receiving task based on the id value. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section pre"><dt>Precondition</dt><dd>The data pointer argument <em>must</em> be created on the heap. </dd></dl>
+<dl class="section post"><dt>Postcondition</dt><dd>The destination thread will delete the heap allocated data once the callback is complete. <br  />
+ </dd></dl>
+
+</div>
+</div>
+<a id="ac8620c85ca127e184590e9f8d346a2e0" name="ac8620c85ca127e184590e9f8d346a2e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8620c85ca127e184590e9f8d346a2e0">&#9670;&#160;</a></span>ThreadMsg() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -163,7 +208,32 @@ Public Member Functions</h2></td></tr>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a004af6056abc79aa297104e8f0cb7004" name="a004af6056abc79aa297104e8f0cb7004"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a004af6056abc79aa297104e8f0cb7004">&#9670;&#160;</a></span>GetData()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a004af6056abc79aa297104e8f0cb7004">&#9670;&#160;</a></span>GetData() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="class_delegate_m_q_1_1_delegate_msg.html">DelegateMQ::DelegateMsg</a> &gt; ThreadMsg::GetData </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a004af6056abc79aa297104e8f0cb7004" name="a004af6056abc79aa297104e8f0cb7004"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a004af6056abc79aa297104e8f0cb7004">&#9670;&#160;</a></span>GetData() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -188,7 +258,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="abbfb9a9191a8bab76541077c3303d593" name="abbfb9a9191a8bab76541077c3303d593"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abbfb9a9191a8bab76541077c3303d593">&#9670;&#160;</a></span>GetId()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abbfb9a9191a8bab76541077c3303d593">&#9670;&#160;</a></span>GetId() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -212,8 +282,34 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li><a class="el" href="_thread_msg_8h_source.html">ThreadMsg.h</a></li>
+<a id="abbfb9a9191a8bab76541077c3303d593" name="abbfb9a9191a8bab76541077c3303d593"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbfb9a9191a8bab76541077c3303d593">&#9670;&#160;</a></span>GetId() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ThreadMsg::GetId </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li><a class="el" href="freertos_2_thread_msg_8h_source.html">freertos/ThreadMsg.h</a></li>
+<li><a class="el" href="stdlib_2_thread_msg_8h_source.html">stdlib/ThreadMsg.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -104,7 +104,7 @@ $(function(){initNavTree('class_thread.html',''); initResizable(true); });
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="_thread_8h_source.html">Thread.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="freertos_2_thread_8h_source.html">Thread.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for Thread:</div>
 <div class="dyncontent">
@@ -112,11 +112,28 @@ Inheritance diagram for Thread:</div>
   <img src="class_thread.png" usemap="#Thread_map" alt=""/>
   <map id="Thread_map" name="Thread_map">
 <area href="class_delegate_m_q_1_1_i_thread.html" alt="DelegateMQ::IThread" shape="rect" coords="0,0,132,24"/>
+<area href="class_delegate_m_q_1_1_i_thread.html" alt="DelegateMQ::IThread" shape="rect" coords="142,0,274,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a192e02ca6e9efd7b7da940157fb9438a" id="r_a192e02ca6e9efd7b7da940157fb9438a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a192e02ca6e9efd7b7da940157fb9438a">Thread</a> (const std::string &amp;threadName)</td></tr>
+<tr class="memdesc:a192e02ca6e9efd7b7da940157fb9438a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <br /></td></tr>
+<tr class="separator:a192e02ca6e9efd7b7da940157fb9438a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37d9edd3a1a776cbc27dedff949c9726" id="r_a37d9edd3a1a776cbc27dedff949c9726"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37d9edd3a1a776cbc27dedff949c9726">~Thread</a> ()</td></tr>
+<tr class="memdesc:a37d9edd3a1a776cbc27dedff949c9726"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
+<tr class="separator:a37d9edd3a1a776cbc27dedff949c9726"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ac27cb95d8af8be6dd6f8e7c24e24ee" id="r_a7ac27cb95d8af8be6dd6f8e7c24e24ee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">CreateThread</a> ()</td></tr>
+<tr class="separator:a7ac27cb95d8af8be6dd6f8e7c24e24ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2294b75a90c36b4f14e32ae8d975a0fb" id="r_a2294b75a90c36b4f14e32ae8d975a0fb"><td class="memItemLeft" align="right" valign="top">TaskHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a> ()</td></tr>
+<tr class="memdesc:a2294b75a90c36b4f14e32ae8d975a0fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID of this thread instance.  <br /></td></tr>
+<tr class="separator:a2294b75a90c36b4f14e32ae8d975a0fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a093b95e8def5030fd8b0033ce14edc81" id="r_a093b95e8def5030fd8b0033ce14edc81"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a> ()</td></tr>
+<tr class="memdesc:a093b95e8def5030fd8b0033ce14edc81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get thread name.  <br /></td></tr>
+<tr class="separator:a093b95e8def5030fd8b0033ce14edc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f85f3d656be967d8c786f991df1ca48" id="r_a0f85f3d656be967d8c786f991df1ca48"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f85f3d656be967d8c786f991df1ca48">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="class_delegate_m_q_1_1_delegate_msg.html">DelegateMQ::DelegateMsg</a> &gt; msg)</td></tr>
+<tr class="separator:a0f85f3d656be967d8c786f991df1ca48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a192e02ca6e9efd7b7da940157fb9438a" id="r_a192e02ca6e9efd7b7da940157fb9438a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a192e02ca6e9efd7b7da940157fb9438a">Thread</a> (const std::string &amp;threadName)</td></tr>
 <tr class="memdesc:a192e02ca6e9efd7b7da940157fb9438a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <br /></td></tr>
 <tr class="separator:a192e02ca6e9efd7b7da940157fb9438a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,13 +163,16 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aafe48fc7ef98b9e6adcf7b188a30e35a" id="r_aafe48fc7ef98b9e6adcf7b188a30e35a"><td class="memItemLeft" align="right" valign="top">static std::thread::id&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafe48fc7ef98b9e6adcf7b188a30e35a">GetCurrentThreadId</a> ()</td></tr>
+<tr class="memitem:aafe48fc7ef98b9e6adcf7b188a30e35a" id="r_aafe48fc7ef98b9e6adcf7b188a30e35a"><td class="memItemLeft" align="right" valign="top">static TaskHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafe48fc7ef98b9e6adcf7b188a30e35a">GetCurrentThreadId</a> ()</td></tr>
 <tr class="memdesc:aafe48fc7ef98b9e6adcf7b188a30e35a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID of the currently executing thread.  <br /></td></tr>
 <tr class="separator:aafe48fc7ef98b9e6adcf7b188a30e35a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25dc0ec2d5c28fafeaae5b3d7ca1f40a" id="r_a25dc0ec2d5c28fafeaae5b3d7ca1f40a"><td class="memItemLeft" align="right" valign="top">static std::thread::id&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a25dc0ec2d5c28fafeaae5b3d7ca1f40a">GetCurrentThreadId</a> ()</td></tr>
+<tr class="memdesc:a25dc0ec2d5c28fafeaae5b3d7ca1f40a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID of the currently executing thread.  <br /></td></tr>
+<tr class="separator:a25dc0ec2d5c28fafeaae5b3d7ca1f40a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a192e02ca6e9efd7b7da940157fb9438a" name="a192e02ca6e9efd7b7da940157fb9438a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a192e02ca6e9efd7b7da940157fb9438a">&#9670;&#160;</a></span>Thread()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a192e02ca6e9efd7b7da940157fb9438a">&#9670;&#160;</a></span>Thread() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -171,7 +191,45 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="a37d9edd3a1a776cbc27dedff949c9726" name="a37d9edd3a1a776cbc27dedff949c9726"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Thread::~Thread </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destructor. </p>
+
+</div>
+</div>
+<a id="a192e02ca6e9efd7b7da940157fb9438a" name="a192e02ca6e9efd7b7da940157fb9438a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a192e02ca6e9efd7b7da940157fb9438a">&#9670;&#160;</a></span>Thread() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Thread::Thread </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>threadName</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor. </p>
+
+</div>
+</div>
+<a id="a37d9edd3a1a776cbc27dedff949c9726" name="a37d9edd3a1a776cbc27dedff949c9726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -191,7 +249,7 @@ Static Public Member Functions</h2></td></tr>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a7ac27cb95d8af8be6dd6f8e7c24e24ee" name="a7ac27cb95d8af8be6dd6f8e7c24e24ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -209,8 +267,61 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a7ac27cb95d8af8be6dd6f8e7c24e24ee" name="a7ac27cb95d8af8be6dd6f8e7c24e24ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Thread::CreateThread </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Called once to create the worker thread </p><dl class="section return"><dt>Returns</dt><dd>TRUE if thread is created. FALSE otherise. <br  />
+ </dd></dl>
+
+</div>
+</div>
+<a id="a0f85f3d656be967d8c786f991df1ca48" name="a0f85f3d656be967d8c786f991df1ca48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f85f3d656be967d8c786f991df1ca48">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Thread::DispatchDelegate </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="class_delegate_m_q_1_1_delegate_msg.html">DelegateMQ::DelegateMsg</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>msg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Dispatch a <code>DelegateMsg</code> onto this thread. The implementer is responsible for getting the <code>DelegateMsg</code> into an OS message queue. Once <code>DelegateMsg</code> is on the destination thread of control, the <code>IDelegateInvoker::Invoke()</code> function must be called to execute the target function. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>A shared pointer to the message. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section post"><dt>Postcondition</dt><dd>The destination thread calls <code>IThreadInvoker::Invoke()</code> when <code>DelegateMsg</code> is received. </dd></dl>
+
+<p>Implements <a class="el" href="class_delegate_m_q_1_1_i_thread.html#a7ed96421f51d63e94ebc8602ebf9f1da">DelegateMQ::IThread</a>.</p>
+
+</div>
+</div>
 <a id="a42185dba66e40c6d9b1de3326a2c256f" name="a42185dba66e40c6d9b1de3326a2c256f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a42185dba66e40c6d9b1de3326a2c256f">&#9670;&#160;</a></span>DispatchDelegate()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a42185dba66e40c6d9b1de3326a2c256f">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -263,7 +374,7 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="aafe48fc7ef98b9e6adcf7b188a30e35a" name="aafe48fc7ef98b9e6adcf7b188a30e35a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aafe48fc7ef98b9e6adcf7b188a30e35a">&#9670;&#160;</a></span>GetCurrentThreadId()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aafe48fc7ef98b9e6adcf7b188a30e35a">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -273,6 +384,33 @@ Static Public Member Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::thread::id Thread::GetCurrentThreadId </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the ID of the currently executing thread. </p>
+
+</div>
+</div>
+<a id="a25dc0ec2d5c28fafeaae5b3d7ca1f40a" name="a25dc0ec2d5c28fafeaae5b3d7ca1f40a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25dc0ec2d5c28fafeaae5b3d7ca1f40a">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::thread::id Thread::GetCurrentThreadId </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -309,7 +447,26 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="a2294b75a90c36b4f14e32ae8d975a0fb" name="a2294b75a90c36b4f14e32ae8d975a0fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2294b75a90c36b4f14e32ae8d975a0fb">&#9670;&#160;</a></span>GetThreadId()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2294b75a90c36b4f14e32ae8d975a0fb">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::thread::id Thread::GetThreadId </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the ID of this thread instance. </p>
+
+</div>
+</div>
+<a id="a2294b75a90c36b4f14e32ae8d975a0fb" name="a2294b75a90c36b4f14e32ae8d975a0fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2294b75a90c36b4f14e32ae8d975a0fb">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -328,7 +485,34 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="a093b95e8def5030fd8b0033ce14edc81" name="a093b95e8def5030fd8b0033ce14edc81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Thread::GetThreadName </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get thread name. </p>
+
+</div>
+</div>
+<a id="a093b95e8def5030fd8b0033ce14edc81" name="a093b95e8def5030fd8b0033ce14edc81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -355,8 +539,10 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="_thread_8h_source.html">Thread.h</a></li>
-<li><a class="el" href="_thread_8cpp.html">Thread.cpp</a></li>
+<li><a class="el" href="freertos_2_thread_8h_source.html">freertos/Thread.h</a></li>
+<li><a class="el" href="stdlib_2_thread_8h_source.html">stdlib/Thread.h</a></li>
+<li><a class="el" href="freertos_2_thread_8cpp.html">freertos/Thread.cpp</a></li>
+<li><a class="el" href="stdlib_2_thread_8cpp.html">stdlib/Thread.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

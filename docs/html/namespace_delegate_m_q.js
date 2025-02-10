@@ -65,11 +65,11 @@ var namespace_delegate_m_q =
     [ "DelegateRemoteId", "namespace_delegate_m_q.html#afef0cda01024edf43bd33060327fa307", null ],
     [ "DelegateError", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141", [
       [ "SUCCESS", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141ad0749aaba8b833466dfcbb0428e4f89c", null ],
-      [ "ERR_STREAM_FAIL", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141ace6e247bfe3d77b344711311fee24107", null ],
-      [ "ERR_STREAM_EMPTY", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141a3d3fe247b631d721c6c8d423f7050f0c", null ],
+      [ "ERR_STREAM_NOT_GOOD", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141a78d23b7ddceca52b8912f668760e1766", null ],
       [ "ERR_NO_SERIALIZER", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141afdbb48f8e830dba35bd9fbd08a92e3ce", null ],
       [ "ERR_SERIALIZE", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141a27dd8c402d16b3f4525b8a2d3d6e8cf8", null ],
       [ "ERR_DESERIALIZE", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141acd71045ed3f42c6989cdc860fc93371c", null ],
+      [ "ERR_DESERIALIZE_EXCEPTION", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141ac78b85137bd31a80f22922b807a76556", null ],
       [ "ERR_NO_DISPATCHER", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141a9de4b9d71ed3fcd9c33bdd9306574594", null ],
       [ "ERR_DISPATCH", "namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141a9474f3b03888eaf0576eabf7a0f5e1fb", null ]
     ] ],

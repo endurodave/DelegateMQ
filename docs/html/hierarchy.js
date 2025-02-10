@@ -66,9 +66,11 @@ var hierarchy =
     [ "DelegateMQ::ISerializer< R >", "struct_delegate_m_q_1_1_i_serializer.html", null ],
     [ "DelegateMQ::ISerializer< RetType(Args...)>", "class_delegate_m_q_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", [
       [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+      [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
     ] ],
     [ "DelegateMQ::IThread", "class_delegate_m_q_1_1_i_thread.html", [
+      [ "Thread", "class_thread.html", null ],
       [ "Thread", "class_thread.html", null ]
     ] ],
     [ "DelegateMQ::IThreadInvoker", "class_delegate_m_q_1_1_i_thread_invoker.html", [

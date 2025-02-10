@@ -21,6 +21,6 @@ var searchData=
   ['destroy_18',['Destroy',['../class_transport.html#aeb51f22fb31b9d6ce4690455ce09b0d6',1,'Transport']]],
   ['difference_19',['Difference',['../class_timer.html#abca3deb1a05cc5fa6873f177d134e83c',1,'Timer']]],
   ['dispatch_20',['Dispatch',['../class_delegate_m_q_1_1_i_dispatcher.html#a0b754b253d3564b6d74fdbe7671386ba',1,'DelegateMQ::IDispatcher::Dispatch()'],['../class_dispatcher.html#a7ab39998b10dd608d7cb79168b06122c',1,'Dispatcher::Dispatch()']]],
-  ['dispatchdelegate_21',['DispatchDelegate',['../class_delegate_m_q_1_1_i_thread.html#a7ed96421f51d63e94ebc8602ebf9f1da',1,'DelegateMQ::IThread::DispatchDelegate()'],['../class_thread.html#a42185dba66e40c6d9b1de3326a2c256f',1,'Thread::DispatchDelegate()']]],
+  ['dispatchdelegate_21',['DispatchDelegate',['../class_delegate_m_q_1_1_i_thread.html#a7ed96421f51d63e94ebc8602ebf9f1da',1,'DelegateMQ::IThread::DispatchDelegate()'],['../class_thread.html#a0f85f3d656be967d8c786f991df1ca48',1,'Thread::DispatchDelegate(std::shared_ptr&lt; DelegateMQ::DelegateMsg &gt; msg)'],['../class_thread.html#a42185dba66e40c6d9b1de3326a2c256f',1,'Thread::DispatchDelegate(std::shared_ptr&lt; DelegateMQ::DelegateMsg &gt; msg)']]],
   ['dispatcher_22',['Dispatcher',['../class_dispatcher.html#ab7dabf79371e1372d16d2c979c35d27d',1,'Dispatcher']]]
 ];

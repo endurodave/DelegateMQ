@@ -16,7 +16,7 @@ var searchData=
   ['_7emulticastdelegatesafe_13',['~MulticastDelegateSafe',['../class_delegate_m_q_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a7b4152114403b39411512497570df4c5',1,'DelegateMQ::MulticastDelegateSafe&lt; RetType(Args...)&gt;']]],
   ['_7esemaphore_14',['~Semaphore',['../class_delegate_m_q_1_1_semaphore.html#a0a81991c32ff6b0f9cf187423724b273',1,'DelegateMQ::Semaphore']]],
   ['_7eserialize_15',['~serialize',['../classserialize.html#a587c1fd9308681181e30579b9930539f',1,'serialize']]],
-  ['_7ethread_16',['~Thread',['../class_thread.html#a37d9edd3a1a776cbc27dedff949c9726',1,'Thread']]],
+  ['_7ethread_16',['~Thread',['../class_thread.html#a37d9edd3a1a776cbc27dedff949c9726',1,'Thread::~Thread()'],['../class_thread.html#a37d9edd3a1a776cbc27dedff949c9726',1,'Thread::~Thread()']]],
   ['_7etimer_17',['~Timer',['../class_timer.html#af87243f09ef5b58b889fb4a7284b526d',1,'Timer']]],
   ['_7eunicastdelegate_18',['~UnicastDelegate',['../class_delegate_m_q_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ae02f6a045928e627b4f6c3a2e796e21f',1,'DelegateMQ::UnicastDelegate&lt; RetType(Args...)&gt;']]]
 ];

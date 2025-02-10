@@ -25,22 +25,13 @@
 var NAVTREE =
 [
   [ "Delegates", "index.html", [
-    [ "Asynchronous Delegates in C++", "index.html#autotoc_md0", null ],
-    [ "Design Documentation", "index.html#autotoc_md1", null ],
-    [ "Quick Start", "index.html#autotoc_md2", [
-      [ "Basic Examples", "index.html#autotoc_md3", null ],
-      [ "Publish/Subscribe Example", "index.html#autotoc_md4", [
-        [ "Publisher", "index.html#autotoc_md5", null ],
-        [ "Subscriber", "index.html#autotoc_md6", null ]
-      ] ],
-      [ "All Delegate Types Example", "index.html#autotoc_md7", null ],
-      [ "Asynchronous API Example", "index.html#autotoc_md8", null ]
-    ] ],
-    [ "Delegate Classes", "index.html#autotoc_md9", null ],
-    [ "Project Build", "index.html#autotoc_md10", null ],
-    [ "Related Repositories", "index.html#autotoc_md11", [
-      [ "Alternative Implementations", "index.html#autotoc_md12", null ],
-      [ "Projects Using Delegates", "index.html#autotoc_md13", null ]
+    [ "Delegates in C++", "index.html#autotoc_md0", null ],
+    [ "Overview", "index.html#autotoc_md1", null ],
+    [ "Documentation", "index.html#autotoc_md2", null ],
+    [ "Project Build", "index.html#autotoc_md3", null ],
+    [ "Related Repositories", "index.html#autotoc_md4", [
+      [ "Alternative Implementations", "index.html#autotoc_md5", null ],
+      [ "Other Projects Using DelegateMQ", "index.html#autotoc_md6", null ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -80,12 +71,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"class_delegate_m_q_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a4dc6e662bdd92b5056f7b84d46f886e6",
-"class_delegate_m_q_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a01ae6f44d1a88cd818392727fd1a37f3",
-"class_delegate_m_q_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a0244c8c751345f3b48028e2214d04284",
-"class_delegate_m_q_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a9a27d2382f8793379e7fafa0d0f13d71",
-"functions_e.html",
-"xallocator_8h_source.html"
+"class_delegate_m_q_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534",
+"class_delegate_m_q_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a2464dd351330ae86fb06545dd8638776",
+"class_delegate_m_q_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a38cc5ff7e92f8c4327a9fcd2339635a0",
+"class_delegate_m_q_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#aebff4b708c584d0ae53d5d636574d4b9",
+"classstl__allocator.html#a670fa330eea672f3bd493d37a316cb01",
+"structserialize__traits_1_1is__shared__ptr.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
