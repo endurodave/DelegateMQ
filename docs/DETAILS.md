@@ -159,7 +159,7 @@ include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
 
 Update `External.cmake` external library paths.
 
-Add `DMQ_PREDEF_SOURCES` to your sources If using the predefined supporting DelegateMQ classes (e.g. `Thread`, `Serialize`, ...).
+Add `DMQ_PREDEF_SOURCES` to your sources if using the predefined supporting DelegateMQ classes (e.g. `Thread`, `Serialize`, ...).
 
 ```
 # Collect DelegateMQ predef source files
@@ -699,7 +699,7 @@ delegateRemote.Invoke(recv_stream);
 ```
 ## Error Handling
 
-The DelegateMQ library uses dynamic memory to send asynchronous delegate messages to the target thread. By default, out-of-memory failures throw a `std::bad_alloc` exception. Optionally, if `USE_ASSERTS` is defined, exceptions are not thrown, and an assert is triggered instead. See `DelegateOpt.h` for more details.
+The DelegateMQ library uses dynamic memory to send asynchronous delegate messages to the target thread. By default, out-of-memory failures throw a `std::bad_alloc` exception. Optionally, if `DMQ_ASSERTS` is defined, exceptions are not thrown, and an assert is triggered instead. See `DelegateOpt.h` for more details.
 
 Remote delegate error handling is captured by registering a callback with  `SetErrorHandler()`. 
 
@@ -791,7 +791,7 @@ The `DelegateMQ` library external dependencies are based upon on the intended us
 
 ## Fixed-Block Memory Allocator
 
-The DelegateMQ library optionally uses a fixed-block memory allocator when `USE_ALLOCATOR` is defined. See `DelegateOpt.h` for more details. The allocator design is available in the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
+The DelegateMQ library optionally uses a fixed-block memory allocator when `DMQ_ALLOCATOR` is defined. See `DelegateOpt.h` for more details. The allocator design is available in the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
 
 `std::function` used within class `DelegateFunction` may use the heap under certain conditions. Implement a custom `xfunction` similar to the `xlist` concept within `xlist.h` using the `xallocator` fixed-block allocator if deemed necessary.
 

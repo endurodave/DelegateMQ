@@ -65,7 +65,7 @@ The DelegateMQ library asynchronous features differ from `std::async` in that th
 
 DelegateMQ uses an external thread, transport, and serializer, all of which are based on simple, well-defined interfaces.
 
-<img src="docs/LayerDiagram.jpg" alt="DelegateMQ Layer Diagram" style="width:60%;"><br>
+<img src="docs/LayerDiagram.jpg" alt="DelegateMQ Layer Diagram" style="width:70%;"><br>
 *DelegateMQ Layer Diagram*
 
 
