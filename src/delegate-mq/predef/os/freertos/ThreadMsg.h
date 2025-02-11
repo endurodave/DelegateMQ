@@ -13,18 +13,18 @@ public:
 	/// @pre The data pointer argument *must* be created on the heap.
 	/// @post The destination thread will delete the heap allocated data once the 
 	///		callback is complete.  
-	ThreadMsg(int id, std::shared_ptr<DelegateMQ::DelegateMsg> data) :
+	ThreadMsg(int id, std::shared_ptr<dmq::DelegateMsg> data) :
 		m_id(id), 
 		m_data(data)
 	{
 	}
 
 	int GetId() const { return m_id; } 
-    std::shared_ptr<DelegateMQ::DelegateMsg> GetData() { return m_data; }
+    std::shared_ptr<dmq::DelegateMsg> GetData() { return m_data; }
 
 private:
 	int m_id;
-    std::shared_ptr<DelegateMQ::DelegateMsg> m_data;
+    std::shared_ptr<dmq::DelegateMsg> m_data;
 };
 
 #endif

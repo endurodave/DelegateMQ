@@ -10,7 +10,7 @@
 #include "DelegateMQ.h"
 #include "data.h"
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
 
 /// @brief Receiver receives data from the Sender.

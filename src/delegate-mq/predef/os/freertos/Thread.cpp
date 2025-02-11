@@ -3,7 +3,7 @@
 #include "predef/util/Fault.h"
 
 using namespace std;
-using namespace DelegateMQ;
+using namespace dmq;
 
 #define MSG_DISPATCH_DELEGATE	1
 #define MSG_EXIT_THREAD			2
@@ -67,7 +67,7 @@ TaskHandle_t Thread::GetCurrentThreadId()
 //----------------------------------------------------------------------------
 // DispatchDelegate
 //----------------------------------------------------------------------------
-void Thread::DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg)
+void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
 	if (m_queue == nullptr)
 		throw std::invalid_argument("Queue pointer is null");

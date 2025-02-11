@@ -13,9 +13,9 @@
 #include <map>
 #include <mutex>
 
-static const DelegateMQ::DelegateRemoteId ALARM_MSG_ID = 1;
-static const DelegateMQ::DelegateRemoteId DATA_MSG_ID = 2;
-static const DelegateMQ::DelegateRemoteId COMMAND_MSG_ID = 3;
+static const dmq::DelegateRemoteId ALARM_MSG_ID = 1;
+static const dmq::DelegateRemoteId DATA_MSG_ID = 2;
+static const dmq::DelegateRemoteId COMMAND_MSG_ID = 3;
 
 // NetworkMgr sends and receives data using a delegate transport implemented
 // using ZeroMQ library. Class is thread safe.
@@ -23,10 +23,10 @@ class NetworkMgr
 {
 public:
     // Resister with delegate to receive callbacks
-    static DelegateMQ::MulticastDelegateSafe<void(DelegateMQ::DelegateRemoteId, DelegateMQ::DelegateError, DelegateMQ::DelegateErrorAux)> ErrorCb;
-    static DelegateMQ::MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)> AlarmMsgCb;
-    static DelegateMQ::MulticastDelegateSafe<void(CommandMsg&)> CommandMsgCb;
-    static DelegateMQ::MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
+    static dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCb;
+    static dmq::MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)> AlarmMsgCb;
+    static dmq::MulticastDelegateSafe<void(CommandMsg&)> CommandMsgCb;
+    static dmq::MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
 
     static NetworkMgr& Instance()
     {
@@ -55,7 +55,7 @@ private:
     void Poll();
 
     // Handle errors from DelegateMQ library
-    void ErrorHandler(DelegateMQ::DelegateRemoteId id, DelegateMQ::DelegateError error, DelegateMQ::DelegateErrorAux aux);
+    void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux);
 
     // Incoming message handlers
     void RecvAlarmMsg(AlarmMsg& msg, AlarmNote& note);
@@ -78,19 +78,19 @@ private:
     Dispatcher m_dispatcher;
 
     // Map each remote delegate ID with an invoker instance
-    std::map<DelegateMQ::DelegateRemoteId, DelegateMQ::IRemoteInvoker*> m_receiveIdMap;
+    std::map<dmq::DelegateRemoteId, dmq::IRemoteInvoker*> m_receiveIdMap;
 
     // Receive alarm via remote delegate
     Serializer<void(AlarmMsg&, AlarmNote&)> m_alarmMsgSer;
-    DelegateMQ::DelegateMemberRemote<NetworkMgr, void(AlarmMsg&, AlarmNote&)> m_alarmMsgDel;
+    dmq::DelegateMemberRemote<NetworkMgr, void(AlarmMsg&, AlarmNote&)> m_alarmMsgDel;
 
     // Receive commands via remote delegate
     Serializer<void(CommandMsg&)> m_commandMsgSer;
-    DelegateMQ::DelegateMemberRemote<NetworkMgr, void(CommandMsg&)> m_commandMsgDel;
+    dmq::DelegateMemberRemote<NetworkMgr, void(CommandMsg&)> m_commandMsgDel;
 
     // Receive data package via remote delegate
     Serializer<void(DataMsg&)> m_dataMsgSer;
-    DelegateMQ::DelegateMemberRemote<NetworkMgr, void(DataMsg&)> m_dataMsgDel;
+    dmq::DelegateMemberRemote<NetworkMgr, void(DataMsg&)> m_dataMsgDel;
 };
 
 #endif

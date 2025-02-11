@@ -15,7 +15,7 @@ class DataMgr
 {
 public:
     // Register with delegate to receive callbacks when data is received
-    static DelegateMQ::MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
+    static dmq::MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
 
     static DataMgr& Instance()
     {

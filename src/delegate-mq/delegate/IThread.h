@@ -3,7 +3,7 @@
 
 #include "DelegateMsg.h"
 
-namespace DelegateMQ {
+namespace dmq {
 
 /// @file
 /// @brief A base class for a delegate enabled execution thread. Implemented by 

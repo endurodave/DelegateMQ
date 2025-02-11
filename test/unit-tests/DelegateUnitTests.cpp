@@ -5,7 +5,7 @@
 #include <Windows.h>
 #endif
 
-using namespace DelegateMQ;
+using namespace dmq;
 
 Thread testThread("DelegateUnitTestsThread");
 

@@ -10,7 +10,7 @@
 #include <functional>
 #include <memory>
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
 
 namespace Example

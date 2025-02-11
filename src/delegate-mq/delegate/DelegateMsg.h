@@ -14,7 +14,7 @@
 #include <mutex>
 #include <stdexcept>
 
-namespace DelegateMQ {
+namespace dmq {
 
 /// @brief Base class for all delegate inter-thread messages
 class DelegateMsg

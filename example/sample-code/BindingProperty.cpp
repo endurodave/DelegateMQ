@@ -7,7 +7,7 @@
 #include <functional>
 #include <string>
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
 
 namespace Example

@@ -22,7 +22,7 @@
 #include <mutex>
 
 /// @brief Dispatcher sends data to the transport for transmission to the endpoint.
-class Dispatcher : public DelegateMQ::IDispatcher
+class Dispatcher : public dmq::IDispatcher
 {
 public:
     Dispatcher() = default;
@@ -37,7 +37,7 @@ public:
     }
 
     // Send argument data to the transport
-    virtual int Dispatch(std::ostream& os, DelegateMQ::DelegateRemoteId id) 
+    virtual int Dispatch(std::ostream& os, dmq::DelegateRemoteId id) 
     {
         std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 

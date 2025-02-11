@@ -4,7 +4,7 @@
 
 #include "NetworkMgr.h"
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
 
 MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::ErrorCb;

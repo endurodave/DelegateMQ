@@ -5,7 +5,7 @@
 #include <chrono>
 #include <cstring>
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
 using namespace UnitTestData;
 

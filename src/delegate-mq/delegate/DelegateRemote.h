@@ -50,7 +50,7 @@
 #include <tuple>
 #include <iostream>
 
-namespace DelegateMQ {
+namespace dmq {
 
 enum class DelegateError {
     SUCCESS = 0,

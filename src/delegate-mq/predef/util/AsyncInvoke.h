@@ -28,7 +28,7 @@ auto AsyncInvoke(Func func, Thread& thread, const std::chrono::milliseconds& tim
     // Is the calling function executing on the requested thread?
     if (thread.GetThreadId() != Thread::GetCurrentThreadId()) {
         // Create a delegate that points to func to invoke on thread
-        auto delegate = DelegateMQ::MakeDelegate(func, thread, timeout);
+        auto delegate = dmq::MakeDelegate(func, thread, timeout);
 
         // Invoke the delegate target function asynchronously and wait for function call to complete
         auto retVal = delegate.AsyncInvoke(std::forward<Args>(args)...);
@@ -68,7 +68,7 @@ auto AsyncInvoke(TClass tclass, Func func, Thread& thread, const std::chrono::mi
     // Is the calling function executing on the requested thread?
     if (thread.GetThreadId() != Thread::GetCurrentThreadId()) {
         // Create a delegate that points to func to invoke on thread
-        auto delegate = DelegateMQ::MakeDelegate(tclass, func, thread, timeout);
+        auto delegate = dmq::MakeDelegate(tclass, func, thread, timeout);
 
         // Invoke the delegate target function asynchronously and wait for function call to complete
         auto retVal = delegate.AsyncInvoke(std::forward<Args>(args)...);

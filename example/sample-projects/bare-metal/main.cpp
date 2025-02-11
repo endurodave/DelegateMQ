@@ -7,7 +7,7 @@
 #include <sstream>
 #include <chrono>
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
  
 std::atomic<bool> processTimerExit = false;

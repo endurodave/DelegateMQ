@@ -11,7 +11,7 @@ class Timer
 {
 public:
 	/// Client's register with Expired to get timer callbacks
-	DelegateMQ::UnicastDelegate<void(void)> Expired;
+	dmq::UnicastDelegate<void(void)> Expired;
 
 	/// Constructor
 	Timer(void);

@@ -12,7 +12,7 @@
 // Fix compiler error on Windows
 #undef max
 
-namespace DelegateMQ {
+namespace dmq {
 
 /// @brief A semaphore wrapper class. 
 class Semaphore

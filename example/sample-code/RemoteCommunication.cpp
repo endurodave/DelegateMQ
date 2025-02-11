@@ -8,7 +8,7 @@
 #include <sstream>
 #include <chrono>
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
 
 namespace Example

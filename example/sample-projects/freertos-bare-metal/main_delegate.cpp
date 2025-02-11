@@ -14,7 +14,7 @@
 #include "FreeRTOS.h"
 #include "timers.h"
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
 
 #define mainTIMER_FREQUENCY_MS			pdMS_TO_TICKS( 50UL )

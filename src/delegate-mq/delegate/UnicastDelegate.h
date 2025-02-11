@@ -8,7 +8,7 @@
 #include "Delegate.h"
 #include <memory>
 
-namespace DelegateMQ {
+namespace dmq {
 
 template <class R>
 struct UnicastDelegate; // Not defined

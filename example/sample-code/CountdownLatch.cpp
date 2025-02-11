@@ -9,7 +9,7 @@
 #include <chrono>
 #include <latch>
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
 
 namespace Example

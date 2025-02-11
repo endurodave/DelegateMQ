@@ -38,7 +38,7 @@ struct Serializer; // Not defined
 
 // Serialize all target function argument data using serialize class
 template<class RetType, class... Args>
-class Serializer<RetType(Args...)> : public DelegateMQ::ISerializer<RetType(Args...)>
+class Serializer<RetType(Args...)> : public dmq::ISerializer<RetType(Args...)>
 {
 public:
     // Write arguments to a stream

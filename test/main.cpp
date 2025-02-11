@@ -25,7 +25,7 @@
 // David Lafreniere, 2025.
 
 using namespace std;
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std::chrono;
 
 std::atomic<bool> processTimerExit = false;

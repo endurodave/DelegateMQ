@@ -24,7 +24,7 @@
 #include "DelegateOpt.h"
 
 /// The delegate library namespace
-namespace DelegateMQ {
+namespace dmq {
 
 /// @brief Non-template base class for all delegates.
 class DelegateBase {
@@ -742,7 +742,5 @@ auto MakeDelegate(std::function<RetType(Args...)> func) {
 }
 
 }
-
-namespace dmq = DelegateMQ;  // Alias
 
 #endif

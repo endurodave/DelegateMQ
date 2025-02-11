@@ -15,7 +15,7 @@
 
 class ThreadMsg;
 
-class Thread : public DelegateMQ::IThread
+class Thread : public dmq::IThread
 {
 public:
 	/// Constructor
@@ -37,7 +37,7 @@ public:
 	/// Get thread name
 	std::string GetThreadName() { return THREAD_NAME; }
 
-	virtual void DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg);
+	virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg);
 
 private:
 	Thread(const Thread&) = delete;

@@ -63,7 +63,7 @@ private:
         AlarmHandler(msg, note);
     }
 
-    void ErrorHandler(DelegateMQ::DelegateRemoteId id, DelegateMQ::DelegateError error, DelegateMQ::DelegateErrorAux aux)
+    void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
         std::cout << "AlarmMgr Error: " << id << " " << (int)error << " " << aux << std::endl;
     }

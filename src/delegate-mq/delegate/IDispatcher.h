@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace DelegateMQ {
+namespace dmq {
 
 // Remote identifier shared between sender and receiver remotes
 typedef uint16_t DelegateRemoteId;

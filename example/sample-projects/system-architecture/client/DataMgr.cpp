@@ -1,3 +1,3 @@
 #include "DataMgr.h"
 
-DelegateMQ::MulticastDelegateSafe<void(DataMsg&)> DataMgr::DataMsgCb;
+dmq::MulticastDelegateSafe<void(DataMsg&)> DataMgr::DataMsgCb;

@@ -8,7 +8,7 @@
 #include "DelegateMQ.h"
 #include "data.h"
 
-using namespace DelegateMQ;
+using namespace dmq;
 using namespace std;
 
 /// @brief Sender is an active object with a thread. The thread sends data to the 

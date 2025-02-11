@@ -5,7 +5,7 @@
 #include <mutex>
 #include "SysDataTypes.h"
 
-using namespace DelegateMQ;
+using namespace dmq;
 
 /// @brief SysData stores common data accessible by any system thread. This class
 /// is thread-safe.
