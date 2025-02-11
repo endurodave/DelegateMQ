@@ -1,4 +1,4 @@
 var _delegate_msg_8h =
 [
-    [ "DelegateMQ::DelegateMsg", "class_delegate_m_q_1_1_delegate_msg.html", "class_delegate_m_q_1_1_delegate_msg" ]
+    [ "dmq::DelegateMsg", "classdmq_1_1_delegate_msg.html", "classdmq_1_1_delegate_msg" ]
 ];

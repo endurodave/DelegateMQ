@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['delegateerror_0',['DelegateError',['../namespace_delegate_m_q.html#ae4862a87c04605fce2d7f9cfec41a141',1,'DelegateMQ']]]
+  ['delegateerror_0',['DelegateError',['../namespacedmq.html#a62ea8a73887af62d409322557b4e757d',1,'dmq']]]
 ];

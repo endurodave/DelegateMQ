@@ -1,9 +1,9 @@
 var class_thread_msg =
 [
-    [ "ThreadMsg", "class_thread_msg.html#ac8620c85ca127e184590e9f8d346a2e0", null ],
-    [ "ThreadMsg", "class_thread_msg.html#ac8620c85ca127e184590e9f8d346a2e0", null ],
-    [ "GetData", "class_thread_msg.html#a004af6056abc79aa297104e8f0cb7004", null ],
-    [ "GetData", "class_thread_msg.html#a004af6056abc79aa297104e8f0cb7004", null ],
+    [ "ThreadMsg", "class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb", null ],
+    [ "ThreadMsg", "class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb", null ],
+    [ "GetData", "class_thread_msg.html#a9ade162182d4633f65f0d4492d5ccd3f", null ],
+    [ "GetData", "class_thread_msg.html#a9ade162182d4633f65f0d4492d5ccd3f", null ],
     [ "GetId", "class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593", null ],
     [ "GetId", "class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593", null ]
 ];

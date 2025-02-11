@@ -106,7 +106,7 @@ $(function(){initNavTree('stdlib_2_thread_msg_8h_source.html',''); initResizable
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">public</span>:</div>
 <div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="class_thread_msg.html#ac8620c85ca127e184590e9f8d346a2e0">   16</a></span>    <a class="code hl_function" href="class_thread_msg.html#ac8620c85ca127e184590e9f8d346a2e0">ThreadMsg</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, std::shared_ptr&lt;DelegateMQ::DelegateMsg&gt; data) :</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb">   16</a></span>    <a class="code hl_function" href="class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb">ThreadMsg</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, std::shared_ptr&lt;dmq::DelegateMsg&gt; data) :</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        m_id(id), </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        m_data(data)</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    {</div>
@@ -114,18 +114,18 @@ $(function(){initNavTree('stdlib_2_thread_msg_8h_source.html',''); initResizable
 </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593">   22</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593">GetId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_id; } </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="class_thread_msg.html#a004af6056abc79aa297104e8f0cb7004">   23</a></span>    std::shared_ptr&lt;DelegateMQ::DelegateMsg&gt; <a class="code hl_function" href="class_thread_msg.html#a004af6056abc79aa297104e8f0cb7004">GetData</a>() { <span class="keywordflow">return</span> m_data; }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="class_thread_msg.html#a9ade162182d4633f65f0d4492d5ccd3f">   23</a></span>    std::shared_ptr&lt;dmq::DelegateMsg&gt; <a class="code hl_function" href="class_thread_msg.html#a9ade162182d4633f65f0d4492d5ccd3f">GetData</a>() { <span class="keywordflow">return</span> m_data; }</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">private</span>:</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">int</span> m_id;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    std::shared_ptr&lt;DelegateMQ::DelegateMsg&gt; m_data;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    std::shared_ptr&lt;dmq::DelegateMsg&gt; m_data;</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclass_thread_msg_html"><div class="ttname"><a href="class_thread_msg.html">ThreadMsg</a></div><div class="ttdoc">A class to hold a platform-specific thread messsage that will be passed through the OS message queue.</div><div class="ttdef"><b>Definition</b> freertos/ThreadMsg.h:7</div></div>
-<div class="ttc" id="aclass_thread_msg_html_a004af6056abc79aa297104e8f0cb7004"><div class="ttname"><a href="class_thread_msg.html#a004af6056abc79aa297104e8f0cb7004">ThreadMsg::GetData</a></div><div class="ttdeci">std::shared_ptr&lt; DelegateMQ::DelegateMsg &gt; GetData()</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:23</div></div>
+<div class="ttc" id="aclass_thread_msg_html_a752a7235f4ea1ec437186a935f85f1cb"><div class="ttname"><a href="class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb">ThreadMsg::ThreadMsg</a></div><div class="ttdeci">ThreadMsg(int id, std::shared_ptr&lt; dmq::DelegateMsg &gt; data)</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:16</div></div>
+<div class="ttc" id="aclass_thread_msg_html_a9ade162182d4633f65f0d4492d5ccd3f"><div class="ttname"><a href="class_thread_msg.html#a9ade162182d4633f65f0d4492d5ccd3f">ThreadMsg::GetData</a></div><div class="ttdeci">std::shared_ptr&lt; dmq::DelegateMsg &gt; GetData()</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:23</div></div>
 <div class="ttc" id="aclass_thread_msg_html_abbfb9a9191a8bab76541077c3303d593"><div class="ttname"><a href="class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593">ThreadMsg::GetId</a></div><div class="ttdeci">int GetId() const</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:22</div></div>
-<div class="ttc" id="aclass_thread_msg_html_ac8620c85ca127e184590e9f8d346a2e0"><div class="ttname"><a href="class_thread_msg.html#ac8620c85ca127e184590e9f8d346a2e0">ThreadMsg::ThreadMsg</a></div><div class="ttdeci">ThreadMsg(int id, std::shared_ptr&lt; DelegateMQ::DelegateMsg &gt; data)</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:16</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

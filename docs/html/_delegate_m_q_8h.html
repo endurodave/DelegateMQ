@@ -135,7 +135,7 @@ $(function(){initNavTree('_delegate_m_q_8h.html',''); initResizable(true); });
 <li>Design Patterns(Active Object)</li>
 </ul>
 <p>The delegate library's asynchronous features differ from <code>std::async</code> in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into the event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.</p>
-<p>The <code>Async</code> and <code>AsyncWait</code> class variants may throw <code>std::bad_alloc</code> if heap allocation fails within <code>operator()(Args... args)</code>. Alternatively, define <code>USE_ASSERTS</code> to use <code>assert</code> as opposed to exceptions. All other delegate class functions do not throw exceptions.</p>
+<p>The <code>Async</code> and <code>AsyncWait</code> class variants may throw <code>std::bad_alloc</code> if heap allocation fails within <code>operator()(Args... args)</code>. Alternatively, define <code>DMQ_ASSERTS</code> to use <code>assert</code> as opposed to exceptions. All other delegate class functions do not throw exceptions.</p>
 <p>Github repository location: <br  />
  <a href="https://github.com/endurodave/cpp-async-delegate">https://github.com/endurodave/cpp-async-delegate</a></p>
 <p>See <a class="el" href="_r_e_a_d_m_e_8md.html">README.md</a>, DETAILS.md, EXAMPLES.md, and source code Doxygen comments for more information. </p>

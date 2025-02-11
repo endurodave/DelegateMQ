@@ -1,4 +1,4 @@
 var _i_thread_8h =
 [
-    [ "DelegateMQ::IThread", "class_delegate_m_q_1_1_i_thread.html", "class_delegate_m_q_1_1_i_thread" ]
+    [ "dmq::IThread", "classdmq_1_1_i_thread.html", "classdmq_1_1_i_thread" ]
 ];

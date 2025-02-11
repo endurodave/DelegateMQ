@@ -39,7 +39,7 @@ Synchronous and asynchronous delegates are available. Asynchronous variants hand
 Remote delegates enable function invocation across processes or processors by using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callable endpoints with any function signature. Minimal effort is required to extend support to any new library. Concrete examples are provided using support libraries below. 
 
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
-* **Transport:** [ZeroMQ](https://zeromq.org/), UDP, Data Pipe, memory buffer
+* **Transport:** [ZeroMQ](https://zeromq.org/), UDP, data pipe, memory buffer
  
 It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to `nullptr`. Const correctness is maintained; stored const objects can only be called by const member functions.
 
@@ -63,6 +63,12 @@ Typical use cases are:
 
 The DelegateMQ library asynchronous features differ from `std::async` in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into an event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.
 
+DelegateMQ uses an external thread, transport, and serializer, all of which are based on simple, well-defined interfaces.
+
+<img src="docs/LayerDiagram.jpg" alt="DelegateMQ Layer Diagram" style="width:60%;"><br>
+*DelegateMQ Layer Diagram*
+
+
 Originally published on CodeProject at: <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a>
 
 # Documentation
@@ -81,11 +87,32 @@ Originally published on CodeProject at: <a href="https://www.codeproject.com/Art
 
 See [Example Projects](docs/DETAILS.md#example-projects) to build other project examples.
 
+# Features
+
+DelegateMQ features at a glance. 
+
+| Feature | DelegateMQ |
+| --- | --- |
+| Purpose | DelegateMQ is a library used for invoking any callable synchronously, asynchronously, or remotely |
+| Usages | Callbacks (synchronous and asynchronous), asynchronous API's, communication and data distribution, and more |
+| Library | Allows customizing data sharing between threads, processes, or processors |
+| Complexity | Lightweight and extensible through external library interfaces and full source code |
+| Threading | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
+| Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |
+| Transport | External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (`ITransport`)  |
+| Message Buffering | Provided by a communication library (e.g. ZeroMQ) or custom solution within transport |
+| Timeouts and Retries | Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution |
+| Dynamic Memory | Heap or DelegateMQ fixed-block allocator |
+| Error Handling | Configurable for return error code, assert or exception |
+| Embedded Friendly | Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "superloop"). |
+| Operation System | Any. Custom `IThread` implementation may be required. |
+| Language | C++17 or higher |
+
 # Related Repositories
 
 ## Alternative Implementations
 
-Alternative asynchronous implementations similar in concept to C++ delegates, simpler, and less features.
+Alternative asynchronous implementations similar in concept to DelegateMQ, simpler, and less features.
 
 * <a href="https://github.com/endurodave/AsyncCallback">Asynchronous Callbacks in C++</a> - A C++ asynchronous callback framework.
 * <a href="https://github.com/endurodave/C_AsyncCallback">Asynchronous Callbacks in C</a> - A C language asynchronous callback framework.

@@ -2,6 +2,7 @@
 [![conan Ubuntu](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml)
 [![conan Ubuntu](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml)
 [![conan Windows](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml)
+[![Codecov](https://codecov.io/gh/endurodave/cpp-async-delegate/branch/master/graph/badge.svg)](https://app.codecov.io/gh/endurodave/cpp-async-delegate)
 
 # Delegates in C++
 
@@ -16,6 +17,7 @@ The DelegateMQ C++ library can invoke any callable function synchronously, async
   - [Build Options](#build-options)
   - [Example Projects](#example-projects)
   - [Examples Setup](#examples-setup)
+  - [Build Integration](#build-integration)
 - [Quick Start](#quick-start)
   - [Basic Examples](#basic-examples)
   - [Publish/Subscribe Example](#publishsubscribe-example)
@@ -110,16 +112,11 @@ The DelegateMQ C++ library can invoke any callable function synchronously, async
 
 [CMake](https://cmake.org/) is used to create the project files in the `build` directory. The repository root project executes all unit tests and examples with no external code or library dependencies.
 
-`cmake -B build`
+`cmake -B build .`
 
 ## Build Options
 
-The build options are contained within the files below.
-
-| File Name | Settings |
-| --- | --- |
-| `DelegateOpt.h` | `USE_ASSERTS` enable macro to use asserts instead of exceptions.<br>`USE_ALLOCATOR` enable macro to use a fixed-block allocator instead of the global heap. |
-| `External.cmake` | Update directory locations for external libraries such as MessagePack, RapidJSON, ZeroMQ, and FreeRTOS. |
+The DelegateMQ build options are located within `DelegateMQ.cmake`. Customize the external library paths using `External.cmake`. 
 
 ## Example Projects
 
@@ -139,9 +136,52 @@ Some remote delegate example projects have external library dependencies. Follow
 6. Clone [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS).
 7. Edit DelegateMQ `External.cmake` file and update external library directory locations.
 9. Build any example subproject within the `example/sample-projects` directory.<br>
-   `cmake -B build`
+   `cmake -B build .`
 
 See [Sample Projects](#sample-projects) for details regarding each sample project.
+
+## Build Integration
+
+Follow these steps to integrate DelegateMQ into a project.
+
+Set the desired DMQ options and include `DelegateMQ.cmake` within your `CMakeLists.txt` file.
+
+```
+# Set build options
+set (DMQ_EXTERNAL_LIB "ON")
+set (DMQ_ALLOCATOR "OFF")
+set (DMQ_UTIL "ON")
+set (DMQ_THREAD "DMQ_THREAD_STDLIB")
+set (DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")
+set (DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")
+include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
+```
+
+Update `External.cmake` external library paths.
+
+Add `DMQ_PREDEF_SOURCES` to your sources If using the predefined supporting DelegateMQ classes (e.g. `Thread`, `Serialize`, ...).
+
+```
+# Collect DelegateMQ predef source files
+list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+```
+
+Add the DelegateMQ include directory path.
+
+```
+include_directories(${DMQ_ROOT_DIR})
+```
+
+Add external library include paths defined within `External.cmake` as necessary.
+
+```
+include_directories(    
+    ${VCPKG_ROOT_DIR}/include
+    ${MSGPACK_INCLUDE_DIR}
+)
+```
+
+Include `DelegateMQ.h` to use the delegate library. Build and execute the project.
 
 # Quick Start
 
@@ -901,7 +941,7 @@ In short, the DelegateMQ library offers features that are not natively available
 
 # Library
 
-A single include `DelegateMQ.h` provides access to all delegate library features. The library is wrapped within a `DelegateMQ` namespace. The table below shows the delegate class hierarchy.
+A single include `DelegateMQ.h` provides access to all delegate library features. The library is wrapped within a `dmq` namespace. The table below shows the delegate class hierarchy.
 
 ```cpp
 // Delegates
@@ -1091,7 +1131,7 @@ if (thread) {
 `DispatchDelegate()` inserts a message into the thread message queue. `Thread` class uses a underlying `std::thread`. `Thread` is an implementation detail; create a unique `DispatchDelegate()` function based on the platform operating system API.
 
 ```cpp
-void Thread::DispatchDelegate(std::shared_ptr<DelegateMQ::DelegateMsg> msg)
+void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
     if (m_thread == nullptr)
         throw std::invalid_argument("Thread pointer is null");
@@ -1560,7 +1600,7 @@ See the `examples/sample-code` directory for additional examples.
 
 ## Sample Projects
 
-See the `examples/sample-projects` directory for example project. Most projects run on Windows or Linux. Others are Windows-only.
+See the `examples/sample-projects` directory for example project. Most projects run on Windows or Linux. Others are Windows-only. See [Examples Setup](#examples-setup) before running sample projects.
 
 ### bare-metal
 
@@ -1568,6 +1608,7 @@ Remote delegate example with no external libraries.
 
 | Interface | Implementation |
 | --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
 | `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
 
@@ -1577,6 +1618,7 @@ Remote delegate example using FreeRTOS and no external libraries. Tested using t
 
 | Interface | Implementation |
 | --- | --- |
+| `IThread` | `Thread` class implemented using FreeRTOS. 
 | `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
 | `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
 
@@ -1586,6 +1628,7 @@ Remote delegate example with Windows pipe and `serialize`.
 
 | Interface | Implementation |
 | --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | `serialize` class.
 | `IDispatcher` | Windows data pipe for dispatcher transport.
 
@@ -1595,6 +1638,7 @@ Remote delegate example with Windows UDP socket and `serialize`.
 
 | Interface | Implementation |
 | --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | `serialize` class.
 | `IDispatcher` | Windows UDP socket for dispatcher transport.
 
@@ -1604,6 +1648,7 @@ Remote delegate example using ZeroMQ and `serialize`.
 
 | Interface | Implementation |
 | --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | `serialize` class.  
 | `IDispatcher` | ZeroMQ library for dispatcher transport.
 
@@ -1613,6 +1658,7 @@ Remote delegate example using ZeroMQ and MessagePack libraries.
 
 | Interface | Implementation |
 | --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | MessagePack library.  
 | `IDispatcher` | ZeroMQ library for dispatcher transport.
 
@@ -1622,6 +1668,7 @@ Remote delegate example using ZeroMQ and RapidJSON libraries.
 
 | Interface | Implementation |
 | --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | RapidJSON library.  
 | `IDispatcher` | ZeroMQ library for dispatcher transport.
 
@@ -1631,6 +1678,7 @@ Remote delegate example showing a complex system architecture using ZeroMQ and M
 
 | Interface | Implementation |
 | --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | MessagePack library. | 
 | `IDispatcher` | ZeroMQ library for dispatcher transport. |
 

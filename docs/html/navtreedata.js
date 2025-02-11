@@ -29,9 +29,10 @@ var NAVTREE =
     [ "Overview", "index.html#autotoc_md1", null ],
     [ "Documentation", "index.html#autotoc_md2", null ],
     [ "Project Build", "index.html#autotoc_md3", null ],
-    [ "Related Repositories", "index.html#autotoc_md4", [
-      [ "Alternative Implementations", "index.html#autotoc_md5", null ],
-      [ "Other Projects Using DelegateMQ", "index.html#autotoc_md6", null ]
+    [ "Features", "index.html#autotoc_md4", null ],
+    [ "Related Repositories", "index.html#autotoc_md5", [
+      [ "Alternative Implementations", "index.html#autotoc_md6", null ],
+      [ "Other Projects Using DelegateMQ", "index.html#autotoc_md7", null ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -71,12 +72,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"class_delegate_m_q_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534",
-"class_delegate_m_q_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a2464dd351330ae86fb06545dd8638776",
-"class_delegate_m_q_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a38cc5ff7e92f8c4327a9fcd2339635a0",
-"class_delegate_m_q_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#aebff4b708c584d0ae53d5d636574d4b9",
+"classdmq_1_1_delegate_base.html#a0e20360ffb7e3a117d6e564fce0e8f48",
+"classdmq_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797",
+"classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#abac88357ef5057884355352bf3a08d89",
+"classdmq_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#adbd1437d5f2cae0e0101dfd4e60c7fe2",
 "classstl__allocator.html#a670fa330eea672f3bd493d37a316cb01",
-"structserialize__traits_1_1is__shared__ptr.html"
+"structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -102,7 +102,7 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
 <div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a> <a href="https://app.codecov.io/gh/endurodave/cpp-async-delegate"><img src="https://codecov.io/gh/endurodave/cpp-async-delegate/branch/master/graph/badge.svg" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
 <h1><a class="anchor" id="autotoc_md0"></a>
 Delegates in C++</h1>
-<p>The <a class="el" href="namespace_delegate_m_q.html" title="The delegate library namespace.">DelegateMQ</a> C++ library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. The library unifies function invocations to simplify multi-threaded and multi-processor development. Well-defined abstract interfaces and numerous concrete examples offer easy porting to any platform. It is a header-only template library that is thread-safe, unit-tested, and easy to use.</p>
+<p>The DelegateMQ C++ library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. The library unifies function invocations to simplify multi-threaded and multi-processor development. Well-defined abstract interfaces and numerous concrete examples offer easy porting to any platform. It is a header-only template library that is thread-safe, unit-tested, and easy to use.</p>
 <div class="fragment"><div class="line"><span class="comment">// Create an async delegate targeting lambda on thread1</span></div>
 <div class="line"><span class="keyword">auto</span> lambda = [](<span class="keywordtype">int</span> i) { std::cout &lt;&lt; i; };</div>
 <div class="line"><span class="keyword">auto</span> lambdaDelegate = MakeDelegate(std::function(lambda), thread1);</div>
@@ -151,7 +151,7 @@ Overview</h1>
 <li>Design Patterns (Active Object)</li>
 <li><code>std::async</code> <a class="el" href="class_thread.html">Thread</a> Targeting</li>
 </ul>
-<p>The <a class="el" href="namespace_delegate_m_q.html" title="The delegate library namespace.">DelegateMQ</a> library asynchronous features differ from <code>std::async</code> in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into an event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.</p>
+<p>The DelegateMQ library asynchronous features differ from <code>std::async</code> in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into an event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.</p>
 <p>Originally published on CodeProject at: <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a></p>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Documentation</h1>
@@ -164,17 +164,52 @@ Project Build</h1>
 <p><code>cmake -B build -S .</code></p>
 <p>See <a href="docs/DETAILS.md#example-projects">Example Projects</a> to build other project examples.</p>
 <h1><a class="anchor" id="autotoc_md4"></a>
+Features</h1>
+<p>DelegateMQ features at a glance.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Feature   </th><th class="markdownTableHeadNone">DelegateMQ    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Purpose   </td><td class="markdownTableBodyNone">DelegateMQ is a library used for invoking any callable synchronously, asynchronously, or remotely    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Usages   </td><td class="markdownTableBodyNone">Callbacks (synchronous and asynchronous), asynchronous API's, communication and data distribution, and more    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Library   </td><td class="markdownTableBodyNone">Allows customizing data sharing between threads, processes, or processors    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Complexity   </td><td class="markdownTableBodyNone">Lightweight and extensible through external library interfaces and full source code    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Threading   </td><td class="markdownTableBodyNone">No internal threads. External configurable thread interface portable to any OS (<code>IThread</code>).    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Serialization   </td><td class="markdownTableBodyNone">External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (<code>ISerializer</code>)    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a class="el" href="class_transport.html" title="Win32 data pipe transport example.">Transport</a>   </td><td class="markdownTableBodyNone">External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (<code>ITransport</code>)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Message Buffering   </td><td class="markdownTableBodyNone">Provided by a communication library (e.g. ZeroMQ) or custom solution within transport    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Timeouts and Retries   </td><td class="markdownTableBodyNone">Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Dynamic Memory   </td><td class="markdownTableBodyNone">Heap or DelegateMQ fixed-block allocator    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Error Handling   </td><td class="markdownTableBodyNone">Configurable for return error code, assert or exception    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Embedded Friendly   </td><td class="markdownTableBodyNone">Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "superloop").    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Operation System   </td><td class="markdownTableBodyNone">Any. Custom <code>IThread</code> implementation may be required.    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Language   </td><td class="markdownTableBodyNone">C++17 or higher   </td></tr>
+</table>
+<h1><a class="anchor" id="autotoc_md5"></a>
 Related Repositories</h1>
-<h2><a class="anchor" id="autotoc_md5"></a>
+<h2><a class="anchor" id="autotoc_md6"></a>
 Alternative Implementations</h2>
 <p>Alternative asynchronous implementations similar in concept to C++ delegates, simpler, and less features.</p>
 <ul>
 <li><a href="https://github.com/endurodave/AsyncCallback">Asynchronous Callbacks in C++</a> - A C++ asynchronous callback framework.</li>
 <li><a href="https://github.com/endurodave/C_AsyncCallback">Asynchronous Callbacks in C</a> - A C language asynchronous callback framework.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md7"></a>
 Other Projects Using DelegateMQ</h2>
-<p>Repositories utilizing the <a class="el" href="namespace_delegate_m_q.html" title="The delegate library namespace.">DelegateMQ</a> library.</p>
+<p>Repositories utilizing the DelegateMQ library.</p>
 <ul>
 <li><a href="https://github.com/endurodave/AsyncStateMachine">Asynchronous State Machine Design in C++</a> - an asynchronous C++ state machine implemented using an asynchronous delegate library.</li>
 <li><a href="https://github.com/endurodave/IntegrationTestFramework">Integration Test Framework using Google Test and Delegates</a> - a multi-threaded C++ software integration test framework using Google Test and Delegate libraries.</li>

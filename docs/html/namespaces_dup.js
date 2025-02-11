@@ -1,6 +1,6 @@
 var namespaces_dup =
 [
-    [ "DelegateMQ", "namespace_delegate_m_q.html", "namespace_delegate_m_q" ],
+    [ "dmq", "namespacedmq.html", "namespacedmq" ],
     [ "serialize_traits", "namespaceserialize__traits.html", "namespaceserialize__traits" ],
     [ "src_dup", "namespacesrc__dup.html", [
       [ "copy_common_code", "namespacesrc__dup.html#afc752b49e0a83100098f19079eaafef1", null ],
