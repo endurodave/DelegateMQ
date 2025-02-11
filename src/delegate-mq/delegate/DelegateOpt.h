@@ -4,13 +4,7 @@
 /// @file
 /// @brief Delegate library options header file.
 
-// Define this macro to switch between assert or exception handling
-//#define USE_ASSERTS  // Uncomment to use asserts
-
-// Define the macro to use the fixed block allocator
-//#define USE_ALLOCATOR   // Uncomment to use allocator
-
-#ifdef USE_ASSERTS
+#ifdef DMQ_ASSERTS
     #include <cassert>
     // Use assert error handling. Change assert to a different error 
     // handler as required by the target application.
@@ -21,11 +15,11 @@
     #define BAD_ALLOC() throw std::bad_alloc()
 #endif
 
-// If USE_ASSERTS defined above, consider defining USE_ALLOCATOR to prevent 
+// If DMQ_ASSERTS defined above, consider defining DMQ_ALLOCATOR to prevent 
 // std::list usage within delegate library from throwing a std::bad_alloc 
 // exception. The std_allocator calls assert if out of memory. 
 // See master CMakeLists.txt for info on enabling the fixed-block allocator.
-#ifdef USE_ALLOCATOR
+#ifdef DMQ_ALLOCATOR
     // Use stl_allocator fixed-block allocator for dynamic storage allocation
     #include "predef/allocator/xlist.h"
     #include "predef/allocator/xsstream.h"

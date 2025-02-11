@@ -8,11 +8,11 @@
 /// Dispatch callable argument data to a remote endpoint.
 
 #include "delegate/IDispatcher.h"
-#if defined(TRANSPORT_ZEROMQ)
+#if defined(DMQ_TRANSPORT_ZEROMQ)
     #include "predef/transport/zeromq/Transport.h"
-#elif defined (TRANSPORT_WIN32_PIPE)
+#elif defined (DMQ_TRANSPORT_WIN32_PIPE)
     #include "predef/transport/win32-pipe/Transport.h"
-#elif defined (TRANSPORT_WIN32_UDP)
+#elif defined (DMQ_TRANSPORT_WIN32_UDP)
     #include "predef/transport/win32-udp/Transport.h"
 #else
     #error "Include a transport header."

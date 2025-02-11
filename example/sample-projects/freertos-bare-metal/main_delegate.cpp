@@ -127,6 +127,8 @@ public:
     int x;
     int y;
     std::string msg;
+
+    XALLOCATOR
 };
 
 // Simple serialization of Data. Use any serialization scheme as necessary. 

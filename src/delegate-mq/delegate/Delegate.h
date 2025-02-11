@@ -63,7 +63,7 @@ public:
     virtual DelegateBase* Clone() const = 0;
 
     // Optional fixed block allocator for delegates created on the heap 
-    // using operator new(). See USE_ALLOCATOR in DelegateOpt.h and 
+    // using operator new(). See DMQ_ALLOCATOR in DelegateOpt.h and 
     // ENABLE_ALLOCATOR in CMakeLists.txt.
     XALLOCATOR
 };
@@ -742,5 +742,7 @@ auto MakeDelegate(std::function<RetType(Args...)> func) {
 }
 
 }
+
+namespace dmq = DelegateMQ;  // Alias
 
 #endif

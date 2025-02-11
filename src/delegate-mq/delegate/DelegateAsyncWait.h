@@ -27,8 +27,8 @@
 /// threads using the two thread-safe functions below:
 ///
 /// `RetType operator()(Args... args)` - called by the source thread to initiate the async
-/// function call. May throw `std::bad_alloc` if dynamic storage allocation fails and `USE_ASSERTS` 
-/// is not defined. Clone() also may throw `std::bad_alloc` unless 'USE_ASSERTS'. All other delegate 
+/// function call. May throw `std::bad_alloc` if dynamic storage allocation fails and `DMQ_ASSERTS` 
+/// is not defined. Clone() also may throw `std::bad_alloc` unless 'DMQ_ASSERTS'. All other delegate 
 /// class functions do not throw exceptions.
 ///
 /// `void Invoke(std::shared_ptr<DelegateMsg> msg)` - called by the destination
@@ -210,7 +210,7 @@ public:
     /// and copying the state of the current object to it. 
     /// @return A pointer to a new `ClassType` instance.
     /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and USE_ASSERTS not defined.
+    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }
@@ -613,7 +613,7 @@ public:
     /// and copying the state of the current object to it. 
     /// @return A pointer to a new `ClassType` instance.
     /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and USE_ASSERTS not defined.
+    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }
@@ -935,7 +935,7 @@ public:
     /// and copying the state of the current object to it. 
     /// @return A pointer to a new `ClassType` instance.
     /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and USE_ASSERTS not defined.
+    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }

@@ -220,7 +220,7 @@ auto make_tuple_heap(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, st
 /// @param args The remaining arguments to append to the tuple.
 /// @return A new tuple with all arguments appended.
 /// @throws std::bad_alloc If dynamic allocation of arguments created on the heap
-/// for appending to the tuple fails and USE_ASSERTS not defined.
+/// for appending to the tuple fails and DMQ_ASSERTS not defined.
 template<typename Arg1, typename... Args, typename... Ts>
 auto make_tuple_heap(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, std::tuple<Ts...> tup, Arg1 arg1, Args... args)
 {

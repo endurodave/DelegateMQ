@@ -19,7 +19,7 @@
 /// 
 /// `RetType operator()(Args... args)` - called by the sender to initiate the remote function call. 
 /// Use `SetErrorHandler()` to catch invoke errors. Clone() may throw `std::bad_alloc` unless 
-/// `USE_ASSERTS`. All other delegate class functions do not throw exceptions.
+/// `DMQ_ASSERTS`. All other delegate class functions do not throw exceptions.
 /// 
 /// `void Invoke(std::istream& is)` - called by the receiver to invoke the target function. 
 /// 
@@ -185,7 +185,7 @@ public:
     /// and copying the state of the current object to it. 
     /// @return A pointer to a new `ClassType` instance.
     /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and USE_ASSERTS not defined.
+    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }
@@ -680,7 +680,7 @@ public:
     /// and copying the state of the current object to it. 
     /// @return A pointer to a new `ClassType` instance.
     /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and USE_ASSERTS not defined.
+    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }
@@ -1116,7 +1116,7 @@ public:
     /// and copying the state of the current object to it. 
     /// @return A pointer to a new `ClassType` instance.
     /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and USE_ASSERTS not defined.
+    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }

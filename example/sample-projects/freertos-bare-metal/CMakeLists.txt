@@ -18,32 +18,32 @@ set (DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX C)
 
 # Set build options
-set (USE_EXTERNAL_LIB "ON")
-set (USE_ALLOCATOR "OFF")
-set (USE_UTIL "ON")
-set (USE_THREAD "THREAD_FREERTOS")
-set (USE_SERIALIZE "SERIALIZE_NONE")
-set (USE_TRANSPORT "TRANSPORT_NONE")
-include("${CMAKE_SOURCE_DIR}/../../../Config.cmake")
+set (DMQ_EXTERNAL_LIB "ON")
+set (DMQ_ALLOCATOR "OFF")
+set (DMQ_UTIL "ON")
+set (DMQ_THREAD "DMQ_THREAD_FREERTOS")
+set (DMQ_SERIALIZE "DMQ_SERIALIZE_NONE")
+set (DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")
+include("${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/DelegateMQ.cmake")
 
 # Collect all .cpp and *.h source files in the src directory
 file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.c*" "${CMAKE_SOURCE_DIR}/*.h")
 
 # Collect DelegateMQ predef source files
-list(APPEND SOURCES ${PREDEF_SOURCES})
+list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
 
 # Collect FreeRTOS source files
 list(APPEND SOURCES ${FREERTOS_SOURCES})
 
 # Organize delegate source files within IDE (Visual Studio)
-source_group("Delegate Files" FILES ${DELEGATEMQ_SOURCES} ${PREDEF_SOURCES})
+source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES} ${DMQ_PREDEF_SOURCES})
 source_group("FreeRTOS Files" FILES ${FREERTOS_SOURCES})
 
 # Add subdirectories to include path
 include_directories(
     .
     ./Trace_Recorder_Configuration
-    ${DELEGATE_ROOT_DIR}/src/delegate-mq
+    ${DMQ_ROOT_DIR}
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/include
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Common/include
@@ -51,7 +51,7 @@ include_directories(
 )
 
 # Add an executable target
-add_executable(${DELEGATE_APP} ${SOURCES} ${DELEGATEMQ_SOURCES})
+add_executable(${DELEGATE_APP} ${SOURCES} ${DMQ_LIB_SOURCES})
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 

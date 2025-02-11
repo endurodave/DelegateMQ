@@ -70,7 +70,7 @@ void *xrealloc(void *ptr, size_t size);
 /// Output allocator statistics to the standard output
 void xalloc_stats();
 
-#ifdef USE_ALLOCATOR
+#ifdef DMQ_ALLOCATOR
     // Macro to overload new/delete with xalloc/xfree. Add macro to any class to enable
     // fixed-block memory allocation. Add to a base class provides fixed-block memory
     // for the base and all derived classes.

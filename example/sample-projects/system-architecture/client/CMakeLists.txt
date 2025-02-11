@@ -6,27 +6,27 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 add_compile_definitions(CLIENT_APP)
 
 # Set build options
-set (USE_EXTERNAL_LIB "ON")
-set (USE_ALLOCATOR "OFF")
-set (USE_UTIL "ON")
-set (USE_THREAD "THREAD_STDLIB")
-set (USE_SERIALIZE "SERIALIZE_MSGPACK")
-set (USE_TRANSPORT "TRANSPORT_ZEROMQ")
-include("${CMAKE_SOURCE_DIR}/../../../../Config.cmake")
+set (DMQ_EXTERNAL_LIB "ON")
+set (DMQ_ALLOCATOR "OFF")
+set (DMQ_UTIL "ON")
+set (DMQ_THREAD "DMQ_THREAD_STDLIB")
+set (DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")
+set (DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")
+include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
 
 # Collect all .cpp and *.h source files in the src directory
-file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/*.cpp" "${CMAKE_SOURCE_DIR}/*.h")
+file(GLOB SOURCES "*.cpp" "*.h")
 
 # Collect DelegateMQ predef source files
-list(APPEND SOURCES ${PREDEF_SOURCES})
+list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
 
 # Organize delegate source files within IDE (Visual Studio)
-source_group("Delegate Files" FILES ${DELEGATEMQ_SOURCES})
+source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
 
 # Add subdirectories to include path
 include_directories( 
     ${CMAKE_SOURCE_DIR}/../common
-    ${DELEGATE_ROOT_DIR}/src/delegate-mq
+    ${DMQ_ROOT_DIR}
     ${VCPKG_ROOT_DIR}/include
     ${MSGPACK_INCLUDE_DIR}
 )
@@ -34,7 +34,7 @@ include_directories(
 add_subdirectory("../common" "${CMAKE_BINARY_DIR}/common")
 
 # Add an executable target
-add_executable(${DELEGATE_APP} ${SOURCES} ${DELEGATEMQ_SOURCES})
+add_executable(${DELEGATE_APP} ${SOURCES} ${DMQ_LIB_SOURCES})
 
 target_link_libraries(${DELEGATE_APP} PRIVATE 
     common_lib

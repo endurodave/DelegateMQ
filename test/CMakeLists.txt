@@ -2,26 +2,25 @@
 cmake_minimum_required(VERSION 3.10)
 
 set (DELEGATE_APP "delegate_app")
-set (DELEGATE_LIB "delegate_mq")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
 # Set build options
-set (USE_EXTERNAL_LIB "OFF")
-set (USE_ALLOCATOR "OFF")
-set (USE_UTIL "ON")
-set (USE_THREAD "THREAD_STDLIB")
-set (USE_SERIALIZE "SERIALIZE_SERIALIZE")
-set (USE_TRANSPORT "TRANSPORT_NONE")
-include("${CMAKE_SOURCE_DIR}/Config.cmake")
+set (DMQ_EXTERNAL_LIB "OFF")
+set (DMQ_ALLOCATOR "OFF")
+set (DMQ_UTIL "ON")
+set (DMQ_THREAD "DMQ_THREAD_STDLIB")
+set (DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")
+set (DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")
+include("${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.cmake")
 
 # Collect all .cpp and *.h source files 
-file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+file(GLOB SOURCES "*.cpp" "*.h")
 
 # Collect DelegateMQ predef source files
-list(APPEND SOURCES ${PREDEF_SOURCES})
+list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
 
 # Organize delegate source files within IDE (Visual Studio)
-source_group("Delegate Files" FILES ${DELEGATEMQ_SOURCES} ${PREDEF_SOURCES})
+source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES} ${DMQ_PREDEF_SOURCES})
 
 # Check if the TEST_COVERAGE argument is passed
 option(TEST_COVERAGE "Enable code coverage" OFF)
@@ -36,12 +35,12 @@ endif()
 
 # Add subdirectories to include path
 include_directories( 
-    ${DELEGATE_ROOT_DIR}/src/delegate-mq
-    ${DELEGATE_ROOT_DIR}/test/unit-tests
+    ${DMQ_ROOT_DIR}
+    test/unit-tests
 )
 
 # Add an executable target
-add_executable(${DELEGATE_APP} ${SOURCES} ${DELEGATEMQ_SOURCES})
+add_executable(${DELEGATE_APP} ${SOURCES} ${DMQ_LIB_SOURCES})
 
 target_link_libraries(${DELEGATE_APP} PRIVATE 
     unit_tests_lib
