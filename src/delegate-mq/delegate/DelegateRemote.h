@@ -2,7 +2,7 @@
 #define _DELEGATE_REMOTE_H
 
 // DelegateRemote.h
-// @see https://github.com/endurodave/cpp-async-delegate
+// @see https://github.com/endurodave/DelegateMQ
 // David Lafreniere, Aug 2025.
 
 /// @file

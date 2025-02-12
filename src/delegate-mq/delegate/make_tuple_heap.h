@@ -1,7 +1,7 @@
 #ifndef _MAKE_TUPLE_HEAP_H
 #define _MAKE_TUPLE_HEAP_H
 
-// @see https://github.com/endurodave/cpp-async-delegate
+// @see https://github.com/endurodave/DelegateMQ
 // David Lafreniere, Aug 2020.
 
 /// @file

@@ -1,5 +1,5 @@
 /// @file
-/// @see https://github.com/endurodave/cpp-async-delegate
+/// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 
 #include "NetworkMgr.h"
