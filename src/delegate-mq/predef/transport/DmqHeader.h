@@ -1,5 +1,5 @@
-#ifndef MSG_HEADER_H
-#define MSG_HEADER_H
+#ifndef DMQ_HEADER_H
+#define DMQ_HEADER_H
 
 /// @file 
 /// @see https://github.com/endurodave/DelegateMQ
@@ -9,15 +9,15 @@
 
 /// @brief Header for remote delegate messages. Handles endinesses byte swaps 
 /// as necessary. 
-class MsgHeader
+class DmqHeader
 {
 public:
     static const uint16_t MARKER = 0x55AA;
     static const size_t HEADER_SIZE = 6;
 
     // Constructor
-    MsgHeader() = default;
-    MsgHeader(uint16_t id, uint16_t seqNum)
+    DmqHeader() = default;
+    DmqHeader(uint16_t id, uint16_t seqNum)
         : m_id(id), m_seqNum(seqNum) {}
 
     // Getter for the MARKER

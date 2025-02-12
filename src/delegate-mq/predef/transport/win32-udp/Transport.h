@@ -14,13 +14,14 @@
 
 #pragma comment(lib, "ws2_32.lib")  // Link with Winsock library
 
-#include "predef/dispatcher/MsgHeader.h"
+#include "predef/transport/ITransport.h"
+#include "predef/transport/DmqHeader.h"
 #include <windows.h>
 #include <sstream>
 #include <cstdio>
 
 /// @brief Win32 data pipe transport example. 
-class Transport
+class Transport : public ITransport
 {
 public:
     enum class Type 
@@ -81,7 +82,7 @@ public:
         WSACleanup();
     }
 
-    int Send(std::stringstream& os) 
+    virtual int Send(std::stringstream& os) override
     {
         size_t length = os.str().length();
         if (os.bad() || os.fail() || length <= 0)
@@ -105,7 +106,7 @@ public:
         return 0;
     }
 
-    std::stringstream Receive(MsgHeader& header)
+    virtual std::stringstream Receive(DmqHeader& header) override
     {
         std::stringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
@@ -125,7 +126,7 @@ public:
         headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
         header.SetMarker(marker);
 
-        if (header.GetMarker() != MsgHeader::MARKER) {
+        if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
             return headerStream;  // TODO: Optionally handle this case more gracefully
         }
@@ -143,7 +144,7 @@ public:
         std::stringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write the remaining argument data to stream
-        argStream.write(m_buffer + MsgHeader::HEADER_SIZE, size - MsgHeader::HEADER_SIZE);
+        argStream.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
         // argStream contains the serialized remote argument data
         return argStream;

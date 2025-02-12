@@ -59,7 +59,7 @@ private:
     void Poll()
     {
         // Get incoming data
-        MsgHeader header;
+        DmqHeader header;
         auto arg_data = m_transport.Receive(header);
 
         // Incoming remote delegate data arrived?

@@ -8,14 +8,15 @@
 /// Transport callable argument data to/from a remote using ZeroMQ library. Update 
 /// BUFFER_SIZE below as necessary.
 
-#include "predef/dispatcher/MsgHeader.h"
+#include "predef/transport/ITransport.h"
+#include "predef/transport/DmqHeader.h"
 #include <zmq.h>
 #include <sstream>
 #include <cstdio>
 
 /// @brief ZeroMQ transport example. Each Transport object must only be called
 /// by a single thread of control per ZeroMQ library.
-class Transport
+class Transport : public ITransport
 {
 public:
     enum class Type 
@@ -105,7 +106,7 @@ public:
         m_zmqContext = nullptr;
     }
 
-    int Send(std::stringstream& os) 
+    virtual int Send(std::stringstream& os) override
     {
         size_t length = os.str().length();
         if (os.bad() || os.fail() || length <= 0)
@@ -121,7 +122,7 @@ public:
         return 0;
     }
 
-    std::stringstream Receive(MsgHeader& header)
+    virtual std::stringstream Receive(DmqHeader& header) override
     {
         std::stringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
@@ -134,20 +135,20 @@ public:
             return headerStream;
         }
 
-        if (size <= MsgHeader::HEADER_SIZE) {
+        if (size <= DmqHeader::HEADER_SIZE) {
             std::cerr << "Received data is too small to process." << std::endl;
             return headerStream;
         }
 
         // Write the received header data into the stringstream
-        headerStream.write(buffer, MsgHeader::HEADER_SIZE);
+        headerStream.write(buffer, DmqHeader::HEADER_SIZE);
         headerStream.seekg(0);
 
         uint16_t marker = 0;
         headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
         header.SetMarker(marker);
 
-        if (header.GetMarker() != MsgHeader::MARKER) {
+        if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
             return headerStream;  // TODO: Optionally handle this case more gracefully
         }
@@ -165,7 +166,7 @@ public:
         std::stringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write the remaining argument data to stream
-        argStream.write(buffer + MsgHeader::HEADER_SIZE, size - MsgHeader::HEADER_SIZE);
+        argStream.write(buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
         // argStream contains the serialized remote argument data
         return argStream;

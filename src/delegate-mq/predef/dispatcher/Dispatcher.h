@@ -17,7 +17,7 @@
 #else
     #error "Include a transport header."
 #endif
-#include "MsgHeader.h"
+#include "predef/transport/DmqHeader.h"
 #include <sstream>
 #include <mutex>
 
@@ -41,9 +41,9 @@ public:
     {
         std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        MsgHeader header(id, GetSeqNum());
+        DmqHeader header(id, GetSeqNum());
 
-        // Write each header value using the getters from MsgHeader
+        // Write each header value using the getters from DmqHeader
         auto marker = header.GetMarker();
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
 
