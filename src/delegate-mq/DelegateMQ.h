@@ -2,7 +2,7 @@
 #define _DELEGATE_MQ_H
 
 // Delegate.h
-// @see https://github.com/endurodave/cpp-async-delegate
+// @see https://github.com/endurodave/DelegateMQ
 // David Lafreniere, 2025.
 
 /// @file
@@ -50,7 +50,7 @@
 /// as opposed to exceptions. All other delegate class functions do not throw exceptions.
 /// 
 /// Github repository location:  
-/// https://github.com/endurodave/cpp-async-delegate
+/// https://github.com/endurodave/DelegateMQ
 ///
 /// See README.md, DETAILS.md, EXAMPLES.md, and source code Doxygen comments for more information.
 

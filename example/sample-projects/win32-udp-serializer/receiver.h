@@ -2,7 +2,7 @@
 #define RECEIVER_H
 
 /// @file main.cpp
-/// @see https://github.com/endurodave/cpp-async-delegate
+/// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// @brief ZeroMQ with remote delegates examples. 
@@ -59,7 +59,7 @@ private:
     void Poll()
     {
         // Get incoming data
-        MsgHeader header;
+        DmqHeader header;
         auto arg_data = m_transport.Receive(header);
 
         // Incoming remote delegate data arrived?

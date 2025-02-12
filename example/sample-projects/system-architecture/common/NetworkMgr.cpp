@@ -1,5 +1,5 @@
 /// @file
-/// @see https://github.com/endurodave/cpp-async-delegate
+/// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 
 #include "NetworkMgr.h"
@@ -117,7 +117,7 @@ void NetworkMgr::SendDataMsg(DataMsg& data)
 void NetworkMgr::Poll()
 {
     // Get incoming data
-    MsgHeader header;
+    DmqHeader header;
     auto arg_data = m_transport.Receive(header);
      
     // Incoming remote delegate data arrived?
