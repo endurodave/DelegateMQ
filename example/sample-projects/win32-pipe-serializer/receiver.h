@@ -28,7 +28,7 @@ public:
         m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, id);
 
         // Set the transport
-        m_transport.Create(Transport::Type::SUB, TEXT("\\\\.\\pipe\\pipedelegate"));
+        m_transport.Create(Win32PipeTransport::Type::SUB, TEXT("\\\\.\\pipe\\pipedelegate"));
 
         // Create the receiver thread
         m_thread.CreateThread();
@@ -84,7 +84,7 @@ private:
     Timer m_recvTimer;
 
     xostringstream m_argStream;
-    Transport m_transport;
+    Win32PipeTransport m_transport;
     Serializer<void(Data&, DataAux&)> m_serializer;
 
     // Receiver remote delegate

@@ -28,7 +28,7 @@ public:
         m_sendDelegate.SetErrorHandler(MakeDelegate(this, &Sender::ErrorHandler));
 
         // Set the transport
-        m_transport.Create(Transport::Type::PUB, TEXT("\\\\.\\pipe\\pipedelegate"));
+        m_transport.Create(Win32PipeTransport::Type::PUB, TEXT("\\\\.\\pipe\\pipedelegate"));
         m_dispatcher.SetTransport(&m_transport);
         
         // Create the sender thread
@@ -81,7 +81,7 @@ private:
 
     xostringstream m_argStream;
     Dispatcher m_dispatcher;
-    Transport m_transport;
+    Win32PipeTransport m_transport;
     Serializer<void(Data&, DataAux&)> m_serializer;
 
     // Sender remote delegate

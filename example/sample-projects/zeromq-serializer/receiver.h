@@ -28,7 +28,7 @@ public:
         m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, id);
 
         // Set the transport
-        m_transport.Create(Transport::Type::SUB, "tcp://localhost:5555");
+        m_transport.Create(ZeroMqTransport::Type::SUB, "tcp://localhost:5555");
 
         // Create the receiver thread
         m_thread.CreateThread();
@@ -84,7 +84,7 @@ private:
     Timer m_recvTimer;
 
     xostringstream m_argStream;
-    Transport m_transport;
+    ZeroMqTransport m_transport;
     Serializer<void(Data&, DataAux&)> m_serializer;
 
     // Receiver remote delegate
