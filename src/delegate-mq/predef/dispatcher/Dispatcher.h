@@ -9,11 +9,11 @@
 
 #include "delegate/IDispatcher.h"
 #if defined(DMQ_TRANSPORT_ZEROMQ)
-    #include "predef/transport/zeromq/Transport.h"
+    #include "predef/transport/zeromq/ZeroMqTransport.h"
 #elif defined (DMQ_TRANSPORT_WIN32_PIPE)
-    #include "predef/transport/win32-pipe/Transport.h"
+    #include "predef/transport/win32-pipe/Win32PipeTransport.h"
 #elif defined (DMQ_TRANSPORT_WIN32_UDP)
-    #include "predef/transport/win32-udp/Transport.h"
+    #include "predef/transport/win32-udp/Win32UdpTransport.h"
 #else
     #error "Include a transport header."
 #endif
@@ -31,7 +31,7 @@ public:
         m_transport = nullptr;
     }
 
-    void SetTransport(Transport* transport)
+    void SetTransport(ITransport* transport)
     {
         m_transport = transport;
     }
@@ -41,7 +41,7 @@ public:
     {
         std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        DmqHeader header(id, GetSeqNum());
+        DmqHeader header(id, DmqHeader::GetNextSeqNum());
 
         // Write each header value using the getters from DmqHeader
         auto marker = header.GetMarker();
@@ -65,15 +65,7 @@ public:
     }
 
 private:
-    uint16_t GetSeqNum()
-    {
-        static std::atomic<uint16_t> seqNum(0);
-
-        // Atomically increment and return the previous value
-        return seqNum.fetch_add(1, std::memory_order_relaxed);
-    }
-
-    Transport* m_transport = nullptr;
+    ITransport* m_transport = nullptr;
 };
 
 #endif

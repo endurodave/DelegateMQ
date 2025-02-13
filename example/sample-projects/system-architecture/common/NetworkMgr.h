@@ -72,7 +72,7 @@ private:
     xostringstream m_argStream;
 
     // Transport using ZeroMQ library. Only call transport from NetworkMsg thread.
-    Transport m_transport;
+    ZeroMqTransport m_transport;
 
     // Dispatcher using DelegateMQ library
     Dispatcher m_dispatcher;

@@ -6,6 +6,7 @@
 /// David Lafreniere, 2025.
 
 #include <cstdint>
+#include <atomic>
 
 /// @brief Header for remote delegate messages. Handles endinesses byte swaps 
 /// as necessary. 
@@ -54,6 +55,14 @@ public:
     void SetMarker(uint16_t marker)
     {
         m_marker = marker;  // Store as is (in system native endianness)
+    }
+
+    static uint16_t GetNextSeqNum()
+    {
+        static std::atomic<uint16_t> seqNum(0);
+
+        // Atomically increment and return the previous value
+        return seqNum.fetch_add(1, std::memory_order_relaxed);
     }
 
 private:

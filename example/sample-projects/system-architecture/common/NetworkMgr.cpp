@@ -50,10 +50,11 @@ void NetworkMgr::Create()
     m_commandMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
     m_commandMsgDel = MakeDelegate(this, &NetworkMgr::RecvCommandMsg, COMMAND_MSG_ID);
 
+    int err = 0;
 #ifdef SERVER_APP
-    m_transport.Create(Transport::Type::PAIR_SERVER, "tcp://*:5555");
+    err = m_transport.Create(ZeroMqTransport::Type::PAIR_SERVER, "tcp://*:5555");
 #else
-    m_transport.Create(Transport::Type::PAIR_CLIENT, "tcp://localhost:5555");
+    err = m_transport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://localhost:5555");
 #endif
 
     // Set the transport used by the dispatcher

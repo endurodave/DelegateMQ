@@ -1,5 +1,5 @@
-#ifndef TRANSPORT_H
-#define TRANSPORT_H
+#ifndef ZEROMQ_TRANSPORT_H
+#define ZEROMQ_TRANSPORT_H
 
 /// @file 
 /// @see https://github.com/endurodave/DelegateMQ
@@ -16,7 +16,7 @@
 
 /// @brief ZeroMQ transport example. Each Transport object must only be called
 /// by a single thread of control per ZeroMQ library.
-class Transport : public ITransport
+class ZeroMqTransport : public ITransport
 {
 public:
     enum class Type 

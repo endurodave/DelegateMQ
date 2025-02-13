@@ -160,8 +160,8 @@ namespace Example
 
         ~Sender()
         {
-            m_thread.ExitThread();
             m_sendTimer.Stop();
+            m_thread.ExitThread();
         }
 
         // Send data to the remote
@@ -208,6 +208,7 @@ namespace Example
         }
         ~Receiver()
         {
+            m_recvTimer.Stop();
             m_thread.ExitThread();
             m_recvDelegate = nullptr;
         }

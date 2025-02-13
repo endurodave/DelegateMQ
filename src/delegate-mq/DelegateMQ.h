@@ -87,13 +87,13 @@
 
 #if defined(DMQ_TRANSPORT_ZEROMQ)
     #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/zeromq/Transport.h"
+    #include "predef/transport/zeromq/ZeroMqTransport.h"
 #elif defined(DMQ_TRANSPORT_WIN32_PIPE)
     #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/win32-pipe/Transport.h"
+    #include "predef/transport/win32-pipe/Win32PipeTransport.h"
 #elif defined(DMQ_TRANSPORT_WIN32_UDP)
     #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/win32-udp/Transport.h"
+    #include "predef/transport/win32-udp/Win32UdpTransport.h"
 #elif defined(DMQ_TRANSPORT_NONE)
     // Create a custom application-specific transport
 #else

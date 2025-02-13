@@ -1,5 +1,5 @@
-#ifndef TRANSPORT_H
-#define TRANSPORT_H
+#ifndef WIN32_PIPE_TRANSPORT_H
+#define WIN32_PIPE_TRANSPORT_H
 
 /// @file 
 /// @see https://github.com/endurodave/DelegateMQ
@@ -19,7 +19,7 @@
 #include <iostream>
 
 /// @brief Win32 data pipe transport example. 
-class Transport : public ITransport
+class Win32PipeTransport : public ITransport
 {
 public:
     enum class Type 
