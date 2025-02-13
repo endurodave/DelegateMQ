@@ -7,5 +7,6 @@ var searchData=
   ['delegatemsg_2eh_4',['DelegateMsg.h',['../_delegate_msg_8h.html',1,'']]],
   ['delegateopt_2eh_5',['DelegateOpt.h',['../_delegate_opt_8h.html',1,'']]],
   ['delegateremote_2eh_6',['DelegateRemote.h',['../_delegate_remote_8h.html',1,'']]],
-  ['dispatcher_2eh_7',['Dispatcher.h',['../_dispatcher_8h.html',1,'']]]
+  ['dispatcher_2eh_7',['Dispatcher.h',['../_dispatcher_8h.html',1,'']]],
+  ['dmqheader_2eh_8',['DmqHeader.h',['../_dmq_header_8h.html',1,'']]]
 ];

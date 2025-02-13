@@ -30,5 +30,6 @@ var searchData=
   ['delegatememberremote_27',['DelegateMemberRemote',['../structdmq_1_1_delegate_member_remote.html',1,'dmq']]],
   ['delegatememberremote_3c_20tclass_2c_20rettype_28args_2e_2e_2e_29_3e_28',['DelegateMemberRemote&lt; TClass, RetType(Args...)&gt;',['../classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
   ['delegatemsg_29',['DelegateMsg',['../classdmq_1_1_delegate_msg.html',1,'dmq']]],
-  ['dispatcher_30',['Dispatcher',['../class_dispatcher.html',1,'']]]
+  ['dispatcher_30',['Dispatcher',['../class_dispatcher.html',1,'']]],
+  ['dmqheader_31',['DmqHeader',['../class_dmq_header.html',1,'']]]
 ];

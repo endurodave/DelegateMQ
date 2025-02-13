@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['delegates_0',['Delegates',['../index.html',1,'']]]
+  ['delegatemq_0',['DelegateMQ',['../index.html',1,'']]]
 ];

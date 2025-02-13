@@ -86,7 +86,8 @@ var annotated_dup =
     [ "Allocator", "class_allocator.html", "class_allocator" ],
     [ "AllocatorPool", "class_allocator_pool.html", "class_allocator_pool" ],
     [ "Dispatcher", "class_dispatcher.html", "class_dispatcher" ],
-    [ "MsgHeader", "class_msg_header.html", "class_msg_header" ],
+    [ "DmqHeader", "class_dmq_header.html", "class_dmq_header" ],
+    [ "ITransport", "class_i_transport.html", "class_i_transport" ],
     [ "serialize", "classserialize.html", "classserialize" ],
     [ "Serializer", "struct_serializer.html", null ],
     [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4" ],
@@ -95,5 +96,7 @@ var annotated_dup =
     [ "Thread", "class_thread.html", "class_thread" ],
     [ "ThreadMsg", "class_thread_msg.html", "class_thread_msg" ],
     [ "Timer", "class_timer.html", "class_timer" ],
-    [ "Transport", "class_transport.html", "class_transport" ]
+    [ "Win32PipeTransport", "class_win32_pipe_transport.html", "class_win32_pipe_transport" ],
+    [ "Win32UdpTransport", "class_win32_udp_transport.html", "class_win32_udp_transport" ],
+    [ "ZeroMqTransport", "class_zero_mq_transport.html", "class_zero_mq_transport" ]
 ];

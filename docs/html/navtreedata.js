@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "Delegates", "index.html", [
+  [ "DelegateMQ", "index.html", [
     [ "Delegates in C++", "index.html#autotoc_md0", null ],
     [ "Overview", "index.html#autotoc_md1", null ],
     [ "Documentation", "index.html#autotoc_md2", null ],
@@ -72,12 +72,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"classdmq_1_1_delegate_base.html#a0e20360ffb7e3a117d6e564fce0e8f48",
-"classdmq_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797",
-"classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#abac88357ef5057884355352bf3a08d89",
-"classdmq_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#adbd1437d5f2cae0e0101dfd4e60c7fe2",
-"classstl__allocator.html#a670fa330eea672f3bd493d37a316cb01",
-"structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html"
+"classdmq_1_1_delegate_base.html#a3eca9d3564df19ccc5139338f681a77c",
+"classdmq_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a5496fe5ccff70c616a30c45941000b93",
+"classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ae2645f0710f49dfd15c9d68d9e4a3d75",
+"classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433",
+"classstl__allocator.html#aa73c79a3d513bde9cd5ce7ee6c55c219",
+"structserialize__traits_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

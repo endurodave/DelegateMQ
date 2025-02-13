@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Delegates: Delegates</title>
+<title>DelegateMQ: DelegateMQ</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Delegates
+   <div id="projectname">DelegateMQ
    </div>
   </td>
  </tr>
@@ -96,10 +96,10 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">Delegates </div></div>
+  <div class="headertitle"><div class="title">DelegateMQ </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/cpp-async-delegate/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a> <a href="https://app.codecov.io/gh/endurodave/cpp-async-delegate"><img src="https://codecov.io/gh/endurodave/cpp-async-delegate/branch/master/graph/badge.svg" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
+<div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a> <a href="https://app.codecov.io/gh/endurodave/DelegateMQ"><img src="https://codecov.io/gh/endurodave/DelegateMQ/branch/master/graph/badge.svg" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
 <h1><a class="anchor" id="autotoc_md0"></a>
 Delegates in C++</h1>
 <p>The DelegateMQ C++ library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. The library unifies function invocations to simplify multi-threaded and multi-processor development. Well-defined abstract interfaces and numerous concrete examples offer easy porting to any platform. It is a header-only template library that is thread-safe, unit-tested, and easy to use.</p>
@@ -130,7 +130,7 @@ Overview</h1>
 <p>Remote delegates enable function invocation across processes or processors by using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callable endpoints with any function signature. Minimal effort is required to extend support to any new library. Concrete examples are provided using support libraries below.</p>
 <ul>
 <li><b>Serialization:</b> <a href="https://msgpack.org/index.html">MessagePack</a>, <a href="https://github.com/Tencent/rapidjson">RapidJSON</a>, <a href="https://github.com/endurodave/MessageSerialize">MessageSerialize</a></li>
-<li><b><a class="el" href="class_transport.html" title="Win32 data pipe transport example.">Transport</a>:</b> <a href="https://zeromq.org/">ZeroMQ</a>, UDP, Data Pipe, memory buffer</li>
+<li><b>Transport:</b> <a href="https://zeromq.org/">ZeroMQ</a>, UDP, data pipe, memory buffer</li>
 </ul>
 <p>It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to <code>nullptr</code>. Const correctness is maintained; stored const objects can only be called by const member functions.</p>
 <p>A delegate instance can be:</p>
@@ -152,12 +152,15 @@ Overview</h1>
 <li><code>std::async</code> <a class="el" href="class_thread.html">Thread</a> Targeting</li>
 </ul>
 <p>The DelegateMQ library asynchronous features differ from <code>std::async</code> in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into an event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.</p>
+<p>DelegateMQ uses an external thread, transport, and serializer, all of which are based on simple, well-defined interfaces.</p>
+<p><img src="docs/LayerDiagram.jpg" alt="DelegateMQ Layer Diagram" style="width:70%;" class="inline"/><br  />
+ <em>DelegateMQ Layer Diagram</em></p>
 <p>Originally published on CodeProject at: <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a></p>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Documentation</h1>
 <p>See Design Details for implementation design documentation and more examples.</p>
-<p>See <a href="https://endurodave.github.io/cpp-async-delegate/html/index.html">Doxygen Documentation</a> for source code documentation.</p>
-<p>See <a href="https://app.codecov.io/gh/endurodave/cpp-async-delegate">Unit Test Code Coverage</a> test results.</p>
+<p>See <a href="https://endurodave.github.io/DelegateMQ/html/index.html">Doxygen Documentation</a> for source code documentation.</p>
+<p>See <a href="https://app.codecov.io/gh/endurodave/DelegateMQ">Unit Test Code Coverage</a> test results.</p>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Project Build</h1>
 <p><a href="https://www.cmake.org">CMake</a> is used to create the build files. Visual Studio, GCC, and Clang toolchains are supported. Easy porting to other targets. Execute CMake console commands in the project root directory.</p>
@@ -165,10 +168,10 @@ Project Build</h1>
 <p>See <a href="docs/DETAILS.md#example-projects">Example Projects</a> to build other project examples.</p>
 <h1><a class="anchor" id="autotoc_md4"></a>
 Features</h1>
-<p>DelegateMQ features at a glance.</p>
+<p>DelegateMQ at a glance.</p>
 <table class="markdownTable">
 <tr class="markdownTableHead">
-<th class="markdownTableHeadNone">Feature   </th><th class="markdownTableHeadNone">DelegateMQ    </th></tr>
+<th class="markdownTableHeadNone">Category   </th><th class="markdownTableHeadNone">DelegateMQ    </th></tr>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Purpose   </td><td class="markdownTableBodyNone">DelegateMQ is a library used for invoking any callable synchronously, asynchronously, or remotely    </td></tr>
 <tr class="markdownTableRowEven">
@@ -182,7 +185,7 @@ Features</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Serialization   </td><td class="markdownTableBodyNone">External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (<code>ISerializer</code>)    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone"><a class="el" href="class_transport.html" title="Win32 data pipe transport example.">Transport</a>   </td><td class="markdownTableBodyNone">External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (<code>ITransport</code>)    </td></tr>
+<td class="markdownTableBodyNone">Transport   </td><td class="markdownTableBodyNone">External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (<code><a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a></code>)    </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Message Buffering   </td><td class="markdownTableBodyNone">Provided by a communication library (e.g. ZeroMQ) or custom solution within transport    </td></tr>
 <tr class="markdownTableRowOdd">
@@ -202,7 +205,7 @@ Features</h1>
 Related Repositories</h1>
 <h2><a class="anchor" id="autotoc_md6"></a>
 Alternative Implementations</h2>
-<p>Alternative asynchronous implementations similar in concept to C++ delegates, simpler, and less features.</p>
+<p>Alternative asynchronous implementations similar in concept to DelegateMQ, simpler, and less features.</p>
 <ul>
 <li><a href="https://github.com/endurodave/AsyncCallback">Asynchronous Callbacks in C++</a> - A C++ asynchronous callback framework.</li>
 <li><a href="https://github.com/endurodave/C_AsyncCallback">Asynchronous Callbacks in C</a> - A C language asynchronous callback framework.</li>

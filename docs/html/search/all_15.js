@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['zeromq_2ftransport_2eh_0',['Transport.h',['../zeromq_2_transport_8h.html',1,'']]]
+  ['zeromqtransport_0',['ZeroMqTransport',['../class_zero_mq_transport.html',1,'']]],
+  ['zeromqtransport_2eh_1',['ZeroMqTransport.h',['../_zero_mq_transport_8h.html',1,'']]]
 ];

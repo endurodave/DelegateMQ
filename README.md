@@ -89,9 +89,9 @@ See [Example Projects](docs/DETAILS.md#example-projects) to build other project 
 
 # Features
 
-DelegateMQ features at a glance. 
+DelegateMQ at a glance. 
 
-| Feature | DelegateMQ |
+| Category | DelegateMQ |
 | --- | --- |
 | Purpose | DelegateMQ is a library used for invoking any callable synchronously, asynchronously, or remotely |
 | Usages | Callbacks (synchronous and asynchronous), asynchronous API's, communication and data distribution, and more |

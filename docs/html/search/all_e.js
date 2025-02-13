@@ -6,7 +6,7 @@ var searchData=
   ['readendian_3',['readEndian',['../classserialize.html#ac4eceddf9316ef275c8f99aa6573d491',1,'serialize']]],
   ['readme_2emd_4',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
   ['rebind_5',['rebind',['../structstl__allocator_1_1rebind.html',1,'stl_allocator&lt; T &gt;::rebind&lt; U &gt;'],['../structstl__allocator_3_01void_01_4_1_1rebind.html',1,'stl_allocator&lt; void &gt;::rebind']]],
-  ['receive_6',['Receive',['../class_transport.html#a0b9376c22a03ecbd613416abeeb0639e',1,'Transport::Receive(MsgHeader &amp;header)'],['../class_transport.html#a0b9376c22a03ecbd613416abeeb0639e',1,'Transport::Receive(MsgHeader &amp;header)'],['../class_transport.html#a0b9376c22a03ecbd613416abeeb0639e',1,'Transport::Receive(MsgHeader &amp;header)']]],
+  ['receive_6',['Receive',['../class_i_transport.html#a019f68a52cb46287fe919e7c11e2d10c',1,'ITransport::Receive()'],['../class_win32_pipe_transport.html#aad92921500dec5ebdee848f5e7e94cbf',1,'Win32PipeTransport::Receive()'],['../class_win32_udp_transport.html#a240d16c4d7cd14dbb3554bb95fcd0627',1,'Win32UdpTransport::Receive()'],['../class_zero_mq_transport.html#ac51f136bcc9258642078f1c5bb8d824d',1,'ZeroMqTransport::Receive()']]],
   ['reference_7',['reference',['../classstl__allocator.html#af5a899e568d23ab5bb9150b4700a9cb1',1,'stl_allocator']]],
   ['related_20repositories_8',['Related Repositories',['../index.html#autotoc_md5',1,'']]],
   ['remotearg_9',['RemoteArg',['../classdmq_1_1_remote_arg.html',1,'dmq::RemoteArg&lt; Arg &gt;'],['../classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4.html#a30b5b63fe9011e7ac13b823a73216b97',1,'dmq::RemoteArg&lt; Arg ** &gt;::RemoteArg()']]],

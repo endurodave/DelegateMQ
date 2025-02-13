@@ -1,8 +1,5 @@
 var NAVTREEINDEX6 =
 {
-"structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html":[7,0,0,0,3],
-"structserialize__traits_1_1is__shared__ptr.html":[6,0,1,0],
-"structserialize__traits_1_1is__shared__ptr.html":[7,0,1,0],
 "structserialize__traits_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html":[6,0,1,1],
 "structserialize__traits_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html":[7,0,1,1],
 "structserialize__traits_1_1is__unsupported__container.html":[6,0,1,2],
@@ -27,14 +24,10 @@ var NAVTREEINDEX6 =
 "structserialize__traits_1_1is__unsupported__container_3_01std_1_1unordered__multimap_3_01_key_00571da480b2217d8490b18a0bcc496eb2.html":[7,0,1,11],
 "structserialize__traits_1_1is__unsupported__container_3_01std_1_1unordered__multiset_3_01_t_00_062a8fb1713695d62e688ecb3f56d982b.html":[6,0,1,12],
 "structserialize__traits_1_1is__unsupported__container_3_01std_1_1unordered__multiset_3_01_t_00_062a8fb1713695d62e688ecb3f56d982b.html":[7,0,1,12],
-"structstl__allocator_1_1rebind.html":[7,0,9,0],
-"structstl__allocator_1_1rebind.html#acd493d15e02132e3c074d4efba107280":[7,0,9,0,0],
-"structstl__allocator_3_01void_01_4_1_1rebind.html":[7,0,10,0],
-"structstl__allocator_3_01void_01_4_1_1rebind.html#a0a0ec8e21e51f7035ed0b9dc6c053b53":[7,0,10,0,0],
-"win32-pipe_2_transport_8h.html":[8,0,0,0,1,4,0,0],
-"win32-pipe_2_transport_8h_source.html":[8,0,0,0,1,4,0,0],
-"win32-udp_2_transport_8h.html":[8,0,0,0,1,4,1,0],
-"win32-udp_2_transport_8h_source.html":[8,0,0,0,1,4,1,0],
+"structstl__allocator_1_1rebind.html":[7,0,10,0],
+"structstl__allocator_1_1rebind.html#acd493d15e02132e3c074d4efba107280":[7,0,10,0,0],
+"structstl__allocator_3_01void_01_4_1_1rebind.html":[7,0,11,0],
+"structstl__allocator_3_01void_01_4_1_1rebind.html#a0a0ec8e21e51f7035ed0b9dc6c053b53":[7,0,11,0,0],
 "xallocator_8cpp.html":[8,0,0,0,1,0,3],
 "xallocator_8cpp.html#a1ec53eb8420d7c45a0df5aa632605699":[8,0,0,0,1,0,3,6],
 "xallocator_8cpp.html#a229bdfd69b1fe7d0ad297e789824019e":[8,0,0,0,1,0,3,2],
@@ -77,7 +70,5 @@ var NAVTREEINDEX6 =
 "xstring_8h.html":[8,0,0,0,1,0,10],
 "xstring_8h.html#a50612654f5d2a8436a8006f48560256a":[8,0,0,0,1,0,10,0],
 "xstring_8h.html#a8e7790b4edcc21d50d93d7f148a3c3b9":[8,0,0,0,1,0,10,1],
-"xstring_8h_source.html":[8,0,0,0,1,0,10],
-"zeromq_2_transport_8h.html":[8,0,0,0,1,4,2,0],
-"zeromq_2_transport_8h_source.html":[8,0,0,0,1,4,2,0]
+"xstring_8h_source.html":[8,0,0,0,1,0,10]
 };

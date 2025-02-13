@@ -30,5 +30,6 @@ var searchData=
   ['iserializer_27',['ISerializer',['../structdmq_1_1_i_serializer.html',1,'dmq']]],
   ['iserializer_3c_20rettype_28args_2e_2e_2e_29_3e_28',['ISerializer&lt; RetType(Args...)&gt;',['../classdmq_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
   ['ithread_29',['IThread',['../classdmq_1_1_i_thread.html',1,'dmq']]],
-  ['ithreadinvoker_30',['IThreadInvoker',['../classdmq_1_1_i_thread_invoker.html',1,'dmq']]]
+  ['ithreadinvoker_30',['IThreadInvoker',['../classdmq_1_1_i_thread_invoker.html',1,'dmq']]],
+  ['itransport_31',['ITransport',['../class_i_transport.html',1,'']]]
 ];

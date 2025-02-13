@@ -42,5 +42,7 @@ var searchData=
   ['issuccess_39',['IsSuccess',['../classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#ac3e78a8764e8f02383d44fdf2000f320',1,'dmq::DelegateFreeAsyncWait&lt; RetType(Args...)&gt;::IsSuccess()'],['../classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a5306dfbd249e5d4862eeb484fc3a0f33',1,'dmq::DelegateMemberAsyncWait&lt; TClass, RetType(Args...)&gt;::IsSuccess()'],['../classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a6177168d49d76f739ef1fc8f4204ae54',1,'dmq::DelegateFunctionAsyncWait&lt; RetType(Args...)&gt;::IsSuccess()']]],
   ['ithread_40',['IThread',['../classdmq_1_1_i_thread.html',1,'dmq']]],
   ['ithread_2eh_41',['IThread.h',['../_i_thread_8h.html',1,'']]],
-  ['ithreadinvoker_42',['IThreadInvoker',['../classdmq_1_1_i_thread_invoker.html',1,'dmq']]]
+  ['ithreadinvoker_42',['IThreadInvoker',['../classdmq_1_1_i_thread_invoker.html',1,'dmq']]],
+  ['itransport_43',['ITransport',['../class_i_transport.html',1,'']]],
+  ['itransport_2eh_44',['ITransport.h',['../_i_transport_8h.html',1,'']]]
 ];

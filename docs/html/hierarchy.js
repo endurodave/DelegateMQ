@@ -42,6 +42,7 @@ var hierarchy =
       [ "dmq::DelegateAsyncMsg< Args >", "classdmq_1_1_delegate_async_msg.html", null ],
       [ "dmq::DelegateAsyncWaitMsg< Args >", "classdmq_1_1_delegate_async_wait_msg.html", null ]
     ] ],
+    [ "DmqHeader", "class_dmq_header.html", null ],
     [ "std::false_type", null, [
       [ "dmq::is_shared_ptr< T >", "structdmq_1_1is__shared__ptr.html", null ],
       [ "dmq::is_unique_ptr< T >", "structdmq_1_1is__unique__ptr.html", null ],
@@ -81,7 +82,11 @@ var hierarchy =
       [ "dmq::DelegateMemberAsync< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "dmq::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
     ] ],
-    [ "MsgHeader", "class_msg_header.html", null ],
+    [ "ITransport", "class_i_transport.html", [
+      [ "Win32PipeTransport", "class_win32_pipe_transport.html", null ],
+      [ "Win32UdpTransport", "class_win32_udp_transport.html", null ],
+      [ "ZeroMqTransport", "class_zero_mq_transport.html", null ]
+    ] ],
     [ "dmq::MulticastDelegate< R >", "structdmq_1_1_multicast_delegate.html", null ],
     [ "dmq::MulticastDelegate< RetType(Args...)>", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", [
       [ "dmq::MulticastDelegateSafe< RetType(Args...)>", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
@@ -99,7 +104,6 @@ var hierarchy =
     [ "stl_allocator< void >", "classstl__allocator_3_01void_01_4.html", null ],
     [ "ThreadMsg", "class_thread_msg.html", null ],
     [ "Timer", "class_timer.html", null ],
-    [ "Transport", "class_transport.html", null ],
     [ "std::true_type", null, [
       [ "dmq::is_shared_ptr< const std::shared_ptr< T > & >", "structdmq_1_1is__shared__ptr_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
       [ "dmq::is_shared_ptr< const std::shared_ptr< T > * >", "structdmq_1_1is__shared__ptr_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
