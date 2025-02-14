@@ -26,7 +26,7 @@ source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
 # Add subdirectories to include path
 include_directories( 
     ${DMQ_ROOT_DIR}
-    ${VCPKG_ROOT_DIR}/include
+    ${ZeroMQ_INCLUDE_DIR}
     ${MSGPACK_INCLUDE_DIR}
 )
 
@@ -34,7 +34,7 @@ include_directories(
 add_executable(${DELEGATE_APP} ${SOURCES} ${DMQ_LIB_SOURCES})
 
 target_link_libraries(${DELEGATE_APP} PRIVATE 
-    ${ZMQ_LIB_DIR}/${ZMQ_LIB_NAME}
+    libzmq
 )
 
-copy_vcpkg_dlls(${VCPKG_ROOT_DIR} ${DELEGATE_APP})
+copy_files(${ZeroMQ_LIBRARY} ${CMAKE_BINARY_DIR}/Debug)
