@@ -43,7 +43,7 @@ source_group("FreeRTOS Files" FILES ${FREERTOS_SOURCES})
 include_directories(
     .
     ./Trace_Recorder_Configuration
-    ${DMQ_ROOT_DIR}
+    ${DMQ_INCLUDE_DIR}
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/include
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Common/include

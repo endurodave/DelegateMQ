@@ -24,7 +24,7 @@ source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
 
 # Add subdirectories to include path
 include_directories( 
-    ${DMQ_ROOT_DIR}
+    ${DMQ_INCLUDE_DIR}
     ${ZeroMQ_INCLUDE_DIR}
     ${RAPIDJSON_INCLUDE_DIR}
 )

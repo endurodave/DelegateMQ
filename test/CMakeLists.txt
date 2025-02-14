@@ -35,7 +35,7 @@ endif()
 
 # Add subdirectories to include path
 include_directories( 
-    ${DMQ_ROOT_DIR}
+    ${DMQ_INCLUDE_DIR}
     test/unit-tests
 )
 
