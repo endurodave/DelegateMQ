@@ -157,7 +157,7 @@ set (DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")
 include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
 ```
 
-Update `External.cmake` external library paths.
+Update `External.cmake` external library paths if necessary.
 
 Add `DMQ_PREDEF_SOURCES` to your sources if using the predefined supporting DelegateMQ classes (e.g. `Thread`, `Serialize`, ...).
 
@@ -166,22 +166,16 @@ Add `DMQ_PREDEF_SOURCES` to your sources if using the predefined supporting Dele
 list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
 ```
 
-Add the DelegateMQ include directory path.
-
-```
-include_directories(${DMQ_ROOT_DIR})
-```
-
 Add external library include paths defined within `External.cmake` as necessary.
 
 ```
 include_directories(    
-    ${VCPKG_ROOT_DIR}/include
+    ${DMQ_INCLUDE_DIR}
     ${MSGPACK_INCLUDE_DIR}
 )
 ```
 
-Include `DelegateMQ.h` to use the delegate library. Build and execute the project.
+Include `DelegateMQ.h` to use the delegate library features. Build and execute the project.
 
 # Quick Start
 
