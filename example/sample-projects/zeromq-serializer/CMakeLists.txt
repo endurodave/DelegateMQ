@@ -1,17 +1,16 @@
 # Specify the minimum CMake version required
 cmake_minimum_required(VERSION 3.10)
 
-set (DELEGATE_APP "delegate_app")
+set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 add_compile_definitions(SERVER_APP)
 
 # Set build options
-set (DMQ_EXTERNAL_LIB "ON")
-set (DMQ_ALLOCATOR "OFF")
-set (DMQ_UTIL "ON")
-set (DMQ_THREAD "DMQ_THREAD_STDLIB")
-set (DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")
-set (DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")
+set(DMQ_ALLOCATOR "OFF")
+set(DMQ_UTIL "ON")
+set(DMQ_THREAD "DMQ_THREAD_STDLIB")
+set(DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")
+set(DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")
 include("${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/DelegateMQ.cmake")
 
 # Collect all .cpp and *.h source files in the src directory

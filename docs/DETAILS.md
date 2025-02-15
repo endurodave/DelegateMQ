@@ -148,12 +148,11 @@ Set the desired DMQ options and include `DelegateMQ.cmake` within your `CMakeLis
 
 ```
 # Set build options
-set (DMQ_EXTERNAL_LIB "ON")
-set (DMQ_ALLOCATOR "OFF")
-set (DMQ_UTIL "ON")
-set (DMQ_THREAD "DMQ_THREAD_STDLIB")
-set (DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")
-set (DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")
+set(DMQ_ALLOCATOR "OFF")
+set(DMQ_UTIL "ON")
+set(DMQ_THREAD "DMQ_THREAD_STDLIB")
+set(DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")
+set(DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")
 include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
 ```
 

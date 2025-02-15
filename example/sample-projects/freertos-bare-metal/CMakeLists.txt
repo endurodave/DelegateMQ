@@ -14,16 +14,15 @@ else()
     message(WARNING "Unknown architecture. Ensure 32-bit for FreeRTOS build.")
 endif()
 
-set (DELEGATE_APP "delegate_app")
+set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX C)
 
 # Set build options
-set (DMQ_EXTERNAL_LIB "ON")
-set (DMQ_ALLOCATOR "OFF")
-set (DMQ_UTIL "ON")
-set (DMQ_THREAD "DMQ_THREAD_FREERTOS")
-set (DMQ_SERIALIZE "DMQ_SERIALIZE_NONE")
-set (DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")
+set(DMQ_ALLOCATOR "OFF")
+set(DMQ_UTIL "ON")
+set(DMQ_THREAD "DMQ_THREAD_FREERTOS")
+set(DMQ_SERIALIZE "DMQ_SERIALIZE_NONE")
+set(DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")
 include("${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/DelegateMQ.cmake")
 
 # Collect all .cpp and *.h source files in the src directory
