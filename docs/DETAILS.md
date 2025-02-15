@@ -128,7 +128,9 @@ Some remote delegate example projects have external library dependencies. Follow
 
 1. Install [vcpkg](https://github.com/microsoft/vcpkg).
 2. Install [Boost](https://www.boost.org/) using vcpkg. DelegateMQ does not use Boost, but some external libraries below require.<br>
-   `./vcpkg install boost`
+   `./vcpkg install boost`<br>
+   Linux, may need:<br>
+   `./vcpkg install boost:x64-linux-dynamic`
 3. Install [ZeroMQ](https://zeromq.org/) using vcpkg.<br>
    `./vcvpkg install zeromq`
 4. Clone [RapidJSON](https://github.com/Tencent/rapidjson).
