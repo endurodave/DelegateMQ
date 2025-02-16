@@ -8,13 +8,15 @@ using namespace dmq;
 using namespace std;
 
 MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::ErrorCb;
+MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId)> NetworkMgr::TimeoutCb;
 MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)> NetworkMgr::AlarmMsgCb;
 MulticastDelegateSafe<void(CommandMsg&)> NetworkMgr::CommandMsgCb;
 MulticastDelegateSafe<void(DataMsg&)> NetworkMgr::DataMsgCb;
 
 NetworkMgr::NetworkMgr() :
     m_thread("NetworkMgr"),
-    m_argStream(ios::in | ios::out | ios::binary)
+    m_argStream(ios::in | ios::out | ios::binary),
+    m_transportMonitor(std::chrono::milliseconds(2000))
 {
     // Create the receiver thread
     m_thread.CreateThread();
@@ -56,6 +58,9 @@ void NetworkMgr::Create()
 #else
     err = m_transport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://localhost:5555");
 #endif
+
+    m_transportMonitor.Timeout += dmq::MakeDelegate(this, &NetworkMgr::TimeoutHandler);
+    m_transport.SetTransportMonitor(&m_transportMonitor);
 
     // Set the transport used by the dispatcher
     m_dispatcher.SetTransport(&m_transport);
@@ -120,26 +125,38 @@ void NetworkMgr::Poll()
     // Get incoming data
     DmqHeader header;
     auto arg_data = m_transport.Receive(header);
-     
+
     // Incoming remote delegate data arrived?
     if (!arg_data.str().empty())
     {
-        auto receiveDelegate = m_receiveIdMap[header.GetId()];
-        if (receiveDelegate)
+        if (header.GetId() != ACK_REMOTE_ID)
         {
-            // Invoke the receiver target function with the sender's argument data
-            receiveDelegate->Invoke(arg_data);
-        }
-        else
-        {
-            cout << "Received delegate not found!" << endl;
+            // Process remote delegate message
+            auto receiveDelegate = m_receiveIdMap[header.GetId()];
+            if (receiveDelegate)
+            {
+                // Invoke the receiver target function with the sender's argument data
+                receiveDelegate->Invoke(arg_data);
+            }
+            else
+            {
+                cout << "Received delegate not found!" << endl;
+            }
         }
     }
+
+    // Preiodically process message timeout handling
+    m_transportMonitor.Process();
 }
 
 void NetworkMgr::ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
 {
     ErrorCb(id, error, aux);
+}
+
+void NetworkMgr::TimeoutHandler(uint16_t seqNum, dmq::DelegateRemoteId id)
+{
+    TimeoutCb(seqNum, id);
 }
 
 void NetworkMgr::RecvAlarmMsg(AlarmMsg& msg, AlarmNote& note)

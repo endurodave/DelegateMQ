@@ -24,6 +24,7 @@ class NetworkMgr
 public:
     // Resister with delegate to receive callbacks
     static dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCb;
+    static dmq::MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId)> TimeoutCb;
     static dmq::MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)> AlarmMsgCb;
     static dmq::MulticastDelegateSafe<void(CommandMsg&)> CommandMsgCb;
     static dmq::MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
@@ -57,6 +58,9 @@ private:
     // Handle errors from DelegateMQ library
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux);
 
+    // Handle message timeouts
+    void TimeoutHandler(uint16_t seqNum, dmq::DelegateRemoteId id);
+
     // Incoming message handlers
     void RecvAlarmMsg(AlarmMsg& msg, AlarmNote& note);
     void RecvCommandMsg(CommandMsg& command);
@@ -73,6 +77,9 @@ private:
 
     // Transport using ZeroMQ library. Only call transport from NetworkMsg thread.
     ZeroMqTransport m_transport;
+
+    // Monitor messages for timeout
+    TransportMonitor m_transportMonitor;
 
     // Dispatcher using DelegateMQ library
     Dispatcher m_dispatcher;

@@ -39,26 +39,14 @@ public:
     // Send argument data to the transport
     virtual int Dispatch(std::ostream& os, dmq::DelegateRemoteId id) 
     {
-        std::stringstream ss(std::ios::in | std::ios::out | std::ios::binary);
-
-        DmqHeader header(id, DmqHeader::GetNextSeqNum());
-
-        // Write each header value using the getters from DmqHeader
-        auto marker = header.GetMarker();
-        ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
-
-        auto id_value = header.GetId();
-        ss.write(reinterpret_cast<const char*>(&id_value), sizeof(id_value));
-
-        auto seqNum = header.GetSeqNum();
-        ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
-
-        // Insert delegate arguments from the stream (os)
-        ss << os.rdbuf();
+        std::ostringstream* ss = dynamic_cast<std::ostringstream*>(&os);
+        if (!ss)
+            return -1;
 
         if (m_transport)
         {
-            int err = m_transport->Send(ss);
+            DmqHeader header(id, DmqHeader::GetNextSeqNum());
+            int err = m_transport->Send(*ss, header);
             return err;
         }
         return -1;

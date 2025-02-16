@@ -696,7 +696,7 @@ delegateRemote.Invoke(recv_stream);
 
 The DelegateMQ library uses dynamic memory to send asynchronous delegate messages to the target thread. By default, out-of-memory failures throw a `std::bad_alloc` exception. Optionally, if `DMQ_ASSERTS` is defined, exceptions are not thrown, and an assert is triggered instead. See `DelegateOpt.h` for more details.
 
-Remote delegate error handling is captured by registering a callback with  `SetErrorHandler()`. 
+Remote delegate error handling is captured by registering a callback with  `SetErrorHandler()`. A transport monitor (`TransportMonitor`) is optional and provides message timeout callbacks using message sequence numbers and acknowledgments.
 
 ## Usage Summary
 

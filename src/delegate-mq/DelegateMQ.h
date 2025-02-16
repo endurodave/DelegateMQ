@@ -102,6 +102,7 @@
 
 #include "predef/util/Fault.h"
 #include "predef/util/Timer.h"
+#include "predef/util/TransportMonitor.h"
 #include "predef/util/AsyncInvoke.h"
 
 #endif

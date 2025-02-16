@@ -10,8 +10,9 @@ class ITransport
 public:
     /// Send data to a remote
     /// @param[in] os Output stream to send.
+    /// @param[in] header The header to send.
     /// @return 0 if success.
-    virtual int Send(std::stringstream& os) = 0;
+    virtual int Send(std::ostringstream& os, const DmqHeader& header) = 0;
 
     /// Receive data from a remote
     /// @param[out] header Incoming delegate message header.

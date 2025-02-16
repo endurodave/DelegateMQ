@@ -74,24 +74,38 @@ public:
         m_hPipe = INVALID_HANDLE_VALUE;
     }
 
-    virtual int Send(std::stringstream& os) override
+    virtual int Send(std::ostringstream& os, const DmqHeader& header) override
     {
-        size_t length = os.str().length();
-        if (os.bad() || os.fail() || length <= 0)
+        if (os.bad() || os.fail())
             return -1;
 
-        size_t len = (size_t)os.tellp();
-        char* sendBuf = (char*)malloc(len);
+        std::ostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+
+        // Write each header value using the getters from DmqHeader
+        auto marker = header.GetMarker();
+        ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
+
+        auto id = header.GetId();
+        ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
+
+        auto seqNum = header.GetSeqNum();
+        ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
+
+        // Insert delegate arguments from the stream (os)
+        ss << os.rdbuf();
+
+        size_t length = ss.str().length();
+        char* sendBuf = (char*)malloc(length);
 
         // Copy char buffer into heap allocated memory
-        os.rdbuf()->sgetn(sendBuf, len);
+        ss.rdbuf()->sgetn(sendBuf, length);
 
         // Send message through named pipe
         DWORD sentLen = 0;
-        BOOL success = WriteFile(m_hPipe, sendBuf, (DWORD)len, &sentLen, NULL);
+        BOOL success = WriteFile(m_hPipe, sendBuf, (DWORD)length, &sentLen, NULL);
         free(sendBuf);
 
-        if (!success || sentLen != len)
+        if (!success || sentLen != length)
             return -1;
         return 0;
     }

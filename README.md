@@ -11,14 +11,14 @@ The DelegateMQ C++ library can invoke any callable function synchronously, async
 ```cpp
 // Create an async delegate targeting lambda on thread1
 auto lambda = [](int i) { std::cout << i; };
-auto lambdaDelegate = MakeDelegate(std::function(lambda), thread1);
+auto lambdaDelegate = dmq::MakeDelegate(std::function(lambda), thread1);
 
 // Create an async delegate targeting Class::Func() on thread2
 Class myClass;
-auto memberDelegate = MakeDelegate(&myClass, &Class::Func, thread2);
+auto memberDelegate = dmq::MakeDelegate(&myClass, &Class::Func, thread2);
 
 // Create a thread-safe delegate container
-MulticastDelegateSafe<void(int)> delegates;
+dmq::MulticastDelegateSafe<void(int)> delegates;
 
 // Insert delegates into the container 
 delegates += lambdaDelegate;
@@ -101,7 +101,7 @@ DelegateMQ at a glance.
 | Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |
 | Transport | External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (`ITransport`)  |
 | Message Buffering | Provided by a communication library (e.g. ZeroMQ) or custom solution within transport |
-| Timeouts and Retries | Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution |
+| Timeouts and Retries | Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution (`ITansportMonitor`) |
 | Dynamic Memory | Heap or DelegateMQ fixed-block allocator |
 | Error Handling | Configurable for return error code, assert or exception |
 | Embedded Friendly | Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "superloop"). |

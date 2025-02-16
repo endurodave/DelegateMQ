@@ -634,11 +634,7 @@ int main(void)
     timer.Stop();
     timer.Expired.Clear();
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-
    	workerThread1.ExitThread();
-
-    std::this_thread::sleep_for(std::chrono::seconds(1));
 
 	return 0;
 }

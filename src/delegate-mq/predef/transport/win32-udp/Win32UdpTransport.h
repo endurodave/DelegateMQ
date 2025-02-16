@@ -82,21 +82,36 @@ public:
         WSACleanup();
     }
 
-    virtual int Send(std::stringstream& os) override
+    virtual int Send(std::ostringstream& os, const DmqHeader& header) override
     {
-        size_t length = os.str().length();
-        if (os.bad() || os.fail() || length <= 0)
+        if (os.bad() || os.fail())
             return -1;
 
-        size_t len = (size_t)os.tellp();
-        char* sendBuf = (char*)malloc(len);
+        std::ostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+
+        // Write each header value using the getters from DmqHeader
+        auto marker = header.GetMarker();
+        ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
+
+        auto id = header.GetId();
+        ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
+
+        auto seqNum = header.GetSeqNum();
+        ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
+
+        // Insert delegate arguments from the stream (os)
+        ss << os.rdbuf();
+
+        size_t length = ss.str().length();
+
+        char* sendBuf = (char*)malloc(length);
         if (!sendBuf)
             return -1;
 
         // Copy char buffer into heap allocated memory
-        os.rdbuf()->sgetn(sendBuf, len);
+        ss.rdbuf()->sgetn(sendBuf, length);
 
-        int err = sendto(m_socket, sendBuf, (int)len, 0, (sockaddr*)&m_serverAddr, sizeof(m_serverAddr));
+        int err = sendto(m_socket, sendBuf, (int)length, 0, (sockaddr*)&m_serverAddr, sizeof(m_serverAddr));
         free(sendBuf);
         if (err == SOCKET_ERROR) 
         {

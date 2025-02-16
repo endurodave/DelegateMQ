@@ -9,6 +9,7 @@
 /// BUFFER_SIZE below as necessary.
 
 #include "predef/transport/ITransport.h"
+#include "predef/transport/ITransportMonitor.h"
 #include "predef/transport/DmqHeader.h"
 #include <zmq.h>
 #include <sstream>
@@ -106,20 +107,45 @@ public:
         m_zmqContext = nullptr;
     }
 
-    virtual int Send(std::stringstream& os) override
+    virtual int Send(std::ostringstream& os, const DmqHeader& header) override
     {
-        size_t length = os.str().length();
-        if (os.bad() || os.fail() || length <= 0)
+        if (os.bad() || os.fail())
             return -1;
 
+        std::ostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+
+        // Write each header value using the getters from DmqHeader
+        auto marker = header.GetMarker();
+        ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
+
+        auto id = header.GetId();
+        ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
+
+        auto seqNum = header.GetSeqNum();
+        ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
+
+        // Insert delegate arguments from the stream (os)
+        ss << os.rdbuf();
+
+        size_t length = ss.str().length();
+
         // Send delegate argument data using ZeroMQ
-        int err = zmq_send(m_zmq, os.str().c_str(), length, ZMQ_DONTWAIT);
+        int err = zmq_send(m_zmq, ss.str().c_str(), length, ZMQ_DONTWAIT);
         if (err == -1)
         {
             std::cerr << "zmq_send failed with error: " << zmq_strerror(zmq_errno()) << std::endl;
             return zmq_errno();
         }
-        return 0;
+        else
+        {
+            if (id != dmq::ACK_REMOTE_ID)
+            {
+                // Add sequence number to monitor
+                if (m_transportMonitor)
+                    m_transportMonitor->Add(seqNum, id);
+            }
+            return 0;
+        }
     }
 
     virtual std::stringstream Receive(DmqHeader& header) override
@@ -135,7 +161,7 @@ public:
             return headerStream;
         }
 
-        if (size <= DmqHeader::HEADER_SIZE) {
+        if (size < DmqHeader::HEADER_SIZE) {
             std::cerr << "Received data is too small to process." << std::endl;
             return headerStream;
         }
@@ -168,13 +194,39 @@ public:
         // Write the remaining argument data to stream
         argStream.write(buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
+        if (id == dmq::ACK_REMOTE_ID)
+        {
+            // Receiver ack'ed message. Remove sequence number from monitor.
+            if (m_transportMonitor)
+                m_transportMonitor->Remove(seqNum);
+        }
+        else
+        {          
+            if (m_transportMonitor)
+            {
+                // Send header with received seqNum as the ack message
+                std::ostringstream ss_ack;
+                DmqHeader ack;
+                ack.SetId(dmq::ACK_REMOTE_ID);
+                ack.SetSeqNum(seqNum);
+                Send(ss_ack, ack);
+            }
+        }
+
         // argStream contains the serialized remote argument data
         return argStream;
+    }
+
+    void SetTransportMonitor(ITransportMonitor* transportMonitor)
+    {
+        m_transportMonitor = transportMonitor;
     }
 
 private:
     void* m_zmqContext = nullptr;
     void* m_zmq = nullptr;
+
+    ITransportMonitor* m_transportMonitor = nullptr;
 
     static const int BUFFER_SIZE = 4096;
     char buffer[BUFFER_SIZE];
