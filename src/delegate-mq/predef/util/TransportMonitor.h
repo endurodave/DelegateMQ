@@ -17,7 +17,7 @@ class TransportMonitor : public ITransportMonitor
 public:
     dmq::MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId)> Timeout;
 
-    TransportMonitor(std::chrono::milliseconds& timeout) : TIMEOUT(timeout) {}
+    TransportMonitor(const std::chrono::milliseconds& timeout) : TIMEOUT(timeout) {}
     ~TransportMonitor() { m_pending.clear(); }
 
 	/// Add a sequence number
