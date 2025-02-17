@@ -56,7 +56,9 @@ int main()
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);
 
-    NetworkMgr::Instance().Create();
+    int err = NetworkMgr::Instance().Create();
+    if (err)
+        std::cout << "NetworkMgr::Create() error: " << err << std::endl;
     NetworkMgr::Instance().Start();
     AlarmMgr::Instance();
     DataMgr::Instance();

@@ -35,13 +35,15 @@ int main()
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);
 
-    NetworkMgr::Instance().Create();
+    int err = NetworkMgr::Instance().Create();
+    if (err)
+        std::cout << "NetworkMgr::Create() error: " << err << std::endl;
     NetworkMgr::Instance().Start();
     AlarmMgr::Instance();
     ServerApp::Instance();
 
     // Let client and server communicate
-    std::this_thread::sleep_for(std::chrono::seconds(30));
+    std::this_thread::sleep_for(std::chrono::seconds(1000));
 
     NetworkMgr::Instance().Stop();
 

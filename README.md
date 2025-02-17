@@ -69,7 +69,7 @@ DelegateMQ uses an external thread, transport, and serializer, all of which are 
 *DelegateMQ Layer Diagram*
 
 
-Originally published on CodeProject at: <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a>
+Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.
 
 # Documentation
 
@@ -100,8 +100,8 @@ DelegateMQ at a glance.
 | Threading | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
 | Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |
 | Transport | External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (`ITransport`)  |
-| Message Buffering | Provided by a communication library (e.g. ZeroMQ) or custom solution within transport |
 | Timeouts and Retries | Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution (`ITransportMonitor`) |
+| Message Buffering | Provided by a communication library (e.g. ZeroMQ) or custom solution within transport |
 | Dynamic Memory | Heap or DelegateMQ fixed-block allocator |
 | Error Handling | Configurable for return error code, assert or exception |
 | Embedded Friendly | Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "superloop"). |

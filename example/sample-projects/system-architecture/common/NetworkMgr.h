@@ -18,7 +18,7 @@ static const dmq::DelegateRemoteId DATA_MSG_ID = 2;
 static const dmq::DelegateRemoteId COMMAND_MSG_ID = 3;
 
 // NetworkMgr sends and receives data using a delegate transport implemented
-// using ZeroMQ library. Class is thread safe.
+// using ZeroMQ library. Class is thread safe. All public APIs are asynchronous.
 class NetworkMgr
 {
 public:
@@ -35,8 +35,13 @@ public:
         return instance;
     }
 
-    void Create();
+    // Create the instance. Called once at startup.
+    int Create();
+
+    // Start lisiting for messages 
     void Start();
+
+    // Stop lisining for messages
     void Stop();
 
     // Send alarm message to the remote

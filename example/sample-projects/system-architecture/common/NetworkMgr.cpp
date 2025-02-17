@@ -27,11 +27,11 @@ NetworkMgr::~NetworkMgr()
     m_thread.ExitThread();
 }
 
-void NetworkMgr::Create()
+int NetworkMgr::Create()
 {
     // Reinvoke call onto NetworkMgr thread
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-        return MakeDelegate(this, &NetworkMgr::Create, m_thread)();
+        return MakeDelegate(this, &NetworkMgr::Create, m_thread, WAIT_INFINITE)();
 
     // Setup the remote delegate interfaces
     m_alarmMsgDel.SetStream(&m_argStream);
@@ -56,7 +56,8 @@ void NetworkMgr::Create()
 #ifdef SERVER_APP
     err = m_transport.Create(ZeroMqTransport::Type::PAIR_SERVER, "tcp://*:5555");
 #else
-    err = m_transport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://localhost:5555");
+    err = m_transport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://localhost:5555");   // Connect to local server
+    //err = m_transport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://192.168.0.123:5555"); // Connect to remote server
 #endif
 
     m_transportMonitor.Timeout += dmq::MakeDelegate(this, &NetworkMgr::TimeoutHandler);
@@ -69,6 +70,8 @@ void NetworkMgr::Create()
     m_receiveIdMap[ALARM_MSG_ID] = &m_alarmMsgDel;
     m_receiveIdMap[COMMAND_MSG_ID] = &m_commandMsgDel;
     m_receiveIdMap[DATA_MSG_ID] = &m_dataMsgDel;
+
+    return err;
 }
 
 void NetworkMgr::Start()
@@ -140,7 +143,7 @@ void NetworkMgr::Poll()
             }
             else
             {
-                cout << "Received delegate not found!" << endl;
+                cout << "Receiver delegate not found!" << endl;
             }
         }
     }

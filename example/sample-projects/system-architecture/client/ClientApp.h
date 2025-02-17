@@ -49,6 +49,7 @@ private:
         m_thread.CreateThread();
 
         NetworkMgr::ErrorCb += MakeDelegate(this, &ClientApp::ErrorHandler, m_thread);
+        NetworkMgr::TimeoutCb += MakeDelegate(this, &ClientApp::TimeoutHandler, m_thread);
     }
 
     ~ClientApp()
@@ -73,6 +74,11 @@ private:
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
         std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
+    }
+
+    void TimeoutHandler(uint16_t seqNum, dmq::DelegateRemoteId id)
+    {
+        std::cout << "ClientApp Timeout: " << id << " " << seqNum << std::endl;
     }
 
     Thread m_thread;

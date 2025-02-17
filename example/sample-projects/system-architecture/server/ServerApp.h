@@ -47,6 +47,7 @@ private:
         // Register for incoming client commands
         NetworkMgr::CommandMsgCb += MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread);
         NetworkMgr::ErrorCb += MakeDelegate(this, &ServerApp::ErrorHandler, m_thread);
+        NetworkMgr::TimeoutCb += MakeDelegate(this, &ServerApp::TimeoutHandler, m_thread);
     }
 
     ~ServerApp()
@@ -84,6 +85,11 @@ private:
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
         std::cout << "ServerApp Error: " << id << " " << (int)error << " " << aux << std::endl;
+    }
+
+    void TimeoutHandler(uint16_t seqNum, dmq::DelegateRemoteId id)
+    {
+        std::cout << "ServerApp Timeout: " << id << " " << seqNum << std::endl;
     }
 
     Thread m_thread;

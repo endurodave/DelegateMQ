@@ -8,10 +8,10 @@
 #include <chrono>
 
 /// @brief Monitors remote delegate message timeouts. Class is not thread safe.
-/// Call TransportMonitor::Process() periodically to for timeout handling.
-/// Depending on the transport implementation, the message might still be delivered.
-/// A timeout expiring just means that an ack was not receied within the time 
-/// specified.
+/// Call TransportMonitor::Process() periodically for timeout handling.
+/// Depending on the transport implementation, the message might still be delivered
+/// event if the monitor Timeout callback is invoked. A timeout expiring just means 
+/// that an ack was not receied within the time specified.
 class TransportMonitor : public ITransportMonitor
 {
 public:
@@ -21,7 +21,7 @@ public:
     ~TransportMonitor() { m_pending.clear(); }
 
 	/// Add a sequence number
-	/// param[in] seqNum - the message sequence number
+	/// param[in] seqNum - the delegate message sequence number
     /// param[in] remoteId - the remote ID
     void Add(uint16_t seqNum, dmq::DelegateRemoteId remoteId)
     {
@@ -32,7 +32,7 @@ public:
     }
 
 	/// Remove a sequence number
-	/// param[in] seqNum - the message sequence number
+	/// param[in] seqNum - the delegate message sequence number
     void Remove(uint16_t seqNum)
     {
         if (m_pending.count(seqNum) != 0)
@@ -42,7 +42,7 @@ public:
         }
     }
 
-	/// Called periodically to process message timeouts
+	/// Call periodically to process message timeouts
     void Process()
     {
         auto now = std::chrono::system_clock::now();
