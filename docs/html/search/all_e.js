@@ -13,6 +13,6 @@ var searchData=
   ['remotearg_3c_20arg_20_26_20_3e_10',['RemoteArg&lt; Arg &amp; &gt;',['../classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html',1,'dmq']]],
   ['remotearg_3c_20arg_20_2a_20_3e_11',['RemoteArg&lt; Arg * &gt;',['../classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html',1,'dmq']]],
   ['remotearg_3c_20arg_20_2a_2a_20_3e_12',['RemoteArg&lt; Arg ** &gt;',['../classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4.html',1,'dmq']]],
-  ['remove_13',['Remove',['../classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a30ddda028ef2df79d998ec91f6389c00',1,'dmq::MulticastDelegate&lt; RetType(Args...)&gt;::Remove()'],['../classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a20a07368898fb566fc685938af0d81c5',1,'dmq::MulticastDelegateSafe&lt; RetType(Args...)&gt;::Remove()']]],
+  ['remove_13',['Remove',['../classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a30ddda028ef2df79d998ec91f6389c00',1,'dmq::MulticastDelegate&lt; RetType(Args...)&gt;::Remove()'],['../classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a20a07368898fb566fc685938af0d81c5',1,'dmq::MulticastDelegateSafe&lt; RetType(Args...)&gt;::Remove()'],['../class_i_transport_monitor.html#a64b5f2d1c3688410e3d084a8d67b7669',1,'ITransportMonitor::Remove()'],['../class_transport_monitor.html#a4a86fbe9c52d32bd4b21053cda25f732',1,'TransportMonitor::Remove()']]],
   ['repositories_14',['Related Repositories',['../index.html#autotoc_md5',1,'']]]
 ];

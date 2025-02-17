@@ -6,7 +6,7 @@
 
 # Delegates in C++
 
-The DelegateMQ C++ library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. The library unifies function invocations to simplify multi-threaded and multi-processor development. Well-defined abstract interfaces and numerous concrete examples offer easy porting to any platform. It is a header-only template library that is thread-safe, unit-tested, and easy to use.
+The DelegateMQ C++ library enables function invocations on any callable, either synchronously, asynchronously, or on a remote endpoint. This messaging middleware library unifies function calls across threads, processes, or processors through a simple delegate interface. It provides well-defined abstract interfaces and numerous concrete examples, making it easy to port to any platform. As a header-only template library, DelegateMQ is thread-safe, unit-tested, and easy to use.
 
 ```cpp
 // Create an async delegate targeting lambda on thread1

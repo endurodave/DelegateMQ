@@ -99,6 +99,7 @@ var namespacedmq =
     [ "tuple_append", "namespacedmq.html#af9e832ed1ea2342072d7fec269159f0e", null ],
     [ "tuple_append", "namespacedmq.html#afa227e805c1482bf7069b21db90f64f9", null ],
     [ "tuple_append", "namespacedmq.html#a2fc402f34b913d06933fe25814f8ddaa", null ],
+    [ "ACK_REMOTE_ID", "namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b", null ],
     [ "INVALID_REMOTE_ID", "namespacedmq.html#a0278aebc59e9f350d10a47d1a5ef1acb", null ],
     [ "WAIT_INFINITE", "namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca", null ]
 ];

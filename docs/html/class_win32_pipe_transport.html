@@ -131,8 +131,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0429417d6063ffc5bca41e0f8a0f7cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad647f9019e2628ff7852d665caf1d558" id="r_ad647f9019e2628ff7852d665caf1d558"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad647f9019e2628ff7852d665caf1d558">Close</a> ()</td></tr>
 <tr class="separator:ad647f9019e2628ff7852d665caf1d558"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41a2138261d71c4460147feec1e65978" id="r_a41a2138261d71c4460147feec1e65978"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41a2138261d71c4460147feec1e65978">Send</a> (std::stringstream &amp;os) override</td></tr>
-<tr class="separator:a41a2138261d71c4460147feec1e65978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a895db4f56bb0b66dbe27942f019fc27c" id="r_a895db4f56bb0b66dbe27942f019fc27c"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a895db4f56bb0b66dbe27942f019fc27c">Send</a> (std::ostringstream &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
+<tr class="separator:a895db4f56bb0b66dbe27942f019fc27c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad92921500dec5ebdee848f5e7e94cbf" id="r_aad92921500dec5ebdee848f5e7e94cbf"><td class="memItemLeft" align="right" valign="top">virtual std::stringstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad92921500dec5ebdee848f5e7e94cbf">Receive</a> (<a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
 <tr class="separator:aad92921500dec5ebdee848f5e7e94cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_i_transport"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_i_transport')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_i_transport.html">ITransport</a></td></tr>
@@ -255,8 +255,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a41a2138261d71c4460147feec1e65978" name="a41a2138261d71c4460147feec1e65978"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a41a2138261d71c4460147feec1e65978">&#9670;&#160;</a></span>Send()</h2>
+<a id="a895db4f56bb0b66dbe27942f019fc27c" name="a895db4f56bb0b66dbe27942f019fc27c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a895db4f56bb0b66dbe27942f019fc27c">&#9670;&#160;</a></span>Send()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -267,8 +267,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual int Win32PipeTransport::Send </td>
           <td>(</td>
-          <td class="paramtype">std::stringstream &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span></td><td>)</td>
+          <td class="paramtype">std::ostringstream &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -280,12 +284,13 @@ Public Member Functions</h2></td></tr>
 <p>Send data to a remote </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>Output stream to send. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">header</td><td>The header to send. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 if success. </dd></dl>
 
-<p>Implements <a class="el" href="class_i_transport.html#ab167aab734a53819053e1c0fd4a97172">ITransport</a>.</p>
+<p>Implements <a class="el" href="class_i_transport.html#ae4ad3a26af8ada83e36db57e6c32493c">ITransport</a>.</p>
 
 </div>
 </div>

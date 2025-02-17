@@ -107,26 +107,28 @@ $(function(){initNavTree('_i_dispatcher_8h_source.html',''); initResizable(true)
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedmq.html">dmq</a> {</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// Remote identifier shared between sender and receiver remotes</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// Remote identifier shared between sender and receiver remotes.</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">   12</a></span><span class="keyword">typedef</span> uint16_t <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">DelegateRemoteId</a>;</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespacedmq.html#a0278aebc59e9f350d10a47d1a5ef1acb">   13</a></span><span class="keyword">const</span> uint16_t <a class="code hl_variable" href="namespacedmq.html#a0278aebc59e9f350d10a47d1a5ef1acb">INVALID_REMOTE_ID</a> = -1;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classdmq_1_1_i_dispatcher.html">   24</a></span><span class="keyword">class </span><a class="code hl_class" href="classdmq_1_1_i_dispatcher.html">IDispatcher</a></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classdmq_1_1_i_dispatcher.html#a4a9710cb642631f21be1072b5ff2d179">   32</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classdmq_1_1_i_dispatcher.html#a4a9710cb642631f21be1072b5ff2d179">Dispatch</a>(std::ostream&amp; os, <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">DelegateRemoteId</a> <span class="keywordtype">id</span>) = 0;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">   14</a></span><span class="keyword">const</span> uint16_t <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">ACK_REMOTE_ID</a> = 0;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classdmq_1_1_i_dispatcher.html">   25</a></span><span class="keyword">class </span><a class="code hl_class" href="classdmq_1_1_i_dispatcher.html">IDispatcher</a></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classdmq_1_1_i_dispatcher.html#a4a9710cb642631f21be1072b5ff2d179">   33</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classdmq_1_1_i_dispatcher.html#a4a9710cb642631f21be1072b5ff2d179">Dispatch</a>(std::ostream&amp; os, <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">DelegateRemoteId</a> <span class="keywordtype">id</span>) = 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
 </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassdmq_1_1_i_dispatcher_html"><div class="ttname"><a href="classdmq_1_1_i_dispatcher.html">dmq::IDispatcher</a></div><div class="ttdoc">Delegate interface class to dispatch serialized function argument data to a remote destination....</div><div class="ttdef"><b>Definition</b> IDispatcher.h:25</div></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassdmq_1_1_i_dispatcher_html"><div class="ttname"><a href="classdmq_1_1_i_dispatcher.html">dmq::IDispatcher</a></div><div class="ttdoc">Delegate interface class to dispatch serialized function argument data to a remote destination....</div><div class="ttdef"><b>Definition</b> IDispatcher.h:26</div></div>
 <div class="ttc" id="aclassdmq_1_1_i_dispatcher_html_a4a9710cb642631f21be1072b5ff2d179"><div class="ttname"><a href="classdmq_1_1_i_dispatcher.html#a4a9710cb642631f21be1072b5ff2d179">dmq::IDispatcher::Dispatch</a></div><div class="ttdeci">virtual int Dispatch(std::ostream &amp;os, DelegateRemoteId id)=0</div></div>
 <div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
 <div class="ttc" id="anamespacedmq_html_a0278aebc59e9f350d10a47d1a5ef1acb"><div class="ttname"><a href="namespacedmq.html#a0278aebc59e9f350d10a47d1a5ef1acb">dmq::INVALID_REMOTE_ID</a></div><div class="ttdeci">const uint16_t INVALID_REMOTE_ID</div><div class="ttdef"><b>Definition</b> IDispatcher.h:13</div></div>
 <div class="ttc" id="anamespacedmq_html_a5c5e55328ae2cd1d800dfb6c83a21bda"><div class="ttname"><a href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a></div><div class="ttdeci">uint16_t DelegateRemoteId</div><div class="ttdef"><b>Definition</b> IDispatcher.h:12</div></div>
+<div class="ttc" id="anamespacedmq_html_a621e40ea0fde57bf5426750dab582f0b"><div class="ttname"><a href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a></div><div class="ttdeci">const uint16_t ACK_REMOTE_ID</div><div class="ttdef"><b>Definition</b> IDispatcher.h:14</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

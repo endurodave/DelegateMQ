@@ -121,8 +121,8 @@ Inheritance diagram for ITransport:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab167aab734a53819053e1c0fd4a97172" id="r_ab167aab734a53819053e1c0fd4a97172"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab167aab734a53819053e1c0fd4a97172">Send</a> (std::stringstream &amp;os)=0</td></tr>
-<tr class="separator:ab167aab734a53819053e1c0fd4a97172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4ad3a26af8ada83e36db57e6c32493c" id="r_ae4ad3a26af8ada83e36db57e6c32493c"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4ad3a26af8ada83e36db57e6c32493c">Send</a> (std::ostringstream &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header)=0</td></tr>
+<tr class="separator:ae4ad3a26af8ada83e36db57e6c32493c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a019f68a52cb46287fe919e7c11e2d10c" id="r_a019f68a52cb46287fe919e7c11e2d10c"><td class="memItemLeft" align="right" valign="top">virtual std::stringstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a019f68a52cb46287fe919e7c11e2d10c">Receive</a> (<a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header)=0</td></tr>
 <tr class="separator:a019f68a52cb46287fe919e7c11e2d10c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -163,8 +163,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab167aab734a53819053e1c0fd4a97172" name="ab167aab734a53819053e1c0fd4a97172"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab167aab734a53819053e1c0fd4a97172">&#9670;&#160;</a></span>Send()</h2>
+<a id="ae4ad3a26af8ada83e36db57e6c32493c" name="ae4ad3a26af8ada83e36db57e6c32493c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4ad3a26af8ada83e36db57e6c32493c">&#9670;&#160;</a></span>Send()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -175,8 +175,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual int ITransport::Send </td>
           <td>(</td>
-          <td class="paramtype">std::stringstream &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span></td><td>)</td>
+          <td class="paramtype">std::ostringstream &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -188,12 +192,13 @@ Public Member Functions</h2></td></tr>
 <p>Send data to a remote </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>Output stream to send. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">header</td><td>The header to send. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 if success. </dd></dl>
 
-<p>Implemented in <a class="el" href="class_win32_pipe_transport.html#a41a2138261d71c4460147feec1e65978">Win32PipeTransport</a>, <a class="el" href="class_win32_udp_transport.html#ae8bd3bd5858c74bba8c848fedd1cb9f9">Win32UdpTransport</a>, and <a class="el" href="class_zero_mq_transport.html#a8bc7306d5c3166360817fef9288c57a8">ZeroMqTransport</a>.</p>
+<p>Implemented in <a class="el" href="class_win32_pipe_transport.html#a895db4f56bb0b66dbe27942f019fc27c">Win32PipeTransport</a>, <a class="el" href="class_win32_udp_transport.html#aa271b389992e6b38947e9b2a8bb9a1a7">Win32UdpTransport</a>, and <a class="el" href="class_zero_mq_transport.html#a876f09d4ae678e12d7f536137859ce01">ZeroMqTransport</a>.</p>
 
 </div>
 </div>

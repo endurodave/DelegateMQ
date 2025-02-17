@@ -7,5 +7,5 @@ var class_win32_udp_transport =
     [ "Close", "class_win32_udp_transport.html#a33326db8eef9a348f389d0967b211d48", null ],
     [ "Create", "class_win32_udp_transport.html#a1b727a5d21a4149c4355ff81cd51c204", null ],
     [ "Receive", "class_win32_udp_transport.html#a240d16c4d7cd14dbb3554bb95fcd0627", null ],
-    [ "Send", "class_win32_udp_transport.html#ae8bd3bd5858c74bba8c848fedd1cb9f9", null ]
+    [ "Send", "class_win32_udp_transport.html#aa271b389992e6b38947e9b2a8bb9a1a7", null ]
 ];

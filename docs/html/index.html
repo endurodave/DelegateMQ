@@ -102,17 +102,17 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
 <div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a> <a href="https://app.codecov.io/gh/endurodave/DelegateMQ"><img src="https://codecov.io/gh/endurodave/DelegateMQ/branch/master/graph/badge.svg" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
 <h1><a class="anchor" id="autotoc_md0"></a>
 Delegates in C++</h1>
-<p>The DelegateMQ C++ library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. The library unifies function invocations to simplify multi-threaded and multi-processor development. Well-defined abstract interfaces and numerous concrete examples offer easy porting to any platform. It is a header-only template library that is thread-safe, unit-tested, and easy to use.</p>
+<p>The DelegateMQ C++ library enables function invocations on any callable, either synchronously, asynchronously, or on a remote endpoint. This messaging middleware library unifies function calls across threads, processes, or processors through a simple delegate interface. It provides well-defined abstract interfaces and numerous concrete examples, making it easy to port to any platform. As a header-only template library, DelegateMQ is thread-safe, unit-tested, and easy to use.</p>
 <div class="fragment"><div class="line"><span class="comment">// Create an async delegate targeting lambda on thread1</span></div>
 <div class="line"><span class="keyword">auto</span> lambda = [](<span class="keywordtype">int</span> i) { std::cout &lt;&lt; i; };</div>
-<div class="line"><span class="keyword">auto</span> lambdaDelegate = MakeDelegate(std::function(lambda), thread1);</div>
+<div class="line"><span class="keyword">auto</span> lambdaDelegate = <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(std::function(lambda), thread1);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create an async delegate targeting Class::Func() on thread2</span></div>
 <div class="line">Class myClass;</div>
-<div class="line"><span class="keyword">auto</span> memberDelegate = MakeDelegate(&amp;myClass, &amp;Class::Func, thread2);</div>
+<div class="line"><span class="keyword">auto</span> memberDelegate = <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(&amp;myClass, &amp;Class::Func, thread2);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create a thread-safe delegate container</span></div>
-<div class="line">MulticastDelegateSafe&lt;void(<span class="keywordtype">int</span>)&gt; delegates;</div>
+<div class="line"><a class="code hl_struct" href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a>&lt;void(<span class="keywordtype">int</span>)&gt; delegates;</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Insert delegates into the container </span></div>
 <div class="line">delegates += lambdaDelegate;</div>
@@ -120,6 +120,8 @@ Delegates in C++</h1>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Invoke all callable targets asynchronously </span></div>
 <div class="line">delegates(123);</div>
+<div class="ttc" id="anamespacedmq_html_a65e308cc5f3e37d2f7f89c72b9744ae2"><div class="ttname"><a href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:670</div></div>
+<div class="ttc" id="astructdmq_1_1_multicast_delegate_safe_html"><div class="ttname"><a href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a></div><div class="ttdef"><b>Definition</b> MulticastDelegateSafe.h:14</div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md1"></a>
 Overview</h1>
 <p>In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, callbacks, asynchronous APIs, or when you need to pass functions as arguments.</p>
@@ -155,7 +157,7 @@ Overview</h1>
 <p>DelegateMQ uses an external thread, transport, and serializer, all of which are based on simple, well-defined interfaces.</p>
 <p><img src="docs/LayerDiagram.jpg" alt="DelegateMQ Layer Diagram" style="width:70%;" class="inline"/><br  />
  <em>DelegateMQ Layer Diagram</em></p>
-<p>Originally published on CodeProject at: <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a></p>
+<p>Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.</p>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Documentation</h1>
 <p>See Design Details for implementation design documentation and more examples.</p>
@@ -187,9 +189,9 @@ Features</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Transport   </td><td class="markdownTableBodyNone">External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (<code><a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a></code>)    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">Message Buffering   </td><td class="markdownTableBodyNone">Provided by a communication library (e.g. ZeroMQ) or custom solution within transport    </td></tr>
+<td class="markdownTableBodyNone">Timeouts and Retries   </td><td class="markdownTableBodyNone">Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution (<code><a class="el" href="class_i_transport_monitor.html" title="DelegateMQ transport monitor interface.">ITransportMonitor</a></code>)    </td></tr>
 <tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Timeouts and Retries   </td><td class="markdownTableBodyNone">Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution    </td></tr>
+<td class="markdownTableBodyNone">Message Buffering   </td><td class="markdownTableBodyNone">Provided by a communication library (e.g. ZeroMQ) or custom solution within transport    </td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Dynamic Memory   </td><td class="markdownTableBodyNone">Heap or DelegateMQ fixed-block allocator    </td></tr>
 <tr class="markdownTableRowOdd">

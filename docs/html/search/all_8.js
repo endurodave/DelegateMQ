@@ -44,5 +44,7 @@ var searchData=
   ['ithread_2eh_41',['IThread.h',['../_i_thread_8h.html',1,'']]],
   ['ithreadinvoker_42',['IThreadInvoker',['../classdmq_1_1_i_thread_invoker.html',1,'dmq']]],
   ['itransport_43',['ITransport',['../class_i_transport.html',1,'']]],
-  ['itransport_2eh_44',['ITransport.h',['../_i_transport_8h.html',1,'']]]
+  ['itransport_2eh_44',['ITransport.h',['../_i_transport_8h.html',1,'']]],
+  ['itransportmonitor_45',['ITransportMonitor',['../class_i_transport_monitor.html',1,'']]],
+  ['itransportmonitor_2eh_46',['ITransportMonitor.h',['../_i_transport_monitor_8h.html',1,'']]]
 ];

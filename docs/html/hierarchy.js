@@ -87,11 +87,15 @@ var hierarchy =
       [ "Win32UdpTransport", "class_win32_udp_transport.html", null ],
       [ "ZeroMqTransport", "class_zero_mq_transport.html", null ]
     ] ],
+    [ "ITransportMonitor", "class_i_transport_monitor.html", [
+      [ "TransportMonitor", "class_transport_monitor.html", null ]
+    ] ],
     [ "dmq::MulticastDelegate< R >", "structdmq_1_1_multicast_delegate.html", null ],
     [ "dmq::MulticastDelegate< RetType(Args...)>", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", [
       [ "dmq::MulticastDelegateSafe< RetType(Args...)>", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
     ] ],
     [ "dmq::MulticastDelegateSafe< R >", "structdmq_1_1_multicast_delegate_safe.html", null ],
+    [ "dmq::MulticastDelegateSafe< void(uint16_t, dmq::DelegateRemoteId)>", "structdmq_1_1_multicast_delegate_safe.html", null ],
     [ "stl_allocator< T >::rebind< U >", "structstl__allocator_1_1rebind.html", null ],
     [ "stl_allocator< void >::rebind", "structstl__allocator_3_01void_01_4_1_1rebind.html", null ],
     [ "dmq::RemoteArg< Arg >", "classdmq_1_1_remote_arg.html", null ],
