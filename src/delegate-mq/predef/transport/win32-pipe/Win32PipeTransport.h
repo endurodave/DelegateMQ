@@ -74,12 +74,12 @@ public:
         m_hPipe = INVALID_HANDLE_VALUE;
     }
 
-    virtual int Send(std::ostringstream& os, const DmqHeader& header) override
+    virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         if (os.bad() || os.fail())
             return -1;
 
-        std::ostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write each header value using the getters from DmqHeader
         auto marker = header.GetMarker();
@@ -110,9 +110,9 @@ public:
         return 0;
     }
 
-    virtual std::stringstream Receive(DmqHeader& header) override
+    virtual xstringstream Receive(DmqHeader& header) override
     {
-        std::stringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
+        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         // Check if client connected
         BOOL connected = ConnectNamedPipe(m_hPipe, NULL) ?
@@ -154,7 +154,7 @@ public:
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
-        std::stringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
+        xstringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write the remaining argument data to stream
         argStream.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);

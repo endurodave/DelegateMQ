@@ -33,6 +33,7 @@
     using xlist = std::list<T, Alloc>;
 
     typedef std::basic_ostringstream<char, std::char_traits<char>> xostringstream;
+    typedef std::basic_stringstream<char, std::char_traits<char>> xstringstream;
 
     // Not using xallocator; define as nothing
     #define XALLOCATOR

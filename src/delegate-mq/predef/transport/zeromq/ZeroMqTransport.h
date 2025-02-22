@@ -107,12 +107,12 @@ public:
         m_zmqContext = nullptr;
     }
 
-    virtual int Send(std::ostringstream& os, const DmqHeader& header) override
+    virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         if (os.bad() || os.fail())
             return -1;
 
-        std::ostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write each header value using the getters from DmqHeader
         auto marker = header.GetMarker();
@@ -148,9 +148,9 @@ public:
         }
     }
 
-    virtual std::stringstream Receive(DmqHeader& header) override
+    virtual xstringstream Receive(DmqHeader& header) override
     {
-        std::stringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
+        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         int size = zmq_recv(m_zmq, buffer, BUFFER_SIZE, ZMQ_DONTWAIT);
         if (size == -1) {
@@ -189,7 +189,7 @@ public:
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
-        std::stringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
+        xstringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write the remaining argument data to stream
         argStream.write(buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
@@ -205,7 +205,7 @@ public:
             if (m_transportMonitor)
             {
                 // Send header with received seqNum as the ack message
-                std::ostringstream ss_ack;
+                xostringstream ss_ack;
                 DmqHeader ack;
                 ack.SetId(dmq::ACK_REMOTE_ID);
                 ack.SetSeqNum(seqNum);

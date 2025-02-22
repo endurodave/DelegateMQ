@@ -39,7 +39,7 @@ public:
     // Send argument data to the transport
     virtual int Dispatch(std::ostream& os, dmq::DelegateRemoteId id) 
     {
-        std::ostringstream* ss = dynamic_cast<std::ostringstream*>(&os);
+        xostringstream* ss = dynamic_cast<xostringstream*>(&os);
         if (!ss)
             return -1;
 
