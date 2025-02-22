@@ -381,7 +381,7 @@ public:
                 Arg2 a2 = rp2.Get();
 
                 m_serializer->Read(is, a1, a2);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -399,7 +399,7 @@ public:
                 Arg3 a3 = rp3.Get();
 
                 m_serializer->Read(is, a1, a2, a3);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2, a3);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -420,7 +420,7 @@ public:
                 Arg4 a4 = rp4.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2, a3, a4);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -444,7 +444,7 @@ public:
                 Arg5 a5 = rp5.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4, a5);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2, a3, a4, a5);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -876,7 +876,7 @@ public:
                 Arg2 a2 = rp2.Get();
 
                 m_serializer->Read(is, a1, a2);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -894,7 +894,7 @@ public:
                 Arg3 a3 = rp3.Get();
 
                 m_serializer->Read(is, a1, a2, a3);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2, a3);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -915,7 +915,7 @@ public:
                 Arg4 a4 = rp4.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2, a3, a4);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -939,7 +939,7 @@ public:
                 Arg5 a5 = rp5.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4, a5);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2, a3, a4, a5);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -1312,7 +1312,7 @@ public:
                 Arg2 a2 = rp2.Get();
 
                 m_serializer->Read(is, a1, a2);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -1330,7 +1330,7 @@ public:
                 Arg3 a3 = rp3.Get();
 
                 m_serializer->Read(is, a1, a2, a3);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2, a3);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -1351,7 +1351,7 @@ public:
                 Arg4 a4 = rp4.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2, a3, a4);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
@@ -1375,7 +1375,7 @@ public:
                 Arg5 a5 = rp5.Get();
 
                 m_serializer->Read(is, a1, a2, a3, a4, a5);
-                if (is.good())
+                if (!is.bad() && !is.fail())
                     operator()(a1, a2, a3, a4, a5);
                 else
                     RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
