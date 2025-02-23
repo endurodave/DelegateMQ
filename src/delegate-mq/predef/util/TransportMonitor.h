@@ -17,7 +17,7 @@ class TransportMonitor : public ITransportMonitor
 public:
     dmq::MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId)> Timeout;
 
-    TransportMonitor(const std::chrono::milliseconds& timeout) : TIMEOUT(timeout) {}
+    TransportMonitor(const std::chrono::milliseconds& timeout) : TRANSPORT_TIMEOUT(timeout) {}
     ~TransportMonitor() { m_pending.clear(); }
 
 	/// Add a sequence number
@@ -53,7 +53,7 @@ public:
             auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - (*it).second.timeStamp);
 
             // Has timeout expired?
-            if (elapsed > TIMEOUT) 
+            if (elapsed > TRANSPORT_TIMEOUT)
             {
                 Timeout((*it).first, (*it).second.remoteId);
                 it = m_pending.erase(it);
@@ -73,7 +73,7 @@ private:
     };
 
 	std::map<uint16_t, TimeoutData> m_pending;
-	const std::chrono::milliseconds TIMEOUT;
+	const std::chrono::milliseconds TRANSPORT_TIMEOUT;
 };
 
 #endif

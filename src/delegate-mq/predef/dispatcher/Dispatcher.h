@@ -14,6 +14,8 @@
     #include "predef/transport/win32-pipe/Win32PipeTransport.h"
 #elif defined (DMQ_TRANSPORT_WIN32_UDP)
     #include "predef/transport/win32-udp/Win32UdpTransport.h"
+#elif defined (DMQ_TRANSPORT_MQTT)
+    #include "predef/transport/mqtt/MqttTransport.h"
 #else
     #error "Include a transport header."
 #endif

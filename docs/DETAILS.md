@@ -69,6 +69,7 @@ The DelegateMQ C++ library can invoke any callable function synchronously, async
   - [Sample Projects](#sample-projects)
     - [bare-metal](#bare-metal)
     - [freertos-bare-metal](#freertos-bare-metal)
+    - [mqtt-rapidjson](#mqtt-rapidjson)
     - [win32-pipe-serializer](#win32-pipe-serializer)
     - [win32-upd-serializer](#win32-upd-serializer)
     - [zeromq-serializer](#zeromq-serializer)
@@ -136,7 +137,8 @@ Some remote delegate example projects have external library dependencies. Follow
 4. Clone [RapidJSON](https://github.com/Tencent/rapidjson).
 5. Clone [MessagePack C++](https://github.com/msgpack/msgpack-c/tree/cpp_master) `cpp_master` branch.
 6. Clone [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS).
-7. Edit DelegateMQ `External.cmake` file and update external library directory locations.
+7. Clone and build [Paho C MQTT](https://github.com/eclipse-paho/paho.mqtt.c).
+8. Edit DelegateMQ `External.cmake` file and update external library directory locations.
 9. Build any example subproject within the `example/sample-projects` directory.<br>
    `cmake -B build .`
 
@@ -1616,6 +1618,16 @@ Remote delegate example using FreeRTOS and no external libraries. Tested using t
 | `IThread` | `Thread` class implemented using FreeRTOS. 
 | `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
 | `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
+
+### mqtt-rapidjson
+
+Remote delegate example with MQTT and RapidJSON. Execute the pub and sub projects to run the example. See CMakeList.txt for details.
+
+| Interface | Implementation |
+| --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
+| `ISerializer` | RapidJSON library. 
+| `IDispatcher` | Shared sender/receiver MQTT library for dispatcher transport.
 
 ### win32-pipe-serializer
 
