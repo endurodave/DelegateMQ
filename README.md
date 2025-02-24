@@ -39,7 +39,7 @@ Synchronous and asynchronous delegates are available. Asynchronous variants hand
 Remote delegates enable function invocation across processes or processors by using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callable endpoints with any function signature. Minimal effort is required to extend support to any new library. Concrete examples are provided using support libraries below. 
 
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
-* **Transport:** [ZeroMQ](https://zeromq.org/), UDP, data pipe, memory buffer
+* **Transport:** [ZeroMQ](https://zeromq.org/), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), UDP, data pipe, memory buffer
  
 It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to `nullptr`. Const correctness is maintained; stored const objects can only be called by const member functions.
 
