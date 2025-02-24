@@ -35,7 +35,8 @@ list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
 list(APPEND SOURCES ${FREERTOS_SOURCES})
 
 # Organize delegate source files within IDE (Visual Studio)
-source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES} ${DMQ_PREDEF_SOURCES})
+source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
+source_group("Predef Files" FILES ${DMQ_PREDEF_SOURCES})
 source_group("FreeRTOS Files" FILES ${FREERTOS_SOURCES})
 
 # Add subdirectories to include path

@@ -6,7 +6,7 @@
 
 # Delegates in C++
 
-The DelegateMQ C++ library can invoke any callable function synchronously, asynchronously, or on a remote endpoint. 
+The DelegateMQ C++ library enables function invocations on any callable, either synchronously, asynchronously, or on a remote endpoint.
 
 # Table of Contents
 
@@ -67,6 +67,7 @@ The DelegateMQ C++ library can invoke any callable function synchronously, async
   - [`std::async` Thread Targeting Example](#stdasync-thread-targeting-example)
   - [More Examples](#more-examples)
   - [Sample Projects](#sample-projects)
+    - [system-architecture](#system-architecture)
     - [bare-metal](#bare-metal)
     - [freertos-bare-metal](#freertos-bare-metal)
     - [mqtt-rapidjson](#mqtt-rapidjson)
@@ -75,7 +76,6 @@ The DelegateMQ C++ library can invoke any callable function synchronously, async
     - [zeromq-serializer](#zeromq-serializer)
     - [zeromq-msgpack-cpp](#zeromq-msgpack-cpp)
     - [zeromq-rapidjson](#zeromq-rapidjson)
-    - [system-architecture](#system-architecture)
 - [Tests](#tests)
   - [Unit Tests](#unit-tests)
   - [Valgrind Memory Tests](#valgrind-memory-tests)
@@ -125,7 +125,7 @@ Remote delegate example projects are located within the `example/sample-projects
 
 ## Examples Setup
 
-Some remote delegate example projects have external library dependencies. Follow the setup instructions below to build and run any sample project.
+Some remote delegate example projects have external library dependencies. Follow the setup instructions below to build and run any sample project. Not all external libraries are required, as it depended on the example executed.
 
 1. Install [vcpkg](https://github.com/microsoft/vcpkg).
 2. Install [Boost](https://www.boost.org/) using vcpkg. DelegateMQ does not use Boost, but some external libraries below require.<br>
@@ -1599,6 +1599,30 @@ See the `examples/sample-code` directory for additional examples.
 
 See the `examples/sample-projects` directory for example project. Most projects run on Windows or Linux. Others are Windows-only. See [Examples Setup](#examples-setup) before running sample projects.
 
+### system-architecture
+
+The system-architecture remote delegate example demonstrates a complex client/server application using ZeroMQ and MessagePack support libraries. Subsystems communication and collaborate between threads and processes. Execute the client and server projects to run the example.
+
+| Class | Location | Details |
+| --- | --- | --- |
+| `ClientApp` | Client | Main client application. Handles local and remote sensors and actuators. |
+| `ServerApp` | Server | Main server application. Slave sensors and actuators application. |
+| `DataMgr` | Client | Collects data from client (local) and server (remote) data sources |
+| `AlarmMgr` | Client<br>Server | Handles system alarms. Server sends alarms to client for processing. |
+| `NetworkMgr` | Client<br>Server | Centralized, shared client and server communication interface using remote delegates. |
+| `Sensor` | Client<br>Server | Reads sensor data |
+| `Actuator` | Client<br>Server | Controls actuator |
+
+Interface implementation details. 
+
+| Interface | Implementation | Details |
+| --- | --- | --- |
+| `IThread` | `Thread` | Implemented using `std::thread` | 
+| `ISerializer` | `Serializer` | Implemented using MessagePack library | 
+| `IDispatcher` | `Dispatcher` | Universal delegate dispatcher |
+| `ITransport` | `ZeroMqTransport` | ZeroMQ message transport |
+| `ITransportMonitor` | `TransportMonitor` | Monitor message timeouts |
+
 ### bare-metal
 
 Remote delegate example with no external libraries. 
@@ -1678,30 +1702,6 @@ Remote delegate example using ZeroMQ and RapidJSON libraries.
 | `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | RapidJSON library.  
 | `IDispatcher` | ZeroMQ library for dispatcher transport.
-
-### system-architecture
-
-Remote delegate example showing a complex system client/server architecture using ZeroMQ and MessagePack libraries. Subsystems communication and collaborate between threads and processes. Execute the client and server projects to run the example.
-
-| Class | Location | Details |
-| --- | --- | --- |
-| `ClientApp` | Client | Main client application. Handles local and remote sensors and actuators. |
-| `ServerApp` | Server | Main server application. Slave sensors and actuators application. |
-| `DataMgr` | Client | Collects data from client (local) and server (remote) data sources |
-| `AlarmMgr` | Client<br>Server | Handles system alarms. Server sends alarms to client for processing. |
-| `NetworkMgr` | Client<br>Server | Centralized, shared client and server communication interface |
-| `Sensor` | Client<br>Server | Reads sensor data |
-| `Actuator` | Client<br>Server | Controls actuator |
-
-Interface implementation details. 
-
-| Interface | Implementation | Details |
-| --- | --- | --- |
-| `IThread` | `Thread` | Implemented using `std::thread` | 
-| `ISerializer` | `Serializer` | Implemented using MessagePack library | 
-| `IDispatcher` | `Dispatcher` | Universal delegate dispatcher |
-| `ITransport` | `ZeroMqTransport` | ZeroMQ message transport |
-| `ITransportMonitor` | `TransportMonitor` | Monitor message timeouts |
 
 # Tests
 

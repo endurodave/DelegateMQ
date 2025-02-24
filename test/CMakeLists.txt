@@ -19,7 +19,8 @@ file(GLOB SOURCES "*.cpp" "*.h")
 list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
 
 # Organize delegate source files within IDE (Visual Studio)
-source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES} ${DMQ_PREDEF_SOURCES})
+source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
+source_group("Predef Files" FILES ${DMQ_PREDEF_SOURCES})
 
 # Check if the TEST_COVERAGE argument is passed
 option(TEST_COVERAGE "Enable code coverage" OFF)
