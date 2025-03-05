@@ -84,7 +84,8 @@ private:
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
-        std::cout << "ServerApp Error: " << id << " " << (int)error << " " << aux << std::endl;
+        if (error != dmq::DelegateError::SUCCESS)
+            std::cout << "ServerApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
     void TimeoutHandler(uint16_t seqNum, dmq::DelegateRemoteId id)

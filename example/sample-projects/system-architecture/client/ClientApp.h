@@ -6,6 +6,8 @@
 #include "Sensor.h"
 #include "DataMsg.h"
 
+typedef std::function<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCallback;
+
 // ClientApp reads data locally and sends to DataMgr for storage. 
 class ClientApp
 {
@@ -16,17 +18,49 @@ public:
         return instance;
     }
 
-    void Start()
+    /// Start data collection locally (polling with a timer) and remotely (sending a 
+    /// start message to ServerApp). 
+    /// @return `true` if data collection command sent successfully to ServerApp. 
+    /// `false` if the send fails.
+    bool Start()
     {
-        // Send message to start remote data collection
+        bool success = false;
+        std::mutex mtx;
+        std::condition_variable cv;
+
+        // Callback to capture NetworkMgr::SendCommandMsg() success or error
+        ErrorCallback errorCb = [&success, &cv](dmq::DelegateRemoteId id, dmq::DelegateError err, dmq::DelegateErrorAux aux) {
+            // SendCommandMsg() ID?
+            if (id == COMMAND_MSG_ID) {
+                // Send success?
+                if (err == dmq::DelegateError::SUCCESS)
+                    success = true;
+                cv.notify_one();
+            }
+        };
+
+        // Register for callback 
+        NetworkMgr::ErrorCb += MakeDelegate(errorCb);
+
         CommandMsg command;
         command.action = CommandMsg::Action::START;
         command.pollTime = 250;
+
+        // Async send message to start remote data collection
         NetworkMgr::Instance().SendCommandMsg(command);
+
+        // Wait for async send callback to be triggered
+        std::unique_lock<std::mutex> lock(mtx);
+        cv.wait(lock);
+
+        // Send complete; unregister from callback
+        NetworkMgr::ErrorCb -= MakeDelegate(errorCb);
 
         // Start local data collection
         m_pollTimer.Expired = MakeDelegate(this, &ClientApp::PollData, m_thread);
         m_pollTimer.Start(std::chrono::milliseconds(500));
+
+        return success;
     }
 
     void Stop()
@@ -73,7 +107,8 @@ private:
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
-        std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
+        if (error != dmq::DelegateError::SUCCESS)
+            std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
     void TimeoutHandler(uint16_t seqNum, dmq::DelegateRemoteId id)

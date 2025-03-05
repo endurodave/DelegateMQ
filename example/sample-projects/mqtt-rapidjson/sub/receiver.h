@@ -19,15 +19,15 @@ class Receiver : public IMqttReceiveHandler
 public:
     dmq::MulticastDelegateSafe<void(Data&)> DataCb;
 
-    Receiver(DelegateRemoteId id) :
-        m_id(id),
+    Receiver() :
         m_thread("Receiver"),
         m_argStream(ios::in | ios::out | ios::binary)
     {
         // Set the delegate interfaces
         m_recvDelegate.SetStream(&m_argStream);
         m_recvDelegate.SetSerializer(&m_serializer);
-        m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, id);
+        m_recvDelegate.SetErrorHandler(MakeDelegate(this, &Receiver::ErrorHandler));
+        m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, Data::DATA_ID);
 
         // Set the transport
         m_transport.Create(MqttTransport::Type::SUB);
@@ -74,6 +74,12 @@ private:
     {
         // Notify registered callback subscribers
         DataCb(data);
+    }
+
+    void ErrorHandler(DelegateRemoteId, DelegateError err, DelegateErrorAux)
+    {
+        if (err != dmq::DelegateError::SUCCESS)
+            ASSERT_TRUE(0);
     }
 
     DelegateRemoteId m_id;

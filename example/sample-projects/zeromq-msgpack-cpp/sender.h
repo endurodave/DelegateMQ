@@ -68,9 +68,10 @@ public:
     }
 
 private:
-    void ErrorHandler(DelegateRemoteId, DelegateError, DelegateErrorAux)
+    void ErrorHandler(DelegateRemoteId, DelegateError err, DelegateErrorAux)
     {
-        ASSERT_TRUE(0);
+        if (err != dmq::DelegateError::SUCCESS)
+            ASSERT_TRUE(0);
     }
 
     Thread m_thread;

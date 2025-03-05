@@ -19,13 +19,11 @@ static void ProcessTimers()
 
 int main() 
 {
-    const DelegateRemoteId id = 1;
-
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);
 
     // Create Sender object
-    Sender sender(id);
+    Sender sender;
 
     sender.Start();
 

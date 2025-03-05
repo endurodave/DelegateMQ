@@ -49,6 +49,8 @@ public:
 class Data 
 {
 public:
+    static const dmq::DelegateRemoteId DATA_ID = 1;
+
     std::vector<DataPoint> dataPoints;
     std::string msg;
 

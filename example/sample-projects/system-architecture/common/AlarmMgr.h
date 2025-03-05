@@ -65,7 +65,8 @@ private:
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
-        std::cout << "AlarmMgr Error: " << id << " " << (int)error << " " << aux << std::endl;
+        if (error != dmq::DelegateError::SUCCESS)
+            std::cout << "AlarmMgr Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
     Thread m_thread;

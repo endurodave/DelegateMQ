@@ -182,9 +182,9 @@ public:
     /// @brief Creates a copy of the current object.
     /// @details Clones the current instance of the class by creating a new object
     /// and copying the state of the current object to it. 
-    /// @return A pointer to a new `ClassType` instance.
-    /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
+    /// @return A pointer to a new `ClassType` instance or nullptr if allocation fails.
+    /// @post The caller is responsible for deleting the clone object and checking for 
+    /// nullptr.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }
@@ -482,9 +482,9 @@ public:
     /// @brief Creates a copy of the current object.
     /// @details Clones the current instance of the class by creating a new object
     /// and copying the state of the current object to it. 
-    /// @return A pointer to a new `ClassType` instance.
-    /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
+    /// @return A pointer to a new `ClassType` instance or nullptr if allocation fails.
+    /// @post The caller is responsible for deleting the clone object and checking for 
+    /// nullptr.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }
@@ -723,9 +723,9 @@ public:
     /// @brief Creates a copy of the current object.
     /// @details Clones the current instance of the class by creating a new object
     /// and copying the state of the current object to it. 
-    /// @return A pointer to a new `ClassType` instance.
-    /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
+    /// @return A pointer to a new `ClassType` instance or nullptr if allocation fails.
+    /// @post The caller is responsible for deleting the clone object and checking for 
+    /// nullptr.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }

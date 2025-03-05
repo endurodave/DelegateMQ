@@ -27,8 +27,6 @@ void DataCb(Data& data)
 
 int main() 
 {
-    const DelegateRemoteId id = 1;
-
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);
 
@@ -36,7 +34,7 @@ int main()
     recvThread.CreateThread();
 
     // Create Receiver object
-    Receiver receiver(id);
+    Receiver receiver;
     receiver.DataCb += dmq::MakeDelegate(&DataCb, recvThread);
 
     receiver.Start();

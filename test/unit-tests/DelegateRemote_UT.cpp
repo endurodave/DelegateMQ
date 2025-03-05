@@ -376,8 +376,9 @@ static void DelegateFreeRemoteTests()
         arr[i](TEST_INT);
     delete[] arr;
 
-    std::function<void(DelegateRemoteId, DelegateError, int)> errorHandler = [](DelegateRemoteId id, DelegateError error, int code) {
-        ASSERT_TRUE(false);
+    std::function<void(DelegateRemoteId, DelegateError, int)> errorHandler = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {
+        if (error != dmq::DelegateError::SUCCESS)
+            ASSERT_TRUE(false);
     };
     Dispatcher dispatcher;
     xostringstream os(ios::in | ios::out | ios::binary);
@@ -628,7 +629,8 @@ static void DelegateMemberRemoteTests()
     delete[] arr;
 
     std::function<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> errorHandler = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {
-        ASSERT_TRUE(false);
+        if (error != dmq::DelegateError::SUCCESS)
+            ASSERT_TRUE(false);
     };
     Dispatcher dispatcher;
     RemoteClass remoteClass;
@@ -809,7 +811,8 @@ static void DelegateMemberSpRemoteTests()
     delete[] arr;
 
     std::function<void(DelegateRemoteId, DelegateError, int)> errorHandler = [](DelegateRemoteId id, DelegateError error, int code) {
-        ASSERT_TRUE(false);
+        if (error != dmq::DelegateError::SUCCESS)
+            ASSERT_TRUE(false);
     };
     static std::function<void(int)> LambdaFuncInt = +[](int i) {
         ASSERT_TRUE(i == TEST_INT);
@@ -1011,7 +1014,8 @@ static void DelegateFunctionRemoteTests()
 #endif
 
     std::function<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> errorHandler = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {
-        ASSERT_TRUE(false);
+        if (error != dmq::DelegateError::SUCCESS)
+            ASSERT_TRUE(false);
     };
     Dispatcher dispatcher;
     xostringstream os(ios::in | ios::out | ios::binary);

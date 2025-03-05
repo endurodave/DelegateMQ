@@ -15,7 +15,9 @@
 /// serialized stream arguments.
 /// 
 /// An `ISerializer` and `IDispatcher` implementations are required to serialize and dispatch a 
-/// remote delegate. 
+/// remote delegate. These interface implementations, relied upon by the remote delegate, might not 
+/// be thread safe. Therefore, ensure each remote delegate instance is called from a single thread 
+/// of control.
 /// 
 /// `RetType operator()(Args... args)` - called by the sender to initiate the remote function call. 
 /// Use `SetErrorHandler()` to catch invoke errors. Clone() may throw `std::bad_alloc` unless 
@@ -183,9 +185,9 @@ public:
     /// @brief Creates a copy of the current object.
     /// @details Clones the current instance of the class by creating a new object
     /// and copying the state of the current object to it. 
-    /// @return A pointer to a new `ClassType` instance.
-    /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
+    /// @return A pointer to a new `ClassType` instance or nullptr if allocation fails.
+    /// @post The caller is responsible for deleting the clone object and checking for 
+    /// nullptr.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }
@@ -289,6 +291,7 @@ public:
                 try {
                     // Serialize all target function arguments into a stream
                     m_serializer->Write(*m_stream, std::forward<Args>(args)...);
+                    RaiseSuccess(m_id);
                 } catch (std::exception&) {
                     RaiseError(m_id, DelegateError::ERR_SERIALIZE);
                 }
@@ -497,6 +500,11 @@ public:
         m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
+    /// @brief Clear the error handler
+    void ClearErrorHandler() {
+        m_errorHandler.Clear();
+    }
+
     /// @brief Get the last error code
     /// @return The last error detected
     /// @post Error is reset to SUCCESS after call
@@ -507,7 +515,8 @@ public:
     }
 
 private:
-    /// @brief Raise an error and callback registered error handler
+    /// Raise an error and callback registered error handler
+    /// @param[in] id Remote delegate ID.
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
     /// @throws std::runtime_error If no error handler is registered.
@@ -517,6 +526,13 @@ private:
         } else {
             throw std::runtime_error("Delegate remote error.");
         }
+    }
+
+    /// Raise success and callback registered error handler
+    /// @param[in] id Remote delegate ID.
+    void RaiseSuccess(DelegateRemoteId id) {
+        if (m_errorHandler)
+            m_errorHandler(id, dmq::DelegateError::SUCCESS, 0);
     }
 
     /// The delegate unique remote identifier
@@ -678,9 +694,9 @@ public:
     /// @brief Creates a copy of the current object.
     /// @details Clones the current instance of the class by creating a new object
     /// and copying the state of the current object to it. 
-    /// @return A pointer to a new `ClassType` instance.
-    /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
+    /// @return A pointer to a new `ClassType` instance or nullptr if allocation fails.
+    /// @post The caller is responsible for deleting the clone object and checking for 
+    /// nullptr.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }
@@ -784,6 +800,7 @@ public:
                 try {
                     // Serialize all target function arguments into a stream
                     m_serializer->Write(*m_stream, std::forward<Args>(args)...);
+                    RaiseSuccess(m_id);
                 } catch (std::exception&) {
                     RaiseError(m_id, DelegateError::ERR_SERIALIZE);
                 }
@@ -992,6 +1009,11 @@ public:
         m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
+    /// @brief Clear the error handler
+    void ClearErrorHandler() {
+        m_errorHandler.Clear();
+    }
+
     /// @brief Get the last error code
     /// @return The last error detected
     /// @post Error is reset to SUCCESS after call
@@ -1002,7 +1024,8 @@ public:
     }
 
 private:
-    /// @brief Raise an error and callback registered error handler
+    /// Raise an error and callback registered error handler
+    /// @param[in] id Remote delegate ID.
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
     /// @throws std::runtime_error If no error handler is registered.
@@ -1012,6 +1035,13 @@ private:
         } else {
             throw std::runtime_error("Delegate remote error.");
         }
+    }
+
+    /// Raise success and callback registered error handler
+    /// @param[in] id Remote delegate ID.
+    void RaiseSuccess(DelegateRemoteId id) {
+        if (m_errorHandler)
+            m_errorHandler(id, dmq::DelegateError::SUCCESS, 0);
     }
 
     /// The delegate unique remote identifier
@@ -1114,9 +1144,9 @@ public:
     /// @brief Creates a copy of the current object.
     /// @details Clones the current instance of the class by creating a new object
     /// and copying the state of the current object to it. 
-    /// @return A pointer to a new `ClassType` instance.
-    /// @post The caller is responsible for deleting the clone object.
-    /// @throws std::bad_alloc If dynamic memory allocation fails and DMQ_ASSERTS not defined.
+    /// @return A pointer to a new `ClassType` instance or nullptr if allocation fails.
+    /// @post The caller is responsible for deleting the clone object and checking for 
+    /// nullptr.
     virtual ClassType* Clone() const override {
         return new(std::nothrow) ClassType(*this);
     }
@@ -1220,6 +1250,7 @@ public:
                 try {
                     // Serialize all target function arguments into a stream
                     m_serializer->Write(*m_stream, std::forward<Args>(args)...);
+                    RaiseSuccess(m_id);
                 } catch (std::exception&) {
                     RaiseError(m_id, DelegateError::ERR_SERIALIZE);
                 }
@@ -1428,6 +1459,11 @@ public:
         m_errorHandler = std::move(errorHandler);  // Moving the temporary
     }
 
+    /// @brief Clear the error handler
+    void ClearErrorHandler() {
+        m_errorHandler.Clear();
+    }
+
     /// @brief Get the last error code
     /// @return The last error detected
     /// @post Error is reset to SUCCESS after call
@@ -1438,7 +1474,8 @@ public:
     }
 
 private:
-    /// @brief Raise an error and callback registered error handler
+    /// Raise an error and callback registered error handler
+    /// @param[in] id Remote delegate ID.
     /// @param[in] error Error code.
     /// @param[in] auxCode Optional auxiliary code.
     /// @throws std::runtime_error If no error handler is registered.
@@ -1448,6 +1485,13 @@ private:
         } else {
             throw std::runtime_error("Delegate remote error.");
         }
+    }
+
+    /// Raise success and callback registered error handler
+    /// @param[in] id Remote delegate ID.
+    void RaiseSuccess(DelegateRemoteId id) {
+        if (m_errorHandler)
+            m_errorHandler(id, dmq::DelegateError::SUCCESS, 0);
     }
 
     /// The delegate unique remote identifier
