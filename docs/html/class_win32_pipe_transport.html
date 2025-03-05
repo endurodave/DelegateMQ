@@ -131,10 +131,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a0429417d6063ffc5bca41e0f8a0f7cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad647f9019e2628ff7852d665caf1d558" id="r_ad647f9019e2628ff7852d665caf1d558"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad647f9019e2628ff7852d665caf1d558">Close</a> ()</td></tr>
 <tr class="separator:ad647f9019e2628ff7852d665caf1d558"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a895db4f56bb0b66dbe27942f019fc27c" id="r_a895db4f56bb0b66dbe27942f019fc27c"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a895db4f56bb0b66dbe27942f019fc27c">Send</a> (std::ostringstream &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
-<tr class="separator:a895db4f56bb0b66dbe27942f019fc27c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad92921500dec5ebdee848f5e7e94cbf" id="r_aad92921500dec5ebdee848f5e7e94cbf"><td class="memItemLeft" align="right" valign="top">virtual std::stringstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad92921500dec5ebdee848f5e7e94cbf">Receive</a> (<a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
-<tr class="separator:aad92921500dec5ebdee848f5e7e94cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d3d1d095712800240cfbb4c2e5f2579" id="r_a1d3d1d095712800240cfbb4c2e5f2579"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d3d1d095712800240cfbb4c2e5f2579">Send</a> (<a class="el" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
+<tr class="separator:a1d3d1d095712800240cfbb4c2e5f2579"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2abc80e157b6ccbed44ab9cc4244d911" id="r_a2abc80e157b6ccbed44ab9cc4244d911"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2abc80e157b6ccbed44ab9cc4244d911">Receive</a> (<a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
+<tr class="separator:a2abc80e157b6ccbed44ab9cc4244d911"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_i_transport"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_i_transport')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_i_transport.html">ITransport</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -221,8 +221,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aad92921500dec5ebdee848f5e7e94cbf" name="aad92921500dec5ebdee848f5e7e94cbf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad92921500dec5ebdee848f5e7e94cbf">&#9670;&#160;</a></span>Receive()</h2>
+<a id="a2abc80e157b6ccbed44ab9cc4244d911" name="a2abc80e157b6ccbed44ab9cc4244d911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2abc80e157b6ccbed44ab9cc4244d911">&#9670;&#160;</a></span>Receive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -231,7 +231,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::stringstream Win32PipeTransport::Receive </td>
+          <td class="memname">virtual <a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> Win32PipeTransport::Receive </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span></td><td>)</td>
           <td></td>
@@ -251,12 +251,12 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The received incoming data bytes, not including the header. </dd></dl>
 
-<p>Implements <a class="el" href="class_i_transport.html#a019f68a52cb46287fe919e7c11e2d10c">ITransport</a>.</p>
+<p>Implements <a class="el" href="class_i_transport.html#a0484467f5333330a859e4dad39df01bb">ITransport</a>.</p>
 
 </div>
 </div>
-<a id="a895db4f56bb0b66dbe27942f019fc27c" name="a895db4f56bb0b66dbe27942f019fc27c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a895db4f56bb0b66dbe27942f019fc27c">&#9670;&#160;</a></span>Send()</h2>
+<a id="a1d3d1d095712800240cfbb4c2e5f2579" name="a1d3d1d095712800240cfbb4c2e5f2579"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d3d1d095712800240cfbb4c2e5f2579">&#9670;&#160;</a></span>Send()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -267,7 +267,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual int Win32PipeTransport::Send </td>
           <td>(</td>
-          <td class="paramtype">std::ostringstream &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>, </td>
+          <td class="paramtype"><a class="el" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -290,7 +290,7 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 if success. </dd></dl>
 
-<p>Implements <a class="el" href="class_i_transport.html#ae4ad3a26af8ada83e36db57e6c32493c">ITransport</a>.</p>
+<p>Implements <a class="el" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">ITransport</a>.</p>
 
 </div>
 </div>

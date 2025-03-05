@@ -135,10 +135,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a622b3e3e52ff2226d29f1a1a33edab59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a488dc382184e736c47ac9058104ba222" id="r_a488dc382184e736c47ac9058104ba222"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a488dc382184e736c47ac9058104ba222">Destroy</a> ()</td></tr>
 <tr class="separator:a488dc382184e736c47ac9058104ba222"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a876f09d4ae678e12d7f536137859ce01" id="r_a876f09d4ae678e12d7f536137859ce01"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a876f09d4ae678e12d7f536137859ce01">Send</a> (std::ostringstream &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
-<tr class="separator:a876f09d4ae678e12d7f536137859ce01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac51f136bcc9258642078f1c5bb8d824d" id="r_ac51f136bcc9258642078f1c5bb8d824d"><td class="memItemLeft" align="right" valign="top">virtual std::stringstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac51f136bcc9258642078f1c5bb8d824d">Receive</a> (<a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
-<tr class="separator:ac51f136bcc9258642078f1c5bb8d824d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8064789233491016310d45d740de095d" id="r_a8064789233491016310d45d740de095d"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8064789233491016310d45d740de095d">Send</a> (<a class="el" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
+<tr class="separator:a8064789233491016310d45d740de095d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ad206313487f0fa79df948a20898006" id="r_a2ad206313487f0fa79df948a20898006"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ad206313487f0fa79df948a20898006">Receive</a> (<a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
+<tr class="separator:a2ad206313487f0fa79df948a20898006"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a300f5a6e3a7b08863d77894ab3e816b3" id="r_a300f5a6e3a7b08863d77894ab3e816b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a300f5a6e3a7b08863d77894ab3e816b3">SetTransportMonitor</a> (<a class="el" href="class_i_transport_monitor.html">ITransportMonitor</a> *transportMonitor)</td></tr>
 <tr class="separator:a300f5a6e3a7b08863d77894ab3e816b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_i_transport"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_i_transport')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_i_transport.html">ITransport</a></td></tr>
@@ -254,8 +254,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac51f136bcc9258642078f1c5bb8d824d" name="ac51f136bcc9258642078f1c5bb8d824d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac51f136bcc9258642078f1c5bb8d824d">&#9670;&#160;</a></span>Receive()</h2>
+<a id="a2ad206313487f0fa79df948a20898006" name="a2ad206313487f0fa79df948a20898006"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ad206313487f0fa79df948a20898006">&#9670;&#160;</a></span>Receive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -264,7 +264,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::stringstream ZeroMqTransport::Receive </td>
+          <td class="memname">virtual <a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> ZeroMqTransport::Receive </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span></td><td>)</td>
           <td></td>
@@ -284,12 +284,12 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The received incoming data bytes, not including the header. </dd></dl>
 
-<p>Implements <a class="el" href="class_i_transport.html#a019f68a52cb46287fe919e7c11e2d10c">ITransport</a>.</p>
+<p>Implements <a class="el" href="class_i_transport.html#a0484467f5333330a859e4dad39df01bb">ITransport</a>.</p>
 
 </div>
 </div>
-<a id="a876f09d4ae678e12d7f536137859ce01" name="a876f09d4ae678e12d7f536137859ce01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a876f09d4ae678e12d7f536137859ce01">&#9670;&#160;</a></span>Send()</h2>
+<a id="a8064789233491016310d45d740de095d" name="a8064789233491016310d45d740de095d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8064789233491016310d45d740de095d">&#9670;&#160;</a></span>Send()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -300,7 +300,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual int ZeroMqTransport::Send </td>
           <td>(</td>
-          <td class="paramtype">std::ostringstream &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>, </td>
+          <td class="paramtype"><a class="el" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -323,7 +323,7 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 if success. </dd></dl>
 
-<p>Implements <a class="el" href="class_i_transport.html#ae4ad3a26af8ada83e36db57e6c32493c">ITransport</a>.</p>
+<p>Implements <a class="el" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">ITransport</a>.</p>
 
 </div>
 </div>

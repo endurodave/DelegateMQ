@@ -27,12 +27,13 @@ var NAVTREE =
   [ "DelegateMQ", "index.html", [
     [ "Delegates in C++", "index.html#autotoc_md0", null ],
     [ "Overview", "index.html#autotoc_md1", null ],
-    [ "Documentation", "index.html#autotoc_md2", null ],
-    [ "Project Build", "index.html#autotoc_md3", null ],
-    [ "Features", "index.html#autotoc_md4", null ],
-    [ "Related Repositories", "index.html#autotoc_md5", [
-      [ "Alternative Implementations", "index.html#autotoc_md6", null ],
-      [ "Other Projects Using DelegateMQ", "index.html#autotoc_md7", null ]
+    [ "Motivation", "index.html#autotoc_md2", null ],
+    [ "Documentation", "index.html#autotoc_md3", null ],
+    [ "Project Build", "index.html#autotoc_md4", null ],
+    [ "Features", "index.html#autotoc_md5", null ],
+    [ "Related Repositories", "index.html#autotoc_md6", [
+      [ "Alternative Implementations", "index.html#autotoc_md7", null ],
+      [ "Other Projects Using DelegateMQ", "index.html#autotoc_md8", null ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -72,12 +73,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"classdmq_1_1_delegate_async_wait_msg.html#a7da6811643a41e327367102c2c40c833",
-"classdmq_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a0ebd6009ee01817fca8b90a33b5b399c",
-"classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9e6063bdb062f93a743468eefea7ea42",
-"classdmq_1_1_i_dispatcher.html",
-"classserialize.html#acfb1afef8776c22530f83bec54ea89b0ab50339a10e1de285ac99d4c3990b8693",
-"structdmq_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html"
+"classdmq_1_1_delegate_async_msg.html#a905ab435bb0665e3778aa5d596a1b9ea",
+"classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#ab17315c47ac3bb760553c2388af98b7e",
+"classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a4c8c0a41aefd724586316576327b0332",
+"classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#aa18c831ed33e2e68128fcf9fb59a45a9",
+"classserialize.html#a9a6b840996a628f65126f216bafe3ab4a5af1a3a285c2bdee4192223e31e1f833",
+"structdmq_1_1_delegate_function_async_wait.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

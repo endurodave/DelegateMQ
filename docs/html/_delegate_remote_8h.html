@@ -195,7 +195,7 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Delegate "`Remote`" series of classes used to invoke a function remotely (i.e. different CPU, different process, etc...). </p>
 <p>The classes are not thread safe. Invoking a function remotely requires serializing all target function arguments and sending the argument data to the remote destination. All argument data is serialized into a stream. The receiver calls <code>Invoke()</code> with the received serialized stream arguments.</p>
-<p>An <code>ISerializer</code> and <code>IDispatcher</code> implementations are required to serialize and dispatch a remote delegate.</p>
+<p>An <code>ISerializer</code> and <code>IDispatcher</code> implementations are required to serialize and dispatch a remote delegate. These interface implementations, relied upon by the remote delegate, might not be thread safe. Therefore, ensure each remote delegate instance is called from a single thread of control.</p>
 <p><code>RetType operator()(Args... args)</code> - called by the sender to initiate the remote function call. Use <code>SetErrorHandler()</code> to catch invoke errors. Clone() may throw <code>std::bad_alloc</code> unless <code>DMQ_ASSERTS</code>. All other delegate class functions do not throw exceptions.</p>
 <p><code>void Invoke(std::istream&amp; is)</code> - called by the receiver to invoke the target function.</p>
 <p>Limitations:</p>

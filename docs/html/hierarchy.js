@@ -59,6 +59,7 @@ var hierarchy =
     [ "dmq::IDispatcher", "classdmq_1_1_i_dispatcher.html", [
       [ "Dispatcher", "class_dispatcher.html", null ]
     ] ],
+    [ "IMqttReceiveHandler", "class_i_mqtt_receive_handler.html", null ],
     [ "dmq::IRemoteInvoker", "classdmq_1_1_i_remote_invoker.html", [
       [ "dmq::DelegateFreeRemote< RetType(Args...)>", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "dmq::DelegateFunctionRemote< RetType(Args...)>", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
@@ -83,6 +84,7 @@ var hierarchy =
       [ "dmq::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
     ] ],
     [ "ITransport", "class_i_transport.html", [
+      [ "MqttTransport", "class_mqtt_transport.html", null ],
       [ "Win32PipeTransport", "class_win32_pipe_transport.html", null ],
       [ "Win32UdpTransport", "class_win32_udp_transport.html", null ],
       [ "ZeroMqTransport", "class_zero_mq_transport.html", null ]

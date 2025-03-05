@@ -208,6 +208,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6f5d8ba4722f0ed57e157c670d60631e" id="r_a6f5d8ba4722f0ed57e157c670d60631e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f5d8ba4722f0ed57e157c670d60631e">SetErrorHandler</a> (<a class="el" href="structdmq_1_1_delegate.html">Delegate</a>&lt; void(<a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">DelegateRemoteId</a>, <a class="el" href="namespacedmq.html#a62ea8a73887af62d409322557b4e757d">DelegateError</a>, <a class="el" href="namespacedmq.html#a4bcc300237d5cb854a800a19ccc0400a">DelegateErrorAux</a>)&gt; &amp;&amp;errorHandler)</td></tr>
 <tr class="memdesc:a6f5d8ba4722f0ed57e157c670d60631e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the error handler.  <br /></td></tr>
 <tr class="separator:a6f5d8ba4722f0ed57e157c670d60631e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a651408a9ac273d81d8d39712b4242c57" id="r_a651408a9ac273d81d8d39712b4242c57"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a651408a9ac273d81d8d39712b4242c57">ClearErrorHandler</a> ()</td></tr>
+<tr class="memdesc:a651408a9ac273d81d8d39712b4242c57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the error handler.  <br /></td></tr>
+<tr class="separator:a651408a9ac273d81d8d39712b4242c57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a9b01350223748e35b9b97cbfe579aa" id="r_a3a9b01350223748e35b9b97cbfe579aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacedmq.html#a62ea8a73887af62d409322557b4e757d">DelegateError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a9b01350223748e35b9b97cbfe579aa">GetError</a> ()</td></tr>
 <tr class="memdesc:a3a9b01350223748e35b9b97cbfe579aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the last error code.  <br /></td></tr>
 <tr class="separator:a3a9b01350223748e35b9b97cbfe579aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -632,6 +635,35 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
+<a id="a651408a9ac273d81d8d39712b4242c57" name="a651408a9ac273d81d8d39712b4242c57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a651408a9ac273d81d8d39712b4242c57">&#9670;&#160;</a></span>ClearErrorHandler()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="structdmq_1_1_delegate_free_remote.html">dmq::DelegateFreeRemote</a>&lt; RetType(Args...)&gt;::ClearErrorHandler </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear the error handler. </p>
+
+</div>
+</div>
 <a id="a5e1bcfc7eae630d87b172503d3c64b91" name="a5e1bcfc7eae630d87b172503d3c64b91"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5e1bcfc7eae630d87b172503d3c64b91">&#9670;&#160;</a></span>Clone()</h2>
 
@@ -658,14 +690,8 @@ template&lt;class RetType , class... Args&gt; </div>
 </div><div class="memdoc">
 
 <p>Creates a copy of the current object. </p>
-<p>Clones the current instance of the class by creating a new object and copying the state of the current object to it. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to a new <code>ClassType</code> instance. </dd></dl>
-<dl class="section post"><dt>Postcondition</dt><dd>The caller is responsible for deleting the clone object. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::bad_alloc</td><td>If dynamic memory allocation fails and DMQ_ASSERTS not defined. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Clones the current instance of the class by creating a new object and copying the state of the current object to it. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to a new <code>ClassType</code> instance or nullptr if allocation fails. </dd></dl>
+<dl class="section post"><dt>Postcondition</dt><dd>The caller is responsible for deleting the clone object and checking for nullptr. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="classdmq_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html#ac6ed6d31e89c824e049f32b95b42e6bf">dmq::DelegateFree&lt; RetType(Args...)&gt;</a>.</p>
 

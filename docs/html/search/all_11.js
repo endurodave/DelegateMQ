@@ -7,5 +7,5 @@ var searchData=
   ['unicastdelegate_3c_20void_28void_29_3e_4',['UnicastDelegate&lt; void(void)&gt;',['../structdmq_1_1_unicast_delegate.html',1,'dmq']]],
   ['unknown_5',['UNKNOWN',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a696b031073e74bf2cb98e5ef201d4aa3',1,'serialize']]],
   ['user_5fdefined_6',['USER_DEFINED',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a5123cb514ff95a726922950380866e00',1,'serialize']]],
-  ['using_20delegatemq_7',['Other Projects Using DelegateMQ',['../index.html#autotoc_md7',1,'']]]
+  ['using_20delegatemq_7',['Other Projects Using DelegateMQ',['../index.html#autotoc_md8',1,'']]]
 ];

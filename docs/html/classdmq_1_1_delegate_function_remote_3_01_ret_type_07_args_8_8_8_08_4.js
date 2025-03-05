@@ -12,6 +12,7 @@ var classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "Assign", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a77da976828228b1bcb16727a684f061f", null ],
     [ "AsyncInvoke", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a2b74d245781bf2bf7a530566694d53ce", null ],
     [ "Bind", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a8bba7efcfa46cd137a5087cbeb453540", null ],
+    [ "ClearErrorHandler", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a9b88d808c9cf65127c1ded991c90df25", null ],
     [ "Clone", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#ac56985043710a44668759152893a5b16", null ],
     [ "Equal", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#ae7e4ad271251cada9c8973af1eb6dd0c", null ],
     [ "GetError", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#adda0c90a83a45869c398f045ebf9da92", null ],

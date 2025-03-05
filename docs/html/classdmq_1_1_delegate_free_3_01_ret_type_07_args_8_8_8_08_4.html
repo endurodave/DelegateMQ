@@ -542,8 +542,8 @@ template&lt;class RetType , class... Args&gt; </div>
 </div><div class="memdoc">
 
 <p>Creates a copy of the current object. </p>
-<p>Clones the current instance of the class by creating a new object and copying the state of the current object to it. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to a new <code>ClassType</code> instance. </dd></dl>
-<dl class="section post"><dt>Postcondition</dt><dd>The caller is responsible for deleting the clone object. </dd></dl>
+<p>Clones the current instance of the class by creating a new object and copying the state of the current object to it. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to a new <code>ClassType</code> instance or nullptr if allocation fails. </dd></dl>
+<dl class="section post"><dt>Postcondition</dt><dd>The caller is responsible for deleting the clone object and checking for nullptr. </dd></dl>
 
 <p>Implements <a class="el" href="classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ae036803e39429adf2b2b541b35be5604">dmq::Delegate&lt; RetType(Args...)&gt;</a>.</p>
 

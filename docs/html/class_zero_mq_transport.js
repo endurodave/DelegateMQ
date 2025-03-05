@@ -9,7 +9,7 @@ var class_zero_mq_transport =
     [ "Close", "class_zero_mq_transport.html#a622b3e3e52ff2226d29f1a1a33edab59", null ],
     [ "Create", "class_zero_mq_transport.html#a180c60a8845d6eb436f4a1296a3bfe68", null ],
     [ "Destroy", "class_zero_mq_transport.html#a488dc382184e736c47ac9058104ba222", null ],
-    [ "Receive", "class_zero_mq_transport.html#ac51f136bcc9258642078f1c5bb8d824d", null ],
-    [ "Send", "class_zero_mq_transport.html#a876f09d4ae678e12d7f536137859ce01", null ],
+    [ "Receive", "class_zero_mq_transport.html#a2ad206313487f0fa79df948a20898006", null ],
+    [ "Send", "class_zero_mq_transport.html#a8064789233491016310d45d740de095d", null ],
     [ "SetTransportMonitor", "class_zero_mq_transport.html#a300f5a6e3a7b08863d77894ab3e816b3", null ]
 ];

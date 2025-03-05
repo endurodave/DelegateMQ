@@ -182,6 +182,8 @@ Include `DelegateMQ.h` to use the delegate library features. Build and execute t
 
 # Quick Start
 
+Simple delegate examples showing basic functionality.
+
 ## Basic Examples
 
 Simple function definitions.
@@ -395,12 +397,15 @@ DelegateBase
         DelegateFree<>
             DelegateFreeAsync<>
             DelegateFreeAsyncWait<>
+            DelegateFreeRemote<>
         DelegateMember<>
             DelegateMemberAsync<>
             DelegateMemberAsyncWait<>
+            DelegateMemberRemote<>
         DelegateFunction<>
             DelegateFunctionAsync<>
             DelegateFunctionAsyncWait<>
+            DelegateFunctionRemote<>
 
 // Interfaces
 IDispatcher
@@ -526,6 +531,8 @@ delegateF.Clear();
 delegateF = nullptr;
 ```
 ## Asynchronous Delegates
+
+An asynchronous delegate invokes a callable on a user-specified thread of control.
 
 ### Non-Blocking
 
@@ -1373,6 +1380,8 @@ SysData::GetInstance().SetSystemMode(SystemMode::NORMAL);
 
 ## Asynchronous API Examples
 
+An async-API look like a normal function call to a caller. However, an async delegate invokes the callable on a specific thread of control either blocking or non-blocking.
+
 ### No Locks
 
 `SysDataNoLock` is an alternate implementation that uses a private `MulticastDelegateSafe<>` for setting the system mode asynchronously and without locks.
@@ -1601,7 +1610,9 @@ See the `examples/sample-projects` directory for example project. Most projects 
 
 ### system-architecture
 
-The system-architecture remote delegate example demonstrates a complex client/server application using ZeroMQ and MessagePack support libraries. Subsystems communication and collaborate between threads and processes. Execute the client and server projects to run the example.
+The System Architecture example demonstrates a complex client-server DelegateMQ application using the ZeroMQ and MessagePack support libraries. This example implements the acquisition of sensor and actuator data across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code.
+
+Execute the client and server projects to run the example.
 
 | Class | Location | Details |
 | --- | --- | --- |

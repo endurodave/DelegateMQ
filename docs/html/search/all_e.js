@@ -6,13 +6,13 @@ var searchData=
   ['readendian_3',['readEndian',['../classserialize.html#ac4eceddf9316ef275c8f99aa6573d491',1,'serialize']]],
   ['readme_2emd_4',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
   ['rebind_5',['rebind',['../structstl__allocator_1_1rebind.html',1,'stl_allocator&lt; T &gt;::rebind&lt; U &gt;'],['../structstl__allocator_3_01void_01_4_1_1rebind.html',1,'stl_allocator&lt; void &gt;::rebind']]],
-  ['receive_6',['Receive',['../class_i_transport.html#a019f68a52cb46287fe919e7c11e2d10c',1,'ITransport::Receive()'],['../class_win32_pipe_transport.html#aad92921500dec5ebdee848f5e7e94cbf',1,'Win32PipeTransport::Receive()'],['../class_win32_udp_transport.html#a240d16c4d7cd14dbb3554bb95fcd0627',1,'Win32UdpTransport::Receive()'],['../class_zero_mq_transport.html#ac51f136bcc9258642078f1c5bb8d824d',1,'ZeroMqTransport::Receive()']]],
+  ['receive_6',['Receive',['../class_i_transport.html#a0484467f5333330a859e4dad39df01bb',1,'ITransport::Receive()'],['../class_i_mqtt_receive_handler.html#a75e22c8b0ba471fa61361953f3387ff6',1,'IMqttReceiveHandler::Receive()'],['../class_mqtt_transport.html#a760c039d661da84e124cfb70875f9a15',1,'MqttTransport::Receive()'],['../class_win32_pipe_transport.html#a2abc80e157b6ccbed44ab9cc4244d911',1,'Win32PipeTransport::Receive()'],['../class_win32_udp_transport.html#a285044d5586a962c9b9063cd186e2455',1,'Win32UdpTransport::Receive()'],['../class_zero_mq_transport.html#a2ad206313487f0fa79df948a20898006',1,'ZeroMqTransport::Receive()']]],
   ['reference_7',['reference',['../classstl__allocator.html#af5a899e568d23ab5bb9150b4700a9cb1',1,'stl_allocator']]],
-  ['related_20repositories_8',['Related Repositories',['../index.html#autotoc_md5',1,'']]],
+  ['related_20repositories_8',['Related Repositories',['../index.html#autotoc_md6',1,'']]],
   ['remotearg_9',['RemoteArg',['../classdmq_1_1_remote_arg.html',1,'dmq::RemoteArg&lt; Arg &gt;'],['../classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4.html#a30b5b63fe9011e7ac13b823a73216b97',1,'dmq::RemoteArg&lt; Arg ** &gt;::RemoteArg()']]],
   ['remotearg_3c_20arg_20_26_20_3e_10',['RemoteArg&lt; Arg &amp; &gt;',['../classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html',1,'dmq']]],
   ['remotearg_3c_20arg_20_2a_20_3e_11',['RemoteArg&lt; Arg * &gt;',['../classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html',1,'dmq']]],
   ['remotearg_3c_20arg_20_2a_2a_20_3e_12',['RemoteArg&lt; Arg ** &gt;',['../classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4.html',1,'dmq']]],
   ['remove_13',['Remove',['../classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a30ddda028ef2df79d998ec91f6389c00',1,'dmq::MulticastDelegate&lt; RetType(Args...)&gt;::Remove()'],['../classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a20a07368898fb566fc685938af0d81c5',1,'dmq::MulticastDelegateSafe&lt; RetType(Args...)&gt;::Remove()'],['../class_i_transport_monitor.html#a64b5f2d1c3688410e3d084a8d67b7669',1,'ITransportMonitor::Remove()'],['../class_transport_monitor.html#a4a86fbe9c52d32bd4b21053cda25f732',1,'TransportMonitor::Remove()']]],
-  ['repositories_14',['Related Repositories',['../index.html#autotoc_md5',1,'']]]
+  ['repositories_14',['Related Repositories',['../index.html#autotoc_md6',1,'']]]
 ];

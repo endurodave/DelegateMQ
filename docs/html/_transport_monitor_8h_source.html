@@ -114,7 +114,7 @@ $(function(){initNavTree('_transport_monitor_8h_source.html',''); initResizable(
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a17b3973e09217c5c078b176ea2de3139">   18</a></span>    <a class="code hl_struct" href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a>&lt;void(uint16_t, <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a>)&gt; <a class="code hl_variable" href="class_transport_monitor.html#a17b3973e09217c5c078b176ea2de3139">Timeout</a>;</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a0d2d0059f8272528d703682bfff862f6">   20</a></span>    <a class="code hl_function" href="class_transport_monitor.html#a0d2d0059f8272528d703682bfff862f6">TransportMonitor</a>(<span class="keyword">const</span> std::chrono::milliseconds&amp; timeout) : TIMEOUT(timeout) {}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a0d2d0059f8272528d703682bfff862f6">   20</a></span>    <a class="code hl_function" href="class_transport_monitor.html#a0d2d0059f8272528d703682bfff862f6">TransportMonitor</a>(<span class="keyword">const</span> std::chrono::milliseconds&amp; timeout) : TRANSPORT_TIMEOUT(timeout) {}</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6">   21</a></span>    <a class="code hl_function" href="class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6">~TransportMonitor</a>() { m_pending.clear(); }</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
@@ -149,7 +149,7 @@ $(function(){initNavTree('_transport_monitor_8h_source.html',''); initResizable(
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keyword">auto</span> elapsed = std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(now - (*it).second.timeStamp);</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="comment">// Has timeout expired?</span></div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keywordflow">if</span> (elapsed &gt; TIMEOUT) </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keywordflow">if</span> (elapsed &gt; TRANSPORT_TIMEOUT)</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            {</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                <a class="code hl_variable" href="class_transport_monitor.html#a17b3973e09217c5c078b176ea2de3139">Timeout</a>((*it).first, (*it).second.remoteId);</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                it = m_pending.erase(it);</div>
@@ -170,7 +170,7 @@ $(function(){initNavTree('_transport_monitor_8h_source.html',''); initResizable(
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    };</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::map&lt;uint16_t, TimeoutData&gt; m_pending;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">const</span> std::chrono::milliseconds TIMEOUT;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">const</span> std::chrono::milliseconds TRANSPORT_TIMEOUT;</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>};</div>
 </div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>

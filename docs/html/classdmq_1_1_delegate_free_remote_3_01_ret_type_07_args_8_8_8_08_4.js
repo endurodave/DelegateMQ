@@ -12,6 +12,7 @@ var classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "Assign", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a155441708f3a3c325a3d25a6e6b0efb1", null ],
     [ "AsyncInvoke", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a483cfca1dd571e40e11af6ce06eb293d", null ],
     [ "Bind", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a5cfb49e94d33f70eb19a4d74b6227cdb", null ],
+    [ "ClearErrorHandler", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a651408a9ac273d81d8d39712b4242c57", null ],
     [ "Clone", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a5e1bcfc7eae630d87b172503d3c64b91", null ],
     [ "Equal", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a9ab546040ae72a317b8434b22873e76e", null ],
     [ "GetError", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a3a9b01350223748e35b9b97cbfe579aa", null ],

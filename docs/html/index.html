@@ -120,7 +120,7 @@ Delegates in C++</h1>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Invoke all callable targets asynchronously </span></div>
 <div class="line">delegates(123);</div>
-<div class="ttc" id="anamespacedmq_html_a65e308cc5f3e37d2f7f89c72b9744ae2"><div class="ttname"><a href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:670</div></div>
+<div class="ttc" id="anamespacedmq_html_a65e308cc5f3e37d2f7f89c72b9744ae2"><div class="ttname"><a href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:673</div></div>
 <div class="ttc" id="astructdmq_1_1_multicast_delegate_safe_html"><div class="ttname"><a href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a></div><div class="ttdef"><b>Definition</b> MulticastDelegateSafe.h:14</div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md1"></a>
 Overview</h1>
@@ -132,7 +132,7 @@ Overview</h1>
 <p>Remote delegates enable function invocation across processes or processors by using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callable endpoints with any function signature. Minimal effort is required to extend support to any new library. Concrete examples are provided using support libraries below.</p>
 <ul>
 <li><b>Serialization:</b> <a href="https://msgpack.org/index.html">MessagePack</a>, <a href="https://github.com/Tencent/rapidjson">RapidJSON</a>, <a href="https://github.com/endurodave/MessageSerialize">MessageSerialize</a></li>
-<li><b>Transport:</b> <a href="https://zeromq.org/">ZeroMQ</a>, UDP, data pipe, memory buffer</li>
+<li><b>Transport:</b> <a href="https://zeromq.org/">ZeroMQ</a>, <a href="https://github.com/eclipse-paho/paho.mqtt.c">MQTT</a>, UDP, data pipe, memory buffer</li>
 </ul>
 <p>It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to <code>nullptr</code>. Const correctness is maintained; stored const objects can only be called by const member functions.</p>
 <p>A delegate instance can be:</p>
@@ -157,18 +157,23 @@ Overview</h1>
 <p>DelegateMQ uses an external thread, transport, and serializer, all of which are based on simple, well-defined interfaces.</p>
 <p><img src="docs/LayerDiagram.jpg" alt="DelegateMQ Layer Diagram" style="width:70%;" class="inline"/><br  />
  <em>DelegateMQ Layer Diagram</em></p>
+<p>The library's flexible CMake build options allow for the inclusion of only the necessary features. Synchronous, asynchronous, and remote delegates can be used individually or in combination.</p>
 <p>Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.</p>
 <h1><a class="anchor" id="autotoc_md2"></a>
+Motivation</h1>
+<p>Systems are composed of various design patterns or libraries to implement callbacks, asynchronous APIs, and inter-thread or inter-processor communications. These elements typically lack shared commonality. Callbacks are one-off implementations by individual developers, messages between threads rely on OS message queues, and communication libraries handle data transfer complexities. However, the underlying commonality lies in the need to move argument data to the target handler function, regardless of its location.</p>
+<p>The DelegateMQ middleware effectively encapsulates all data movement and function invocation within a single library. Whether the target function is a static method, class method, or lambda—residing locally in a separate thread or remotely on a different processor—the library ensures the movement of argument data (marshalling when necessary) and invokes the target function. The low-level details of data movement and function invocation are neatly abstracted from the application layer.</p>
+<h1><a class="anchor" id="autotoc_md3"></a>
 Documentation</h1>
 <p>See Design Details for implementation design documentation and more examples.</p>
 <p>See <a href="https://endurodave.github.io/DelegateMQ/html/index.html">Doxygen Documentation</a> for source code documentation.</p>
 <p>See <a href="https://app.codecov.io/gh/endurodave/DelegateMQ">Unit Test Code Coverage</a> test results.</p>
-<h1><a class="anchor" id="autotoc_md3"></a>
+<h1><a class="anchor" id="autotoc_md4"></a>
 Project Build</h1>
 <p><a href="https://www.cmake.org">CMake</a> is used to create the build files. Visual Studio, GCC, and Clang toolchains are supported. Easy porting to other targets. Execute CMake console commands in the project root directory.</p>
 <p><code>cmake -B build -S .</code></p>
 <p>See <a href="docs/DETAILS.md#example-projects">Example Projects</a> to build other project examples.</p>
-<h1><a class="anchor" id="autotoc_md4"></a>
+<h1><a class="anchor" id="autotoc_md5"></a>
 Features</h1>
 <p>DelegateMQ at a glance.</p>
 <table class="markdownTable">
@@ -203,21 +208,21 @@ Features</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Language   </td><td class="markdownTableBodyNone">C++17 or higher   </td></tr>
 </table>
-<h1><a class="anchor" id="autotoc_md5"></a>
+<h1><a class="anchor" id="autotoc_md6"></a>
 Related Repositories</h1>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md7"></a>
 Alternative Implementations</h2>
 <p>Alternative asynchronous implementations similar in concept to DelegateMQ, simpler, and less features.</p>
 <ul>
 <li><a href="https://github.com/endurodave/AsyncCallback">Asynchronous Callbacks in C++</a> - A C++ asynchronous callback framework.</li>
 <li><a href="https://github.com/endurodave/C_AsyncCallback">Asynchronous Callbacks in C</a> - A C language asynchronous callback framework.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md8"></a>
 Other Projects Using DelegateMQ</h2>
 <p>Repositories utilizing the DelegateMQ library.</p>
 <ul>
 <li><a href="https://github.com/endurodave/AsyncStateMachine">Asynchronous State Machine Design in C++</a> - an asynchronous C++ state machine implemented using an asynchronous delegate library.</li>
-<li><a href="https://github.com/endurodave/IntegrationTestFramework">Integration Test Framework using Google Test and Delegates</a> - a multi-threaded C++ software integration test framework using Google Test and Delegate libraries.</li>
+<li><a href="https://github.com/endurodave/IntegrationTestFramework">Integration Test Framework using Google Test and Delegates</a> - a multi-threaded C++ software integration test framework using Google Test and DelegateMQ libraries.</li>
 <li><a href="https://github.com/endurodave/Async-SQLite">Asynchronous SQLite API using C++ Delegates</a> - an asynchronous SQLite wrapper implemented using an asynchronous delegate library. </li>
 </ul>
 </div></div><!-- PageDoc -->

@@ -24,7 +24,7 @@ var searchData=
   ['xsstream_2eh_21',['xsstream.h',['../xsstream_8h.html',1,'']]],
   ['xstring_22',['xstring',['../xstring_8h.html#a50612654f5d2a8436a8006f48560256a',1,'xstring.h']]],
   ['xstring_2eh_23',['xstring.h',['../xstring_8h.html',1,'']]],
-  ['xstringstream_24',['xstringstream',['../xsstream_8h.html#a055d3311b69b67770df52fcf4948744e',1,'xsstream.h']]],
+  ['xstringstream_24',['xstringstream',['../_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae',1,'xstringstream:&#160;DelegateOpt.h'],['../xsstream_8h.html#a055d3311b69b67770df52fcf4948744e',1,'xstringstream:&#160;xsstream.h']]],
   ['xwostringstream_25',['xwostringstream',['../xsstream_8h.html#aedac73adf3363c46070bff77a0e47e3a',1,'xsstream.h']]],
   ['xwstring_26',['xwstring',['../xstring_8h.html#a8e7790b4edcc21d50d93d7f148a3c3b9',1,'xstring.h']]],
   ['xwstringstream_27',['xwstringstream',['../xsstream_8h.html#a80796ed46a3d7f87bd5b49bba9152961',1,'xsstream.h']]]

@@ -967,14 +967,8 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 </div><div class="memdoc">
 
 <p>Creates a copy of the current object. </p>
-<p>Clones the current instance of the class by creating a new object and copying the state of the current object to it. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to a new <code>ClassType</code> instance. </dd></dl>
-<dl class="section post"><dt>Postcondition</dt><dd>The caller is responsible for deleting the clone object. </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">std::bad_alloc</td><td>If dynamic memory allocation fails and DMQ_ASSERTS not defined. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Clones the current instance of the class by creating a new object and copying the state of the current object to it. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to a new <code>ClassType</code> instance or nullptr if allocation fails. </dd></dl>
+<dl class="section post"><dt>Postcondition</dt><dd>The caller is responsible for deleting the clone object and checking for nullptr. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a4c8c0a41aefd724586316576327b0332">dmq::DelegateMember&lt; TClass, RetType(Args...)&gt;</a>.</p>
 

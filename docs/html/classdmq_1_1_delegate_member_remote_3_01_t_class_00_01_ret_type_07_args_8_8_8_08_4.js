@@ -21,6 +21,7 @@ var classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_
     [ "Bind", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a5286871306b16bf2fa4b5c01a001f319", null ],
     [ "Bind", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a14dc3338504b61b2ec1177578b27efed", null ],
     [ "Bind", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a66734bb0a13ff7b7fccd3c92c20dfed0", null ],
+    [ "ClearErrorHandler", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a70fe27d535bf9c6bbd5046be9107b0cc", null ],
     [ "Clone", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#aad5a169baf98024bb3de0ec2262f2d59", null ],
     [ "Equal", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a5e0e0bd41a3b0d41a005e074ec52eafa", null ],
     [ "GetError", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a04c1a18619d8684ad6544145ba89b046", null ],
