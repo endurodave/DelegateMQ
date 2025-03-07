@@ -70,7 +70,7 @@ public:
     /// @return A reference to the current object.
     UnicastDelegateSafe& operator=(UnicastDelegateSafe&& rhs) noexcept {
         const std::lock_guard<std::mutex> lock(m_lock);
-        BaseType::operator=(std::forward<MulticastDelegateSafe>(rhs));
+        BaseType::operator=(std::forward<UnicastDelegateSafe>(rhs));
         return *this;
     }
 
