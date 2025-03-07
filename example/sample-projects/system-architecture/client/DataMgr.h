@@ -45,6 +45,7 @@ private:
 
     ~DataMgr()
     {
+        NetworkMgr::DataMsgCb -= MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread);
         m_thread.ExitThread();
     }
 

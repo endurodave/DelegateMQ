@@ -9,6 +9,7 @@
 #include "AlarmMsg.h"
 #include "DataMsg.h"
 #include "CommandMsg.h"
+#include "ActuatorMsg.h"
 #include <msgpack.hpp>
 #include <map>
 #include <mutex>
@@ -16,22 +17,24 @@
 static const dmq::DelegateRemoteId ALARM_MSG_ID = 1;
 static const dmq::DelegateRemoteId DATA_MSG_ID = 2;
 static const dmq::DelegateRemoteId COMMAND_MSG_ID = 3;
+static const dmq::DelegateRemoteId ACTUATOR_MSG_ID = 4;
 
 /// @brief NetworkMgr sends and receives data using a delegate transport implemented
 /// using ZeroMQ library. Class is thread safe. All public APIs are asynchronous.
 /// 
 /// @details NetworkMgr has its own internal thread of control. All DelegateMemberRemote<>
-/// must only be invoked on the internal thread. All public APIs are asynchronous. 
-/// Register with ErrorCb or TimeoutCb to handle errors.
+/// must only be invoked on the internal thread. All public APIs are asynchronous (blocking 
+/// and non-blocking). Register with ErrorCb or TimeoutCb to handle errors.
 class NetworkMgr
 {
 public:
     // Resister with delegate to receive callbacks
     static dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCb;
-    static dmq::MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId)> TimeoutCb;
+    static dmq::MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId, TransportMonitor::Status)> SendStatusCb;
     static dmq::MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)> AlarmMsgCb;
     static dmq::MulticastDelegateSafe<void(CommandMsg&)> CommandMsgCb;
     static dmq::MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
+    static dmq::MulticastDelegateSafe<void(ActuatorMsg&)> ActuatorMsgCb;
 
     static NetworkMgr& Instance()
     {
@@ -57,6 +60,10 @@ public:
     // Send data message to the remote
     void SendDataMsg(DataMsg& data);
 
+    // Send actuator position command. Blocking call returns after remote receives 
+    // the actuator message.
+    bool SendActuatorMsgWait(ActuatorMsg& msg);
+
 private:
     NetworkMgr();
     ~NetworkMgr();
@@ -64,22 +71,32 @@ private:
     // Poll called periodically on m_thread context
     void Poll();
 
+    // Process message timeout loop
+    void Timeout();
+
     // Handle errors from DelegateMQ library
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux);
 
-    // Handle message timeouts
-    void TimeoutHandler(uint16_t seqNum, dmq::DelegateRemoteId id);
+    // Handle send message status callbacks
+    void SendStatusHandler(uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status);
 
     // Incoming message handlers
     void RecvAlarmMsg(AlarmMsg& msg, AlarmNote& note);
     void RecvCommandMsg(CommandMsg& command);
     void RecvDataMsg(DataMsg& data);
+    void RecvActuatorMsg(ActuatorMsg& msg);
 
     // NetworkApp thread of control
     Thread m_thread;
 
+    // Message timeout processing thread
+    Thread m_timeoutThread;
+
     // Timer for polling
     Timer m_recvTimer;
+
+    // Timer for processing message timeouts
+    Timer m_timeoutTimer;
 
     // Serialize function argument data into a stream
     xostringstream m_argStream;
@@ -107,6 +124,10 @@ private:
     // Receive data package via remote delegate
     Serializer<void(DataMsg&)> m_dataMsgSer;
     dmq::DelegateMemberRemote<NetworkMgr, void(DataMsg&)> m_dataMsgDel;
+
+    // Receive actuator message via remote delegate
+    Serializer<void(ActuatorMsg&)> m_actuatorMsgSer;
+    dmq::DelegateMemberRemote<NetworkMgr, void(ActuatorMsg&)> m_actuatorMsgDel;
 };
 
 #endif

@@ -16,7 +16,7 @@ public:
         return instance;
     }
 
-    // Receive and handle client commands
+    // Receive and handle client command message
     void CommandMsgRecv(CommandMsg& command)
     {
         if (command.action == CommandMsg::Action::START)
@@ -34,6 +34,19 @@ public:
         }
     }
 
+    // Receive and handle client actuator message
+    void ActuatorMsgRecv(ActuatorMsg& command)
+    {
+        std::cout << "Actuator " << command.actuatorId << " position " << command.actuatorPosition << std::endl;
+
+        if (command.actuatorId == 1)
+            m_actuator1.SetPosition(command.actuatorPosition);
+        else if (command.actuatorId == 2)
+            m_actuator2.SetPosition(command.actuatorPosition);
+        else
+            std::cout << "Unknown actuator ID" << std::endl;
+    }
+
 private:
     ServerApp() :
         m_thread("ServerAppThread"),
@@ -46,8 +59,9 @@ private:
 
         // Register for incoming client commands
         NetworkMgr::CommandMsgCb += MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread);
+        NetworkMgr::ActuatorMsgCb += MakeDelegate(this, &ServerApp::ActuatorMsgRecv, m_thread);
         NetworkMgr::ErrorCb += MakeDelegate(this, &ServerApp::ErrorHandler, m_thread);
-        NetworkMgr::TimeoutCb += MakeDelegate(this, &ServerApp::TimeoutHandler, m_thread);
+        NetworkMgr::SendStatusCb += MakeDelegate(this, &ServerApp::SendStatusHandler, m_thread);
     }
 
     ~ServerApp()
@@ -88,9 +102,10 @@ private:
             std::cout << "ServerApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    void TimeoutHandler(uint16_t seqNum, dmq::DelegateRemoteId id)
+    void SendStatusHandler(uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status)
     {
-        std::cout << "ServerApp Timeout: " << id << " " << seqNum << std::endl;
+        if (status != TransportMonitor::Status::SUCCESS)
+            std::cout << "ServerApp Timeout: " << id << " " << seqNum << std::endl;
     }
 
     Thread m_thread;

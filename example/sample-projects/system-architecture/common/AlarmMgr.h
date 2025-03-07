@@ -43,6 +43,9 @@ private:
 
     ~AlarmMgr()
     {
+        NetworkMgr::ErrorCb -= MakeDelegate(this, &AlarmMgr::ErrorHandler, m_thread);
+        NetworkMgr::AlarmMsgCb -= MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
+
         m_thread.ExitThread();
     }
 

@@ -91,7 +91,7 @@ public:
     /// @brief Clear the all target functions.
     virtual void operator=(std::nullptr_t) noexcept { 
         const std::lock_guard<std::mutex> lock(m_lock);
-        return BaseType::Clear(); 
+        BaseType::Clear(); 
     }
 
     /// Insert a delegate into the container.

@@ -56,6 +56,8 @@ int main()
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);
 
+    receiveThread.CreateThread();
+
     int err = NetworkMgr::Instance().Create();
     if (err)
         std::cout << "NetworkMgr::Create() error: " << err << std::endl;
@@ -63,8 +65,6 @@ int main()
     AlarmMgr::Instance();
     DataMgr::Instance();
     ClientApp::Instance();
-
-    receiveThread.CreateThread();
 
     // Register to receive local and remote data updates on receiveThread
     DataMgr::DataMsgCb += MakeDelegate(&DataMsgRecv, receiveThread);
@@ -76,14 +76,13 @@ int main()
     std::this_thread::sleep_for(std::chrono::seconds(30));
 
     ClientApp::Instance().Stop();
-
     NetworkMgr::Instance().Stop();
     receiveThread.ExitThread();
 
     // Ensure the timer thread completes before main exits
     processTimerExit.store(true);
     if (timerThread.joinable())
-        timerThread.join();  
+        timerThread.join();
 
     return 0;
 }

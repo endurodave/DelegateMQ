@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <chrono>
 
-/// @brief Monitors remote delegate message timeouts. Class is not thread safe.
+/// @brief Monitors remote delegate send message timeouts. Class is thread safe.
 /// Call TransportMonitor::Process() periodically for timeout handling.
 /// Depending on the transport implementation, the message might still be delivered
 /// event if the monitor Timeout callback is invoked. A timeout expiring just means 
@@ -15,16 +15,28 @@
 class TransportMonitor : public ITransportMonitor
 {
 public:
-    dmq::MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId)> Timeout;
+    enum class Status
+    {
+        SUCCESS,  // Message received by remote
+        TIMEOUT   // Message timeout
+    };
+
+    // Delegate to monitor message send status
+    dmq::MulticastDelegateSafe<void(uint16_t seqNum, dmq::DelegateRemoteId id, Status status)> SendStatusCb;
 
     TransportMonitor(const std::chrono::milliseconds& timeout) : TRANSPORT_TIMEOUT(timeout) {}
-    ~TransportMonitor() { m_pending.clear(); }
+    ~TransportMonitor() 
+    { 
+        const std::unique_lock<std::mutex> lock(m_lock);
+        m_pending.clear(); 
+    }
 
 	/// Add a sequence number
 	/// param[in] seqNum - the delegate message sequence number
     /// param[in] remoteId - the remote ID
     void Add(uint16_t seqNum, dmq::DelegateRemoteId remoteId)
     {
+        const std::unique_lock<std::mutex> lock(m_lock);
         TimeoutData d;
         d.timeStamp = std::chrono::system_clock::now();
         d.remoteId = remoteId;
@@ -35,16 +47,19 @@ public:
 	/// param[in] seqNum - the delegate message sequence number
     void Remove(uint16_t seqNum)
     {
+        const std::unique_lock<std::mutex> lock(m_lock);
         if (m_pending.count(seqNum) != 0)
         {
             TimeoutData d = m_pending[seqNum];
             m_pending.erase(seqNum);
+            SendStatusCb(seqNum, d.remoteId, Status::SUCCESS);
         }
     }
 
 	/// Call periodically to process message timeouts
     void Process()
     {
+        const std::unique_lock<std::mutex> lock(m_lock);
         auto now = std::chrono::system_clock::now();
         auto it = m_pending.begin();
         while (it != m_pending.end()) 
@@ -55,7 +70,7 @@ public:
             // Has timeout expired?
             if (elapsed > TRANSPORT_TIMEOUT)
             {
-                Timeout((*it).first, (*it).second.remoteId);
+                SendStatusCb((*it).first, (*it).second.remoteId, Status::TIMEOUT);
                 it = m_pending.erase(it);
             }
             else 
@@ -74,6 +89,7 @@ private:
 
 	std::map<uint16_t, TimeoutData> m_pending;
 	const std::chrono::milliseconds TRANSPORT_TIMEOUT;
+    std::mutex m_lock;
 };
 
 #endif

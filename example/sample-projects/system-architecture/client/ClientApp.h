@@ -60,16 +60,25 @@ public:
         m_pollTimer.Expired = MakeDelegate(this, &ClientApp::PollData, m_thread);
         m_pollTimer.Start(std::chrono::milliseconds(500));
 
+        // Start actuator updates
+        m_actuatorTimer.Expired = MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread);
+        m_actuatorTimer.Start(std::chrono::milliseconds(1000));
+
         return success;
     }
 
     void Stop()
     {
+        m_stop = true;
+
         CommandMsg command;
         command.action = CommandMsg::Action::STOP;
         NetworkMgr::Instance().SendCommandMsg(command);
 
         m_pollTimer.Stop();
+        m_pollTimer.Expired = nullptr;
+        m_actuatorTimer.Stop();
+        m_actuatorTimer.Expired = nullptr;
     }
 
 private:
@@ -83,17 +92,19 @@ private:
         m_thread.CreateThread();
 
         NetworkMgr::ErrorCb += MakeDelegate(this, &ClientApp::ErrorHandler, m_thread);
-        NetworkMgr::TimeoutCb += MakeDelegate(this, &ClientApp::TimeoutHandler, m_thread);
+        NetworkMgr::SendStatusCb += MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread);
     }
 
     ~ClientApp()
     {
-        m_pollTimer.Stop();
         m_thread.ExitThread();
     }
 
     void PollData()
     {
+        if (m_stop)
+            return;
+
         // Collect sensor and actuator data
         DataMsg dataMsg;
         dataMsg.actuators.push_back(m_actuator3.GetState());
@@ -105,25 +116,59 @@ private:
         DataMgr::Instance().SetDataMsg(dataMsg);
     }
 
+    void ActuatorUpdate()
+    {
+        if (m_stop)
+            return;
+
+        static int cnt = 0;
+        bool position;
+        if (++cnt % 2)
+            position = false;   // actuators off
+        else
+            position = true;    // actuators on
+
+        // Set local acuator positions
+        m_actuator3.SetPosition(position);
+        m_actuator4.SetPosition(position);
+
+        // Set remote actuator positions
+        ActuatorMsg msg;
+        msg.actuatorId = 1;
+        msg.actuatorPosition = position;
+
+        // SendActuatorMsg calls block until remote receives and processes the message
+        bool success1 = NetworkMgr::Instance().SendActuatorMsgWait(msg);
+        msg.actuatorId = 2;
+        bool success2 = NetworkMgr::Instance().SendActuatorMsgWait(msg);
+
+        if (!success1 || !success2)
+            std::cout << "Remote actuator failed!" << std::endl;
+    }
+
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
         if (error != dmq::DelegateError::SUCCESS)
             std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    void TimeoutHandler(uint16_t seqNum, dmq::DelegateRemoteId id)
+    void SendStatusHandler(uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status)
     {
-        std::cout << "ClientApp Timeout: " << id << " " << seqNum << std::endl;
+        if (status != TransportMonitor::Status::SUCCESS)
+            std::cout << "ClientApp Timeout: " << id << " " << seqNum << std::endl;
     }
 
     Thread m_thread;
 
     Timer m_pollTimer;
+    Timer m_actuatorTimer;
 
     Actuator m_actuator3;
     Actuator m_actuator4;
     Sensor m_sensor3;
     Sensor m_sensor4;
+
+    bool m_stop = false;
 };
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef _TIMER_H
 #define _TIMER_H
 
-#include "../../delegate/UnicastDelegate.h"
+#include "../../delegate/UnicastDelegateSafe.h"
 #include <mutex>
 #include <list>
 
@@ -11,7 +11,7 @@ class Timer
 {
 public:
 	/// Client's register with Expired to get timer callbacks
-	dmq::UnicastDelegate<void(void)> Expired;
+	dmq::UnicastDelegateSafe<void(void)> Expired;
 
 	/// Constructor
 	Timer(void);
