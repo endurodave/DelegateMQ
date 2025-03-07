@@ -46,7 +46,7 @@ public:
     /// @param[in] rhs A delegate target to assign
     void operator=(const DelegateType& rhs) {
         const std::lock_guard<std::mutex> lock(m_lock);
-        BaseType::operator=(delegate);
+        BaseType::operator=(rhs);
     }
 
     /// Assign a delegate to the container.
@@ -82,7 +82,7 @@ public:
 
     /// Any registered delegates?
     /// @return `true` if delegate container is empty.
-    bool Empty() const { 
+    bool Empty() { 
         const std::lock_guard<std::mutex> lock(m_lock);
         return BaseType::Empty();
     }
@@ -95,7 +95,7 @@ public:
 
     /// Get the number of delegates stored.
     /// @return The number of delegates stored.
-    std::size_t Size() const { 
+    std::size_t Size() { 
         const std::lock_guard<std::mutex> lock(m_lock);
         return BaseType::Size();
     }
