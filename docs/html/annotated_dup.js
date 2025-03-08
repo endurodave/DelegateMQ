@@ -66,7 +66,9 @@ var annotated_dup =
       [ "RemoteArg< Arg ** >", "classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4.html", "classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4" ],
       [ "Semaphore", "classdmq_1_1_semaphore.html", "classdmq_1_1_semaphore" ],
       [ "UnicastDelegate", "structdmq_1_1_unicast_delegate.html", null ],
-      [ "UnicastDelegate< RetType(Args...)>", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4" ]
+      [ "UnicastDelegate< RetType(Args...)>", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],
+      [ "UnicastDelegateSafe", "structdmq_1_1_unicast_delegate_safe.html", null ],
+      [ "UnicastDelegateSafe< RetType(Args...)>", "classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4" ]
     ] ],
     [ "serialize_traits", "namespaceserialize__traits.html", [
       [ "is_shared_ptr", "structserialize__traits_1_1is__shared__ptr.html", null ],

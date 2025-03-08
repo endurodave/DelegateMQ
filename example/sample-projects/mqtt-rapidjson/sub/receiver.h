@@ -79,7 +79,7 @@ private:
     void ErrorHandler(DelegateRemoteId, DelegateError err, DelegateErrorAux)
     {
         if (err != dmq::DelegateError::SUCCESS)
-            ASSERT_TRUE(0);
+            std::cout << "ErrorHandler " << (int)err << std::endl;
     }
 
     DelegateRemoteId m_id;

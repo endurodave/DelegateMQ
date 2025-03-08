@@ -97,7 +97,7 @@ var hierarchy =
       [ "dmq::MulticastDelegateSafe< RetType(Args...)>", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
     ] ],
     [ "dmq::MulticastDelegateSafe< R >", "structdmq_1_1_multicast_delegate_safe.html", null ],
-    [ "dmq::MulticastDelegateSafe< void(uint16_t, dmq::DelegateRemoteId)>", "structdmq_1_1_multicast_delegate_safe.html", null ],
+    [ "dmq::MulticastDelegateSafe< void(uint16_t seqNum, dmq::DelegateRemoteId id, Status status)>", "structdmq_1_1_multicast_delegate_safe.html", null ],
     [ "stl_allocator< T >::rebind< U >", "structstl__allocator_1_1rebind.html", null ],
     [ "stl_allocator< void >::rebind", "structstl__allocator_3_01void_01_4_1_1rebind.html", null ],
     [ "dmq::RemoteArg< Arg >", "classdmq_1_1_remote_arg.html", null ],
@@ -134,7 +134,10 @@ var hierarchy =
       [ "serialize_traits::is_unsupported_container< std::unordered_multiset< T, Hash, KeyEqual, Alloc > >", "structserialize__traits_1_1is__unsupported__container_3_01std_1_1unordered__multiset_3_01_t_00_062a8fb1713695d62e688ecb3f56d982b.html", null ]
     ] ],
     [ "dmq::UnicastDelegate< R >", "structdmq_1_1_unicast_delegate.html", null ],
-    [ "dmq::UnicastDelegate< RetType(Args...)>", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+    [ "dmq::UnicastDelegate< RetType(Args...)>", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", [
+      [ "dmq::UnicastDelegateSafe< RetType(Args...)>", "classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
+    ] ],
     [ "dmq::UnicastDelegate< void(DelegateRemoteId, DelegateError, DelegateErrorAux)>", "structdmq_1_1_unicast_delegate.html", null ],
-    [ "dmq::UnicastDelegate< void(void)>", "structdmq_1_1_unicast_delegate.html", null ]
+    [ "dmq::UnicastDelegateSafe< R >", "structdmq_1_1_unicast_delegate_safe.html", null ],
+    [ "dmq::UnicastDelegateSafe< void(void)>", "structdmq_1_1_unicast_delegate_safe.html", null ]
 ];

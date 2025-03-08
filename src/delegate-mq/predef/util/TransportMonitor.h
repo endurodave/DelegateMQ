@@ -10,7 +10,7 @@
 /// @brief Monitors remote delegate send message timeouts. Class is thread safe.
 /// Call TransportMonitor::Process() periodically for timeout handling.
 /// Depending on the transport implementation, the message might still be delivered
-/// event if the monitor Timeout callback is invoked. A timeout expiring just means 
+/// event if the monitor SendStatusCb callback is invoked. A timeout expiring just means 
 /// that an ack was not receied within the time specified.
 class TransportMonitor : public ITransportMonitor
 {
@@ -21,7 +21,7 @@ public:
         TIMEOUT   // Message timeout
     };
 
-    // Delegate to monitor message send status
+    // Delegate callback to monitor message send status
     dmq::MulticastDelegateSafe<void(uint16_t seqNum, dmq::DelegateRemoteId id, Status status)> SendStatusCb;
 
     TransportMonitor(const std::chrono::milliseconds& timeout) : TRANSPORT_TIMEOUT(timeout) {}
@@ -43,7 +43,8 @@ public:
         m_pending[seqNum] = d;
     }
 
-	/// Remove a sequence number
+	/// Remove a sequence number. Invokes SendStatusCb callback to notify 
+    /// registered client of removal.
 	/// param[in] seqNum - the delegate message sequence number
     void Remove(uint16_t seqNum)
     {

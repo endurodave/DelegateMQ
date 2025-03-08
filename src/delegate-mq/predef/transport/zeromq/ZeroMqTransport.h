@@ -55,6 +55,10 @@ public:
                 perror("zmq_bind failed");
                 return 1;
             }
+
+            // Set the receive timeout to 100 milliseconds
+            int timeout = 100; // 100mS 
+            zmq_setsockopt(m_zmq, ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
         }
         else if (type == Type::PUB)
         {
@@ -79,8 +83,8 @@ public:
             // Subscribe to all messages
             zmq_setsockopt(m_zmq, ZMQ_SUBSCRIBE, "", 0);
 
-            // Set the receive timeout to 1000 milliseconds (1 second)
-            int timeout = 1000; // 1 second
+            // Set the receive timeout to 100 milliseconds
+            int timeout = 100; // 100mS 
             zmq_setsockopt(m_zmq, ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
         }
         else

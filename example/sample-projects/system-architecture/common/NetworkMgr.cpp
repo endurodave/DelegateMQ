@@ -97,7 +97,7 @@ void NetworkMgr::Start()
 
     // Start a timer to poll data
     m_recvTimer.Expired = MakeDelegate(this, &NetworkMgr::Poll, m_thread);
-    m_recvTimer.Start(std::chrono::milliseconds(50));
+    m_recvTimer.Start(std::chrono::milliseconds(20));
 
     // Start a timer to process message timeouts
     m_timeoutTimer.Expired = MakeDelegate(this, &NetworkMgr::Timeout, m_timeoutThread);
@@ -149,7 +149,7 @@ void NetworkMgr::SendDataMsg(DataMsg& data)
 // to respond. The execution sequence numbers shown below.
 bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
 {
-    // Is caller executing on m_thread?
+    // If caller is not executing on m_thread
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
     {
         bool success = false;
@@ -175,7 +175,11 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         // 5. Wait for statusCb callback to be triggered on m_thread
         std::unique_lock<std::mutex> lock(mtx);
         if (cv.wait_for(lock, TIMEOUT + std::chrono::milliseconds(100)) == std::cv_status::timeout)
+        {
+            // A timeout should never happen. The transport monitor is setup for a max 
+            // TIMEOUT, so success or failure should never cause cv_status::timeout
             std::cout << "Timeout SendActuatorMsgWait()" << std::endl;
+        }
 
         // 6. Unregister from status callback
         m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);

@@ -60,6 +60,8 @@ var namespacedmq =
     [ "Semaphore", "classdmq_1_1_semaphore.html", "classdmq_1_1_semaphore" ],
     [ "UnicastDelegate", "structdmq_1_1_unicast_delegate.html", null ],
     [ "UnicastDelegate< RetType(Args...)>", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],
+    [ "UnicastDelegateSafe", "structdmq_1_1_unicast_delegate_safe.html", null ],
+    [ "UnicastDelegateSafe< RetType(Args...)>", "classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4" ],
     [ "ArgTypeOf", "namespacedmq.html#aa5033450a33d262cadf38fc666741732", null ],
     [ "DelegateErrorAux", "namespacedmq.html#a4bcc300237d5cb854a800a19ccc0400a", null ],
     [ "DelegateRemoteId", "namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda", null ],

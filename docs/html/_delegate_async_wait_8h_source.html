@@ -334,7 +334,7 @@ $(function(){initNavTree('_delegate_async_wait_8h_source.html',''); initResizabl
 <div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>                    <span class="keywordflow">return</span> GetRetVal();</div>
 <div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>                } <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>                    <span class="comment">// Return a default return value</span></div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>                    <span class="keywordflow">return</span> RetType{};</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>                    <span class="keywordflow">return</span> RetType();</div>
 <div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>                }</div>
 <div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            }</div>
 <div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>        }</div>
@@ -395,7 +395,7 @@ $(function(){initNavTree('_delegate_async_wait_8h_source.html',''); initResizabl
 <div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>            <span class="keywordflow">return</span> std::any_cast&lt;RetType&gt;(m_retVal);</div>
 <div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>        }</div>
 <div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_any_cast&amp;) {</div>
-<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>            <span class="keywordflow">return</span> RetType{};  <span class="comment">// Return a default value if error</span></div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>            <span class="keywordflow">return</span> RetType();  <span class="comment">// Return a default value if error</span></div>
 <div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>        }</div>
 <div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>    }</div>
 </div>
@@ -637,7 +637,7 @@ $(function(){initNavTree('_delegate_async_wait_8h_source.html',''); initResizabl
 <div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span>                    <span class="keywordflow">return</span> GetRetVal();</div>
 <div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span>                } <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>                    <span class="comment">// Return a default return value</span></div>
-<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>                    <span class="keywordflow">return</span> RetType{};</div>
+<div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>                    <span class="keywordflow">return</span> RetType();</div>
 <div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>                }</div>
 <div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>            }</div>
 <div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span>        }</div>
@@ -698,7 +698,7 @@ $(function(){initNavTree('_delegate_async_wait_8h_source.html',''); initResizabl
 <div class="line"><a id="l00830" name="l00830"></a><span class="lineno">  830</span>            <span class="keywordflow">return</span> std::any_cast&lt;RetType&gt;(m_retVal);</div>
 <div class="line"><a id="l00831" name="l00831"></a><span class="lineno">  831</span>        }</div>
 <div class="line"><a id="l00832" name="l00832"></a><span class="lineno">  832</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_any_cast&amp;) {</div>
-<div class="line"><a id="l00833" name="l00833"></a><span class="lineno">  833</span>            <span class="keywordflow">return</span> RetType{};  <span class="comment">// Return a default value if error</span></div>
+<div class="line"><a id="l00833" name="l00833"></a><span class="lineno">  833</span>            <span class="keywordflow">return</span> RetType();  <span class="comment">// Return a default value if error</span></div>
 <div class="line"><a id="l00834" name="l00834"></a><span class="lineno">  834</span>        }</div>
 <div class="line"><a id="l00835" name="l00835"></a><span class="lineno">  835</span>    }</div>
 </div>
@@ -892,7 +892,7 @@ $(function(){initNavTree('_delegate_async_wait_8h_source.html',''); initResizabl
 <div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span>                    <span class="keywordflow">return</span> GetRetVal();</div>
 <div class="line"><a id="l01076" name="l01076"></a><span class="lineno"> 1076</span>                } <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span>                    <span class="comment">// Return a default return value</span></div>
-<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span>                    <span class="keywordflow">return</span> RetType{};</div>
+<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span>                    <span class="keywordflow">return</span> RetType();</div>
 <div class="line"><a id="l01079" name="l01079"></a><span class="lineno"> 1079</span>                }</div>
 <div class="line"><a id="l01080" name="l01080"></a><span class="lineno"> 1080</span>            }</div>
 <div class="line"><a id="l01081" name="l01081"></a><span class="lineno"> 1081</span>        }</div>
@@ -953,7 +953,7 @@ $(function(){initNavTree('_delegate_async_wait_8h_source.html',''); initResizabl
 <div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>            <span class="keywordflow">return</span> std::any_cast&lt;RetType&gt;(m_retVal);</div>
 <div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>        }</div>
 <div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_any_cast&amp;) {</div>
-<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>            <span class="keywordflow">return</span> RetType{};  <span class="comment">// Return a default value if error</span></div>
+<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>            <span class="keywordflow">return</span> RetType();  <span class="comment">// Return a default value if error</span></div>
 <div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>        }</div>
 <div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>    }</div>
 </div>

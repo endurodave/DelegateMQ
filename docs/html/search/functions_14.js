@@ -19,5 +19,6 @@ var searchData=
   ['_7ethread_16',['~Thread',['../class_thread.html#a37d9edd3a1a776cbc27dedff949c9726',1,'Thread::~Thread()'],['../class_thread.html#a37d9edd3a1a776cbc27dedff949c9726',1,'Thread::~Thread()']]],
   ['_7etimer_17',['~Timer',['../class_timer.html#af87243f09ef5b58b889fb4a7284b526d',1,'Timer']]],
   ['_7etransportmonitor_18',['~TransportMonitor',['../class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6',1,'TransportMonitor']]],
-  ['_7eunicastdelegate_19',['~UnicastDelegate',['../classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a1007ef20258f360d55360d688ac007e3',1,'dmq::UnicastDelegate&lt; RetType(Args...)&gt;']]]
+  ['_7eunicastdelegate_19',['~UnicastDelegate',['../classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a1007ef20258f360d55360d688ac007e3',1,'dmq::UnicastDelegate&lt; RetType(Args...)&gt;']]],
+  ['_7eunicastdelegatesafe_20',['~UnicastDelegateSafe',['../classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a0510cc203b018f550fc99a0b3afa74ff',1,'dmq::UnicastDelegateSafe&lt; RetType(Args...)&gt;']]]
 ];

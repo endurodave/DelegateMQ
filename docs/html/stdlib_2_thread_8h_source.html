@@ -153,10 +153,12 @@ $(function(){initNavTree('stdlib_2_thread_8h_source.html',''); initResizable(tru
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="comment">// Promise and future to synchronize thread start</span></div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::promise&lt;void&gt; m_threadStartPromise;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::future&lt;void&gt; m_threadStartFuture;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>};</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="preprocessor">#endif </span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::atomic&lt;bool&gt; m_exit;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="preprocessor">#endif </span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
 <div class="ttc" id="a_i_thread_8h_html"><div class="ttname"><a href="_i_thread_8h.html">IThread.h</a></div><div class="ttdoc">A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...</div></div>
 <div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdef"><b>Definition</b> freertos/Thread.h:19</div></div>
 <div class="ttc" id="aclass_thread_html_a093b95e8def5030fd8b0033ce14edc81"><div class="ttname"><a href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">Thread::GetThreadName</a></div><div class="ttdeci">std::string GetThreadName()</div><div class="ttdoc">Get thread name.</div><div class="ttdef"><b>Definition</b> stdlib/Thread.h:40</div></div>
