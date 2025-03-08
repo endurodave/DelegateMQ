@@ -43,7 +43,10 @@ public:
     /// @param[in] args The arguments used when invoking the target function
     /// @return The target function return value. 
     RetType operator()(Args... args) {
-        return (*m_delegate)(args...);	// Invoke delegate callback
+        if (m_delegate)
+            return (*m_delegate)(args...);	// Invoke delegate callback
+        else
+            return RetType();
     }
 
     /// Invoke the bound target functions. 

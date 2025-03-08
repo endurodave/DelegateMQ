@@ -63,6 +63,52 @@ static void UnicastDelegateTests()
     // Invoke target
     src(TEST_INT);
     src.Broadcast(TEST_INT);
+
+    src.Clear();
+    src(TEST_INT);
+    src.Broadcast(TEST_INT);
+}
+
+static void UnicastDelegateSafeTests()
+{
+    UnicastDelegateSafe<void(int)> src;
+    UnicastDelegateSafe<void(int)> dest;
+    src = MakeDelegate(FreeFuncInt1);
+    ASSERT_TRUE(src.Size() == 1);
+    ASSERT_TRUE(dest.Size() == 0);
+
+    dest.Clear();
+    src = MakeDelegate(&FreeFuncInt1);
+    ASSERT_TRUE(src.Size() == 1);
+    dest = std::move(src);
+    ASSERT_TRUE(src.Size() == 0);
+    ASSERT_TRUE(dest.Size() == 1);
+
+    src = dest;
+    ASSERT_TRUE(src.Size() == 1);
+    ASSERT_TRUE(dest.Size() == 1);
+
+    dest.Clear();
+    ASSERT_TRUE(dest.Size() == 0);
+
+    src = MakeDelegate(&FreeFuncInt1);
+    ASSERT_TRUE(src.Size() == 1);
+    src = nullptr;
+    ASSERT_TRUE(src.Size() == 0);
+
+    dest.Clear();
+    src = MakeDelegate(&FreeFuncInt1);
+    dest = src;
+    ASSERT_TRUE(src.Size() == 1);
+    ASSERT_TRUE(dest.Size() == 1);
+
+    // Invoke target
+    src(TEST_INT);
+    src.Broadcast(TEST_INT);
+
+    src.Clear();
+    src(TEST_INT);
+    src.Broadcast(TEST_INT);
 }
 
 static void MulticastDelegateTests()
@@ -177,6 +223,10 @@ static void MulticastDelegateTests()
     src -= MakeDelegate(&FreeFuncInt1);
     ASSERT_TRUE(src.Size() == 3);
 
+    src.Clear();
+    src(TEST_INT);
+    src.Broadcast(TEST_INT);
+
 #if 0
     // Example shows std::function target limitations. Not a normal usage case.
     // Use MakeDelegate() to create delegates works correctly with delegate 
@@ -235,11 +285,16 @@ static void MulticastDelegateSafeTests()
     // Invoke all targets
     src(TEST_INT);
     src.Broadcast(TEST_INT);
+
+    src.Clear();
+    src(TEST_INT);
+    src.Broadcast(TEST_INT);
 }
 
 void Containers_UT()
 {
     UnicastDelegateTests();
+    UnicastDelegateSafeTests();
     MulticastDelegateTests();
     MulticastDelegateSafeTests();
 }

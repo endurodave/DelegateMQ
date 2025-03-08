@@ -62,6 +62,8 @@ private:
 	// Promise and future to synchronize thread start
 	std::promise<void> m_threadStartPromise;
 	std::future<void> m_threadStartFuture;
+
+	std::atomic<bool> m_exit;
 };
 
 #endif 

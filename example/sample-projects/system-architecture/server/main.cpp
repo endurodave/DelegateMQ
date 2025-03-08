@@ -43,7 +43,7 @@ int main()
     ServerApp::Instance();
 
     // Let client and server communicate
-    std::this_thread::sleep_for(std::chrono::seconds(120));
+    std::this_thread::sleep_for(std::chrono::seconds(45));
 
     NetworkMgr::Instance().Stop();
 

@@ -350,7 +350,7 @@ public:
                     return GetRetVal();
                 } else {
                     // Return a default return value
-                    return RetType{};
+                    return RetType();
                 }
             }
         }
@@ -427,7 +427,7 @@ public:
             return std::any_cast<RetType>(m_retVal);
         }
         catch (const std::bad_any_cast&) {
-            return RetType{};  // Return a default value if error
+            return RetType();  // Return a default value if error
         }
     }
 
@@ -753,7 +753,7 @@ public:
                     return GetRetVal();
                 } else {
                     // Return a default return value
-                    return RetType{};
+                    return RetType();
                 }
             }
         }
@@ -830,7 +830,7 @@ public:
             return std::any_cast<RetType>(m_retVal);
         }
         catch (const std::bad_any_cast&) {
-            return RetType{};  // Return a default value if error
+            return RetType();  // Return a default value if error
         }
     }
 
@@ -1075,7 +1075,7 @@ public:
                     return GetRetVal();
                 } else {
                     // Return a default return value
-                    return RetType{};
+                    return RetType();
                 }
             }
         }
@@ -1152,7 +1152,7 @@ public:
             return std::any_cast<RetType>(m_retVal);
         }
         catch (const std::bad_any_cast&) {
-            return RetType{};  // Return a default value if error
+            return RetType();  // Return a default value if error
         }
     }
 

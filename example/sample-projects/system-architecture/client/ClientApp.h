@@ -62,15 +62,13 @@ public:
 
         // Start actuator updates
         m_actuatorTimer.Expired = MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread);
-        m_actuatorTimer.Start(std::chrono::milliseconds(1000));
+        m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
 
         return success;
     }
 
     void Stop()
     {
-        m_stop = true;
-
         CommandMsg command;
         command.action = CommandMsg::Action::STOP;
         NetworkMgr::Instance().SendCommandMsg(command);
@@ -95,16 +93,15 @@ private:
         NetworkMgr::SendStatusCb += MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread);
     }
 
-    ~ClientApp()
+    ~ClientApp() 
     {
+        NetworkMgr::ErrorCb -= MakeDelegate(this, &ClientApp::ErrorHandler, m_thread);
+        NetworkMgr::SendStatusCb -= MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread);
         m_thread.ExitThread();
     }
 
     void PollData()
     {
-        if (m_stop)
-            return;
-
         // Collect sensor and actuator data
         DataMsg dataMsg;
         dataMsg.actuators.push_back(m_actuator3.GetState());
@@ -118,9 +115,6 @@ private:
 
     void ActuatorUpdate()
     {
-        if (m_stop)
-            return;
-
         static int cnt = 0;
         bool position;
         if (++cnt % 2)
@@ -144,6 +138,10 @@ private:
 
         if (!success1 || !success2)
             std::cout << "Remote actuator failed!" << std::endl;
+
+        // Explicitly start timer for next time. Prevent excessive timer messages in the thread 
+        // queue if "Wait" calls above block a long time due to communications down.
+        m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
     }
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
@@ -167,8 +165,6 @@ private:
     Actuator m_actuator4;
     Sensor m_sensor3;
     Sensor m_sensor4;
-
-    bool m_stop = false;
 };
 
 #endif

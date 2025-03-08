@@ -15,7 +15,7 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName) : m_thread(nullptr), THREAD_NAME(threadName)
+Thread::Thread(const std::string& threadName) : m_thread(nullptr), m_exit(false), THREAD_NAME(threadName)
 {
 }
 
@@ -109,8 +109,16 @@ void Thread::ExitThread()
 		m_cv.notify_one();
 	}
 
+	m_exit.store(true);
     m_thread->join();
-    m_thread = nullptr;
+
+	// Clear the queue if anything added while waiting for join
+	{
+		lock_guard<mutex> lock(m_mutex);
+		m_thread = nullptr;
+		while (!m_queue.empty()) 
+			m_queue.pop();
+	}
 }
 
 //----------------------------------------------------------------------------
@@ -118,6 +126,8 @@ void Thread::ExitThread()
 //----------------------------------------------------------------------------
 void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
+	if (m_exit.load())
+		return;
 	if (m_thread == nullptr)
 		throw std::invalid_argument("Thread pointer is null");
 
