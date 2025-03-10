@@ -26,7 +26,7 @@ public:
     /// data for transport. 
     /// @param[out] os The output stream
     /// @param[in] args The target function arguments 
-    /// @return The input stream
+    /// @return The output stream
     virtual std::ostream& Write(std::ostream& os, Args... args) = 0;
 
     /// Inheriting class implements the read function to unserialize data

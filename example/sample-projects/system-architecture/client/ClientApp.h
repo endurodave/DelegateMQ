@@ -31,7 +31,7 @@ public:
         // Callback to capture NetworkMgr::SendCommandMsg() success or error
         ErrorCallback errorCb = [&success, &cv](dmq::DelegateRemoteId id, dmq::DelegateError err, dmq::DelegateErrorAux aux) {
             // SendCommandMsg() ID?
-            if (id == COMMAND_MSG_ID) {
+            if (id == NetworkMgr::COMMAND_MSG_ID) {
                 // Send success?
                 if (err == dmq::DelegateError::SUCCESS)
                     success = true;

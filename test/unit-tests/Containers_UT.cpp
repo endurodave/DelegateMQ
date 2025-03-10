@@ -24,7 +24,7 @@ public:
 
 static void UnicastDelegateTests()
 {
-    UnicastDelegate<void(int)> src;
+    UnicastDelegateSafe<void(int)> src;
     src = MakeDelegate(FreeFuncInt1);
     ASSERT_TRUE(src.Size() == 1);
     auto dest = std::move(src);
@@ -72,10 +72,15 @@ static void UnicastDelegateTests()
 static void UnicastDelegateSafeTests()
 {
     UnicastDelegateSafe<void(int)> src;
-    UnicastDelegateSafe<void(int)> dest;
     src = MakeDelegate(FreeFuncInt1);
     ASSERT_TRUE(src.Size() == 1);
-    ASSERT_TRUE(dest.Size() == 0);
+    auto dest = std::move(src);
+    ASSERT_TRUE(src.Size() == 0);
+    ASSERT_TRUE(dest.Size() == 1);
+
+    UnicastDelegateSafe<void(int)> src2(dest);
+    ASSERT_TRUE(src2.Size() == 1);
+    ASSERT_TRUE(dest.Size() == 1);
 
     dest.Clear();
     src = MakeDelegate(&FreeFuncInt1);
@@ -246,10 +251,15 @@ static void MulticastDelegateTests()
 static void MulticastDelegateSafeTests()
 {
     MulticastDelegateSafe<void(int)> src;
-    MulticastDelegateSafe<void(int)> dest;
     src += MakeDelegate(&FreeFuncInt1);
     ASSERT_TRUE(src.Size() == 1);
-    ASSERT_TRUE(dest.Size() == 0);
+    auto dest = std::move(src);
+    ASSERT_TRUE(src.Size() == 0);
+    ASSERT_TRUE(dest.Size() == 1);
+
+    MulticastDelegateSafe<void(int)> src2(dest);
+    ASSERT_TRUE(src2.Size() == 1);
+    ASSERT_TRUE(dest.Size() == 1);
 
     src.Clear();
     dest.Clear();

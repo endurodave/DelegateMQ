@@ -13,7 +13,7 @@ namespace dmq {
 template <class R>
 struct UnicastDelegateSafe; // Not defined
 
-/// @brief A non-thread-safe delegate container storing one delegate. Void and  
+/// @brief A thread-safe delegate container storing one delegate. Void and  
 /// non-void return values supported. 
 template<class RetType, class... Args>
 class UnicastDelegateSafe<RetType(Args...)> : public UnicastDelegate<RetType(Args...)>
@@ -24,8 +24,16 @@ public:
 
     UnicastDelegateSafe() = default;
     ~UnicastDelegateSafe() = default;
-    UnicastDelegateSafe(const UnicastDelegateSafe& rhs) = delete;
-    UnicastDelegateSafe(UnicastDelegateSafe&& rhs) = delete;
+
+    UnicastDelegateSafe(const UnicastDelegateSafe& rhs) : BaseType() {
+        const std::lock_guard<std::mutex> lock(m_lock);
+        BaseType::operator=(rhs);
+    }
+
+    UnicastDelegateSafe(UnicastDelegateSafe&& rhs) : BaseType() {
+        const std::lock_guard<std::mutex> lock(m_lock);
+        BaseType::operator=(std::move(rhs));
+    }
 
     /// Invoke the bound target.
     /// @param[in] args The arguments used when invoking the target function
@@ -70,7 +78,7 @@ public:
     /// @return A reference to the current object.
     UnicastDelegateSafe& operator=(UnicastDelegateSafe&& rhs) noexcept {
         const std::lock_guard<std::mutex> lock(m_lock);
-        BaseType::operator=(std::forward<UnicastDelegateSafe>(rhs));
+        BaseType::operator=(std::move(rhs));
         return *this;
     }
 

@@ -65,6 +65,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Blocking Reinvoke](#blocking-reinvoke)
   - [Timer Example](#timer-example)
   - [`std::async` Thread Targeting Example](#stdasync-thread-targeting-example)
+  - [Remote Delegate Example](#remote-delegate-example)
   - [More Examples](#more-examples)
   - [Sample Projects](#sample-projects)
     - [system-architecture](#system-architecture)
@@ -432,6 +433,7 @@ A delegate container stores one or more delegates. A delegate container is calla
 ```cpp
 // Delegate Containers
 UnicastDelegate<>
+    UnicastDelegateSafe<>
 MulticastDelegate<>
     MulticastDelegateSafe<>
 ``` 
@@ -966,6 +968,7 @@ DelegateBase
 
 // Delegate Containers
 UnicastDelegate<>
+    UnicastDelegateSafe<>
 MulticastDelegate<>
     MulticastDelegateSafe<>
 ```
@@ -1096,6 +1099,8 @@ delegateArrayFunc(cArray);
 There is no way to asynchronously pass a C-style array by value. Avoid C-style arrays if possible when using asynchronous delegates to avoid confusion and mistakes.
 
 # Interfaces
+
+DelegateMQ interface classes allow customizing the library runtime behavior.
 
 ## `IThread`
 
@@ -1600,6 +1605,106 @@ void AsyncFutureExample()
     comm_thread.ExitThread();
 }
 ```
+## Remote Delegate Example
+
+Use a remote delegate to invoke a remote target function using [MessagePack](https://github.com/msgpack/msgpack-c/tree/cpp_master) (serialization) and [ZeroMQ](https://zeromq.org/) (transport). Code snippets below express the concept. See [system-architecture](#system-architecture) to execute this example.
+
+`NetworkMgr` class used by client and server applications handles communication with remote device. `SendAlarmMsg()` sends a message to the remote. `AlarmMsgCb` callback is used to receive the incoming message.
+
+```cpp
+#include "DelegateMQ.h"
+
+// NetworkMgr sends and receives data using a DelegateMQ transport implemented
+// with ZeroMQ and MessagePack libraries.
+class NetworkMgr
+{
+public:
+    static const dmq::DelegateRemoteId ALARM_MSG_ID = 1;
+
+    using AlarmFunc = void(AlarmMsg&, AlarmNote&);
+    using AlarmDel = dmq::MulticastDelegateSafe<AlarmFunc>;
+
+    // Receive callbacks for incoming messages by registering with this container
+    static AlarmDel AlarmMsgCb;
+
+    int Create();
+
+    // Send alarm message to the remote
+    void SendAlarmMsg(AlarmMsg& msg, AlarmNote& note);
+
+private:
+    // Serialize function argument data into a stream
+    xostringstream m_argStream;
+
+    // Transport using ZeroMQ library. Only call transport from NetworkMsg thread.
+    ZeroMqTransport m_transport;
+
+    // Dispatcher using DelegateMQ library
+    Dispatcher m_dispatcher;
+
+    // Alarm message remote delegate
+    Serializer<AlarmFunc> m_alarmMsgSer;
+    dmq::DelegateMemberRemote<AlarmDel, AlarmFunc> m_alarmMsgDel;
+};
+```
+
+At runtime, setup the remote delegate interface. A key point is the remote delegate (`m_alarmMsgDel`) binds directly to the `AlarmMsgCb` container (`dmq::MulticastDelegateSafe<AlarmFunc>`). Every incoming message generates one or more callbacks to registered listeners by binding `m_alarmMsgDel` remote delegate to the `AlarmMsgCb` container. A delegate may bind to any callable, and a delegate container is callable.
+
+```cpp
+int NetworkMgr::Create()
+{
+    // Reinvoke call onto NetworkMgr thread
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::Create, m_thread, WAIT_INFINITE)();
+
+    // Setup the remote delegate interfaces
+    m_alarmMsgDel.SetStream(&m_argStream);
+    m_alarmMsgDel.SetSerializer(&m_alarmMsgSer);
+    m_alarmMsgDel.SetDispatcher(&m_dispatcher);
+    m_alarmMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
+
+    // Bind the remote delegate to the AlarmMsgCb delegate container
+    m_alarmMsgDel.Bind(&AlarmMsgCb, &AlarmDel::operator(), ALARM_MSG_ID);
+
+    // Set the transport used by the dispatcher
+    m_dispatcher.SetTransport(&m_transport);
+
+    return 1;
+}
+```
+
+Send message to the remote by calling the `m_alarmMsgDel` delegate on `m_thread` context. A ZeroMQ socket instance is not thread safe so ZeroMQ socket access is always on the `NetworkMgr` internal thread.
+
+```cpp
+void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note)
+{
+    // Reinvoke call onto NetworkMgr thread
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::SendAlarmMsg, m_thread)(msg, note);
+
+    // Send alarm to remote. Invoke remote delegate on m_thread only.
+    m_alarmMsgDel(msg, note);
+}
+```
+
+Client registers to receive remote delegate callbacks on the `AlarmMgr` private thread. 
+
+```cpp
+class AlarmMgr
+{
+    AlarmMgr()
+    {
+        // Register for alarm callback on m_thread
+        NetworkMgr::AlarmMsgCb += MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
+    }
+
+    void RecvAlarmMsg(AlarmMsg& msg, AlarmNote& note)
+    {
+        // Handle incoming alarm message from remote
+    }
+};
+```
+
 ## More Examples
 
 See the `examples/sample-code` directory for additional examples.
@@ -1610,7 +1715,7 @@ See the `examples/sample-projects` directory for example project. Most projects 
 
 ### system-architecture
 
-The System Architecture example demonstrates a complex client-server DelegateMQ application using the ZeroMQ and MessagePack support libraries. This example implements the acquisition of sensor and actuator data across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code.
+The System Architecture example demonstrates a complex client-server DelegateMQ application using the ZeroMQ and MessagePack support libraries. This example implements the acquisition of sensor and actuator data across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
 
 Execute the client and server projects to run the example.
 

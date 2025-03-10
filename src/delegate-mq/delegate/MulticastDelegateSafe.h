@@ -23,8 +23,16 @@ public:
 
     MulticastDelegateSafe() = default;
     ~MulticastDelegateSafe() = default; 
-    MulticastDelegateSafe(const MulticastDelegateSafe& rhs) = delete;
-    MulticastDelegateSafe(MulticastDelegateSafe&& rhs) = delete;
+
+    MulticastDelegateSafe(const MulticastDelegateSafe& rhs) : BaseType() {
+        const std::lock_guard<std::mutex> lock(m_lock);
+        BaseType::operator=(rhs);
+    }
+
+    MulticastDelegateSafe(MulticastDelegateSafe&& rhs) : BaseType() {
+        const std::lock_guard<std::mutex> lock(m_lock);
+        BaseType::operator=(std::move(rhs));
+    }
 
     /// Invoke the bound target function for all stored delegate instances.
     /// A void return value is used since multiple targets invoked.
@@ -84,7 +92,7 @@ public:
     /// @return A reference to the current object.
     MulticastDelegateSafe& operator=(MulticastDelegateSafe&& rhs) noexcept {
         const std::lock_guard<std::mutex> lock(m_lock);
-        BaseType::operator=(std::forward<MulticastDelegateSafe>(rhs));
+        BaseType::operator=(std::move(rhs));
         return *this;
     }
 

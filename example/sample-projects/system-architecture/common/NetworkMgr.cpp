@@ -47,25 +47,26 @@ int NetworkMgr::Create()
     m_alarmMsgDel.SetSerializer(&m_alarmMsgSer);
     m_alarmMsgDel.SetDispatcher(&m_dispatcher);
     m_alarmMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_alarmMsgDel = MakeDelegate(this, &NetworkMgr::RecvAlarmMsg, ALARM_MSG_ID);
+    // Bind the remote delegate to the AlarmMsgCb delegate container for incoming msgs
+    m_alarmMsgDel.Bind(&AlarmMsgCb, &AlarmDel::operator(), ALARM_MSG_ID);
 
     m_dataMsgDel.SetStream(&m_argStream);
     m_dataMsgDel.SetSerializer(&m_dataMsgSer);
     m_dataMsgDel.SetDispatcher(&m_dispatcher);
     m_dataMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_dataMsgDel = MakeDelegate(this, &NetworkMgr::RecvDataMsg, DATA_MSG_ID);
+    m_dataMsgDel.Bind(&DataMsgCb, &DataDel::operator(), DATA_MSG_ID);
 
     m_commandMsgDel.SetStream(&m_argStream);
     m_commandMsgDel.SetSerializer(&m_commandMsgSer);
     m_commandMsgDel.SetDispatcher(&m_dispatcher);
     m_commandMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_commandMsgDel = MakeDelegate(this, &NetworkMgr::RecvCommandMsg, COMMAND_MSG_ID);
+    m_commandMsgDel.Bind(&CommandMsgCb, &CommandDel::operator(), COMMAND_MSG_ID);
 
     m_actuatorMsgDel.SetStream(&m_argStream);
     m_actuatorMsgDel.SetSerializer(&m_actuatorMsgSer);
     m_actuatorMsgDel.SetDispatcher(&m_dispatcher);
     m_actuatorMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_actuatorMsgDel = MakeDelegate(this, &NetworkMgr::RecvActuatorMsg, ACTUATOR_MSG_ID);
+    m_actuatorMsgDel.Bind(&ActuatorMsgCb, &ActuatorDel::operator(), ACTUATOR_MSG_ID);
 
     int err = 0;
 #ifdef SERVER_APP
@@ -81,7 +82,7 @@ int NetworkMgr::Create()
     // Set the transport used by the dispatcher
     m_dispatcher.SetTransport(&m_transport);
 
-    // Set receive async delegates into map
+    // Set remote delegate into map
     m_receiveIdMap[ALARM_MSG_ID] = &m_alarmMsgDel;
     m_receiveIdMap[COMMAND_MSG_ID] = &m_commandMsgDel;
     m_receiveIdMap[DATA_MSG_ID] = &m_dataMsgDel;
@@ -123,7 +124,7 @@ void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note)
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
         return MakeDelegate(this, &NetworkMgr::SendAlarmMsg, m_thread)(msg, note);
 
-    // Send alarm to remote. 
+    // Send alarm to remote. Invoke remote delegate on m_thread only.
     m_alarmMsgDel(msg, note);
 }
 
@@ -145,18 +146,20 @@ void NetworkMgr::SendDataMsg(DataMsg& data)
     m_dataMsgDel(data);
 }
 
-// Async send an actuator command and block the caller waiting for the client 
-// to respond. The execution sequence numbers shown below.
+// Async send an actuator command and block the caller waiting until the client 
+// responds or timeout. The execution sequence numbers shown below.
 bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
 {
     // If caller is not executing on m_thread
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
     {
+        // *** Caller's thread executes this control brach ***
+
         bool success = false;
         std::mutex mtx;
         std::condition_variable cv;
 
-        // 1. Callback handler for transport monitor send status
+        // 5. Callback handler for transport monitor send status
         SendStatusCallback statusCb = [&success, &cv](uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status) {
             if (id == ACTUATOR_MSG_ID) {
                 // Client received ActuatorMsg?
@@ -166,15 +169,15 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
             }
         };
 
-        // 2. Register for send status callback (success or failure)
+        // 1. Register for send status callback (success or failure)
         m_transportMonitor.SendStatusCb += dmq::MakeDelegate(statusCb);
 
-        // 3. Renvoke SendActuatorMsgWait() on m_thread context
+        // 2. Reinvoke SendActuatorMsgWait() on m_thread context
         MakeDelegate(this, &NetworkMgr::SendActuatorMsgWait, m_thread)(msg);
 
-        // 5. Wait for statusCb callback to be triggered on m_thread
+        // 3. Wait for statusCb callback to be triggered on m_thread
         std::unique_lock<std::mutex> lock(mtx);
-        if (cv.wait_for(lock, TIMEOUT + std::chrono::milliseconds(100)) == std::cv_status::timeout)
+        if (cv.wait_for(lock, TIMEOUT) == std::cv_status::timeout)
         {
             // A timeout should never happen. The transport monitor is setup for a max 
             // TIMEOUT, so success or failure should never cause cv_status::timeout
@@ -184,13 +187,17 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         // 6. Unregister from status callback
         m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
 
-        // 7. Return the blocking async function invoke status
+        // 7. Return the blocking async function invoke status to caller
         return success;
     }
+    else
+    {
+        // *** NetworkMgr::m_thread executes this control brach ***
 
-    // 4. Send actuator command to remote on m_thread. 
-    m_actuatorMsgDel(msg);
-    return true;
+        // 4. Send actuator command to remote on m_thread. 
+        m_actuatorMsgDel(msg);
+        return true;
+    }
 }
 
 // Poll called periodically on m_thread context
@@ -209,7 +216,8 @@ void NetworkMgr::Poll()
             auto receiveDelegate = m_receiveIdMap[header.GetId()];
             if (receiveDelegate)
             {
-                // Invoke the receiver target function with the sender's argument data
+                // Invoke the receiver target callable with the sender's 
+                // incoming argument data
                 receiveDelegate->Invoke(arg_data);
             }
             else
@@ -236,23 +244,4 @@ void NetworkMgr::SendStatusHandler(uint16_t seqNum, dmq::DelegateRemoteId id, Tr
     SendStatusCb(seqNum, id, status);
 }
 
-void NetworkMgr::RecvAlarmMsg(AlarmMsg& msg, AlarmNote& note)
-{
-    AlarmMsgCb(msg, note);
-}
-
-void NetworkMgr::RecvCommandMsg(CommandMsg& command)
-{
-    CommandMsgCb(command);
-}
-
-void NetworkMgr::RecvDataMsg(DataMsg& data)
-{
-    DataMsgCb(data);
-}
-
-void NetworkMgr::RecvActuatorMsg(ActuatorMsg& msg)
-{
-    ActuatorMsgCb(msg);
-}
 
