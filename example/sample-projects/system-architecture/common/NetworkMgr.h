@@ -29,10 +29,10 @@ class NetworkMgr
 {
 public:
     // Remote delegate IDs
-    static const dmq::DelegateRemoteId ALARM_MSG_ID = 1;
-    static const dmq::DelegateRemoteId DATA_MSG_ID = 2;
-    static const dmq::DelegateRemoteId COMMAND_MSG_ID = 3;
-    static const dmq::DelegateRemoteId ACTUATOR_MSG_ID = 4;
+    static const dmq::DelegateRemoteId ALARM_MSG_ID;
+    static const dmq::DelegateRemoteId DATA_MSG_ID;
+    static const dmq::DelegateRemoteId COMMAND_MSG_ID;
+    static const dmq::DelegateRemoteId ACTUATOR_MSG_ID;
 
     // Remote delegate type definitions
     using AlarmFunc = void(AlarmMsg&, AlarmNote&);

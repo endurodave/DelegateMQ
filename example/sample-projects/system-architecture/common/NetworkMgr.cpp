@@ -10,6 +10,11 @@ using namespace std;
 
 static const std::chrono::milliseconds TIMEOUT(2000);
 
+const dmq::DelegateRemoteId NetworkMgr::ALARM_MSG_ID = 1;
+const dmq::DelegateRemoteId NetworkMgr::DATA_MSG_ID = 2;
+const dmq::DelegateRemoteId NetworkMgr::COMMAND_MSG_ID = 3;
+const dmq::DelegateRemoteId NetworkMgr::ACTUATOR_MSG_ID = 4;
+
 MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::ErrorCb;
 MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId, TransportMonitor::Status)> NetworkMgr::SendStatusCb;
 MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)> NetworkMgr::AlarmMsgCb;
