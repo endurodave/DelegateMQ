@@ -98,6 +98,7 @@ $(function(){initNavTree('msgpack_2_serializer_8h.html',''); initResizable(true)
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">Serializer.h File Reference</div></div>
 </div><!--header-->
@@ -105,6 +106,7 @@ $(function(){initNavTree('msgpack_2_serializer_8h.html',''); initResizable(true)
 <div class="textblock"><code>#include &quot;msgpack.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="_i_serializer_8h_source.html">delegate/ISerializer.h</a>&quot;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
 </div>
 <p><a href="msgpack_2_serializer_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -113,17 +115,17 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html">Serializer&lt; RetType(Args...)&gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a78a2af22afb5218d602cf0523207c37e" id="r_a78a2af22afb5218d602cf0523207c37e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a78a2af22afb5218d602cf0523207c37e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a78a2af22afb5218d602cf0523207c37e">is_const_type</a> = std::is_const&lt;std::remove_reference_t&lt;T&gt;&gt;</td></tr>
+<tr class="separator:a78a2af22afb5218d602cf0523207c37e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae82a6e5a72d648eeb33428610cfdda66" id="r_ae82a6e5a72d648eeb33428610cfdda66"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:ae82a6e5a72d648eeb33428610cfdda66"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae82a6e5a72d648eeb33428610cfdda66">make_serialized</a> (msgpack::sbuffer &amp;buffer)</td></tr>
-<tr class="separator:ae82a6e5a72d648eeb33428610cfdda66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af791c2d5fa37795a60613fe50101b5ca" id="r_af791c2d5fa37795a60613fe50101b5ca"><td class="memTemplParams" colspan="2">template&lt;typename Arg1 , typename... Args&gt; </td></tr>
 <tr class="memitem:af791c2d5fa37795a60613fe50101b5ca"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af791c2d5fa37795a60613fe50101b5ca">make_serialized</a> (msgpack::sbuffer &amp;buffer, Arg1 &amp;arg1, Args... args)</td></tr>
 <tr class="separator:af791c2d5fa37795a60613fe50101b5ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afee2f2c993e0a392bdae5b7ec564172f" id="r_afee2f2c993e0a392bdae5b7ec564172f"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:afee2f2c993e0a392bdae5b7ec564172f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#afee2f2c993e0a392bdae5b7ec564172f">make_unserialized</a> (msgpack::unpacker &amp;unpacker)</td></tr>
-<tr class="separator:afee2f2c993e0a392bdae5b7ec564172f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50697fa79105d830b15d8056f63ac1aa" id="r_a50697fa79105d830b15d8056f63ac1aa"><td class="memTemplParams" colspan="2">template&lt;typename Arg1 , typename... Args&gt; </td></tr>
 <tr class="memitem:a50697fa79105d830b15d8056f63ac1aa"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a50697fa79105d830b15d8056f63ac1aa">make_unserialized</a> (msgpack::unpacker &amp;unpacker, Arg1 &amp;arg1, Args &amp;&amp;... args)</td></tr>
 <tr class="separator:a50697fa79105d830b15d8056f63ac1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -132,28 +134,26 @@ Functions</h2></td></tr>
 <div class="textblock"><dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
 <p>Serialize callable argument data using MessagePack library for transport to a remote. Endinaness correctly handled by MessagePack library. <br  />
  </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="ae82a6e5a72d648eeb33428610cfdda66" name="ae82a6e5a72d648eeb33428610cfdda66"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae82a6e5a72d648eeb33428610cfdda66">&#9670;&#160;</a></span>make_serialized() <span class="overload">[1/2]</span></h2>
+</div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="a78a2af22afb5218d602cf0523207c37e" name="a78a2af22afb5218d602cf0523207c37e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78a2af22afb5218d602cf0523207c37e">&#9670;&#160;</a></span>is_const_type</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename... Ts&gt; </div>
+template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void make_serialized </td>
-          <td>(</td>
-          <td class="paramtype">msgpack::sbuffer &amp;</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span></td><td>)</td>
-          <td></td>
+          <td class="memname">using <a class="el" href="#a78a2af22afb5218d602cf0523207c37e">is_const_type</a> = std::is_const&lt;std::remove_reference_t&lt;T&gt;&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
+<h2 class="groupheader">Function Documentation</h2>
 <a id="af791c2d5fa37795a60613fe50101b5ca" name="af791c2d5fa37795a60613fe50101b5ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af791c2d5fa37795a60613fe50101b5ca">&#9670;&#160;</a></span>make_serialized() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af791c2d5fa37795a60613fe50101b5ca">&#9670;&#160;</a></span>make_serialized()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -180,27 +180,8 @@ template&lt;typename Arg1 , typename... Args&gt; </div>
 
 </div>
 </div>
-<a id="afee2f2c993e0a392bdae5b7ec564172f" name="afee2f2c993e0a392bdae5b7ec564172f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afee2f2c993e0a392bdae5b7ec564172f">&#9670;&#160;</a></span>make_unserialized() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Ts&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void make_unserialized </td>
-          <td>(</td>
-          <td class="paramtype">msgpack::unpacker &amp;</td>          <td class="paramname"><span class="paramname"><em>unpacker</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a50697fa79105d830b15d8056f63ac1aa" name="a50697fa79105d830b15d8056f63ac1aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50697fa79105d830b15d8056f63ac1aa">&#9670;&#160;</a></span>make_unserialized() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a50697fa79105d830b15d8056f63ac1aa">&#9670;&#160;</a></span>make_unserialized()</h2>
 
 <div class="memitem">
 <div class="memproto">

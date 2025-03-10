@@ -104,7 +104,7 @@ $(function(){initNavTree('classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_ar
 </div><!--header-->
 <div class="contents">
 
-<p>A non-thread-safe delegate container storing one delegate. Void and <br  />
+<p>A thread-safe delegate container storing one delegate. Void and <br  />
  non-void return values supported. <br  />
   
  <a href="#details">More...</a></p>
@@ -136,10 +136,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8fef5d2cb43bc2acdb8de0145e0f79f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0510cc203b018f550fc99a0b3afa74ff" id="r_a0510cc203b018f550fc99a0b3afa74ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0510cc203b018f550fc99a0b3afa74ff">~UnicastDelegateSafe</a> ()=default</td></tr>
 <tr class="separator:a0510cc203b018f550fc99a0b3afa74ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d5828aa19c73b0bd9129dab6e8e8014" id="r_a4d5828aa19c73b0bd9129dab6e8e8014"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d5828aa19c73b0bd9129dab6e8e8014">UnicastDelegateSafe</a> (const <a class="el" href="structdmq_1_1_unicast_delegate_safe.html">UnicastDelegateSafe</a> &amp;rhs)=delete</td></tr>
-<tr class="separator:a4d5828aa19c73b0bd9129dab6e8e8014"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa22d79da3de18c97d5bbc222dfc65ea5" id="r_aa22d79da3de18c97d5bbc222dfc65ea5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa22d79da3de18c97d5bbc222dfc65ea5">UnicastDelegateSafe</a> (<a class="el" href="structdmq_1_1_unicast_delegate_safe.html">UnicastDelegateSafe</a> &amp;&amp;rhs)=delete</td></tr>
-<tr class="separator:aa22d79da3de18c97d5bbc222dfc65ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae792c19d9799f9d9de59e3a8ca8ec434" id="r_ae792c19d9799f9d9de59e3a8ca8ec434"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae792c19d9799f9d9de59e3a8ca8ec434">UnicastDelegateSafe</a> (const <a class="el" href="structdmq_1_1_unicast_delegate_safe.html">UnicastDelegateSafe</a> &amp;rhs)</td></tr>
+<tr class="separator:ae792c19d9799f9d9de59e3a8ca8ec434"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abab654d41c5837bfd4e8932fdd42924b" id="r_abab654d41c5837bfd4e8932fdd42924b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abab654d41c5837bfd4e8932fdd42924b">UnicastDelegateSafe</a> (<a class="el" href="structdmq_1_1_unicast_delegate_safe.html">UnicastDelegateSafe</a> &amp;&amp;rhs)</td></tr>
+<tr class="separator:abab654d41c5837bfd4e8932fdd42924b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1876af8c4b381fcbfcb8085fca8aab1f" id="r_a1876af8c4b381fcbfcb8085fca8aab1f"><td class="memItemLeft" align="right" valign="top">RetType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1876af8c4b381fcbfcb8085fca8aab1f">operator()</a> (Args... args)</td></tr>
 <tr class="separator:a1876af8c4b381fcbfcb8085fca8aab1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeada731015992f1ed5883d10bc2b6524" id="r_aeada731015992f1ed5883d10bc2b6524"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeada731015992f1ed5883d10bc2b6524">Broadcast</a> (Args... args)</td></tr>
@@ -205,7 +205,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;class RetType, class... Args&gt;<br />
-class dmq::UnicastDelegateSafe&lt; RetType(Args...)&gt;</div><p>A non-thread-safe delegate container storing one delegate. Void and <br  />
+class dmq::UnicastDelegateSafe&lt; RetType(Args...)&gt;</div><p>A thread-safe delegate container storing one delegate. Void and <br  />
  non-void return values supported. <br  />
  </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
@@ -296,8 +296,8 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a4d5828aa19c73b0bd9129dab6e8e8014" name="a4d5828aa19c73b0bd9129dab6e8e8014"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d5828aa19c73b0bd9129dab6e8e8014">&#9670;&#160;</a></span>UnicastDelegateSafe() <span class="overload">[2/3]</span></h2>
+<a id="ae792c19d9799f9d9de59e3a8ca8ec434" name="ae792c19d9799f9d9de59e3a8ca8ec434"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae792c19d9799f9d9de59e3a8ca8ec434">&#9670;&#160;</a></span>UnicastDelegateSafe() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -316,15 +316,15 @@ template&lt;class RetType , class... Args&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="aa22d79da3de18c97d5bbc222dfc65ea5" name="aa22d79da3de18c97d5bbc222dfc65ea5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa22d79da3de18c97d5bbc222dfc65ea5">&#9670;&#160;</a></span>UnicastDelegateSafe() <span class="overload">[3/3]</span></h2>
+<a id="abab654d41c5837bfd4e8932fdd42924b" name="abab654d41c5837bfd4e8932fdd42924b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abab654d41c5837bfd4e8932fdd42924b">&#9670;&#160;</a></span>UnicastDelegateSafe() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -343,7 +343,7 @@ template&lt;class RetType , class... Args&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

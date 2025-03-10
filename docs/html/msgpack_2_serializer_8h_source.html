@@ -106,85 +106,100 @@ $(function(){initNavTree('msgpack_2_serializer_8h_source.html',''); initResizabl
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;msgpack.hpp&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_i_serializer_8h.html">delegate/ISerializer.h</a>&quot;</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">// make_serialized serializes each remote function argument</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Ts&gt;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="msgpack_2_serializer_8h.html#ae82a6e5a72d648eeb33428610cfdda66">   17</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="msgpack_2_serializer_8h.html#ae82a6e5a72d648eeb33428610cfdda66">make_serialized</a>(msgpack::sbuffer&amp; buffer) { }</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Arg1, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00020" data-start="{" data-end="}">
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="msgpack_2_serializer_8h.html#af791c2d5fa37795a60613fe50101b5ca">   20</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="msgpack_2_serializer_8h.html#ae82a6e5a72d648eeb33428610cfdda66">make_serialized</a>(msgpack::sbuffer&amp; buffer, Arg1&amp; arg1, Args... args) {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    msgpack::pack(buffer, arg1);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_function" href="msgpack_2_serializer_8h.html#ae82a6e5a72d648eeb33428610cfdda66">make_serialized</a>(buffer, args...);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
-</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">// Type trait to check if a type is const</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="msgpack_2_serializer_8h.html#a78a2af22afb5218d602cf0523207c37e">   18</a></span><span class="keyword">using </span><a class="code hl_typedef" href="msgpack_2_serializer_8h.html#a78a2af22afb5218d602cf0523207c37e">is_const_type</a> = std::is_const&lt;std::remove_reference_t&lt;T&gt;&gt;;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">// make_serialized serializes each remote function argument</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Arg1, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="msgpack_2_serializer_8h.html#af791c2d5fa37795a60613fe50101b5ca">   22</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="msgpack_2_serializer_8h.html#af791c2d5fa37795a60613fe50101b5ca">make_serialized</a>(msgpack::sbuffer&amp; buffer, Arg1&amp; arg1, Args... args) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    msgpack::pack(buffer, arg1);</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">// make_unserialized unserializes each remote function argument</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span>... Ts&gt;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="msgpack_2_serializer_8h.html#afee2f2c993e0a392bdae5b7ec564172f">   27</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="msgpack_2_serializer_8h.html#afee2f2c993e0a392bdae5b7ec564172f">make_unserialized</a>(msgpack::unpacker&amp; unpacker) { }</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Arg1, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="msgpack_2_serializer_8h.html#a50697fa79105d830b15d8056f63ac1aa">   30</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="msgpack_2_serializer_8h.html#afee2f2c993e0a392bdae5b7ec564172f">make_unserialized</a>(msgpack::unpacker&amp; unpacker, Arg1&amp; arg1, Args&amp;&amp;... args) {</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    msgpack::object_handle oh;</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (!unpacker.next(oh)) </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Error during MsgPack unpacking.&quot;</span>);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    arg1 = oh.get().as&lt;Arg1&gt;();</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_function" href="msgpack_2_serializer_8h.html#afee2f2c993e0a392bdae5b7ec564172f">make_unserialized</a>(unpacker, args...);</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="comment">// Recursively call for other arguments</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (<span class="keyword">sizeof</span>...(args) &gt; 0) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_function" href="msgpack_2_serializer_8h.html#af791c2d5fa37795a60613fe50101b5ca">make_serialized</a>(buffer, args...);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
 </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> R&gt;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="struct_serializer.html">   39</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_serializer.html">Serializer</a>; <span class="comment">// Not defined</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">// Serialize all target function argument data using MessagePack library</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">template</span>&lt;<span class="keyword">class </span>RetType, <span class="keyword">class</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html">   43</a></span><span class="keyword">class </span><a class="code hl_struct" href="struct_serializer.html">Serializer</a>&lt;RetType(Args...)&gt; : <span class="keyword">public</span> <a class="code hl_struct" href="structdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;RetType(Args...)&gt;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>{</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="comment">// Write arguments to a stream</span></div>
-<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">   47</a></span>    <span class="keyword">virtual</span> std::ostream&amp; <a class="code hl_function" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Write</a>(std::ostream&amp; os, Args... args)<span class="keyword"> override </span>{</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        msgpack::sbuffer buffer;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_function" href="msgpack_2_serializer_8h.html#ae82a6e5a72d648eeb33428610cfdda66">make_serialized</a>(buffer, args...);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        os.write(buffer.data(), buffer.size());</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">return</span> os;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment">// make_unserialized unserializes each remote function argument</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Arg1, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="msgpack_2_serializer_8h.html#a50697fa79105d830b15d8056f63ac1aa">   33</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="msgpack_2_serializer_8h.html#a50697fa79105d830b15d8056f63ac1aa">make_unserialized</a>(msgpack::unpacker&amp; unpacker, Arg1&amp; arg1, Args&amp;&amp;... args) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">static_assert</span>(!<a class="code hl_typedef" href="msgpack_2_serializer_8h.html#a78a2af22afb5218d602cf0523207c37e">is_const_type&lt;Arg1&gt;::value</a>, <span class="stringliteral">&quot;Arg1 cannot be const.&quot;</span>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    msgpack::object_handle oh;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (!unpacker.next(oh)) </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Error during MsgPack unpacking.&quot;</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    arg1 = oh.get().as&lt;Arg1&gt;();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">// Recursively call for other arguments</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (<span class="keyword">sizeof</span>...(args) &gt; 0) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <a class="code hl_function" href="msgpack_2_serializer_8h.html#a50697fa79105d830b15d8056f63ac1aa">make_unserialized</a>(unpacker, args...);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
 </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// Read arguments from a stream</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> R&gt;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="struct_serializer.html">   47</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_serializer.html">Serializer</a>; <span class="comment">// Not defined</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="comment">// Serialize all target function argument data using MessagePack library</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">template</span>&lt;<span class="keyword">class </span>RetType, <span class="keyword">class</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html">   51</a></span><span class="keyword">class </span><a class="code hl_struct" href="struct_serializer.html">Serializer</a>&lt;RetType(Args...)&gt; : <span class="keyword">public</span> <a class="code hl_struct" href="structdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;RetType(Args...)&gt;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>{</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// Write arguments to a stream</span></div>
 <div class="foldopen" id="foldopen00055" data-start="{" data-end="}">
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">   55</a></span>    <span class="keyword">virtual</span> std::istream&amp; <a class="code hl_function" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Read</a>(std::istream&amp; is, Args&amp;... args)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">   55</a></span>    <span class="keyword">virtual</span> std::ostream&amp; <a class="code hl_function" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Write</a>(std::ostream&amp; os, Args... args)<span class="keyword"> override </span>{</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            std::string buffer_data((std::istreambuf_iterator&lt;char&gt;(is)), std::istreambuf_iterator&lt;char&gt;());</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            msgpack::unpacker unpacker;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            unpacker.reserve_buffer(buffer_data.size());</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            std::memcpy(unpacker.buffer(), buffer_data.data(), buffer_data.size());</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            unpacker.buffer_consumed(buffer_data.size());</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <a class="code hl_function" href="msgpack_2_serializer_8h.html#afee2f2c993e0a392bdae5b7ec564172f">make_unserialized</a>(unpacker, args...);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        }</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> msgpack::type_error&amp; e) {</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Deserialize type conversion error: &quot;</span> &lt;&lt; e.what() &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keywordflow">throw</span>;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        }</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Deserialize error: &quot;</span> &lt;&lt; e.what() &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">throw</span>;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        }</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> is;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            msgpack::sbuffer buffer;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <a class="code hl_function" href="msgpack_2_serializer_8h.html#af791c2d5fa37795a60613fe50101b5ca">make_serialized</a>(buffer, args...);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            os.write(buffer.data(), buffer.size());</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Serialize error: &quot;</span> &lt;&lt; e.what() &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">return</span> os;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
 </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment">// Read arguments from a stream</span></div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">   69</a></span>    <span class="keyword">virtual</span> std::istream&amp; <a class="code hl_function" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Read</a>(std::istream&amp; is, Args&amp;... args)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            std::string buffer_data((std::istreambuf_iterator&lt;char&gt;(is)), std::istreambuf_iterator&lt;char&gt;());</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            msgpack::unpacker unpacker;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            unpacker.reserve_buffer(buffer_data.size());</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            std::memcpy(unpacker.buffer(), buffer_data.data(), buffer_data.size());</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            unpacker.buffer_consumed(buffer_data.size());</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <a class="code hl_function" href="msgpack_2_serializer_8h.html#a50697fa79105d830b15d8056f63ac1aa">make_unserialized</a>(unpacker, args...);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> msgpack::type_error&amp; e) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Deserialize type conversion error: &quot;</span> &lt;&lt; e.what() &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Deserialize error: &quot;</span> &lt;&lt; e.what() &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">return</span> is;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
 </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>};</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_i_serializer_8h_html"><div class="ttname"><a href="_i_serializer_8h.html">ISerializer.h</a></div><div class="ttdoc">Delegate serializer interface class.</div></div>
-<div class="ttc" id="aclass_serializer_3_01_ret_type_07_args_8_8_8_08_4_html_a00e80821a799ccab63c59accfdbecd49"><div class="ttname"><a href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Serializer&lt; RetType(Args...)&gt;::Read</a></div><div class="ttdeci">virtual std::istream &amp; Read(std::istream &amp;is, Args &amp;... args) override</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:55</div></div>
-<div class="ttc" id="aclass_serializer_3_01_ret_type_07_args_8_8_8_08_4_html_afcdb8d3800db2da7f659c47dc8a1986d"><div class="ttname"><a href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Serializer&lt; RetType(Args...)&gt;::Write</a></div><div class="ttdeci">virtual std::ostream &amp; Write(std::ostream &amp;os, Args... args) override</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:47</div></div>
-<div class="ttc" id="amsgpack_2_serializer_8h_html_ae82a6e5a72d648eeb33428610cfdda66"><div class="ttname"><a href="msgpack_2_serializer_8h.html#ae82a6e5a72d648eeb33428610cfdda66">make_serialized</a></div><div class="ttdeci">void make_serialized(msgpack::sbuffer &amp;buffer)</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:17</div></div>
-<div class="ttc" id="amsgpack_2_serializer_8h_html_afee2f2c993e0a392bdae5b7ec564172f"><div class="ttname"><a href="msgpack_2_serializer_8h.html#afee2f2c993e0a392bdae5b7ec564172f">make_unserialized</a></div><div class="ttdeci">void make_unserialized(msgpack::unpacker &amp;unpacker)</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:27</div></div>
-<div class="ttc" id="astruct_serializer_html"><div class="ttname"><a href="struct_serializer.html">Serializer</a></div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:39</div></div>
+<div class="ttc" id="aclass_serializer_3_01_ret_type_07_args_8_8_8_08_4_html_a00e80821a799ccab63c59accfdbecd49"><div class="ttname"><a href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Serializer&lt; RetType(Args...)&gt;::Read</a></div><div class="ttdeci">virtual std::istream &amp; Read(std::istream &amp;is, Args &amp;... args) override</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:69</div></div>
+<div class="ttc" id="aclass_serializer_3_01_ret_type_07_args_8_8_8_08_4_html_afcdb8d3800db2da7f659c47dc8a1986d"><div class="ttname"><a href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Serializer&lt; RetType(Args...)&gt;::Write</a></div><div class="ttdeci">virtual std::ostream &amp; Write(std::ostream &amp;os, Args... args) override</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:55</div></div>
+<div class="ttc" id="amsgpack_2_serializer_8h_html_a50697fa79105d830b15d8056f63ac1aa"><div class="ttname"><a href="msgpack_2_serializer_8h.html#a50697fa79105d830b15d8056f63ac1aa">make_unserialized</a></div><div class="ttdeci">void make_unserialized(msgpack::unpacker &amp;unpacker, Arg1 &amp;arg1, Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:33</div></div>
+<div class="ttc" id="amsgpack_2_serializer_8h_html_a78a2af22afb5218d602cf0523207c37e"><div class="ttname"><a href="msgpack_2_serializer_8h.html#a78a2af22afb5218d602cf0523207c37e">is_const_type</a></div><div class="ttdeci">std::is_const&lt; std::remove_reference_t&lt; T &gt; &gt; is_const_type</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:18</div></div>
+<div class="ttc" id="amsgpack_2_serializer_8h_html_af791c2d5fa37795a60613fe50101b5ca"><div class="ttname"><a href="msgpack_2_serializer_8h.html#af791c2d5fa37795a60613fe50101b5ca">make_serialized</a></div><div class="ttdeci">void make_serialized(msgpack::sbuffer &amp;buffer, Arg1 &amp;arg1, Args... args)</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:22</div></div>
+<div class="ttc" id="astruct_serializer_html"><div class="ttname"><a href="struct_serializer.html">Serializer</a></div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:47</div></div>
 <div class="ttc" id="astructdmq_1_1_i_serializer_html"><div class="ttname"><a href="structdmq_1_1_i_serializer.html">dmq::ISerializer</a></div><div class="ttdef"><b>Definition</b> ISerializer.h:12</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

@@ -115,15 +115,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acc859df38f2791d4cb79b6294ef4a4b9" id="r_acc859df38f2791d4cb79b6294ef4a4b9"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:acc859df38f2791d4cb79b6294ef4a4b9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#acc859df38f2791d4cb79b6294ef4a4b9">make_serialized</a> (<a class="el" href="classserialize.html">serialize</a> &amp;ser, std::ostream &amp;os)</td></tr>
-<tr class="separator:acc859df38f2791d4cb79b6294ef4a4b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacc9d7ff58bfa99925b5280b7f1849d0" id="r_aacc9d7ff58bfa99925b5280b7f1849d0"><td class="memTemplParams" colspan="2">template&lt;typename Arg1 , typename... Args&gt; </td></tr>
 <tr class="memitem:aacc9d7ff58bfa99925b5280b7f1849d0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aacc9d7ff58bfa99925b5280b7f1849d0">make_serialized</a> (<a class="el" href="classserialize.html">serialize</a> &amp;ser, std::ostream &amp;os, Arg1 &amp;arg1, Args... args)</td></tr>
 <tr class="separator:aacc9d7ff58bfa99925b5280b7f1849d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44143ac6764c46791600ba293441c45b" id="r_a44143ac6764c46791600ba293441c45b"><td class="memTemplParams" colspan="2">template&lt;typename... Ts&gt; </td></tr>
-<tr class="memitem:a44143ac6764c46791600ba293441c45b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a44143ac6764c46791600ba293441c45b">make_unserialized</a> (<a class="el" href="classserialize.html">serialize</a> &amp;ser, std::istream &amp;is)</td></tr>
-<tr class="separator:a44143ac6764c46791600ba293441c45b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8fe08a1a970a68b406e90987cde0355f" id="r_a8fe08a1a970a68b406e90987cde0355f"><td class="memTemplParams" colspan="2">template&lt;typename Arg1 , typename... Args&gt; </td></tr>
 <tr class="memitem:a8fe08a1a970a68b406e90987cde0355f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a8fe08a1a970a68b406e90987cde0355f">make_unserialized</a> (<a class="el" href="classserialize.html">serialize</a> &amp;ser, std::istream &amp;is, Arg1 &amp;arg1, Args &amp;&amp;... args)</td></tr>
 <tr class="separator:a8fe08a1a970a68b406e90987cde0355f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,31 +127,8 @@ Functions</h2></td></tr>
 <p>Serialize callable argument data using serialize class for transport to a remote. Endinaness correctly handled by serialize class. <br  />
  </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="acc859df38f2791d4cb79b6294ef4a4b9" name="acc859df38f2791d4cb79b6294ef4a4b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc859df38f2791d4cb79b6294ef4a4b9">&#9670;&#160;</a></span>make_serialized() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Ts&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void make_serialized </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classserialize.html">serialize</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>ser</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::ostream &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="aacc9d7ff58bfa99925b5280b7f1849d0" name="aacc9d7ff58bfa99925b5280b7f1849d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aacc9d7ff58bfa99925b5280b7f1849d0">&#9670;&#160;</a></span>make_serialized() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aacc9d7ff58bfa99925b5280b7f1849d0">&#9670;&#160;</a></span>make_serialized()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -189,31 +160,8 @@ template&lt;typename Arg1 , typename... Args&gt; </div>
 
 </div>
 </div>
-<a id="a44143ac6764c46791600ba293441c45b" name="a44143ac6764c46791600ba293441c45b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a44143ac6764c46791600ba293441c45b">&#9670;&#160;</a></span>make_unserialized() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Ts&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void make_unserialized </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classserialize.html">serialize</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>ser</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::istream &amp;</td>          <td class="paramname"><span class="paramname"><em>is</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a8fe08a1a970a68b406e90987cde0355f" name="a8fe08a1a970a68b406e90987cde0355f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8fe08a1a970a68b406e90987cde0355f">&#9670;&#160;</a></span>make_unserialized() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fe08a1a970a68b406e90987cde0355f">&#9670;&#160;</a></span>make_unserialized()</h2>
 
 <div class="memitem">
 <div class="memproto">
