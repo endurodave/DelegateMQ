@@ -8,6 +8,51 @@
 
 The DelegateMQ C++ library enables function invocations on any callable, either synchronously, asynchronously, or on a remote endpoint. This messaging middleware library unifies function calls across threads, processes, or processors through a simple delegate interface. It provides well-defined abstract interfaces and numerous concrete examples, making it easy to port to any platform. As a header-only template library, DelegateMQ is thread-safe, unit-tested, and easy to use.
 
+`Subscriber` registers with `Publisher` to receive asynchronous callbacks:
+
+```cpp
+class Publisher
+{
+public:
+    // Thread-safe container to store registered callbacks
+    dmq::MulticastDelegateSafe<void(const std::string& msg)> MsgCb;
+
+    static Publisher& Instance() 
+    {
+        static Publisher instance;
+        return instance;
+    }
+
+    void SetMsg(const std::string& msg) 
+    {
+        m_msg = msg;    // Store message
+        MsgCb(m_msg);   // Invoke all callbacks
+    }
+
+private:
+    Publisher() = default;
+    std::string m_msg;
+};
+
+class Subscriber
+{
+public:
+    Subscriber() : m_thread("SubscriberThread") 
+    {
+        m_thread.CreateThread();
+
+        // Register for publisher callback on m_thread context
+        Publisher::Instance().MsgCb += dmq::MakeDelegate(this, &Subscriber::HandleMsgCb, m_thread);
+    }
+
+private:
+    void HandleMsgCb(const std::string& msg) { std::cout << msg << std::endl; }
+    Thread m_thread;
+};
+```
+
+Multiple callables stored and invoked example: 
+
 ```cpp
 // Create an async delegate targeting lambda on thread1
 auto lambda = [](int i) { std::cout << i; };

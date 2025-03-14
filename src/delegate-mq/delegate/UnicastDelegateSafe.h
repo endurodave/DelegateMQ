@@ -3,7 +3,7 @@
 
 /// @file
 /// @brief Delegate container for storing an invoking a single delegate instance. 
-/// Class is not thread-safe.
+/// Class is thread-safe.
 
 #include "UnicastDelegate.h"
 #include <mutex>

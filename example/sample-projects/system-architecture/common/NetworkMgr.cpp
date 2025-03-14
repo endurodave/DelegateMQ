@@ -87,7 +87,7 @@ int NetworkMgr::Create()
     // Set the transport used by the dispatcher
     m_dispatcher.SetTransport(&m_transport);
 
-    // Set remote delegate into map
+    // Set remote delegates into map
     m_receiveIdMap[ALARM_MSG_ID] = &m_alarmMsgDel;
     m_receiveIdMap[COMMAND_MSG_ID] = &m_commandMsgDel;
     m_receiveIdMap[DATA_MSG_ID] = &m_dataMsgDel;
@@ -158,7 +158,7 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
     // If caller is not executing on m_thread
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
     {
-        // *** Caller's thread executes this control brach ***
+        // *** Caller's thread executes this control branch ***
 
         bool success = false;
         std::mutex mtx;
@@ -197,7 +197,7 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
     }
     else
     {
-        // *** NetworkMgr::m_thread executes this control brach ***
+        // *** NetworkMgr::m_thread executes this control branch ***
 
         // 4. Send actuator command to remote on m_thread. 
         m_actuatorMsgDel(msg);
@@ -235,7 +235,7 @@ void NetworkMgr::Poll()
 
 void NetworkMgr::Timeout()
 {
-    // Preiodically process message timeouts
+    // Periodically process message timeouts
     m_transportMonitor.Process();
 }
 

@@ -87,7 +87,7 @@ private:
     // Poll called periodically on m_thread context
     void Poll();
 
-    // Process message timeout loop
+    // Process message timeouts 
     void Timeout();
 
     // Handle errors from DelegateMQ library

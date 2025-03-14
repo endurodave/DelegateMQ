@@ -7,7 +7,7 @@
 
 /// @file
 /// @brief Delegate series of classes are used to invoke a function synchronously. 
-/// @details Delgates support binding to free functions, class instance functions, class 
+/// @details Delegates support binding to free functions, class instance functions, class 
 /// static function, and std::function targets. Lambda functions can be bound to a delegate 
 /// when assigned to a `std::function`. The classes are not thread-safe.
 /// 
