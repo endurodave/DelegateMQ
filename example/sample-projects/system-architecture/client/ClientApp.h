@@ -31,7 +31,7 @@ public:
         // Callback to capture NetworkMgr::SendCommandMsg() success or error
         ErrorCallback errorCb = [&success, &cv](dmq::DelegateRemoteId id, dmq::DelegateError err, dmq::DelegateErrorAux aux) {
             // SendCommandMsg() ID?
-            if (id == NetworkMgr::COMMAND_MSG_ID) {
+            if (id == ids::COMMAND_MSG_ID) {
                 // Send success?
                 if (err == dmq::DelegateError::SUCCESS)
                     success = true;
@@ -113,6 +113,8 @@ private:
         DataMgr::Instance().SetDataMsg(dataMsg);
     }
 
+    // Update the local and remote actuator positions. Blocking call that only 
+    // returns if all actuators updates succeed or a failure occurs.
     void ActuatorUpdate()
     {
         static int cnt = 0;
@@ -146,13 +148,13 @@ private:
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
-        if (error != dmq::DelegateError::SUCCESS)
+        if (error != dmq::DelegateError::SUCCESS && id == ids::COMMAND_MSG_ID)
             std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    void SendStatusHandler(uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status)
+    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
     {
-        if (status != TransportMonitor::Status::SUCCESS)
+        if (status != TransportMonitor::Status::SUCCESS && id == ids::COMMAND_MSG_ID)
             std::cout << "ClientApp Timeout: " << id << " " << seqNum << std::endl;
     }
 

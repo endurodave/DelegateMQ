@@ -22,7 +22,7 @@ public:
     };
 
     // Delegate callback to monitor message send status
-    dmq::MulticastDelegateSafe<void(uint16_t seqNum, dmq::DelegateRemoteId id, Status status)> SendStatusCb;
+    dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId id, uint16_t seqNum, Status status)> SendStatusCb;
 
     TransportMonitor(const std::chrono::milliseconds& timeout) : TRANSPORT_TIMEOUT(timeout) {}
     ~TransportMonitor() 

@@ -102,7 +102,7 @@ private:
             std::cout << "ServerApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    void SendStatusHandler(uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status)
+    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
     {
         if (status != TransportMonitor::Status::SUCCESS)
             std::cout << "ServerApp Timeout: " << id << " " << seqNum << std::endl;

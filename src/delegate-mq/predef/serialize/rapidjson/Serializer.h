@@ -49,6 +49,7 @@ public:
     // Write arguments to a stream
     virtual std::ostream& Write(std::ostream& os, Args... args) override {
         try {
+            os.seekp(0, std::ios::beg);
             rapidjson::StringBuffer sb;
             rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
 

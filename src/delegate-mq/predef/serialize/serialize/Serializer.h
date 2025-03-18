@@ -45,6 +45,7 @@ public:
     // Write arguments to a stream
     virtual std::ostream& Write(std::ostream& os, Args... args) override {
         try {
+            os.seekp(0, std::ios::beg);
             serialize ser;
             make_serialized(ser, os, args...);
         }

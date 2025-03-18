@@ -46,6 +46,7 @@ public:
     }
 
 private:
+    // Handle publisher callback on m_thread
     void HandleMsgCb(const std::string& msg) { std::cout << msg << std::endl; }
     Thread m_thread;
 };

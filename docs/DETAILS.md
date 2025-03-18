@@ -1725,9 +1725,10 @@ Execute the client and server projects to run the example.
 | `ServerApp` | Server | Main server application. Slave sensors and actuators application. |
 | `DataMgr` | Client | Collects data from client (local) and server (remote) data sources |
 | `AlarmMgr` | Client<br>Server | Handles system alarms. Server sends alarms to client for processing. |
-| `NetworkMgr` | Client<br>Server | Centralized, shared client and server communication interface using remote delegates. |
 | `Sensor` | Client<br>Server | Reads sensor data |
 | `Actuator` | Client<br>Server | Controls actuator |
+| `RemoteEndpoint` | Client<br>Server | Delegate endpoint for bidirectional remote communication. |
+| `NetworkMgr` | Client<br>Server | Centralized, shared client and server communication interface using remote delegates. |
 
 Interface implementation details. 
 

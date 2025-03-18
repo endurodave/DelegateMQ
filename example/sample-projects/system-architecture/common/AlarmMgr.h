@@ -68,7 +68,7 @@ private:
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
-        if (error != dmq::DelegateError::SUCCESS)
+        if (error != dmq::DelegateError::SUCCESS && id == ids::ALARM_MSG_ID)
             std::cout << "AlarmMgr Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 

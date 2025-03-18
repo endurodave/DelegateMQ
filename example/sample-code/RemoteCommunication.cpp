@@ -19,7 +19,7 @@ namespace Example
     public:
         static void Send(std::stringstream& os) {
             std::lock_guard<std::mutex> lk(m_mutex);
-            m_ss << os.rdbuf();
+            m_ss << os.str();
         }
         static std::stringstream Receive() {
             std::lock_guard<std::mutex> lk(m_mutex);

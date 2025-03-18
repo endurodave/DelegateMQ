@@ -92,7 +92,7 @@ public:
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
 
         // Insert delegate arguments from the stream (os)
-        ss << os.rdbuf();
+        ss << os.str();
 
         size_t length = ss.str().length();
         char* sendBuf = (char*)malloc(length);

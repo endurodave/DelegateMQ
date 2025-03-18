@@ -3,32 +3,29 @@
 /// David Lafreniere, 2025.
 
 #include "NetworkMgr.h"
-#include <iostream>
 
 using namespace dmq;
 using namespace std;
 
 static const std::chrono::milliseconds TIMEOUT(2000);
 
-const dmq::DelegateRemoteId NetworkMgr::ALARM_MSG_ID = 1;
-const dmq::DelegateRemoteId NetworkMgr::DATA_MSG_ID = 2;
-const dmq::DelegateRemoteId NetworkMgr::COMMAND_MSG_ID = 3;
-const dmq::DelegateRemoteId NetworkMgr::ACTUATOR_MSG_ID = 4;
-
 MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::ErrorCb;
-MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId, TransportMonitor::Status)> NetworkMgr::SendStatusCb;
+MulticastDelegateSafe<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)> NetworkMgr::SendStatusCb;
 MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)> NetworkMgr::AlarmMsgCb;
 MulticastDelegateSafe<void(CommandMsg&)> NetworkMgr::CommandMsgCb;
 MulticastDelegateSafe<void(DataMsg&)> NetworkMgr::DataMsgCb;
 MulticastDelegateSafe<void(ActuatorMsg&)> NetworkMgr::ActuatorMsgCb;
 
-typedef std::function<void(uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status)> SendStatusCallback;
+typedef std::function<void(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)> SendStatusCallback;
 
 NetworkMgr::NetworkMgr() :
     m_thread("NetworkMgr"),
     m_timeoutThread("NetworkMgrTimeout"),
-    m_argStream(ios::in | ios::out | ios::binary),
-    m_transportMonitor(TIMEOUT)
+    m_transportMonitor(TIMEOUT),
+    m_alarmMsgDel(ids::ALARM_MSG_ID, &m_dispatcher),
+    m_commandMsgDel(ids::COMMAND_MSG_ID, &m_dispatcher),
+    m_dataMsgDel(ids::DATA_MSG_ID, &m_dispatcher),
+    m_actuatorMsgDel(ids::ACTUATOR_MSG_ID, &m_dispatcher)
 {
     // Create the threads
     m_thread.CreateThread();
@@ -47,31 +44,19 @@ int NetworkMgr::Create()
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
         return MakeDelegate(this, &NetworkMgr::Create, m_thread, WAIT_INFINITE)();
 
-    // Setup the remote delegate interfaces
-    m_alarmMsgDel.SetStream(&m_argStream);
-    m_alarmMsgDel.SetSerializer(&m_alarmMsgSer);
-    m_alarmMsgDel.SetDispatcher(&m_dispatcher);
-    m_alarmMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    // Bind the remote delegate to the AlarmMsgCb delegate container for incoming msgs
-    m_alarmMsgDel.Bind(&AlarmMsgCb, &AlarmDel::operator(), ALARM_MSG_ID);
+    // Bind the remote delegate interface to a delegate container. Each 
+    // incoming remote message will invoke all registered callbacks.
+    m_alarmMsgDel.Bind(&AlarmMsgCb, &AlarmDel::operator(), ids::ALARM_MSG_ID);
+    m_alarmMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::ErrorHandler);
 
-    m_dataMsgDel.SetStream(&m_argStream);
-    m_dataMsgDel.SetSerializer(&m_dataMsgSer);
-    m_dataMsgDel.SetDispatcher(&m_dispatcher);
-    m_dataMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_dataMsgDel.Bind(&DataMsgCb, &DataDel::operator(), DATA_MSG_ID);
+    m_dataMsgDel.Bind(&DataMsgCb, &DataDel::operator(), ids::DATA_MSG_ID);
+    m_dataMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::ErrorHandler);
 
-    m_commandMsgDel.SetStream(&m_argStream);
-    m_commandMsgDel.SetSerializer(&m_commandMsgSer);
-    m_commandMsgDel.SetDispatcher(&m_dispatcher);
-    m_commandMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_commandMsgDel.Bind(&CommandMsgCb, &CommandDel::operator(), COMMAND_MSG_ID);
+    m_commandMsgDel.Bind(&CommandMsgCb, &CommandDel::operator(), ids::COMMAND_MSG_ID);
+    m_commandMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::ErrorHandler);
 
-    m_actuatorMsgDel.SetStream(&m_argStream);
-    m_actuatorMsgDel.SetSerializer(&m_actuatorMsgSer);
-    m_actuatorMsgDel.SetDispatcher(&m_dispatcher);
-    m_actuatorMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::ErrorHandler));
-    m_actuatorMsgDel.Bind(&ActuatorMsgCb, &ActuatorDel::operator(), ACTUATOR_MSG_ID);
+    m_actuatorMsgDel.Bind(&ActuatorMsgCb, &ActuatorDel::operator(), ids::ACTUATOR_MSG_ID);
+    m_actuatorMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::ErrorHandler);
 
     int err = 0;
 #ifdef SERVER_APP
@@ -81,23 +66,25 @@ int NetworkMgr::Create()
     //err = m_transport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://192.168.0.123:5555"); // Connect to remote server
 #endif
 
+    // Set transport monitor callback to catch communication success and error
     m_transportMonitor.SendStatusCb += dmq::MakeDelegate(this, &NetworkMgr::SendStatusHandler);
     m_transport.SetTransportMonitor(&m_transportMonitor);
 
     // Set the transport used by the dispatcher
     m_dispatcher.SetTransport(&m_transport);
 
-    // Set remote delegates into map
-    m_receiveIdMap[ALARM_MSG_ID] = &m_alarmMsgDel;
-    m_receiveIdMap[COMMAND_MSG_ID] = &m_commandMsgDel;
-    m_receiveIdMap[DATA_MSG_ID] = &m_dataMsgDel;
-    m_receiveIdMap[ACTUATOR_MSG_ID] = &m_actuatorMsgDel;
+    // Set remote delegates into map for receiving messages
+    m_receiveIdMap[ids::ALARM_MSG_ID] = &m_alarmMsgDel;
+    m_receiveIdMap[ids::COMMAND_MSG_ID] = &m_commandMsgDel;
+    m_receiveIdMap[ids::DATA_MSG_ID] = &m_dataMsgDel;
+    m_receiveIdMap[ids::ACTUATOR_MSG_ID] = &m_actuatorMsgDel;
 
     return err;
 }
 
 void NetworkMgr::Start()
 {
+    // Reinvoke Start() function call onto m_thread 
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
         return MakeDelegate(this, &NetworkMgr::Start, m_thread)();
 
@@ -112,6 +99,7 @@ void NetworkMgr::Start()
 
 void NetworkMgr::Stop()
 {
+    // Reinvoke Stop() function call on m_thread and wait for call to complete
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
         return MakeDelegate(this, &NetworkMgr::Stop, m_thread, WAIT_INFINITE)();
 
@@ -119,7 +107,6 @@ void NetworkMgr::Stop()
     m_recvTimer.Expired = nullptr;
     m_timeoutTimer.Stop();
     m_timeoutTimer.Expired = nullptr;
-    m_dispatcher.SetTransport(nullptr);
     m_transport.Close();
     //m_transport.Destroy();
 }
@@ -151,8 +138,8 @@ void NetworkMgr::SendDataMsg(DataMsg& data)
     m_dataMsgDel(data);
 }
 
-// Async send an actuator command and block the caller waiting until the client 
-// responds or timeout. The execution sequence numbers shown below.
+// Async send an actuator command and block the caller waiting until the remote 
+// client responds or timeout. The execution sequence numbers shown below.
 bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
 {
     // If caller is not executing on m_thread
@@ -164,9 +151,9 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         std::mutex mtx;
         std::condition_variable cv;
 
-        // 5. Callback handler for transport monitor send status
-        SendStatusCallback statusCb = [&success, &cv](uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status) {
-            if (id == ACTUATOR_MSG_ID) {
+        // 5. Callback handler for transport monitor send status (success or failure)
+        SendStatusCallback statusCb = [&success, &cv](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
+            if (id == ids::ACTUATOR_MSG_ID) {
                 // Client received ActuatorMsg?
                 if (status == TransportMonitor::Status::SUCCESS)
                     success = true;
@@ -180,7 +167,7 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         // 2. Reinvoke SendActuatorMsgWait() on m_thread context
         MakeDelegate(this, &NetworkMgr::SendActuatorMsgWait, m_thread)(msg);
 
-        // 3. Wait for statusCb callback to be triggered on m_thread
+        // 3. Wait for statusCb callback to be invoked on m_thread
         std::unique_lock<std::mutex> lock(mtx);
         if (cv.wait_for(lock, TIMEOUT) == std::cv_status::timeout)
         {
@@ -244,9 +231,9 @@ void NetworkMgr::ErrorHandler(DelegateRemoteId id, DelegateError error, Delegate
     ErrorCb(id, error, aux);
 }
 
-void NetworkMgr::SendStatusHandler(uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status)
+void NetworkMgr::SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
 {
-    SendStatusCb(seqNum, id, status);
+    SendStatusCb(id, seqNum, status);
 }
 
 

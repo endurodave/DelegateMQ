@@ -6,21 +6,21 @@
 /// David Lafreniere, 2025.
 
 #include "DelegateMQ.h"
+#include "RemoteIds.h"
 #include "AlarmMsg.h"
 #include "DataMsg.h"
 #include "CommandMsg.h"
 #include "ActuatorMsg.h"
-#include <msgpack.hpp>
+#include "RemoteEndpoint.h"
 #include <map>
-#include <mutex>
 
 /// @brief NetworkMgr sends and receives data using a DelegateMQ transport implemented
 /// with ZeroMQ and MessagePack libraries. Class is thread safe. All public APIs are 
 /// asynchronous.
 /// 
 /// @details NetworkMgr has its own internal thread of control. All public APIs are 
-/// asynchronous (blocking and non-blocking). Register with ErrorCb or TimeoutCb to 
-/// handle errors.
+/// asynchronous (blocking and non-blocking). Register with ErrorCb or SendStatusCb to 
+/// handle success or errors.
 /// 
 /// Each socket instance in the ZeroMQ transport layer must only be accessed by a single
 /// thread of control. Therefore, when invoking a remote delegate it must be performed on 
@@ -28,12 +28,6 @@
 class NetworkMgr
 {
 public:
-    // Remote delegate IDs
-    static const dmq::DelegateRemoteId ALARM_MSG_ID;
-    static const dmq::DelegateRemoteId DATA_MSG_ID;
-    static const dmq::DelegateRemoteId COMMAND_MSG_ID;
-    static const dmq::DelegateRemoteId ACTUATOR_MSG_ID;
-
     // Remote delegate type definitions
     using AlarmFunc = void(AlarmMsg&, AlarmNote&);
     using AlarmDel = dmq::MulticastDelegateSafe<AlarmFunc>;
@@ -94,7 +88,7 @@ private:
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux);
 
     // Handle send message status callbacks
-    void SendStatusHandler(uint16_t seqNum, dmq::DelegateRemoteId id, TransportMonitor::Status status);
+    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status);
 
     // NetworkApp thread of control
     Thread m_thread;
@@ -108,36 +102,23 @@ private:
     // Timer for processing message timeouts
     Timer m_timeoutTimer;
 
-    // Serialize function argument data into a stream
-    xostringstream m_argStream;
+    // Delegate dispatcher 
+    Dispatcher m_dispatcher;
 
     // Transport using ZeroMQ library. Only call transport from NetworkMsg thread.
     ZeroMqTransport m_transport;
 
-    // Monitor messages for timeout
+    // Monitor message timeouts
     TransportMonitor m_transportMonitor;
-
-    // Dispatcher using DelegateMQ library
-    Dispatcher m_dispatcher;
 
     // Map each remote delegate ID to an invoker instance
     std::map<dmq::DelegateRemoteId, dmq::IRemoteInvoker*> m_receiveIdMap;
 
-    // Alarm message remote delegate
-    Serializer<AlarmFunc> m_alarmMsgSer;
-    dmq::DelegateMemberRemote<AlarmDel, AlarmFunc> m_alarmMsgDel;
-
-    // Command message remote delegate
-    Serializer<CommandFunc> m_commandMsgSer;
-    dmq::DelegateMemberRemote<CommandDel, CommandFunc> m_commandMsgDel;
-
-    // Data message remote delegate
-    Serializer<DataFunc> m_dataMsgSer;
-    dmq::DelegateMemberRemote<DataDel, DataFunc> m_dataMsgDel;
-
-    // Actuator message remote delegate
-    Serializer<ActuatorFunc> m_actuatorMsgSer;
-    dmq::DelegateMemberRemote<ActuatorDel, ActuatorFunc> m_actuatorMsgDel;
+    // Remote delegate endpoints used to send/receive messages
+    RemoteEndpoint<AlarmDel, AlarmFunc> m_alarmMsgDel;
+    RemoteEndpoint<CommandDel, CommandFunc> m_commandMsgDel;
+    RemoteEndpoint<DataDel, DataFunc> m_dataMsgDel;
+    RemoteEndpoint<ActuatorDel, ActuatorFunc> m_actuatorMsgDel;
 };
 
 #endif

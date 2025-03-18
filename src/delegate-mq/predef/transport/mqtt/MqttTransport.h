@@ -145,7 +145,7 @@ public:
         ss << seqNum << "] ";
 
         // Insert delegate arguments from the stream (os)
-        ss << os.rdbuf();
+        ss << os.str();
 
         size_t payloadLen = ss.str().length();
 

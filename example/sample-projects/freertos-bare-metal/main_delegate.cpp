@@ -26,13 +26,13 @@ static void TimerCallback(TimerHandle_t xTimerHandle)
     Timer::ProcessTimers();
 }
 
-// The "transport" is simplely a shared std::stringstream
+// The "transport" is simply a shared std::stringstream
 class Transport
 {
 public:
     static void Send(std::stringstream& os) {
         std::lock_guard<std::mutex> lk(m_mutex);
-        m_ss << os.rdbuf();
+        m_ss << os.str();
     }
     static std::stringstream& Receive() {
         std::lock_guard<std::mutex> lk(m_mutex);
