@@ -14,7 +14,7 @@ class RemoteEndpoint<TClass, RetType(Args...)> : public dmq::DelegateMemberRemot
 public:
     // Remote delegate type definitions
     using Func = RetType(Args...);
-    using BaseType = DelegateMemberRemote<TClass, RetType(Args...)>;
+    using BaseType = dmq::DelegateMemberRemote<TClass, RetType(Args...)>;
 
     // Error handler callback
     dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCb;
@@ -22,13 +22,13 @@ public:
     // A remote delegate endpoint constructor
     RemoteEndpoint(dmq::DelegateRemoteId id, Dispatcher* dispatcher) :
         BaseType(id),
-        m_argStream(ios::in | ios::out | ios::binary)
+        m_argStream(std::ios::in | std::ios::out | std::ios::binary)
     {
         // Setup the remote delegate interfaces
-        SetStream(&m_argStream);
-        SetSerializer(&m_msgSer);
-        SetDispatcher(dispatcher);
-        SetErrorHandler(MakeDelegate(this, &RemoteEndpoint::ErrorHandler));
+        this->SetStream(&m_argStream);
+        this->SetSerializer(&m_msgSer);
+        this->SetDispatcher(dispatcher);
+        this->SetErrorHandler(MakeDelegate(this, &RemoteEndpoint::ErrorHandler));
     }
 
 private:
