@@ -103,6 +103,50 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
 <h1><a class="anchor" id="autotoc_md0"></a>
 Delegates in C++</h1>
 <p>The DelegateMQ C++ library enables function invocations on any callable, either synchronously, asynchronously, or on a remote endpoint. This messaging middleware library unifies function calls across threads, processes, or processors through a simple delegate interface. It provides well-defined abstract interfaces and numerous concrete examples, making it easy to port to any platform. As a header-only template library, DelegateMQ is thread-safe, unit-tested, and easy to use.</p>
+<p><code>Subscriber</code> registers with <code>Publisher</code> to receive asynchronous callbacks:</p>
+<div class="fragment"><div class="line"><span class="keyword">class </span>Publisher</div>
+<div class="line">{</div>
+<div class="line"><span class="keyword">public</span>:</div>
+<div class="line">    <span class="comment">// Thread-safe container to store registered callbacks</span></div>
+<div class="line">    <a class="code hl_struct" href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a>&lt;void(<span class="keyword">const</span> std::string&amp; msg)&gt; MsgCb;</div>
+<div class="line"> </div>
+<div class="line">    <span class="keyword">static</span> Publisher&amp; Instance() </div>
+<div class="line">    {</div>
+<div class="line">        <span class="keyword">static</span> Publisher instance;</div>
+<div class="line">        <span class="keywordflow">return</span> instance;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line">    <span class="keywordtype">void</span> SetMsg(<span class="keyword">const</span> std::string&amp; msg) </div>
+<div class="line">    {</div>
+<div class="line">        m_msg = msg;    <span class="comment">// Store message</span></div>
+<div class="line">        MsgCb(m_msg);   <span class="comment">// Invoke all callbacks</span></div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">private</span>:</div>
+<div class="line">    Publisher() = <span class="keywordflow">default</span>;</div>
+<div class="line">    std::string m_msg;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">class </span>Subscriber</div>
+<div class="line">{</div>
+<div class="line"><span class="keyword">public</span>:</div>
+<div class="line">    Subscriber() : m_thread(<span class="stringliteral">&quot;SubscriberThread&quot;</span>) </div>
+<div class="line">    {</div>
+<div class="line">        m_thread.CreateThread();</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Register for publisher callback on m_thread context</span></div>
+<div class="line">        Publisher::Instance().MsgCb += <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;Subscriber::HandleMsgCb, m_thread);</div>
+<div class="line">    }</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">private</span>:</div>
+<div class="line">    <span class="comment">// Handle publisher callback on m_thread</span></div>
+<div class="line">    <span class="keywordtype">void</span> HandleMsgCb(<span class="keyword">const</span> std::string&amp; msg) { std::cout &lt;&lt; msg &lt;&lt; std::endl; }</div>
+<div class="line">    <a class="code hl_class" href="class_thread.html">Thread</a> m_thread;</div>
+<div class="line">};</div>
+<div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdef"><b>Definition</b> freertos/Thread.h:19</div></div>
+<div class="ttc" id="anamespacedmq_html_a65e308cc5f3e37d2f7f89c72b9744ae2"><div class="ttname"><a href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:673</div></div>
+<div class="ttc" id="astructdmq_1_1_multicast_delegate_safe_html"><div class="ttname"><a href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a></div><div class="ttdef"><b>Definition</b> MulticastDelegateSafe.h:14</div></div>
+</div><!-- fragment --><p>Multiple callables targets stored and invoked asynchronously example:</p>
 <div class="fragment"><div class="line"><span class="comment">// Create an async delegate targeting lambda on thread1</span></div>
 <div class="line"><span class="keyword">auto</span> lambda = [](<span class="keywordtype">int</span> i) { std::cout &lt;&lt; i; };</div>
 <div class="line"><span class="keyword">auto</span> lambdaDelegate = <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(std::function(lambda), thread1);</div>
@@ -120,8 +164,6 @@ Delegates in C++</h1>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Invoke all callable targets asynchronously </span></div>
 <div class="line">delegates(123);</div>
-<div class="ttc" id="anamespacedmq_html_a65e308cc5f3e37d2f7f89c72b9744ae2"><div class="ttname"><a href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:673</div></div>
-<div class="ttc" id="astructdmq_1_1_multicast_delegate_safe_html"><div class="ttname"><a href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a></div><div class="ttdef"><b>Definition</b> MulticastDelegateSafe.h:14</div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md1"></a>
 Overview</h1>
 <p>In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, callbacks, asynchronous APIs, or when you need to pass functions as arguments.</p>

@@ -202,7 +202,7 @@ $(function(){initNavTree('_win32_udp_transport_8h_source.html',''); initResizabl
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        ss.write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;seqNum), <span class="keyword">sizeof</span>(seqNum));</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="comment">// Insert delegate arguments from the stream (os)</span></div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        ss &lt;&lt; os.rdbuf();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        ss &lt;&lt; os.str();</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordtype">size_t</span> length = ss.str().length();</div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>

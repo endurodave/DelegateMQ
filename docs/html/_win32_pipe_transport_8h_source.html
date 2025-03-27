@@ -195,7 +195,7 @@ $(function(){initNavTree('_win32_pipe_transport_8h_source.html',''); initResizab
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        ss.write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;seqNum), <span class="keyword">sizeof</span>(seqNum));</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="comment">// Insert delegate arguments from the stream (os)</span></div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        ss &lt;&lt; os.rdbuf();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        ss &lt;&lt; os.str();</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordtype">size_t</span> length = ss.str().length();</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordtype">char</span>* sendBuf = (<span class="keywordtype">char</span>*)malloc(length);</div>

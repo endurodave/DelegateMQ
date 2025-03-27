@@ -105,7 +105,7 @@ $(function(){initNavTree('class_transport_monitor.html',''); initResizable(true)
 </div><!--header-->
 <div class="contents">
 
-<p>Monitors remote delegate send message timeouts. Class is thread safe. Call <a class="el" href="#ac4dd814fb686a053c4505829c8c21b40" title="Call periodically to process message timeouts.">TransportMonitor::Process()</a> periodically for timeout handling. Depending on the transport implementation, the message might still be delivered event if the monitor SendStatusCb callback is invoked. A timeout expiring just means that an ack was not receied within the time specified.  
+<p>Monitors remote delegate send message timeouts. Class is thread safe. Call <a class="el" href="#ac4dd814fb686a053c4505829c8c21b40" title="Call periodically to process message timeouts.">TransportMonitor::Process()</a> periodically for timeout handling. Depending on the transport implementation, the message might still be delivered event if the monitor SendStatusCb callback is invoked. A timeout expiring just means that an ack was not received within the time specified.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_transport_monitor_8h_source.html">TransportMonitor.h</a>&gt;</code></p>
@@ -143,11 +143,11 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a4efa09474466ceb621855030862ce6ec" id="r_a4efa09474466ceb621855030862ce6ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a>&lt; void(uint16_t seqNum, <a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> id, <a class="el" href="#ac815afe1a228c0cd92dc294278aea86e">Status</a> status)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4efa09474466ceb621855030862ce6ec">SendStatusCb</a></td></tr>
-<tr class="separator:a4efa09474466ceb621855030862ce6ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf8c23c39cbb7240f75043a27cf3aa65" id="r_acf8c23c39cbb7240f75043a27cf3aa65"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a>&lt; void(<a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> id, uint16_t seqNum, <a class="el" href="#ac815afe1a228c0cd92dc294278aea86e">Status</a> status)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf8c23c39cbb7240f75043a27cf3aa65">SendStatusCb</a></td></tr>
+<tr class="separator:acf8c23c39cbb7240f75043a27cf3aa65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Monitors remote delegate send message timeouts. Class is thread safe. Call <a class="el" href="#ac4dd814fb686a053c4505829c8c21b40" title="Call periodically to process message timeouts.">TransportMonitor::Process()</a> periodically for timeout handling. Depending on the transport implementation, the message might still be delivered event if the monitor SendStatusCb callback is invoked. A timeout expiring just means that an ack was not receied within the time specified. </p>
+<div class="textblock"><p>Monitors remote delegate send message timeouts. Class is thread safe. Call <a class="el" href="#ac4dd814fb686a053c4505829c8c21b40" title="Call periodically to process message timeouts.">TransportMonitor::Process()</a> periodically for timeout handling. Depending on the transport implementation, the message might still be delivered event if the monitor SendStatusCb callback is invoked. A timeout expiring just means that an ack was not received within the time specified. </p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="ac815afe1a228c0cd92dc294278aea86e" name="ac815afe1a228c0cd92dc294278aea86e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac815afe1a228c0cd92dc294278aea86e">&#9670;&#160;</a></span>Status</h2>
@@ -315,14 +315,14 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a4efa09474466ceb621855030862ce6ec" name="a4efa09474466ceb621855030862ce6ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4efa09474466ceb621855030862ce6ec">&#9670;&#160;</a></span>SendStatusCb</h2>
+<a id="acf8c23c39cbb7240f75043a27cf3aa65" name="acf8c23c39cbb7240f75043a27cf3aa65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf8c23c39cbb7240f75043a27cf3aa65">&#9670;&#160;</a></span>SendStatusCb</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a>&lt;void(uint16_t seqNum, <a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> id, <a class="el" href="#ac815afe1a228c0cd92dc294278aea86e">Status</a> status)&gt; TransportMonitor::SendStatusCb</td>
+          <td class="memname"><a class="el" href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a>&lt;void(<a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> id, uint16_t seqNum, <a class="el" href="#ac815afe1a228c0cd92dc294278aea86e">Status</a> status)&gt; TransportMonitor::SendStatusCb</td>
         </tr>
       </table>
 </div><div class="memdoc">

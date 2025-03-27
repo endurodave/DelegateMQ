@@ -149,75 +149,76 @@ $(function(){initNavTree('rapidjson_2_serializer_8h_source.html',''); initResiza
 <div class="foldopen" id="foldopen00050" data-start="{" data-end="}">
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">   50</a></span>    <span class="keyword">virtual</span> std::ostream&amp; <a class="code hl_function" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Write</a>(std::ostream&amp; os, Args... args)<span class="keyword"> override </span>{</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            rapidjson::StringBuffer sb;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            rapidjson::PrettyWriter&lt;rapidjson::StringBuffer&gt; writer(sb);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <a class="code hl_function" href="msgpack_2_serializer_8h.html#af791c2d5fa37795a60613fe50101b5ca">make_serialized</a>(writer, os, args...);</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keywordflow">if</span> (writer.IsComplete())</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                os &lt;&lt; sb.GetString();</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                os.setstate(std::ios::failbit);</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        }</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Serialize error: &quot;</span> &lt;&lt; e.what() &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordflow">throw</span>;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">return</span> os;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            os.seekp(0, std::ios::beg);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            rapidjson::StringBuffer sb;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            rapidjson::PrettyWriter&lt;rapidjson::StringBuffer&gt; writer(sb);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <a class="code hl_function" href="msgpack_2_serializer_8h.html#af791c2d5fa37795a60613fe50101b5ca">make_serialized</a>(writer, os, args...);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keywordflow">if</span> (writer.IsComplete())</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                os &lt;&lt; sb.GetString();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                os.setstate(std::ios::failbit);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Serialize error: &quot;</span> &lt;&lt; e.what() &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">return</span> os;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
 </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment">// Read arguments from a stream</span></div>
-<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">   69</a></span>    <span class="keyword">virtual</span> std::istream&amp; <a class="code hl_function" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Read</a>(std::istream&amp; is, Args&amp;... args)<span class="keyword"> override </span>{</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="comment">// Get stream length </span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            std::streampos current_pos = is.tellg();</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            is.seekg(0, std::ios::end);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordtype">int</span> length = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(is.tellg());</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            is.seekg(current_pos, std::ios::beg);</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="comment">// Allocate storage buffer</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordtype">char</span>* buf = (<span class="keywordtype">char</span>*)malloc(length + 1);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">if</span> (!buf)</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                <span class="keywordflow">return</span> is;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="comment">// Copy into buffer </span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            is.rdbuf()-&gt;sgetn(buf, length);</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            buf[length] = 0;   <span class="comment">// null terminate incoming data</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="comment">//std::cout &lt;&lt; buf;</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="comment">// Parse JSON</span></div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            rapidjson::Document doc;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            doc.Parse(buf);</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <span class="comment">// Check for parsing errors</span></div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordflow">if</span> (doc.HasParseError())</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            {</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                <span class="comment">// Let caller know read failed</span></div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                is.setstate(std::ios::failbit);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;Parse error: &quot;</span> &lt;&lt; doc.GetParseError() &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;Error offset: &quot;</span> &lt;&lt; doc.GetErrorOffset() &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                free(buf);</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                <span class="keywordflow">return</span> is;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            }</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <a class="code hl_function" href="msgpack_2_serializer_8h.html#a50697fa79105d830b15d8056f63ac1aa">make_unserialized</a>(doc, is, args...);</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            free(buf);</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">return</span> is;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        }</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Deserialize error: &quot;</span> &lt;&lt; e.what() &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="keywordflow">throw</span>;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        }</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">return</span> is;</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="comment">// Read arguments from a stream</span></div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">   70</a></span>    <span class="keyword">virtual</span> std::istream&amp; <a class="code hl_function" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Read</a>(std::istream&amp; is, Args&amp;... args)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="comment">// Get stream length </span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            std::streampos current_pos = is.tellg();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            is.seekg(0, std::ios::end);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordtype">int</span> length = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(is.tellg());</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            is.seekg(current_pos, std::ios::beg);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="comment">// Allocate storage buffer</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordtype">char</span>* buf = (<span class="keywordtype">char</span>*)malloc(length + 1);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">if</span> (!buf)</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                <span class="keywordflow">return</span> is;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="comment">// Copy into buffer </span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            is.rdbuf()-&gt;sgetn(buf, length);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            buf[length] = 0;   <span class="comment">// null terminate incoming data</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="comment">//std::cout &lt;&lt; buf;</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="comment">// Parse JSON</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            rapidjson::Document doc;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            doc.Parse(buf);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="comment">// Check for parsing errors</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordflow">if</span> (doc.HasParseError())</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                <span class="comment">// Let caller know read failed</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                is.setstate(std::ios::failbit);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;Parse error: &quot;</span> &lt;&lt; doc.GetParseError() &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;Error offset: &quot;</span> &lt;&lt; doc.GetErrorOffset() &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                free(buf);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="keywordflow">return</span> is;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            <a class="code hl_function" href="msgpack_2_serializer_8h.html#a50697fa79105d830b15d8056f63ac1aa">make_unserialized</a>(doc, is, args...);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            free(buf);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            <span class="keywordflow">return</span> is;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Deserialize error: &quot;</span> &lt;&lt; e.what() &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">return</span> is;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }</div>
 </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>};</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>};</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_i_serializer_8h_html"><div class="ttname"><a href="_i_serializer_8h.html">ISerializer.h</a></div><div class="ttdoc">Delegate serializer interface class.</div></div>
-<div class="ttc" id="aclass_serializer_3_01_ret_type_07_args_8_8_8_08_4_html_a00e80821a799ccab63c59accfdbecd49"><div class="ttname"><a href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Serializer&lt; RetType(Args...)&gt;::Read</a></div><div class="ttdeci">virtual std::istream &amp; Read(std::istream &amp;is, Args &amp;... args) override</div><div class="ttdef"><b>Definition</b> rapidjson/Serializer.h:69</div></div>
+<div class="ttc" id="aclass_serializer_3_01_ret_type_07_args_8_8_8_08_4_html_a00e80821a799ccab63c59accfdbecd49"><div class="ttname"><a href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Serializer&lt; RetType(Args...)&gt;::Read</a></div><div class="ttdeci">virtual std::istream &amp; Read(std::istream &amp;is, Args &amp;... args) override</div><div class="ttdef"><b>Definition</b> rapidjson/Serializer.h:70</div></div>
 <div class="ttc" id="aclass_serializer_3_01_ret_type_07_args_8_8_8_08_4_html_afcdb8d3800db2da7f659c47dc8a1986d"><div class="ttname"><a href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Serializer&lt; RetType(Args...)&gt;::Write</a></div><div class="ttdeci">virtual std::ostream &amp; Write(std::ostream &amp;os, Args... args) override</div><div class="ttdef"><b>Definition</b> rapidjson/Serializer.h:50</div></div>
 <div class="ttc" id="amsgpack_2_serializer_8h_html_a50697fa79105d830b15d8056f63ac1aa"><div class="ttname"><a href="msgpack_2_serializer_8h.html#a50697fa79105d830b15d8056f63ac1aa">make_unserialized</a></div><div class="ttdeci">void make_unserialized(msgpack::unpacker &amp;unpacker, Arg1 &amp;arg1, Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:33</div></div>
 <div class="ttc" id="amsgpack_2_serializer_8h_html_af791c2d5fa37795a60613fe50101b5ca"><div class="ttname"><a href="msgpack_2_serializer_8h.html#af791c2d5fa37795a60613fe50101b5ca">make_serialized</a></div><div class="ttdeci">void make_serialized(msgpack::sbuffer &amp;buffer, Arg1 &amp;arg1, Args... args)</div><div class="ttdef"><b>Definition</b> msgpack/Serializer.h:22</div></div>
