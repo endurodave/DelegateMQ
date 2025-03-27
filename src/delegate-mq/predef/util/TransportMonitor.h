@@ -11,7 +11,7 @@
 /// Call TransportMonitor::Process() periodically for timeout handling.
 /// Depending on the transport implementation, the message might still be delivered
 /// event if the monitor SendStatusCb callback is invoked. A timeout expiring just means 
-/// that an ack was not receied within the time specified.
+/// that an ack was not received within the time specified.
 class TransportMonitor : public ITransportMonitor
 {
 public:
@@ -21,7 +21,8 @@ public:
         TIMEOUT   // Message timeout
     };
 
-    // Delegate callback to monitor message send status
+    // Delegate callback to monitor message send status. Callback invoked by 
+    // either the Remove() caller's thread or the Process() caller's thread.
     dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId id, uint16_t seqNum, Status status)> SendStatusCb;
 
     TransportMonitor(const std::chrono::milliseconds& timeout) : TRANSPORT_TIMEOUT(timeout) {}
@@ -53,7 +54,7 @@ public:
         {
             TimeoutData d = m_pending[seqNum];
             m_pending.erase(seqNum);
-            SendStatusCb(seqNum, d.remoteId, Status::SUCCESS);
+            SendStatusCb(d.remoteId, seqNum, Status::SUCCESS);
         }
     }
 
@@ -71,7 +72,7 @@ public:
             // Has timeout expired?
             if (elapsed > TRANSPORT_TIMEOUT)
             {
-                SendStatusCb((*it).first, (*it).second.remoteId, Status::TIMEOUT);
+                SendStatusCb((*it).second.remoteId, (*it).first, Status::TIMEOUT);
                 it = m_pending.erase(it);
             }
             else 

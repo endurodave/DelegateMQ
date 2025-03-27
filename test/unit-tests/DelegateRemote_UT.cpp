@@ -195,6 +195,7 @@ static void DelegateFreeRemoteTests()
 
     Del delegate1(FreeFuncInt1, REMOTE_ID);
     delegate1(TEST_INT);
+    ASSERT_TRUE(delegate1.GetError() == DelegateError::SUCCESS);
     std::invoke(delegate1, TEST_INT);
 
     auto delegate2 = delegate1;
@@ -380,6 +381,7 @@ static void DelegateFreeRemoteTests()
         if (error != dmq::DelegateError::SUCCESS)
             ASSERT_TRUE(false);
     };
+    std::function<void(DelegateRemoteId, DelegateError, int)> errorHandlerNoAssert = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {};
     Dispatcher dispatcher;
     xostringstream os(ios::in | ios::out | ios::binary);
 
@@ -395,6 +397,13 @@ static void DelegateFreeRemoteTests()
         std::istream& recv_stream = dispatcher.GetDispached();
         recv_stream.seekg(0);
         delegateRemote.Invoke(recv_stream);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::SUCCESS);
+
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandlerNoAssert));
+        recv_stream.setstate(std::ios::failbit);
+        delegateRemote.Invoke(recv_stream);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::ERR_STREAM_NOT_GOOD);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::SUCCESS);
     }
 
     {
@@ -484,6 +493,7 @@ static void DelegateMemberRemoteTests()
 
     Del delegate1(&testClass1, &TestClass1::MemberFuncInt1, REMOTE_ID);
     delegate1(TEST_INT);
+    ASSERT_TRUE(delegate1.GetError() == DelegateError::SUCCESS);
     std::invoke(delegate1, TEST_INT);
 
     auto delegate2 = delegate1;
@@ -632,6 +642,7 @@ static void DelegateMemberRemoteTests()
         if (error != dmq::DelegateError::SUCCESS)
             ASSERT_TRUE(false);
     };
+    std::function<void(DelegateRemoteId, DelegateError, int)> errorHandlerNoAssert = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {};
     Dispatcher dispatcher;
     RemoteClass remoteClass;
     xostringstream os(ios::in | ios::out | ios::binary);
@@ -648,6 +659,13 @@ static void DelegateMemberRemoteTests()
         std::istream& recv_stream = dispatcher.GetDispached();
         recv_stream.seekg(0);
         delegateRemote.Invoke(recv_stream);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::SUCCESS);
+
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandlerNoAssert));
+        recv_stream.setstate(std::ios::failbit);
+        delegateRemote.Invoke(recv_stream);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::ERR_STREAM_NOT_GOOD);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::SUCCESS);
     }
 
     {
@@ -718,6 +736,7 @@ static void DelegateMemberSpRemoteTests()
     auto testClass1 = std::make_shared<TestClass1>();
 
     Del delegate1(testClass1, &TestClass1::MemberFuncInt1, REMOTE_ID);
+    ASSERT_TRUE(delegate1.GetError() == DelegateError::SUCCESS);
     delegate1(TEST_INT);
     std::invoke(delegate1, TEST_INT);
 
@@ -814,6 +833,7 @@ static void DelegateMemberSpRemoteTests()
         if (error != dmq::DelegateError::SUCCESS)
             ASSERT_TRUE(false);
     };
+    std::function<void(DelegateRemoteId, DelegateError, int)> errorHandlerNoAssert = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {};
     static std::function<void(int)> LambdaFuncInt = +[](int i) {
         ASSERT_TRUE(i == TEST_INT);
     };
@@ -848,6 +868,13 @@ static void DelegateMemberSpRemoteTests()
         std::istream& recv_stream = dispatcher.GetDispached();
         recv_stream.seekg(0);
         delegateRemote.Invoke(recv_stream);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::SUCCESS);
+
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandlerNoAssert));
+        recv_stream.setstate(std::ios::failbit);
+        delegateRemote.Invoke(recv_stream);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::ERR_STREAM_NOT_GOOD);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::SUCCESS);
     }
 
     {
@@ -917,6 +944,7 @@ static void DelegateFunctionRemoteTests()
 
     Del delegate1(LambdaNoCapture, REMOTE_ID);
     delegate1(TEST_INT);
+    ASSERT_TRUE(delegate1.GetError() == DelegateError::SUCCESS);
     std::invoke(delegate1, TEST_INT);
 
     auto delegate2 = delegate1;
@@ -1017,6 +1045,7 @@ static void DelegateFunctionRemoteTests()
         if (error != dmq::DelegateError::SUCCESS)
             ASSERT_TRUE(false);
     };
+    std::function<void(DelegateRemoteId, DelegateError, int)> errorHandlerNoAssert = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {};
     Dispatcher dispatcher;
     xostringstream os(ios::in | ios::out | ios::binary);
     auto remoteClass = std::make_shared<RemoteClass>();
@@ -1033,6 +1062,13 @@ static void DelegateFunctionRemoteTests()
         std::istream& recv_stream = dispatcher.GetDispached();
         recv_stream.seekg(0);
         delegateRemote.Invoke(recv_stream);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::SUCCESS);
+
+        delegateRemote.SetErrorHandler(MakeDelegate(errorHandlerNoAssert));
+        recv_stream.setstate(std::ios::failbit);
+        delegateRemote.Invoke(recv_stream);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::ERR_STREAM_NOT_GOOD);
+        ASSERT_TRUE(delegateRemote.GetError() == DelegateError::SUCCESS);
     }
 
     {

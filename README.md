@@ -52,7 +52,7 @@ private:
 };
 ```
 
-Multiple callables stored and invoked example: 
+Multiple callables targets stored and invoked asynchronously example: 
 
 ```cpp
 // Create an async delegate targeting lambda on thread1

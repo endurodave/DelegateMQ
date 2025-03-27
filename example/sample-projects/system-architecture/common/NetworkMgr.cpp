@@ -7,7 +7,8 @@
 using namespace dmq;
 using namespace std;
 
-static const std::chrono::milliseconds TIMEOUT(2000);
+static const std::chrono::milliseconds SEND_TIMEOUT(100);
+static const std::chrono::milliseconds RECV_TIMEOUT(2000);
 
 MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::ErrorCb;
 MulticastDelegateSafe<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)> NetworkMgr::SendStatusCb;
@@ -20,8 +21,7 @@ typedef std::function<void(dmq::DelegateRemoteId id, uint16_t seqNum, TransportM
 
 NetworkMgr::NetworkMgr() :
     m_thread("NetworkMgr"),
-    m_timeoutThread("NetworkMgrTimeout"),
-    m_transportMonitor(TIMEOUT),
+    m_transportMonitor(RECV_TIMEOUT),
     m_alarmMsgDel(ids::ALARM_MSG_ID, &m_dispatcher),
     m_commandMsgDel(ids::COMMAND_MSG_ID, &m_dispatcher),
     m_dataMsgDel(ids::DATA_MSG_ID, &m_dispatcher),
@@ -29,13 +29,11 @@ NetworkMgr::NetworkMgr() :
 {
     // Create the threads
     m_thread.CreateThread();
-    m_timeoutThread.CreateThread();
 }
 
 NetworkMgr::~NetworkMgr()
 {
     m_thread.ExitThread();
-    m_timeoutThread.ExitThread();
 }
 
 int NetworkMgr::Create()
@@ -93,7 +91,7 @@ void NetworkMgr::Start()
     m_recvTimer.Start(std::chrono::milliseconds(20));
 
     // Start a timer to process message timeouts
-    m_timeoutTimer.Expired = MakeDelegate(this, &NetworkMgr::Timeout, m_timeoutThread);
+    m_timeoutTimer.Expired = MakeDelegate(this, &NetworkMgr::Timeout, m_thread);
     m_timeoutTimer.Start(std::chrono::milliseconds(100));
 }
 
@@ -139,7 +137,8 @@ void NetworkMgr::SendDataMsg(DataMsg& data)
 }
 
 // Async send an actuator command and block the caller waiting until the remote 
-// client responds or timeout. The execution sequence numbers shown below.
+// client successfully receives the message or timeout. The execution order sequence 
+// numbers shown below.
 bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
 {
     // If caller is not executing on m_thread
@@ -147,16 +146,17 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
     {
         // *** Caller's thread executes this control branch ***
 
-        bool success = false;
+        std::atomic<bool> success(false);
         std::mutex mtx;
         std::condition_variable cv;
 
-        // 5. Callback handler for transport monitor send status (success or failure)
+        // 6. Callback lambda handler for transport monitor send status (success or failure).
+        //    Callback context is m_thread.
         SendStatusCallback statusCb = [&success, &cv](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
             if (id == ids::ACTUATOR_MSG_ID) {
                 // Client received ActuatorMsg?
                 if (status == TransportMonitor::Status::SUCCESS)
-                    success = true;
+                    success.store(true, std::memory_order_relaxed);
                 cv.notify_one();
             }
         };
@@ -164,31 +164,45 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         // 1. Register for send status callback (success or failure)
         m_transportMonitor.SendStatusCb += dmq::MakeDelegate(statusCb);
 
-        // 2. Reinvoke SendActuatorMsgWait() on m_thread context
-        MakeDelegate(this, &NetworkMgr::SendActuatorMsgWait, m_thread)(msg);
+        // 2. Async reinvoke SendActuatorMsgWait() on m_thread context and wait for send to complete
+        auto del = MakeDelegate(this, &NetworkMgr::SendActuatorMsgWait, m_thread, SEND_TIMEOUT);
+        auto retVal = del.AsyncInvoke(msg);
 
-        // 3. Wait for statusCb callback to be invoked on m_thread
-        std::unique_lock<std::mutex> lock(mtx);
-        if (cv.wait_for(lock, TIMEOUT) == std::cv_status::timeout)
+        // 4. Check that the remote delegate send succeeded
+        if (retVal.has_value() &&      // If async function call succeeded AND
+            retVal.value() == true)    // async function call returned true
         {
-            // A timeout should never happen. The transport monitor is setup for a max 
-            // TIMEOUT, so success or failure should never cause cv_status::timeout
-            std::cout << "Timeout SendActuatorMsgWait()" << std::endl;
+            // 5. Wait for statusCb callback to be invoked. Callback invoked when the 
+            //    receiver ack's the message or timeout.
+            std::unique_lock<std::mutex> lock(mtx);
+            if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout) 
+            {
+                // Timeout waiting for remote delegate message ack
+                std::cout << "Timeout SendActuatorMsgWait()" << std::endl;
+            }
         }
 
-        // 6. Unregister from status callback
+        // 7. Unregister from status callback
         m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
 
-        // 7. Return the blocking async function invoke status to caller
-        return success;
+        // 8. Return the blocking async function invoke status to caller
+        return success.load(std::memory_order_relaxed);
     }
     else
     {
         // *** NetworkMgr::m_thread executes this control branch ***
 
-        // 4. Send actuator command to remote on m_thread. 
-        m_actuatorMsgDel(msg);
-        return true;
+        // 3. Send actuator command to remote on m_thread
+        m_actuatorMsgDel(msg);        
+
+        // Check if send succeeded
+        if (m_actuatorMsgDel.GetError() == DelegateError::SUCCESS)
+        {
+            return true;
+        }
+
+        std::cout << "Send failed!" << std::endl;
+        return false;
     }
 }
 

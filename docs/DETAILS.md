@@ -63,6 +63,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [No Locks](#no-locks)
     - [Reinvoke](#reinvoke)
     - [Blocking Reinvoke](#blocking-reinvoke)
+    - [Blocking Remote Send](#blocking-remote-send)
   - [Timer Example](#timer-example)
   - [`std::async` Thread Targeting Example](#stdasync-thread-targeting-example)
   - [Remote Delegate Example](#remote-delegate-example)
@@ -1515,9 +1516,7 @@ SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type syste
     if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
     {
         // Create an asynchronous delegate and re-invoke the function call on workerThread2
-        auto delegate =
-            MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncWaitAPI, 
-                         workerThread2, WAIT_INFINITE);
+        auto delegate = MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncWaitAPI, workerThread2, WAIT_INFINITE);
         return delegate(systemMode);
     }
 
@@ -1533,6 +1532,82 @@ SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type syste
     SystemModeChangedDelegate(callbackData);
 
     return callbackData.PreviousSystemMode;
+}
+```
+
+### Blocking Remote Send
+
+`SendActuatorMsgWait()` is an asynchronous API using delegates to send `ActuatorMsg` to a remote receiver. The caller is blocked until the receiver receives the message or timeout. See [system-architecture](#system-architecture) project for complete example.
+
+```cpp
+// Async send an actuator command and block the caller waiting until the remote 
+// client successfully receives the message or timeout. The execution order sequence 
+// numbers shown below.
+bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
+{
+    // If caller is not executing on m_thread
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    {
+        // *** Caller's thread executes this control branch ***
+
+        std::atomic<bool> success(false);
+        std::mutex mtx;
+        std::condition_variable cv;
+
+        // 6. Callback lambda handler for transport monitor send status (success or failure).
+        //    Callback context is m_thread or m_threadTimeout.
+        SendStatusCallback statusCb = [&success, &cv](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
+            if (id == ids::ACTUATOR_MSG_ID) {
+                // Client received ActuatorMsg?
+                if (status == TransportMonitor::Status::SUCCESS)
+                    success.store(true, std::memory_order_relaxed);
+                cv.notify_one();
+            }
+        };
+
+        // 1. Register for send status callback (success or failure)
+        m_transportMonitor.SendStatusCb += dmq::MakeDelegate(statusCb);
+
+        // 2. Async reinvoke SendActuatorMsgWait() on m_thread context and wait for send to complete
+        auto del = MakeDelegate(this, &NetworkMgr::SendActuatorMsgWait, m_thread, SEND_TIMEOUT);
+        auto retVal = del.AsyncInvoke(msg);
+
+        // 4. Check that the remote delegate send succeeded
+        if (retVal.has_value() &&      // If async function call succeeded AND
+            retVal.value() == true)    // async function call returned true
+        {
+            // 5. Wait for statusCb callback to be invoked. Callback invoked when the 
+            //    receiver ack's the message or timeout.
+            std::unique_lock<std::mutex> lock(mtx);
+            if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout) 
+            {
+                // Timeout waiting for remote delegate message ack
+                std::cout << "Timeout SendActuatorMsgWait()" << std::endl;
+            }
+        }
+
+        // 7. Unregister from status callback
+        m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
+
+        // 8. Return the blocking async function invoke status to caller
+        return success.load(std::memory_order_relaxed);
+    }
+    else
+    {
+        // *** NetworkMgr::m_thread executes this control branch ***
+
+        // 3. Send actuator command to remote on m_thread
+        m_actuatorMsgDel(msg);        
+
+        // Check if send succeeded
+        if (m_actuatorMsgDel.GetError() == DelegateError::SUCCESS)
+        {
+            return true;
+        }
+
+        std::cout << "Send failed!" << std::endl;
+        return false;
+    }
 }
 ```
 

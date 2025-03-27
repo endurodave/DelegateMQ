@@ -353,6 +353,7 @@ public:
 
         if (!is.good()) {
             RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
+            return false;
         }
 
         // Invoke the delegate function synchronously
@@ -521,6 +522,7 @@ private:
     /// @param[in] auxCode Optional auxiliary code.
     /// @throws std::runtime_error If no error handler is registered.
     void RaiseError(DelegateRemoteId id, DelegateError error, DelegateErrorAux auxCode = 0) {
+        m_error = error;
         if (m_errorHandler) {
             m_errorHandler(id, error, auxCode);
         } else {
@@ -862,6 +864,7 @@ public:
 
         if (!is.good()) {
             RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
+            return false;
         }
 
         // Invoke the delegate function synchronously
@@ -1030,6 +1033,7 @@ private:
     /// @param[in] auxCode Optional auxiliary code.
     /// @throws std::runtime_error If no error handler is registered.
     void RaiseError(DelegateRemoteId id, DelegateError error, DelegateErrorAux auxCode = 0) {
+        m_error = error;
         if (m_errorHandler) {
             m_errorHandler(id, error, auxCode);
         } else {
@@ -1073,8 +1077,7 @@ struct DelegateFunctionRemote; // Not defined
 
 /// @brief `DelegateFunctionRemote<>` class asynchronously invokes a `std::function` target function.
 /// @details Caution when binding to a `std::function` using this class. `std::function` cannot be 
-/// compared for equality directly in a meaningful way using `operator==`. Therefore, the delegate
-/// library used 
+/// compared for equality directly in a meaningful way using `operator==`.  
 /// 
 /// See `DelegateFunction<>` base class for important usage limitations.
 /// 
@@ -1312,6 +1315,7 @@ public:
 
         if (!is.good()) {
             RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
+            return false;
         }
 
         // Invoke the delegate function synchronously
@@ -1480,6 +1484,7 @@ private:
     /// @param[in] auxCode Optional auxiliary code.
     /// @throws std::runtime_error If no error handler is registered.
     void RaiseError(DelegateRemoteId id, DelegateError error, DelegateErrorAux auxCode = 0) {
+        m_error = error;
         if (m_errorHandler) {
             m_errorHandler(id, error, auxCode);
         } else {

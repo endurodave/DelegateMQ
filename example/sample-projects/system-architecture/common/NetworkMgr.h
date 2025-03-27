@@ -55,10 +55,10 @@ public:
     // Create the instance. Called once at startup.
     int Create();
 
-    // Start lisiting for messages 
+    // Start listening for messages 
     void Start();
 
-    // Stop lisining for messages
+    // Stop listening for messages
     void Stop();
 
     // Send alarm message to the remote
@@ -93,9 +93,6 @@ private:
     // NetworkApp thread of control
     Thread m_thread;
 
-    // Message timeout processing thread
-    Thread m_timeoutThread;
-
     // Timer for polling
     Timer m_recvTimer;
 
@@ -105,7 +102,7 @@ private:
     // Delegate dispatcher 
     Dispatcher m_dispatcher;
 
-    // Transport using ZeroMQ library. Only call transport from NetworkMsg thread.
+    // Transport using ZeroMQ library. Only call transport from NetworkMgr thread.
     ZeroMqTransport m_transport;
 
     // Monitor message timeouts
