@@ -306,6 +306,8 @@ public:
     /// @return The bound function return value, if any. Use `IsSuccess()` to determine if 
     /// the return value is valid before use.
     virtual RetType operator()(Args... args) override {
+        m_retVal.reset();
+        m_success = false;
         if (this->Empty())
             return RetType();
 
@@ -421,7 +423,7 @@ public:
     bool IsSuccess() noexcept { return m_success; }
 
     /// Get the asynchronous function return value
-    /// @return The destination thraed target function return value
+    /// @return The destination thread target function return value
     RetType GetRetVal() noexcept {
         try {
             return std::any_cast<RetType>(m_retVal);
@@ -709,6 +711,8 @@ public:
     /// @return The bound function return value, if any. Use `IsSuccess()` to determine if 
     /// the return value is valid before use.
     virtual RetType operator()(Args... args) override {
+        m_retVal.reset();
+        m_success = false;
         if (this->Empty())
             return RetType();
 
@@ -824,7 +828,7 @@ public:
     bool IsSuccess() noexcept { return m_success; }
 
     /// Get the asynchronous function return value
-    /// @return The destination thraed target function return value
+    /// @return The destination thread target function return value
     RetType GetRetVal() noexcept {
         try {
             return std::any_cast<RetType>(m_retVal);
@@ -1031,6 +1035,8 @@ public:
     /// @return The bound function return value, if any. Use `IsSuccess()` to determine if 
     /// the return value is valid before use.
     virtual RetType operator()(Args... args) override {
+        m_retVal.reset();
+        m_success = false;
         if (this->Empty())
             return RetType();
 
@@ -1146,7 +1152,7 @@ public:
     bool IsSuccess() noexcept { return m_success; }
 
     /// Get the asynchronous function return value
-    /// @return The destination thraed target function return value
+    /// @return The destination thread target function return value
     RetType GetRetVal() noexcept {
         try {
             return std::any_cast<RetType>(m_retVal);

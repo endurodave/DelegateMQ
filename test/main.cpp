@@ -117,6 +117,11 @@ namespace Main
         cout << "FreeFuncPtrPtrTestStruct " << (*value)->x << endl;
     }
 
+    void FreeFuncDelegateArg(Delegate<void(int)>& delegate)
+    {
+        delegate(123);
+    }
+
     class TestClass
     {
     public:
@@ -469,6 +474,14 @@ int main(void)
     std::shared_ptr<Base> base = std::make_shared<Derived>();
     auto baseDelegate = MakeDelegate(base, &Base::display, workerThread1);
     baseDelegate("Invoke Derviced::display()!");
+
+    // Pass delegate argument examples
+    auto delegateFreeSync = MakeDelegate(&FreeFuncInt);
+    FreeFuncDelegateArg(delegateFreeSync);
+    auto delegateFreeAsync = MakeDelegate(&FreeFuncInt, workerThread1);
+    FreeFuncDelegateArg(delegateFreeAsync);
+    auto delegateFreeAsyncWait = MakeDelegate(&FreeFuncInt, workerThread1, WAIT_INFINITE);
+    FreeFuncDelegateArg(delegateFreeAsyncWait);
 
     // Begin lambda examples. Lambda captures not allowed if delegates used to invoke.
     DelegateFunction<int(int)> delFunc([](int x) -> int { return x + 5; });

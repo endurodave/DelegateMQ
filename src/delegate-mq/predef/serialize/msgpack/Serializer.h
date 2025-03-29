@@ -31,6 +31,7 @@ void make_serialized(msgpack::sbuffer& buffer, Arg1& arg1, Args... args) {
 // make_unserialized unserializes each remote function argument
 template<typename Arg1, typename... Args>
 void make_unserialized(msgpack::unpacker& unpacker, Arg1& arg1, Args&&... args) {
+    static_assert(!std::is_pointer<Arg1>::value, "Arg1 cannot be a pointer.");
     static_assert(!is_const_type<Arg1>::value, "Arg1 cannot be const.");
     msgpack::object_handle oh;
     if (!unpacker.next(oh)) 

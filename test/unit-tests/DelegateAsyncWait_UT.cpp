@@ -62,6 +62,11 @@ static void DelegateFreeAsyncWaitTests()
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 
+    delegate1(TEST_INT);
+    ASSERT_TRUE(!delegate1.IsSuccess());
+    auto rv = delegate1.AsyncInvoke(TEST_INT);
+    ASSERT_TRUE(!rv.has_value());
+
     Del delegate6(FreeFuncInt1, workerThread);
     delegate6 = std::move(delegate2);
     ASSERT_TRUE(!delegate6.Empty());
@@ -249,6 +254,11 @@ static void DelegateMemberAsyncWaitTests()
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 
+    delegate1(TEST_INT);
+    ASSERT_TRUE(!delegate1.IsSuccess());
+    auto rv = delegate1.AsyncInvoke(TEST_INT);
+    ASSERT_TRUE(!rv.has_value());
+
     Del delegate6(&testClass1, &TestClass1::MemberFuncInt1, workerThread);
     delegate6 = std::move(delegate2);
     ASSERT_TRUE(!delegate6.Empty());
@@ -425,6 +435,11 @@ static void DelegateMemberSpAsyncWaitTests()
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 
+    delegate1(TEST_INT);
+    ASSERT_TRUE(!delegate1.IsSuccess());
+    auto rv = delegate1.AsyncInvoke(TEST_INT);
+    ASSERT_TRUE(!rv.has_value());
+
     Del delegate6(testClass1, &TestClass1::MemberFuncInt1, workerThread);
     delegate6 = std::move(delegate2);
     ASSERT_TRUE(!delegate6.Empty());
@@ -552,6 +567,11 @@ static void DelegateFunctionAsyncWaitTests()
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
+
+    delegate1(TEST_INT);
+    ASSERT_TRUE(!delegate1.IsSuccess());
+    auto rv = delegate1.AsyncInvoke(TEST_INT);
+    ASSERT_TRUE(!rv.has_value());
 
     DelegateFunctionAsyncWait<void(int)> delegate6(LambdaNoCapture, workerThread);
     delegate6 = std::move(delegate2);

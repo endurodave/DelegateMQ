@@ -27,7 +27,7 @@ public:
             return MakeDelegate(this, &AlarmMgr::SetAlarm, m_thread)(msg, note);
 
         // Client handles alarm locally
-        SetAlarm(msg, note);
+        AlarmHandler(msg, note);
 #endif
     }
 

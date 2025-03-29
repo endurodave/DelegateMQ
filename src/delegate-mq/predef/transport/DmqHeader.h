@@ -62,7 +62,7 @@ public:
         static std::atomic<uint16_t> seqNum(0);
 
         // Atomically increment and return the previous value
-        return seqNum.fetch_add(1, std::memory_order_relaxed);
+        return seqNum.fetch_add(1);
     }
 
 private:

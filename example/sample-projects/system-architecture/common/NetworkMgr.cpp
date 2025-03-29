@@ -150,13 +150,13 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         std::mutex mtx;
         std::condition_variable cv;
 
-        // 6. Callback lambda handler for transport monitor send status (success or failure).
+        // 7. Callback lambda handler for transport monitor send status (success or failure).
         //    Callback context is m_thread.
         SendStatusCallback statusCb = [&success, &cv](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
             if (id == ids::ACTUATOR_MSG_ID) {
                 // Client received ActuatorMsg?
                 if (status == TransportMonitor::Status::SUCCESS)
-                    success.store(true, std::memory_order_relaxed);
+                    success.store(true);
                 cv.notify_one();
             }
         };
@@ -168,11 +168,11 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         auto del = MakeDelegate(this, &NetworkMgr::SendActuatorMsgWait, m_thread, SEND_TIMEOUT);
         auto retVal = del.AsyncInvoke(msg);
 
-        // 4. Check that the remote delegate send succeeded
+        // 5. Check that the remote delegate send succeeded
         if (retVal.has_value() &&      // If async function call succeeded AND
             retVal.value() == true)    // async function call returned true
         {
-            // 5. Wait for statusCb callback to be invoked. Callback invoked when the 
+            // 6. Wait for statusCb callback to be invoked. Callback invoked when the 
             //    receiver ack's the message or timeout.
             std::unique_lock<std::mutex> lock(mtx);
             if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout) 
@@ -182,11 +182,11 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
             }
         }
 
-        // 7. Unregister from status callback
+        // 8. Unregister from status callback
         m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
 
-        // 8. Return the blocking async function invoke status to caller
-        return success.load(std::memory_order_relaxed);
+        // 9. Return the blocking async function invoke status to caller
+        return success.load();
     }
     else
     {
@@ -195,7 +195,7 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         // 3. Send actuator command to remote on m_thread
         m_actuatorMsgDel(msg);        
 
-        // Check if send succeeded
+        // 4. Check if send succeeded
         if (m_actuatorMsgDel.GetError() == DelegateError::SUCCESS)
         {
             return true;

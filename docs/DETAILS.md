@@ -1537,7 +1537,7 @@ SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type syste
 
 ### Blocking Remote Send
 
-`SendActuatorMsgWait()` is an asynchronous API using delegates to send `ActuatorMsg` to a remote receiver. The caller is blocked until the receiver receives the message or timeout. See [system-architecture](#system-architecture) project for complete example.
+`SendActuatorMsgWait()` is an asynchronous API using delegates to send a `ActuatorMsg` object to a remote receiver. The caller is blocked until the receiver receives the message or timeout. See [system-architecture](#system-architecture) project for complete example.
 
 ```cpp
 // Async send an actuator command and block the caller waiting until the remote 
@@ -1555,7 +1555,7 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         std::condition_variable cv;
 
         // 6. Callback lambda handler for transport monitor send status (success or failure).
-        //    Callback context is m_thread or m_threadTimeout.
+        //    Callback context is m_thread.
         SendStatusCallback statusCb = [&success, &cv](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
             if (id == ids::ACTUATOR_MSG_ID) {
                 // Client received ActuatorMsg?
@@ -1639,7 +1639,7 @@ Users create an instance of the timer and register for the expiration. In this c
 
 ```cpp
 m_timer.Expired = MakeDelegate(&myClass, &MyClass::MyCallback, myThread);
-m_timer.Start(1000);
+m_timer.Start(std::chrono::milliseconds(1000));
 ```
 ## `std::async` Thread Targeting Example
 
