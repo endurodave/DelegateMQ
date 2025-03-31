@@ -174,7 +174,7 @@ $(function(){initNavTree('_dmq_header_8h_source.html',''); initResizable(true); 
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keyword">static</span> std::atomic&lt;uint16_t&gt; seqNum(0);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="comment">// Atomically increment and return the previous value</span></div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">return</span> seqNum.fetch_add(1, std::memory_order_relaxed);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">return</span> seqNum.fetch_add(1);</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
 </div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>

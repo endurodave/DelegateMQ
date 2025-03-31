@@ -103,45 +103,54 @@ $(function(){initNavTree('_delegate_opt_8h_source.html',''); initResizable(true)
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define _DELEGATE_OPT_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#ifdef DMQ_ASSERTS</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">    #include &lt;cassert&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="comment">// Use assert error handling. Change assert to a different error </span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="comment">// handler as required by the target application.</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">    #define BAD_ALLOC() assert(false &amp;&amp; &quot;Memory allocation failed!&quot;)</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">    #include &lt;new&gt;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="comment">// Use exception error handling</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#abe89b46e296c7421855410a08d6d31fe">   15</a></span><span class="preprocessor">    #define BAD_ALLOC() throw std::bad_alloc()</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">// If DMQ_ASSERTS defined above, consider defining DMQ_ALLOCATOR to prevent </span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">// std::list usage within delegate library from throwing a std::bad_alloc </span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">// exception. The std_allocator calls assert if out of memory. </span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">// See master CMakeLists.txt for info on enabling the fixed-block allocator.</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#ifdef DMQ_ALLOCATOR</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="comment">// Use stl_allocator fixed-block allocator for dynamic storage allocation</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">    #include &quot;<a class="code" href="xlist_8h.html">predef/allocator/xlist.h</a>&quot;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">    #include &quot;<a class="code" href="xsstream_8h.html">predef/allocator/xsstream.h</a>&quot;</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">    #include &quot;<a class="code" href="stl__allocator_8h.html">predef/allocator/stl_allocator.h</a>&quot;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">    #include &lt;list&gt;</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">    #include &lt;sstream&gt;</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// Use default std::allocator for dynamic storage allocation</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Alloc = std::allocator&lt;T&gt;&gt;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">   33</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="_delegate_opt_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">xlist</a> = std::list&lt;T, Alloc&gt;;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">   35</a></span>    <span class="keyword">typedef</span> std::basic_ostringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">   36</a></span>    <span class="keyword">typedef</span> std::basic_stringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>;</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedmq.html">dmq</a></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">   11</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">Duration</a> = std::chrono::duration&lt;uint32_t, std::milli&gt;;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#ifdef DMQ_ASSERTS</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">    #include &lt;cassert&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="comment">// Use assert error handling. Change assert to a different error </span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="comment">// handler as required by the target application.</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">    #define BAD_ALLOC() assert(false &amp;&amp; &quot;Memory allocation failed!&quot;)</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">    #include &lt;new&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="comment">// Use exception error handling</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#abe89b46e296c7421855410a08d6d31fe">   22</a></span><span class="preprocessor">    #define BAD_ALLOC() throw std::bad_alloc()</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">// If DMQ_ASSERTS defined above, consider defining DMQ_ALLOCATOR to prevent </span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// std::list usage within delegate library from throwing a std::bad_alloc </span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">// exception. The std_allocator calls assert if out of memory. </span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">// See master CMakeLists.txt for info on enabling the fixed-block allocator.</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#ifdef DMQ_ALLOCATOR</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="comment">// Use stl_allocator fixed-block allocator for dynamic storage allocation</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">    #include &quot;<a class="code" href="xlist_8h.html">predef/allocator/xlist.h</a>&quot;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">    #include &quot;<a class="code" href="xsstream_8h.html">predef/allocator/xsstream.h</a>&quot;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">    #include &quot;<a class="code" href="stl__allocator_8h.html">predef/allocator/stl_allocator.h</a>&quot;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">    #include &lt;list&gt;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">    #include &lt;sstream&gt;</span></div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// Not using xallocator; define as nothing</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">   39</a></span><span class="preprocessor">    #define XALLOCATOR</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// Use default std::allocator for dynamic storage allocation</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Alloc = std::allocator&lt;T&gt;&gt;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">   40</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="_delegate_opt_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">xlist</a> = std::list&lt;T, Alloc&gt;;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:35</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a9e6c72a4d9879e662d02c096cf16ff3c"><div class="ttname"><a href="_delegate_opt_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">xlist</a></div><div class="ttdeci">std::list&lt; T, Alloc &gt; xlist</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:33</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:36</div></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">   42</a></span>    <span class="keyword">typedef</span> std::basic_ostringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">   43</a></span>    <span class="keyword">typedef</span> std::basic_stringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="comment">// Not using xallocator; define as nothing</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">   46</a></span><span class="preprocessor">    #define XALLOCATOR</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:42</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a9e6c72a4d9879e662d02c096cf16ff3c"><div class="ttname"><a href="_delegate_opt_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c">xlist</a></div><div class="ttdeci">std::list&lt; T, Alloc &gt; xlist</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:40</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:43</div></div>
+<div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
+<div class="ttc" id="anamespacedmq_html_a13ee4c32c184d1339bf5dc2657948156"><div class="ttname"><a href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a></div><div class="ttdeci">std::chrono::duration&lt; uint32_t, std::milli &gt; Duration</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:11</div></div>
 <div class="ttc" id="astl__allocator_8h_html"><div class="ttname"><a href="stl__allocator_8h.html">stl_allocator.h</a></div></div>
 <div class="ttc" id="axlist_8h_html"><div class="ttname"><a href="xlist_8h.html">xlist.h</a></div></div>
 <div class="ttc" id="axsstream_8h_html"><div class="ttname"><a href="xsstream_8h.html">xsstream.h</a></div></div>

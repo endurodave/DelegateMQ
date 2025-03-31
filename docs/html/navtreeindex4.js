@@ -1,5 +1,6 @@
 var NAVTREEINDEX4 =
 {
+"classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a87baad547a67d1670a03b9ff58bf8cab":[7,0,0,29,30],
 "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a87baad547a67d1670a03b9ff58bf8cab":[8,0,0,29,30],
 "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534":[7,0,0,29,39],
 "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534":[8,0,0,29,39],
@@ -163,14 +164,14 @@ var NAVTREEINDEX4 =
 "classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html#adf4de40f4ce5d925b6a564295a241206":[8,0,0,54,0],
 "classdmq_1_1_semaphore.html":[7,0,0,57],
 "classdmq_1_1_semaphore.html":[8,0,0,57],
+"classdmq_1_1_semaphore.html#a28a35743252985803aea68d1b54b25f0":[7,0,0,57,3],
+"classdmq_1_1_semaphore.html#a28a35743252985803aea68d1b54b25f0":[8,0,0,57,3],
 "classdmq_1_1_semaphore.html#a72910c620d2b9f13ede38381e3d8c04f":[7,0,0,57,0],
 "classdmq_1_1_semaphore.html#a72910c620d2b9f13ede38381e3d8c04f":[8,0,0,57,0],
 "classdmq_1_1_semaphore.html#aa73621d8ff3905dc69bc9bb8a4b6a2c3":[7,0,0,57,2],
 "classdmq_1_1_semaphore.html#aa73621d8ff3905dc69bc9bb8a4b6a2c3":[8,0,0,57,2],
 "classdmq_1_1_semaphore.html#ac3ebd49985c6c3b7ccde0a575a4c7b19":[7,0,0,57,1],
 "classdmq_1_1_semaphore.html#ac3ebd49985c6c3b7ccde0a575a4c7b19":[8,0,0,57,1],
-"classdmq_1_1_semaphore.html#adf711bbc67095de40fa037f752e28a83":[7,0,0,57,3],
-"classdmq_1_1_semaphore.html#adf711bbc67095de40fa037f752e28a83":[8,0,0,57,3],
 "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html":[7,0,0,59],
 "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html":[8,0,0,59],
 "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a00c2f392fb122fa7e10788214bd23a75":[7,0,0,59,8],
@@ -248,6 +249,5 @@ var NAVTREEINDEX4 =
 "classdmq_1_1heap__arg__deleter.html#ad04b633e20b555dc6e359b75cb5d8288":[7,0,0,31,0],
 "classdmq_1_1heap__arg__deleter.html#ad04b633e20b555dc6e359b75cb5d8288":[8,0,0,31,0],
 "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html":[7,0,0,32],
-"classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html":[8,0,0,32],
-"classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html#ab8c1e7384bd0dcadd7aeae4583fcce59":[7,0,0,32,0]
+"classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html":[8,0,0,32]
 };

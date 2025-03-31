@@ -204,14 +204,14 @@ $(function(){initNavTree('_multicast_delegate_safe_8h_source.html',''); initResi
 <div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a2e203194bdde23e1aff76ceda0a0ac80">  107</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a2e203194bdde23e1aff76ceda0a0ac80">PushBack</a>(<span class="keyword">const</span> <a class="code hl_class" href="classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html">DelegateType</a>&amp; delegate) {</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keyword">const</span> std::lock_guard&lt;std::mutex&gt; lock(m_lock);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">return</span> BaseType::PushBack(delegate);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        BaseType::PushBack(delegate);</div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
 </div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
 <div class="foldopen" id="foldopen00114" data-start="{" data-end="}">
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a20a07368898fb566fc685938af0d81c5">  114</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a20a07368898fb566fc685938af0d81c5">Remove</a>(<span class="keyword">const</span> <a class="code hl_class" href="classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html">DelegateType</a>&amp; delegate) {</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keyword">const</span> std::lock_guard&lt;std::mutex&gt; lock(m_lock);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">return</span> BaseType::Remove(delegate);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        BaseType::Remove(delegate);</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
 </div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>

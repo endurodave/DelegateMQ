@@ -109,19 +109,19 @@ $(function(){initNavTree('_async_invoke_8h.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a05707757f68e2f853116cdcaed699d0a" id="r_a05707757f68e2f853116cdcaed699d0a"><td class="memTemplParams" colspan="2">template&lt;class Func , class... Args&gt; </td></tr>
-<tr class="memitem:a05707757f68e2f853116cdcaed699d0a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a05707757f68e2f853116cdcaed699d0a">AsyncInvoke</a> (Func func, <a class="el" href="class_thread.html">Thread</a> &amp;thread, const std::chrono::milliseconds &amp;timeout, Args &amp;&amp;... args)</td></tr>
-<tr class="separator:a05707757f68e2f853116cdcaed699d0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a198c6443999a45a9650b5f1e06d50bf3" id="r_a198c6443999a45a9650b5f1e06d50bf3"><td class="memTemplParams" colspan="2">template&lt;class TClass , class Func , class... Args&gt; </td></tr>
-<tr class="memitem:a198c6443999a45a9650b5f1e06d50bf3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a198c6443999a45a9650b5f1e06d50bf3">AsyncInvoke</a> (TClass tclass, Func func, <a class="el" href="class_thread.html">Thread</a> &amp;thread, const std::chrono::milliseconds &amp;timeout, Args &amp;&amp;... args)</td></tr>
-<tr class="separator:a198c6443999a45a9650b5f1e06d50bf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99ebea3e2f28d5c5650539df12e588e7" id="r_a99ebea3e2f28d5c5650539df12e588e7"><td class="memTemplParams" colspan="2">template&lt;class Func , class... Args&gt; </td></tr>
+<tr class="memitem:a99ebea3e2f28d5c5650539df12e588e7"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a99ebea3e2f28d5c5650539df12e588e7">AsyncInvoke</a> (Func func, <a class="el" href="class_thread.html">Thread</a> &amp;thread, const <a class="el" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a> &amp;timeout, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:a99ebea3e2f28d5c5650539df12e588e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca2ee254a7b9c83aaa7d4d4d973f12c0" id="r_aca2ee254a7b9c83aaa7d4d4d973f12c0"><td class="memTemplParams" colspan="2">template&lt;class TClass , class Func , class... Args&gt; </td></tr>
+<tr class="memitem:aca2ee254a7b9c83aaa7d4d4d973f12c0"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aca2ee254a7b9c83aaa7d4d4d973f12c0">AsyncInvoke</a> (TClass tclass, Func func, <a class="el" href="class_thread.html">Thread</a> &amp;thread, const <a class="el" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a> &amp;timeout, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:aca2ee254a7b9c83aaa7d4d4d973f12c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Helper functions to simplify invoking a free or member function on the user-specified thread of control using a single line of code. Particually useful for creating asynhronous APIs (see AsyncAPI.cpp). </p>
 <p>size_t send_data(const std::string&amp; data) { return AsyncInvoke(send_data_private, comm_thread, WAIT_INFINITE, data); } </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a05707757f68e2f853116cdcaed699d0a" name="a05707757f68e2f853116cdcaed699d0a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a05707757f68e2f853116cdcaed699d0a">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[1/2]</span></h2>
+<a id="a99ebea3e2f28d5c5650539df12e588e7" name="a99ebea3e2f28d5c5650539df12e588e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99ebea3e2f28d5c5650539df12e588e7">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -141,7 +141,7 @@ template&lt;class Func , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::chrono::milliseconds &amp;</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -162,8 +162,8 @@ template&lt;class Func , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a198c6443999a45a9650b5f1e06d50bf3" name="a198c6443999a45a9650b5f1e06d50bf3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a198c6443999a45a9650b5f1e06d50bf3">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[2/2]</span></h2>
+<a id="aca2ee254a7b9c83aaa7d4d4d973f12c0" name="aca2ee254a7b9c83aaa7d4d4d973f12c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca2ee254a7b9c83aaa7d4d4d973f12c0">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -188,7 +188,7 @@ template&lt;class TClass , class Func , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::chrono::milliseconds &amp;</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

@@ -278,6 +278,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:a13ee4c32c184d1339bf5dc2657948156" id="r_a13ee4c32c184d1339bf5dc2657948156"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a> = std::chrono::duration&lt;uint32_t, std::milli&gt;</td></tr>
+<tr class="separator:a13ee4c32c184d1339bf5dc2657948156"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bcc300237d5cb854a800a19ccc0400a" id="r_a4bcc300237d5cb854a800a19ccc0400a"><td class="memItemLeft" align="right" valign="top">typedef int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4bcc300237d5cb854a800a19ccc0400a">DelegateErrorAux</a></td></tr>
 <tr class="separator:a4bcc300237d5cb854a800a19ccc0400a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5033450a33d262cadf38fc666741732" id="r_aa5033450a33d262cadf38fc666741732"><td class="memTemplParams" colspan="2">template&lt;size_t N, class... Args&gt; </td></tr>
@@ -344,26 +346,26 @@ Functions</h2></td></tr>
 <tr class="memitem:aa654d4c1cbf9179e9cdd3a8b7aac6c79"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa654d4c1cbf9179e9cdd3a8b7aac6c79">MakeDelegate</a> (std::function&lt; RetType(Args...)&gt; func, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread)</td></tr>
 <tr class="memdesc:aa654d4c1cbf9179e9cdd3a8b7aac6c79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a <code>std::function</code>.  <br /></td></tr>
 <tr class="separator:aa654d4c1cbf9179e9cdd3a8b7aac6c79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a660d4e7d0fd27adf703b42bf5b107dbd" id="r_a660d4e7d0fd27adf703b42bf5b107dbd"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:a660d4e7d0fd27adf703b42bf5b107dbd"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a660d4e7d0fd27adf703b42bf5b107dbd">MakeDelegate</a> (RetType(*func)(Args... args), <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, std::chrono::milliseconds timeout)</td></tr>
-<tr class="memdesc:a660d4e7d0fd27adf703b42bf5b107dbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a free function with a wait and timeout.  <br /></td></tr>
-<tr class="separator:a660d4e7d0fd27adf703b42bf5b107dbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85d96a296905ebc49b5638804a419acb" id="r_a85d96a296905ebc49b5638804a419acb"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:a85d96a296905ebc49b5638804a419acb"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a85d96a296905ebc49b5638804a419acb">MakeDelegate</a> (TClass *object, RetType(TClass::*func)(Args... args), <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, std::chrono::milliseconds timeout)</td></tr>
-<tr class="memdesc:a85d96a296905ebc49b5638804a419acb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function with a wait and timeout.  <br /></td></tr>
-<tr class="separator:a85d96a296905ebc49b5638804a419acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0292281a7a1f1d0de365f0dd6ed9e5cf" id="r_a0292281a7a1f1d0de365f0dd6ed9e5cf"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:a0292281a7a1f1d0de365f0dd6ed9e5cf"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a0292281a7a1f1d0de365f0dd6ed9e5cf">MakeDelegate</a> (const TClass *object, RetType(TClass::*func)(Args... args) const, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, std::chrono::milliseconds timeout)</td></tr>
-<tr class="memdesc:a0292281a7a1f1d0de365f0dd6ed9e5cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a delegate that binds to a const member function.  <br /></td></tr>
-<tr class="separator:a0292281a7a1f1d0de365f0dd6ed9e5cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2f4d58509bd65735c9051a734cc0063" id="r_ae2f4d58509bd65735c9051a734cc0063"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetVal , class... Args&gt; </td></tr>
-<tr class="memitem:ae2f4d58509bd65735c9051a734cc0063"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae2f4d58509bd65735c9051a734cc0063">MakeDelegate</a> (std::shared_ptr&lt; TClass &gt; object, RetVal(TClass::*func)(Args... args), <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, std::chrono::milliseconds timeout)</td></tr>
-<tr class="memdesc:ae2f4d58509bd65735c9051a734cc0063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function using a shared pointer, with a wait and timeout.  <br /></td></tr>
-<tr class="separator:ae2f4d58509bd65735c9051a734cc0063"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85e415b64815f417037626aba3b861c9" id="r_a85e415b64815f417037626aba3b861c9"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:a85e415b64815f417037626aba3b861c9"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a85e415b64815f417037626aba3b861c9">MakeDelegate</a> (std::function&lt; RetType(Args...)&gt; func, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, std::chrono::milliseconds timeout)</td></tr>
-<tr class="memdesc:a85e415b64815f417037626aba3b861c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a <code>std::function</code> with a wait and timeout.  <br /></td></tr>
-<tr class="separator:a85e415b64815f417037626aba3b861c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abba553d856fd21a274ff93f6470f7469" id="r_abba553d856fd21a274ff93f6470f7469"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
+<tr class="memitem:abba553d856fd21a274ff93f6470f7469"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#abba553d856fd21a274ff93f6470f7469">MakeDelegate</a> (RetType(*func)(Args... args), <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a> timeout)</td></tr>
+<tr class="memdesc:abba553d856fd21a274ff93f6470f7469"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a free function with a wait and timeout.  <br /></td></tr>
+<tr class="separator:abba553d856fd21a274ff93f6470f7469"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88f1407a2eb6269b664aa55f9611c25a" id="r_a88f1407a2eb6269b664aa55f9611c25a"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
+<tr class="memitem:a88f1407a2eb6269b664aa55f9611c25a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a88f1407a2eb6269b664aa55f9611c25a">MakeDelegate</a> (TClass *object, RetType(TClass::*func)(Args... args), <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a> timeout)</td></tr>
+<tr class="memdesc:a88f1407a2eb6269b664aa55f9611c25a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function with a wait and timeout.  <br /></td></tr>
+<tr class="separator:a88f1407a2eb6269b664aa55f9611c25a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa179907ed2f66812991b96dd4a38e118" id="r_aa179907ed2f66812991b96dd4a38e118"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
+<tr class="memitem:aa179907ed2f66812991b96dd4a38e118"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa179907ed2f66812991b96dd4a38e118">MakeDelegate</a> (const TClass *object, RetType(TClass::*func)(Args... args) const, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a> timeout)</td></tr>
+<tr class="memdesc:aa179907ed2f66812991b96dd4a38e118"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a delegate that binds to a const member function.  <br /></td></tr>
+<tr class="separator:aa179907ed2f66812991b96dd4a38e118"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62d6319e48abd32e7ac1a8a657ee8acc" id="r_a62d6319e48abd32e7ac1a8a657ee8acc"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetVal , class... Args&gt; </td></tr>
+<tr class="memitem:a62d6319e48abd32e7ac1a8a657ee8acc"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a62d6319e48abd32e7ac1a8a657ee8acc">MakeDelegate</a> (std::shared_ptr&lt; TClass &gt; object, RetVal(TClass::*func)(Args... args), <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a> timeout)</td></tr>
+<tr class="memdesc:a62d6319e48abd32e7ac1a8a657ee8acc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function using a shared pointer, with a wait and timeout.  <br /></td></tr>
+<tr class="separator:a62d6319e48abd32e7ac1a8a657ee8acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b26bbea074f787e55f8197a6f9e82e3" id="r_a5b26bbea074f787e55f8197a6f9e82e3"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
+<tr class="memitem:a5b26bbea074f787e55f8197a6f9e82e3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a5b26bbea074f787e55f8197a6f9e82e3">MakeDelegate</a> (std::function&lt; RetType(Args...)&gt; func, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a> timeout)</td></tr>
+<tr class="memdesc:a5b26bbea074f787e55f8197a6f9e82e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a <code>std::function</code> with a wait and timeout.  <br /></td></tr>
+<tr class="separator:a5b26bbea074f787e55f8197a6f9e82e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab494047f3f6f52df9a9d5293449f316f" id="r_ab494047f3f6f52df9a9d5293449f316f"><td class="memTemplParams" colspan="2">template&lt;size_t N, class... Args&gt; </td></tr>
 <tr class="memitem:ab494047f3f6f52df9a9d5293449f316f"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab494047f3f6f52df9a9d5293449f316f">ArgValueOf</a> (Args &amp;&amp;... ts)</td></tr>
 <tr class="separator:ab494047f3f6f52df9a9d5293449f316f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -410,7 +412,7 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a13a5bc30242a3c91cf0cc744e863ffca" id="r_a13a5bc30242a3c91cf0cc744e863ffca"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13a5bc30242a3c91cf0cc744e863ffca">WAIT_INFINITE</a> = std::chrono::milliseconds::max()</td></tr>
+<tr class="memitem:a13a5bc30242a3c91cf0cc744e863ffca" id="r_a13a5bc30242a3c91cf0cc744e863ffca"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13a5bc30242a3c91cf0cc744e863ffca">WAIT_INFINITE</a> = Duration::max()</td></tr>
 <tr class="separator:a13a5bc30242a3c91cf0cc744e863ffca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0278aebc59e9f350d10a47d1a5ef1acb" id="r_a0278aebc59e9f350d10a47d1a5ef1acb"><td class="memItemLeft" align="right" valign="top">const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0278aebc59e9f350d10a47d1a5ef1acb">INVALID_REMOTE_ID</a> = -1</td></tr>
 <tr class="separator:a0278aebc59e9f350d10a47d1a5ef1acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -460,6 +462,20 @@ template&lt;size_t N, class... Args&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">typedef uint16_t <a class="el" href="#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a13ee4c32c184d1339bf5dc2657948156" name="a13ee4c32c184d1339bf5dc2657948156"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13ee4c32c184d1339bf5dc2657948156">&#9670;&#160;</a></span>Duration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a> = std::chrono::duration&lt;uint32_t, std::milli&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -752,8 +768,8 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a0292281a7a1f1d0de365f0dd6ed9e5cf" name="a0292281a7a1f1d0de365f0dd6ed9e5cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0292281a7a1f1d0de365f0dd6ed9e5cf">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[4/20]</span></h2>
+<a id="aa179907ed2f66812991b96dd4a38e118" name="aa179907ed2f66812991b96dd4a38e118"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa179907ed2f66812991b96dd4a38e118">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[4/20]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -778,7 +794,7 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::chrono::milliseconds</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a></td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -920,8 +936,8 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a660d4e7d0fd27adf703b42bf5b107dbd" name="a660d4e7d0fd27adf703b42bf5b107dbd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a660d4e7d0fd27adf703b42bf5b107dbd">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[8/20]</span></h2>
+<a id="abba553d856fd21a274ff93f6470f7469" name="abba553d856fd21a274ff93f6470f7469"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abba553d856fd21a274ff93f6470f7469">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[8/20]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -941,7 +957,7 @@ template&lt;class RetType , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::chrono::milliseconds</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a></td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1081,8 +1097,8 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a85e415b64815f417037626aba3b861c9" name="a85e415b64815f417037626aba3b861c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a85e415b64815f417037626aba3b861c9">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[12/20]</span></h2>
+<a id="a5b26bbea074f787e55f8197a6f9e82e3" name="a5b26bbea074f787e55f8197a6f9e82e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b26bbea074f787e55f8197a6f9e82e3">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[12/20]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1102,7 +1118,7 @@ template&lt;class RetType , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::chrono::milliseconds</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a></td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1315,8 +1331,8 @@ template&lt;class TClass , class RetVal , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="ae2f4d58509bd65735c9051a734cc0063" name="ae2f4d58509bd65735c9051a734cc0063"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae2f4d58509bd65735c9051a734cc0063">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[16/20]</span></h2>
+<a id="a62d6319e48abd32e7ac1a8a657ee8acc" name="a62d6319e48abd32e7ac1a8a657ee8acc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62d6319e48abd32e7ac1a8a657ee8acc">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[16/20]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1341,7 +1357,7 @@ template&lt;class TClass , class RetVal , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::chrono::milliseconds</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a></td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1575,8 +1591,8 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a85d96a296905ebc49b5638804a419acb" name="a85d96a296905ebc49b5638804a419acb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a85d96a296905ebc49b5638804a419acb">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[20/20]</span></h2>
+<a id="a88f1407a2eb6269b664aa55f9611c25a" name="a88f1407a2eb6269b664aa55f9611c25a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88f1407a2eb6269b664aa55f9611c25a">&#9670;&#160;</a></span>MakeDelegate() <span class="overload">[20/20]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1601,7 +1617,7 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::chrono::milliseconds</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="#a13ee4c32c184d1339bf5dc2657948156">Duration</a></td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1776,7 +1792,7 @@ template&lt;typename Arg , typename... TupleElem&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto dmq::WAIT_INFINITE = std::chrono::milliseconds::max()</td>
+          <td class="memname">auto dmq::WAIT_INFINITE = Duration::max()</td>
         </tr>
       </table>
   </td>
