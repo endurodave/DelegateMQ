@@ -25,7 +25,7 @@ public:
     // either the Remove() caller's thread or the Process() caller's thread.
     dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId id, uint16_t seqNum, Status status)> SendStatusCb;
 
-    TransportMonitor(const std::chrono::milliseconds& timeout) : TRANSPORT_TIMEOUT(timeout) {}
+    TransportMonitor(const dmq::Duration timeout) : TRANSPORT_TIMEOUT(timeout) {}
     ~TransportMonitor() 
     { 
         const std::unique_lock<std::mutex> lock(m_lock);
@@ -67,7 +67,7 @@ public:
         while (it != m_pending.end()) 
         {
             // Calculate the elapsed time as a duration
-            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - (*it).second.timeStamp);
+            auto elapsed = std::chrono::duration_cast<dmq::Duration>(now - (*it).second.timeStamp);
 
             // Has timeout expired?
             if (elapsed > TRANSPORT_TIMEOUT)
@@ -90,7 +90,7 @@ private:
     };
 
 	std::map<uint16_t, TimeoutData> m_pending;
-	const std::chrono::milliseconds TRANSPORT_TIMEOUT;
+	const dmq::Duration TRANSPORT_TIMEOUT;
     std::mutex m_lock;
 };
 

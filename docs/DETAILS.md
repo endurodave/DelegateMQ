@@ -1646,38 +1646,45 @@ m_timer.Start(std::chrono::milliseconds(1000));
 An example combining `std::async`/`std::future` and an asynchronous delegate to target a specific worker thread during communication transmission.
 
 ```cpp
-static Thread comm_thread("CommunicationThread");
+Thread commThread("CommunicationThread");
 
-// Assume send_data() is not thread-safe and may only be called on comm_thread context.
+// Assume SendMsg() is not thread-safe and may only be called on commThread context.
 // A random std::async thread from the pool is unacceptable and causes cross-threading.
-size_t send_data(const std::string& data) 
+size_t SendMsg(const std::string& data)
 {
-    std::this_thread::sleep_for(std::chrono::seconds(2));  // Simulate sending
-    return data.size();  // Return the 'bytes_sent' sent result
+    // Simulate sending data takes a long time
+    std::this_thread::sleep_for(std::chrono::seconds(2));  
+
+    // Return the "bytes sent" result
+    return data.size();  
 }
 
-void AsyncFutureExample() 
+// Send a message asynchronously. Function does other work while SendMsg() 
+// is executing on commThread.
+size_t SendMsgAsync(const std::string& msg)
 {
-    comm_thread.CreateThread();
+    // Create an async blocking delegate targeted at SendMsg()
+    auto sendMsgDelegate = MakeDelegate(&SendMsg, commThread, WAIT_INFINITE);
 
-    // Create an async delegate targeted at send_data()
-    auto send_data_delegate = MakeDelegate(&send_data, comm_thread, WAIT_INFINITE);
+    // Start the asynchronous task using std::async. SendMsg() will be called on 
+    // commThread context.
+    std::future<size_t> result = std::async(std::launch::async, sendMsgDelegate, msg);
 
-    // Start the asynchronous task using std::async. send_data() will be called on 
-    // comm_thread context.
-    std::future<size_t> result = std::async(std::launch::async, send_data_delegate, "send_data message");
-
-    // Do other work while send_data() is executing on comm_thread
-    std::cout << "Doing other work in main thread while data is sent...\n";
-
-    // Continue other work in the main thread while the task runs asynchronously
+    // Do other work while SendMsg() is executing on commThread
+    std::cout << "Doing other work in main thread while SendMsg() completes...\n";
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    // Get bytes sent. This will block until send_data() completes.
-    size_t bytes_sent = result.get(); 
+    // Get bytes sent. Blocks until SendMsg() completes.
+    size_t bytesSent = result.get();
+    return bytesSent;
+}
 
-    std::cout << "Result from send_data: " << bytes_sent << std::endl;
-    comm_thread.ExitThread();
+int main(void)
+{
+    // Send message asynchronously
+    commThread.CreateThread();
+    size_t bytesSent = SendMsgAsync("Hello world!");
+    return 0;
 }
 ```
 ## Remote Delegate Example

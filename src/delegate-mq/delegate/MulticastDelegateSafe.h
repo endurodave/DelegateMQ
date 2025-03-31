@@ -106,14 +106,14 @@ public:
     /// @param[in] delegate A delegate target to insert
     void PushBack(const DelegateType& delegate) {
         const std::lock_guard<std::mutex> lock(m_lock);
-        return BaseType::PushBack(delegate);
+        BaseType::PushBack(delegate);
     }
 
     /// Remove a delegate into the container.
     /// @param[in] delegate The delegate target to remove.
     void Remove(const DelegateType& delegate) {
         const std::lock_guard<std::mutex> lock(m_lock);
-        return BaseType::Remove(delegate);
+        BaseType::Remove(delegate);
     }
 
     /// Any registered delegates?

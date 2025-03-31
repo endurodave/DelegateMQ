@@ -38,9 +38,9 @@ Timer::~Timer()
 //------------------------------------------------------------------------------
 // Start
 //------------------------------------------------------------------------------
-void Timer::Start(std::chrono::milliseconds timeout, bool once)
+void Timer::Start(dmq::Duration timeout, bool once)
 {
-    if (timeout <= std::chrono::milliseconds(0))
+    if (timeout <= dmq::Duration(0))
         throw std::invalid_argument("Timeout cannot be 0");
 
     const std::lock_guard<std::mutex> lock(m_lock);
@@ -99,14 +99,13 @@ void Timer::CheckExpired()
     }
 
     // Call the client's expired callback function
-    //if (Expired)
-        Expired();
+    Expired();
 }
 
 //------------------------------------------------------------------------------
 // Difference
 //------------------------------------------------------------------------------
-std::chrono::milliseconds Timer::Difference(std::chrono::milliseconds time1, std::chrono::milliseconds time2)
+dmq::Duration Timer::Difference(dmq::Duration time1, dmq::Duration time2)
 {
     return (time2 - time1);
 }
@@ -134,10 +133,10 @@ void Timer::ProcessTimers()
     }
 }
 
-std::chrono::milliseconds Timer::GetTime()
+dmq::Duration Timer::GetTime()
 {
-    auto duration = std::chrono::system_clock::now().time_since_epoch();
-    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-    return millis;
+    auto now = std::chrono::system_clock::now().time_since_epoch();
+    auto duration = std::chrono::duration_cast<dmq::Duration>(now);
+    return duration;
 }
 

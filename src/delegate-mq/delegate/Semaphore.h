@@ -22,12 +22,12 @@ public:
 	~Semaphore() = default;
 
 	/// Called to wait on a semaphore to be signaled.
-	/// @param[in] timeout - timeout in milliseconds
+	/// @param[in] timeout - semaphore timeout 
 	/// @return Return true if semaphore signaled, false if timeout occurred. 
-	bool Wait(std::chrono::milliseconds timeout)
+	bool Wait(Duration timeout)
 	{
         std::unique_lock<std::mutex> lk(m_lock);
-        if (timeout == std::chrono::milliseconds::max())
+        if (timeout == Duration::max())
         {
             m_sema.wait(lk, [this] { return m_signaled; });
         }

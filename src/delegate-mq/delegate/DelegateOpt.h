@@ -4,6 +4,13 @@
 /// @file
 /// @brief Delegate library options header file.
 
+#include <chrono>
+
+namespace dmq
+{
+    using Duration = std::chrono::duration<uint32_t, std::milli>;
+}
+
 #ifdef DMQ_ASSERTS
     #include <cassert>
     // Use assert error handling. Change assert to a different error 
