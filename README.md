@@ -8,7 +8,7 @@
 
 The DelegateMQ C++ library enables function invocations on any callable, either synchronously, asynchronously, or on a remote endpoint. This messaging middleware library unifies function calls across threads, processes, or processors through a simple delegate interface. It provides well-defined abstract interfaces and numerous concrete examples, making it easy to port to any platform. As a header-only template library, DelegateMQ is thread-safe, unit-tested, and easy to use.
 
-`Subscriber` registers with `Publisher` to receive asynchronous callbacks:
+`Subscriber` registers with `Publisher` to receive asynchronous callbacks.
 
 ```cpp
 class Publisher
@@ -52,7 +52,7 @@ private:
 };
 ```
 
-Multiple callables targets stored and invoked asynchronously example: 
+Multiple callables targets stored and invoked asynchronously.
 
 ```cpp
 // Create an async delegate targeting lambda on thread1
@@ -72,6 +72,35 @@ delegates += memberDelegate;
 
 // Invoke all callable targets asynchronously 
 delegates(123);
+```
+
+Asynchronous public API reinvokes `StoreAsync()` call onto the internal `m_thread` context.
+
+```cpp
+// Store data using asynchronous public API. Class is thread-safe.
+class DataStore
+{
+public:
+    DataStore() : m_thread("DataStoreThread")
+    {
+        m_thread.CreateThread();
+    }
+
+    // Store data asynchronously on m_thread context (non-blocking)
+    void StoreAsync(const Data& data)
+    {
+        // If caller is not executing on m_thread
+        if (m_thread.GetThreadId() != Thread::GetCurrentThreadId()) {
+            // Reinvoke StoreAsync(data) on m_thread context
+            return dmq::MakeDelegate(this, &DataStore::StoreAsync, m_thread)(data);
+        }
+        m_data = data;  // Data stored on m_thread context
+    }
+
+private:
+    Data m_data;        // Data storage
+    Thread m_thread;    // Internal thread
+};
 ```
 
 # Overview
