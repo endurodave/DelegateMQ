@@ -19,22 +19,26 @@ public:
     }
 
     /// Start data collection locally (polling with a timer) and remotely (sending a 
-    /// start message to ServerApp). 
-    /// @return `true` if data collection command sent successfully to ServerApp. 
-    /// `false` if the send fails.
+    /// start message to ServerApp). Two types of async message sending illustrated. 
+    /// @return `true` if all async commands sent successfully to ServerApp succeed. 
+    /// `false` if the any send fails.
     bool Start()
     {
-        bool success = false;
+        bool sendCommandMsgSuccess = false;
+        bool sendCommandMsgComplete = false;
         std::mutex mtx;
         std::condition_variable cv;
 
-        // Callback to capture NetworkMgr::SendCommandMsg() success or error
-        ErrorCallback errorCb = [&success, &cv](dmq::DelegateRemoteId id, dmq::DelegateError err, dmq::DelegateErrorAux aux) {
+        // Callback to capture NetworkMgr::SendCommandMsg() success or error.
+        ErrorCallback errorCb = [&sendCommandMsgSuccess, &sendCommandMsgComplete, &cv, &mtx](dmq::DelegateRemoteId id, dmq::DelegateError err, dmq::DelegateErrorAux aux) {
             // SendCommandMsg() ID?
             if (id == ids::COMMAND_MSG_ID) {
-                // Send success?
-                if (err == dmq::DelegateError::SUCCESS)
-                    success = true;
+                {
+                    std::lock_guard<std::mutex> lock(mtx);
+                    sendCommandMsgComplete = true;
+                    if (err == dmq::DelegateError::SUCCESS)  // Send success? 
+                        sendCommandMsgSuccess = true;
+                }
                 cv.notify_one();
             }
         };
@@ -46,12 +50,20 @@ public:
         command.action = CommandMsg::Action::START;
         command.pollTime = 250;
 
-        // Async send message to start remote data collection
+        // Async send start remote data collection message (non-blocking). Send success/failure
+        // captured by errorCb callback lambda. 
         NetworkMgr::Instance().SendCommandMsg(command);
 
-        // Wait for async send callback to be triggered
+        // Async send actuator message (non-blocking). Send success/failure captured
+        // using std::future. 
+        ActuatorMsg msg;
+        msg.actuatorId = 1;
+        std::future<bool> futureRetVal = NetworkMgr::Instance().SendActuatorMsgFuture(msg);
+
+        // Wait for async send command callback to be triggered
         std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock);
+        while (!sendCommandMsgComplete)
+            cv.wait(lock);
 
         // Send complete; unregister from callback
         NetworkMgr::ErrorCb -= MakeDelegate(errorCb);
@@ -64,7 +76,11 @@ public:
         m_actuatorTimer.Expired = MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread);
         m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
 
-        return success;
+        // Wait here for the SendActuatorMsgFuture() return value
+        bool sendActuatorMsgSuccess = futureRetVal.get();
+
+        // Return true if both async messages succeed
+        return (sendCommandMsgSuccess && sendActuatorMsgSuccess);
     }
 
     void Stop()

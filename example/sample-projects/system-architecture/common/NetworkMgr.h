@@ -13,6 +13,7 @@
 #include "ActuatorMsg.h"
 #include "RemoteEndpoint.h"
 #include <map>
+#include <future>
 
 /// @brief NetworkMgr sends and receives data using a DelegateMQ transport implemented
 /// with ZeroMQ and MessagePack libraries. Class is thread safe. All public APIs are 
@@ -38,9 +39,13 @@ public:
     using ActuatorFunc = void(ActuatorMsg&);
     using ActuatorDel = dmq::MulticastDelegateSafe<ActuatorFunc>;
 
-    // Receive callbacks by registering with a container
+    // Error delegate is invoked on success or failure of message send
     static dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCb;
+
+    // Send status delegate invoked when the receiver acknowleges the sent message
     static dmq::MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId, TransportMonitor::Status)> SendStatusCb;
+
+    // Incoming message callback delegates
     static AlarmDel AlarmMsgCb;
     static CommandDel CommandMsgCb;
     static DataDel DataMsgCb;
@@ -73,6 +78,9 @@ public:
     // Send actuator position command. Blocking call returns after remote receives 
     // the actuator message or timeout occurs.
     bool SendActuatorMsgWait(ActuatorMsg& msg);
+
+    // Send actuator message to the remote and block using a future return
+    std::future<bool> SendActuatorMsgFuture(ActuatorMsg& msg);
 
 private:
     NetworkMgr();

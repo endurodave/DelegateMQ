@@ -14,7 +14,6 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Build](#build)
-  - [Build Options](#build-options)
   - [Example Projects](#example-projects)
   - [Examples Setup](#examples-setup)
   - [Build Integration](#build-integration)
@@ -113,17 +112,17 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 
 # Build
 
-[CMake](https://cmake.org/) is used to create the project files in the `build` directory. The repository root project executes all unit tests and examples with no external code or library dependencies.
+The repository root project build executes all unit tests and examples with no external code or library dependencies on Windows or Linux systems. [CMake](https://cmake.org/) is used to create the project files in the `build` directory.
 
 `cmake -B build .`
 
-## Build Options
-
-The DelegateMQ build options are located within `DelegateMQ.cmake`. Customize the external library paths within `External.cmake`. 
-
 ## Example Projects
 
-Remote delegate example projects are located within the `example/sample-projects` directory and explained in [Sample Projects](#sample-projects).
+Remote delegate example projects are located within the `example/sample-projects` directory and explained in [Sample Projects](#sample-projects). Most sample projects rely upon one or more external libraries as documented in [Example Setup](#examples-setup).
+
+The [system-architecture](#system-architecture) project located within the `example\sample-projects\system-architecture` directory is a client-server application that runs on Windows or Linux, showcasing various delegate-based design techniques, including remote communication, asynchronous callbacks/APIs, and more. The application builds rely upon the ZeroMQ and MessagePack external libraries as explained in [Example Setup](#examples-setup).
+
+The other example projects narrowly demonstrate a particular remote delegate combination of transport and serialization libraries.
 
 ## Examples Setup
 
@@ -140,7 +139,7 @@ Some remote delegate example projects have external library dependencies. Follow
 5. Clone [MessagePack C++](https://github.com/msgpack/msgpack-c/tree/cpp_master) `cpp_master` branch.
 6. Clone [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS).
 7. Clone and build [Paho C MQTT](https://github.com/eclipse-paho/paho.mqtt.c).
-8. Edit DelegateMQ `External.cmake` file and update external library directory locations.
+8. Edit `src/delegate-mq/External.cmake` file and update external library directory locations.
 9. Build any example subproject within the `example/sample-projects` directory.<br>
    `cmake -B build .`
 
@@ -150,7 +149,7 @@ See [Sample Projects](#sample-projects) for details regarding each sample projec
 
 Follow these steps to integrate DelegateMQ into a project.
 
-Set the desired DMQ options and include `DelegateMQ.cmake` within your `CMakeLists.txt` file.
+Set the desired DMQ build options and include `DelegateMQ.cmake` within your `CMakeLists.txt` file.
 
 ```
 # Set build options
@@ -1554,13 +1553,13 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         std::mutex mtx;
         std::condition_variable cv;
 
-        // 6. Callback lambda handler for transport monitor send status (success or failure).
+        // 7. Callback lambda handler for transport monitor when remote receives message (success or failure).
         //    Callback context is m_thread.
         SendStatusCallback statusCb = [&success, &cv](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
             if (id == ids::ACTUATOR_MSG_ID) {
                 // Client received ActuatorMsg?
                 if (status == TransportMonitor::Status::SUCCESS)
-                    success.store(true, std::memory_order_relaxed);
+                    success.store(true);
                 cv.notify_one();
             }
         };
@@ -1572,11 +1571,11 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         auto del = MakeDelegate(this, &NetworkMgr::SendActuatorMsgWait, m_thread, SEND_TIMEOUT);
         auto retVal = del.AsyncInvoke(msg);
 
-        // 4. Check that the remote delegate send succeeded
+        // 5. Check that the remote delegate send succeeded
         if (retVal.has_value() &&      // If async function call succeeded AND
             retVal.value() == true)    // async function call returned true
         {
-            // 5. Wait for statusCb callback to be invoked. Callback invoked when the 
+            // 6. Wait for statusCb callback to be invoked. Callback invoked when the 
             //    receiver ack's the message or timeout.
             std::unique_lock<std::mutex> lock(mtx);
             if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout) 
@@ -1586,11 +1585,11 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
             }
         }
 
-        // 7. Unregister from status callback
+        // 8. Unregister from status callback
         m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
 
-        // 8. Return the blocking async function invoke status to caller
-        return success.load(std::memory_order_relaxed);
+        // 9. Return the blocking async function invoke status to caller
+        return success.load();
     }
     else
     {
@@ -1599,7 +1598,7 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         // 3. Send actuator command to remote on m_thread
         m_actuatorMsgDel(msg);        
 
-        // Check if send succeeded
+        // 4. Check if send succeeded
         if (m_actuatorMsgDel.GetError() == DelegateError::SUCCESS)
         {
             return true;
@@ -1799,18 +1798,26 @@ See the `examples/sample-projects` directory for example project. Most projects 
 
 The System Architecture example demonstrates a complex client-server DelegateMQ application using the ZeroMQ and MessagePack support libraries. This example implements the acquisition of sensor and actuator data across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
 
-Execute the client and server projects to run the example.
+Follow the steps below to execute the projects.
+
+1. Setup ZeroMQ and MessagePack external library dependencies ([Examples Setup](#examples-setup))
+2. Execute CMake command in `client` and `server` directories.  
+   `cmake -B build .`
+3. Build client and server applications.
+4. Start `delegate_server_app` 
+5. Start `delegate_client_app`
+6. Client and server communicate and output debug data to the console.
 
 | Class | Location | Details |
 | --- | --- | --- |
 | `ClientApp` | Client | Main client application. Handles local and remote sensors and actuators. |
 | `ServerApp` | Server | Main server application. Slave sensors and actuators application. |
+| `NetworkMgr` | Client<br>Server | Centralized, shared client and server communication interface using remote delegates. |
 | `DataMgr` | Client | Collects data from client (local) and server (remote) data sources |
 | `AlarmMgr` | Client<br>Server | Handles system alarms. Server sends alarms to client for processing. |
 | `Sensor` | Client<br>Server | Reads sensor data |
 | `Actuator` | Client<br>Server | Controls actuator |
 | `RemoteEndpoint` | Client<br>Server | Delegate endpoint for bidirectional remote communication. |
-| `NetworkMgr` | Client<br>Server | Centralized, shared client and server communication interface using remote delegates. |
 
 Interface implementation details. 
 

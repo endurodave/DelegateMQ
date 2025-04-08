@@ -70,7 +70,9 @@ int main()
     DataMgr::DataMsgCb += MakeDelegate(&DataMsgRecv, receiveThread);
 
     // Start all data collection
-    ClientApp::Instance().Start();
+    bool success = ClientApp::Instance().Start();
+    if (!success)
+        std::cout << "ClientApp::Start() failed!" << std::endl;
 
     // Let client and server communicate
     std::this_thread::sleep_for(std::chrono::seconds(30));

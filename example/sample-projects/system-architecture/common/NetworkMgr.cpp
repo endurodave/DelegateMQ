@@ -147,16 +147,20 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         // *** Caller's thread executes this control branch ***
 
         std::atomic<bool> success(false);
+        bool complete = false;
         std::mutex mtx;
         std::condition_variable cv;
 
-        // 7. Callback lambda handler for transport monitor send status (success or failure).
+        // 7. Callback lambda handler for transport monitor when remote receives message (success or failure).
         //    Callback context is m_thread.
-        SendStatusCallback statusCb = [&success, &cv](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
+        SendStatusCallback statusCb = [&success, &complete, &cv, &mtx](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
             if (id == ids::ACTUATOR_MSG_ID) {
-                // Client received ActuatorMsg?
-                if (status == TransportMonitor::Status::SUCCESS)
-                    success.store(true);
+                {
+                    std::lock_guard<std::mutex> lock(mtx);                    
+                    complete = true;
+                    if (status == TransportMonitor::Status::SUCCESS)  
+                        success.store(true);   // Client received ActuatorMsg
+                }
                 cv.notify_one();
             }
         };
@@ -175,10 +179,13 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
             // 6. Wait for statusCb callback to be invoked. Callback invoked when the 
             //    receiver ack's the message or timeout.
             std::unique_lock<std::mutex> lock(mtx);
-            if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout) 
+            while (!complete)
             {
-                // Timeout waiting for remote delegate message ack
-                std::cout << "Timeout SendActuatorMsgWait()" << std::endl;
+                if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout)
+                {
+                    // Timeout waiting for remote delegate message ack
+                    std::cout << "Timeout SendActuatorMsgWait()" << std::endl;
+                }
             }
         }
 
@@ -204,6 +211,13 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
         std::cout << "Send failed!" << std::endl;
         return false;
     }
+}
+
+// Send an actuator command and do not block. Return value success or failure captured 
+// later by the caller using the std::future<bool>::get().
+std::future<bool> NetworkMgr::SendActuatorMsgFuture(ActuatorMsg& msg)
+{
+    return std::async(&NetworkMgr::SendActuatorMsgWait, this, std::ref(msg));
 }
 
 // Poll called periodically on m_thread context
