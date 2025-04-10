@@ -15,9 +15,10 @@ public:
     virtual int Send(xostringstream& os, const DmqHeader& header) = 0;
 
     /// Receive data from a remote
+    /// @param[out] is The received incoming data bytes, not including the header.
     /// @param[out] header Incoming delegate message header.
-    /// @return The received incoming data bytes, not including the header.
-    virtual xstringstream Receive(DmqHeader& header) = 0;
+    /// @return 0 if success.
+    virtual int Receive(xstringstream& is, DmqHeader& header) = 0;
 };
 
 #endif

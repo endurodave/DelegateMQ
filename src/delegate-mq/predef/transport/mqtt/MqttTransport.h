@@ -185,12 +185,12 @@ public:
         }
     }
 
-    virtual xstringstream Receive(DmqHeader& header) override
+    virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         if (!m_payload)
-            return headerStream;
+            return -1;
 
         // Find the position of the opening square bracket
         size_t headerStart = 0;
@@ -200,7 +200,7 @@ public:
 
         if (headerStart == m_payloadLen) {
             std::cerr << "Invalid header format: Missing opening '['" << std::endl;
-            return headerStream;
+            return -1;
         }
 
         // Find the position of the closing square bracket
@@ -211,7 +211,7 @@ public:
 
         if (headerEnd == m_payloadLen) {
             std::cerr << "Invalid header format: Missing closing ']'" << std::endl;
-            return headerStream;
+            return -1;
         }
 
         // Calculate the header size (everything between '[' and ']')
@@ -232,14 +232,12 @@ public:
         // Check for the correct sync marker
         if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
-            return headerStream;
+            return -1;
         }
-
-        xstringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
 
         // The remaining data after the closing bracket is the JSON part
         size_t jsonStart = headerEnd + 1; // After the closing header bracket ']'
-        argStream.write(m_payload + jsonStart, m_payloadLen - jsonStart);
+        is.write(m_payload + jsonStart, m_payloadLen - jsonStart);
 
         if (id == dmq::ACK_REMOTE_ID)
         {
@@ -260,8 +258,8 @@ public:
             }
         }
 
-        // argStream contains the serialized remote argument data
-        return argStream;
+        // `is` stream contains the serialized remote argument data
+        return 0;   // success
     }
 
     void SetReceiveHandler(IMqttReceiveHandler* handler)

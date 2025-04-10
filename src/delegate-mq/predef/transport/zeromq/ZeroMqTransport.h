@@ -31,8 +31,9 @@ public:
     int Create(Type type, const char* addr)
     {
         m_zmqContext = zmq_ctx_new();
+        m_type = type;
 
-        if (type == Type::PAIR_CLIENT)
+        if (m_type == Type::PAIR_CLIENT)
         {
             m_zmqContext = zmq_ctx_new();
 
@@ -44,7 +45,7 @@ public:
                 return 1;
             }
         }
-        else if (type == Type::PAIR_SERVER)
+        else if (m_type == Type::PAIR_SERVER)
         {
             m_zmqContext = zmq_ctx_new();
 
@@ -60,7 +61,7 @@ public:
             int timeout = 100; // 100mS 
             zmq_setsockopt(m_zmq, ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
         }
-        else if (type == Type::PUB)
+        else if (m_type == Type::PUB)
         {
             // Create a PUB socket
             m_zmq = zmq_socket(m_zmqContext, ZMQ_PUB);
@@ -70,7 +71,7 @@ public:
                 return 1;
             }
         }
-        else if (type == Type::SUB)
+        else if (m_type == Type::SUB)
         {
             // Create a SUB socket
             m_zmq = zmq_socket(m_zmqContext, ZMQ_SUB);
@@ -113,8 +114,15 @@ public:
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
-        if (os.bad() || os.fail())
+        if (os.bad() || os.fail()) {
+            std::cout << "Error: xostringstream is in a bad state!" << std::endl;
             return -1;
+        }
+
+        if (m_type == Type::SUB) {
+            std::cout << "Cannot send on SUB socket!" << std::endl;
+            return -1;
+        }
 
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
@@ -152,8 +160,18 @@ public:
         }
     }
 
-    virtual xstringstream Receive(DmqHeader& header) override
+    virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
+        if (m_zmq == nullptr) {
+            std::cout << "Socket not created!" << std::endl;
+            return -1;
+        }
+
+        if (m_type == Type::PUB) {
+            std::cout << "Cannot receive on PUB socket!" << std::endl;
+            return -1;
+        }
+
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         int size = zmq_recv(m_zmq, buffer, BUFFER_SIZE, ZMQ_DONTWAIT);
@@ -162,12 +180,12 @@ public:
             if (zmq_errno() == EAGAIN) {
                 //std::cout << "Receive timeout!" << std::endl;
             }
-            return headerStream;
+            return -1;
         }
 
         if (size < DmqHeader::HEADER_SIZE) {
             std::cerr << "Received data is too small to process." << std::endl;
-            return headerStream;
+            return -1;
         }
 
         // Write the received header data into the stringstream
@@ -180,7 +198,7 @@ public:
 
         if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
-            return headerStream;  // TODO: Optionally handle this case more gracefully
+            return -1;  // TODO: Optionally handle this case more gracefully
         }
 
         // Read the DelegateRemoteId (2 bytes) into the `id` variable
@@ -193,10 +211,8 @@ public:
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
-        xstringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
-
-        // Write the remaining argument data to stream
-        argStream.write(buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
+        // Write the remaining target function argument data to stream
+        is.write(buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
         if (id == dmq::ACK_REMOTE_ID)
         {
@@ -217,8 +233,7 @@ public:
             }
         }
 
-        // argStream contains the serialized remote argument data
-        return argStream;
+        return 0;  // Success
     }
 
     void SetTransportMonitor(ITransportMonitor* transportMonitor)
@@ -229,6 +244,7 @@ public:
 private:
     void* m_zmqContext = nullptr;
     void* m_zmq = nullptr;
+    Type m_type = Type::PAIR_CLIENT;
 
     ITransportMonitor* m_transportMonitor = nullptr;
 

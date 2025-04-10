@@ -121,7 +121,7 @@ public:
         return 0;
     }
 
-    virtual xstringstream Receive(DmqHeader& header) override
+    virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
@@ -130,7 +130,7 @@ public:
         if (size == SOCKET_ERROR) 
         {
             std::cerr << "recvfrom failed." << std::endl;
-            return headerStream;
+            return -1;
         }
 
         // Write the received data into the stringstream
@@ -143,7 +143,7 @@ public:
 
         if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
-            return headerStream;  // TODO: Optionally handle this case more gracefully
+            return -1;  // TODO: Optionally handle this case more gracefully
         }
 
         // Read the DelegateRemoteId (2 bytes) into the `id` variable
@@ -156,13 +156,11 @@ public:
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
-        xstringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
-
         // Write the remaining argument data to stream
-        argStream.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
+        is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
         // argStream contains the serialized remote argument data
-        return argStream;
+        return 0;   // Success
     }
 
 private:

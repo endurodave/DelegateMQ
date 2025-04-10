@@ -59,11 +59,12 @@ private:
     void Poll()
     {
         // Get incoming data
+        xstringstream arg_data(std::ios::in | std::ios::out | std::ios::binary);
         DmqHeader header;
-        auto arg_data = m_transport.Receive(header);
+        int error = m_transport.Receive(arg_data, header);
 
         // Incoming remote delegate data arrived?
-        if (!arg_data.str().empty())
+        if (!error && !arg_data.str().empty())
         {
             // Invoke the receiver target function with the sender's argument data
             m_recvDelegate.Invoke(arg_data);

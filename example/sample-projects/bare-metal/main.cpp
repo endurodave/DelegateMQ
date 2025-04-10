@@ -171,9 +171,11 @@ public:
     // Send data to the remote
     void Send()
     {
+        static int cnt = 0;
+
         Data data;
-        data.x = 1;
-        data.y = 2;
+        data.x = cnt++;
+        data.y = cnt++;
         data.msg = "Hello!";
 
         m_sendDelegate(data);

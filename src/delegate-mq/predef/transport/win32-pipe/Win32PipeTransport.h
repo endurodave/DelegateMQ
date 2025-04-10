@@ -110,7 +110,7 @@ public:
         return 0;
     }
 
-    virtual xstringstream Receive(DmqHeader& header) override
+    virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
@@ -118,17 +118,17 @@ public:
         BOOL connected = ConnectNamedPipe(m_hPipe, NULL) ?
             TRUE : (GetLastError() == ERROR_PIPE_CONNECTED);
         if (connected == FALSE)
-            return headerStream;
+            return -1;
 
         DWORD size = 0;
         BOOL success = ReadFile(m_hPipe, m_buffer, BUFFER_SIZE, &size, NULL);
 
         if (success == FALSE || size <= 0)
-            return headerStream;
+            return -1;
 
         if (size <= DmqHeader::HEADER_SIZE) {
             std::cerr << "Received data is too small to process." << std::endl;
-            return headerStream;
+            return -1;
         }
 
         // Write the received data into the stringstream
@@ -141,7 +141,7 @@ public:
 
         if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
-            return headerStream;  // TODO: Optionally handle this case more gracefully
+            return -1;  // TODO: Optionally handle this case more gracefully
         }
 
         // Read the DelegateRemoteId (2 bytes) into the `id` variable
@@ -154,13 +154,11 @@ public:
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
-        xstringstream argStream(std::ios::in | std::ios::out | std::ios::binary);
-
         // Write the remaining argument data to stream
-        argStream.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
+        is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
         // Now `is` contains the rest of the remote argument data
-        return argStream;
+        return 0;  // Success
     }
 
 private:
