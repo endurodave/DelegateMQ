@@ -1798,6 +1798,12 @@ See the `examples/sample-projects` directory for example project. Most projects 
 
 The System Architecture example demonstrates a complex client-server DelegateMQ application using the ZeroMQ and MessagePack support libraries. This example implements the acquisition of sensor and actuator data across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
 
+`NetworkMgr` has three types of remote delegate API examples:
+
+1. **Non-Blocking** - message is sent without waiting. 
+2. **Blocking** - message is send and blocks waiting for the remote to acknowledge or timeout.
+3. **Future** - message is send without waiting and a `std::future` is used to capture the return value later.
+
 Follow the steps below to execute the projects.
 
 1. Setup ZeroMQ and MessagePack external library dependencies ([Examples Setup](#examples-setup))

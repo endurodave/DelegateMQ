@@ -26,6 +26,15 @@
 /// Each socket instance in the ZeroMQ transport layer must only be accessed by a single
 /// thread of control. Therefore, when invoking a remote delegate it must be performed on 
 /// the internal NetworkMgr thread.
+/// 
+/// Three types of remote APIs are implemented:
+/// 
+/// 1. Non-blocking APIs send the message without waiting for success or failure.
+/// 
+/// 2. Blocking APIs wait for the remote to ack the message or time.
+/// 
+/// 3. Future APIs return immediately and a std::future is used to capture the return 
+/// value later.
 class NetworkMgr
 {
 public:
@@ -69,8 +78,14 @@ public:
     // Send alarm message to the remote
     void SendAlarmMsg(AlarmMsg& msg, AlarmNote& note);
 
+    // Send alarm message to the remote and wait for response
+    bool SendAlarmMsgWait(AlarmMsg& msg, AlarmNote& note);
+
     // Send command message to the remote
     void SendCommandMsg(CommandMsg& command);
+
+    // Send command message to the remote and wait for response
+    bool SendCommandMsgWait(CommandMsg& command);
 
     // Send data message to the remote
     void SendDataMsg(DataMsg& data);
@@ -78,6 +93,10 @@ public:
     // Send actuator position command. Blocking call returns after remote receives 
     // the actuator message or timeout occurs.
     bool SendActuatorMsgWait(ActuatorMsg& msg);
+
+    // Alternative function that relies upon RemoteInvoke template function. Blocking 
+    // call returns after remote receives the actuator message or timeout occurs.
+    bool SendActuatorMsgWaitAlt(ActuatorMsg& msg);
 
     // Send actuator message to the remote and block using a future return
     std::future<bool> SendActuatorMsgFuture(ActuatorMsg& msg);
@@ -124,6 +143,90 @@ private:
     RemoteEndpoint<CommandDel, CommandFunc> m_commandMsgDel;
     RemoteEndpoint<DataDel, DataFunc> m_dataMsgDel;
     RemoteEndpoint<ActuatorDel, ActuatorFunc> m_actuatorMsgDel;
+
+    // Generic helper function for invoking any remote delegate. The execution order sequence 
+    // numbers shown below.
+    template <class TClass, class RetType, class... Args>
+    bool RemoteInvoke(RemoteEndpoint<TClass, RetType(Args...)>& endpointDel, Args&&... args) 
+    {
+        // If caller is not executing on m_thread
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        {
+            // *** Caller's thread executes this control branch ***
+
+            std::atomic<bool> success(false);
+            bool complete = false;
+            std::mutex mtx;
+            std::condition_variable cv;
+            dmq::DelegateRemoteId remoteId = endpointDel.GetRemoteId();
+
+            // 7. Callback lambda handler for transport monitor when remote receives message (success or failure).
+            //    Callback context is m_thread.
+            SendStatusCallback statusCb = [&success, &complete, &remoteId, &cv, &mtx](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
+                if (id == remoteId) {
+                    {
+                        std::lock_guard<std::mutex> lock(mtx);
+                        complete = true;
+                        if (status == TransportMonitor::Status::SUCCESS)
+                            success.store(true);   // Client received ActuatorMsg
+                    }
+                    cv.notify_one();
+                }
+            };
+
+            // 1. Register for send status callback (success or failure)
+            m_transportMonitor.SendStatusCb += dmq::MakeDelegate(statusCb);
+
+            // Lambda that binds and forwards arguments to RemoteInvoke with specified endpoint
+            std::function<RetType(Args...)> func = [this, &endpointDel](Args&&... args) {
+                return this->RemoteInvoke<TClass, RetType, Args...>(
+                    endpointDel, std::forward<Args>(args)...);
+                };
+
+            // 2. Async reinvoke func on m_thread context and wait for send to complete
+            auto del = dmq::MakeDelegate(func, m_thread, SEND_TIMEOUT);
+            auto retVal = del.AsyncInvoke(std::forward<Args>(args)...);
+
+            // 5. Check that the remote delegate send succeeded
+            if (retVal.has_value() &&      // If async function call succeeded AND
+                retVal.value() == true)    // async function call returned true
+            {
+                // 6. Wait for statusCb callback to be invoked. Callback invoked when the 
+                //    receiver ack's the message or timeout.
+                std::unique_lock<std::mutex> lock(mtx);
+                while (!complete)
+                {
+                    if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout)
+                    {
+                        // Timeout waiting for remote delegate message ack
+                        std::cout << "Timeout RemoteInvoke()" << std::endl;
+                    }
+                }
+            }
+
+            // 8. Unregister from status callback
+            m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
+
+            // 9. Return the blocking async function invoke status to caller
+            return success.load();
+        }
+        else
+        {
+            // *** NetworkMgr::m_thread executes this control branch ***
+
+            // 3. Send actuator command to remote on m_thread
+            endpointDel(std::forward<Args>(args)...);
+
+            // 4. Check if send succeeded
+            if (endpointDel.GetError() == DelegateError::SUCCESS)
+            {
+                return true;
+            }
+
+            std::cout << "Send failed!" << std::endl;
+            return false;
+        }
+    }
 };
 
 #endif

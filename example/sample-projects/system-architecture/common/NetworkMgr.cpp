@@ -118,6 +118,12 @@ void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note)
     m_alarmMsgDel(msg, note);
 }
 
+bool NetworkMgr::SendAlarmMsgWait(AlarmMsg& msg, AlarmNote& note)
+{
+    // Send alarm to remote and wait for success/failure. 
+    return RemoteInvoke(m_alarmMsgDel, msg, note);
+}
+
 void NetworkMgr::SendCommandMsg(CommandMsg& command)
 {
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
@@ -125,6 +131,12 @@ void NetworkMgr::SendCommandMsg(CommandMsg& command)
 
     // Send data to remote. 
     m_commandMsgDel(command);
+}
+
+bool NetworkMgr::SendCommandMsgWait(CommandMsg& command)
+{
+    // Send command to remote and wait for success/failure. 
+    return RemoteInvoke(m_commandMsgDel, command);
 }
 
 void NetworkMgr::SendDataMsg(DataMsg& data)
@@ -138,7 +150,10 @@ void NetworkMgr::SendDataMsg(DataMsg& data)
 
 // Async send an actuator command and block the caller waiting until the remote 
 // client successfully receives the message or timeout. The execution order sequence 
-// numbers shown below.
+// numbers shown below. 
+// 
+// This is a verbose implementation specific to ActuatorMsg. See RemoteInvoke() 
+// for a generalized form of this function.
 bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
 {
     // If caller is not executing on m_thread
@@ -213,11 +228,18 @@ bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
     }
 }
 
+// Alternative async send actuators message blocking function that relies 
+// upon RemoteInvoke. 
+bool NetworkMgr::SendActuatorMsgWaitAlt(ActuatorMsg& msg)
+{
+    return RemoteInvoke(m_actuatorMsgDel, msg);
+}
+
 // Send an actuator command and do not block. Return value success or failure captured 
 // later by the caller using the std::future<bool>::get().
 std::future<bool> NetworkMgr::SendActuatorMsgFuture(ActuatorMsg& msg)
 {
-    return std::async(&NetworkMgr::SendActuatorMsgWait, this, std::ref(msg));
+    return std::async(&NetworkMgr::SendActuatorMsgWaitAlt, this, std::ref(msg));
 }
 
 // Poll called periodically on m_thread context
@@ -264,5 +286,6 @@ void NetworkMgr::SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, Tr
 {
     SendStatusCb(id, seqNum, status);
 }
+
 
 
