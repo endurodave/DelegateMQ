@@ -34,6 +34,8 @@ NetworkMgr::NetworkMgr() :
 NetworkMgr::~NetworkMgr()
 {
     m_thread.ExitThread();
+    delete m_recvThread;
+    m_recvThread = nullptr;
 }
 
 int NetworkMgr::Create()
@@ -58,18 +60,28 @@ int NetworkMgr::Create()
 
     int err = 0;
 #ifdef SERVER_APP
-    err = m_transport.Create(ZeroMqTransport::Type::PAIR_SERVER, "tcp://*:5555");
+    err = m_sendTransport.Create(ZeroMqTransport::Type::PAIR_SERVER, "tcp://*:5555");
+    err = m_recvTransport.Create(ZeroMqTransport::Type::PAIR_SERVER, "tcp://*:5556");
 #else
-    err = m_transport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://localhost:5555");   // Connect to local server
-    //err = m_transport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://192.168.0.123:5555"); // Connect to remote server
+    err = m_sendTransport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://localhost:5556");
+    err = m_recvTransport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://localhost:5555");       // Connect to local server
+    //err = m_recvTransport.Create(ZeroMqTransport::Type::PAIR_CLIENT, "tcp://192.168.0.123:5555"); // Connect to remote server
 #endif
 
     // Set transport monitor callback to catch communication success and error
     m_transportMonitor.SendStatusCb += dmq::MakeDelegate(this, &NetworkMgr::SendStatusHandler);
-    m_transport.SetTransportMonitor(&m_transportMonitor);
+
+    // Set transport monitors to detect message success or timeout
+    m_sendTransport.SetTransportMonitor(&m_transportMonitor);
+    m_recvTransport.SetTransportMonitor(&m_transportMonitor);
+
+    // The two transports operate as a send/recv pair. Each ZeroMQ socket operates
+    // on its own thread.
+    m_sendTransport.SetRecvTransport(&m_recvTransport);
+    m_recvTransport.SetSendTransport(&m_sendTransport);
 
     // Set the transport used by the dispatcher
-    m_dispatcher.SetTransport(&m_transport);
+    m_dispatcher.SetTransport(&m_sendTransport);
 
     // Set remote delegates into map for receiving messages
     m_receiveIdMap[ids::ALARM_MSG_ID] = &m_alarmMsgDel;
@@ -86,9 +98,8 @@ void NetworkMgr::Start()
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
         return MakeDelegate(this, &NetworkMgr::Start, m_thread)();
 
-    // Start a timer to poll data
-    m_recvTimer.Expired = MakeDelegate(this, &NetworkMgr::Poll, m_thread);
-    m_recvTimer.Start(std::chrono::milliseconds(20));
+    // Create the receive thread to process incoming messages
+    m_recvThread = new std::thread(&NetworkMgr::RecvThread, this);
 
     // Start a timer to process message timeouts
     m_timeoutTimer.Expired = MakeDelegate(this, &NetworkMgr::Timeout, m_thread);
@@ -99,14 +110,22 @@ void NetworkMgr::Stop()
 {
     // Reinvoke Stop() function call on m_thread and wait for call to complete
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-        return MakeDelegate(this, &NetworkMgr::Stop, m_thread, WAIT_INFINITE)();
+    {
+        // Ensure the receive thread loop completes 
+        m_recvThreadExit.store(true);
+        if (m_recvThread && m_recvThread->joinable())
+            m_recvThread->join();
 
-    m_recvTimer.Stop();
-    m_recvTimer.Expired = nullptr;
+        return MakeDelegate(this, &NetworkMgr::Stop, m_thread, WAIT_INFINITE)();
+    }
+
     m_timeoutTimer.Stop();
     m_timeoutTimer.Expired = nullptr;
-    m_transport.Close();
-    //m_transport.Destroy();
+
+    m_sendTransport.Close();
+    m_recvTransport.Close();
+    //m_sendTransport.Destroy();
+    //m_recvTransport.Destroy();
 }
 
 void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note)
@@ -148,89 +167,13 @@ void NetworkMgr::SendDataMsg(DataMsg& data)
     m_dataMsgDel(data);
 }
 
-// Async send an actuator command and block the caller waiting until the remote 
-// client successfully receives the message or timeout. The execution order sequence 
-// numbers shown below. 
-// 
-// This is a verbose implementation specific to ActuatorMsg. See RemoteInvoke() 
-// for a generalized form of this function.
-bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
+bool NetworkMgr::SendDataMsgWait(DataMsg& data)
 {
-    // If caller is not executing on m_thread
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-    {
-        // *** Caller's thread executes this control branch ***
-
-        std::atomic<bool> success(false);
-        bool complete = false;
-        std::mutex mtx;
-        std::condition_variable cv;
-
-        // 7. Callback lambda handler for transport monitor when remote receives message (success or failure).
-        //    Callback context is m_thread.
-        SendStatusCallback statusCb = [&success, &complete, &cv, &mtx](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
-            if (id == ids::ACTUATOR_MSG_ID) {
-                {
-                    std::lock_guard<std::mutex> lock(mtx);                    
-                    complete = true;
-                    if (status == TransportMonitor::Status::SUCCESS)  
-                        success.store(true);   // Client received ActuatorMsg
-                }
-                cv.notify_one();
-            }
-        };
-
-        // 1. Register for send status callback (success or failure)
-        m_transportMonitor.SendStatusCb += dmq::MakeDelegate(statusCb);
-
-        // 2. Async reinvoke SendActuatorMsgWait() on m_thread context and wait for send to complete
-        auto del = MakeDelegate(this, &NetworkMgr::SendActuatorMsgWait, m_thread, SEND_TIMEOUT);
-        auto retVal = del.AsyncInvoke(msg);
-
-        // 5. Check that the remote delegate send succeeded
-        if (retVal.has_value() &&      // If async function call succeeded AND
-            retVal.value() == true)    // async function call returned true
-        {
-            // 6. Wait for statusCb callback to be invoked. Callback invoked when the 
-            //    receiver ack's the message or timeout.
-            std::unique_lock<std::mutex> lock(mtx);
-            while (!complete)
-            {
-                if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout)
-                {
-                    // Timeout waiting for remote delegate message ack
-                    std::cout << "Timeout SendActuatorMsgWait()" << std::endl;
-                }
-            }
-        }
-
-        // 8. Unregister from status callback
-        m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
-
-        // 9. Return the blocking async function invoke status to caller
-        return success.load();
-    }
-    else
-    {
-        // *** NetworkMgr::m_thread executes this control branch ***
-
-        // 3. Send actuator command to remote on m_thread
-        m_actuatorMsgDel(msg);        
-
-        // 4. Check if send succeeded
-        if (m_actuatorMsgDel.GetError() == DelegateError::SUCCESS)
-        {
-            return true;
-        }
-
-        std::cout << "Send failed!" << std::endl;
-        return false;
-    }
+    // Send data to remote and wait for success/failure. 
+    return RemoteInvoke(m_dataMsgDel, data);
 }
 
-// Alternative async send actuators message blocking function that relies 
-// upon RemoteInvoke. 
-bool NetworkMgr::SendActuatorMsgWaitAlt(ActuatorMsg& msg)
+bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
 {
     return RemoteInvoke(m_actuatorMsgDel, msg);
 }
@@ -239,34 +182,54 @@ bool NetworkMgr::SendActuatorMsgWaitAlt(ActuatorMsg& msg)
 // later by the caller using the std::future<bool>::get().
 std::future<bool> NetworkMgr::SendActuatorMsgFuture(ActuatorMsg& msg)
 {
-    return std::async(&NetworkMgr::SendActuatorMsgWaitAlt, this, std::ref(msg));
+    return std::async(&NetworkMgr::SendActuatorMsgWait, this, std::ref(msg));
 }
 
-// Poll called periodically on m_thread context
-void NetworkMgr::Poll()
+// Receive thread loop polls for incoming messages. This thread polls the receive socket
+// and sends the incoming argument data to the Incoming() handler function.
+void NetworkMgr::RecvThread()
 {
-    // Get incoming data
-    xstringstream arg_data(std::ios::in | std::ios::out | std::ios::binary);
-    DmqHeader header;
-    int error = m_transport.Receive(arg_data, header);
-
-    // Incoming remote delegate data arrived?
-    if (!error && !arg_data.str().empty())
+    static const std::chrono::milliseconds INVOKE_TIMEOUT(1000);
+    while (!m_recvThreadExit.load())
     {
-        if (header.GetId() != ACK_REMOTE_ID)
         {
-            // Process remote delegate message
-            auto receiveDelegate = m_receiveIdMap[header.GetId()];
-            if (receiveDelegate)
+            DmqHeader header;
+            xstringstream arg_data(std::ios::in | std::ios::out | std::ios::binary);
+
+            // Poll for incoming message
+            int error = m_recvTransport.Receive(arg_data, header);
+            if (!error && !arg_data.str().empty() && !m_recvThreadExit.load())
             {
-                // Invoke the receiver target callable with the sender's 
-                // incoming argument data
-                receiveDelegate->Invoke(arg_data);
+                // Async invoke the incoming message handler function. A delegate blocking async
+                // invoke here means header and arg_data argument are not copied but instead passed to 
+                // the target function directly.
+                auto success = MakeDelegate(this, &NetworkMgr::Incoming, m_thread, INVOKE_TIMEOUT).AsyncInvoke(header, arg_data);
+                if (!success.has_value())
+                {
+                    // Timeout occurred waiting for the incoming message handler to complete
+                    cout << "Incoming message handler timeout!" << endl;
+                }
             }
-            else
-            {
-                cout << "Receiver delegate not found!" << endl;
-            }
+        }
+    }
+}
+
+void NetworkMgr::Incoming(DmqHeader& header, xstringstream& arg_data)
+{
+    // Process incoming message
+    if (header.GetId() != ACK_REMOTE_ID)
+    {
+        // Process remote delegate message
+        auto receiveDelegate = m_receiveIdMap[header.GetId()];
+        if (receiveDelegate)
+        {
+            // Invoke the receiver target callable with the sender's 
+            // incoming argument data
+            receiveDelegate->Invoke(arg_data);
+        }
+        else
+        {
+            cout << "Receiver delegate not found!" << endl;
         }
     }
 }

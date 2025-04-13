@@ -8,6 +8,7 @@
 /// Transport callable argument data to/from a remote using ZeroMQ library. Update 
 /// BUFFER_SIZE below as necessary.
 
+#include "DelegateMQ.h"
 #include "predef/transport/ITransport.h"
 #include "predef/transport/ITransportMonitor.h"
 #include "predef/transport/DmqHeader.h"
@@ -15,8 +16,10 @@
 #include <sstream>
 #include <cstdio>
 
-/// @brief ZeroMQ transport example. Each Transport object must only be called
-/// by a single thread of control per ZeroMQ library.
+/// @brief ZeroMQ transport class. ZeroMQ socket instances must only be called by a 
+/// single thread of control. Each transport instance has its own internal thread of 
+/// control and all transport APIs are asynchronous. Each instances is an "active 
+/// object" with a private internal thread of control and async public APIs.
 class ZeroMqTransport : public ITransport
 {
 public:
@@ -28,27 +31,41 @@ public:
         SUB
     };
 
+    ZeroMqTransport() : m_thread("ZeroMQTransport"), m_sendTransport(this), m_recvTransport(this)
+    {
+        m_thread.CreateThread();
+    }
+
+    ~ZeroMqTransport()
+    {
+        m_thread.ExitThread();
+    }
+
     int Create(Type type, const char* addr)
     {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+            return MakeDelegate(this, &ZeroMqTransport::Create, m_thread, dmq::WAIT_INFINITE)(type, addr);
+
         m_zmqContext = zmq_ctx_new();
         m_type = type;
 
         if (m_type == Type::PAIR_CLIENT)
         {
-            m_zmqContext = zmq_ctx_new();
-
             // Create a PAIR socket and connect the client to the server address
             m_zmq = zmq_socket(m_zmqContext, ZMQ_PAIR);
             int rc = zmq_connect(m_zmq, addr);
             if (rc != 0) {
                 perror("zmq_connect failed");
+                zmq_close(m_zmq);
                 return 1;
             }
+
+            // Set the receive timeout to 100 milliseconds
+            int timeout = 100; // 100mS 
+            zmq_setsockopt(m_zmq, ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
         }
         else if (m_type == Type::PAIR_SERVER)
         {
-            m_zmqContext = zmq_ctx_new();
-
             // Create a PAIR socket and bind the server to an address
             m_zmq = zmq_socket(m_zmqContext, ZMQ_PAIR);
             int rc = zmq_bind(m_zmq, addr);
@@ -78,6 +95,7 @@ public:
             int rc = zmq_connect(m_zmq, addr);
             if (rc != 0) {
                 perror("zmq_connect failed");
+                zmq_close(m_zmq);
                 return 1;
             }
 
@@ -99,6 +117,9 @@ public:
 
     void Close()
     {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+            return MakeDelegate(this, &ZeroMqTransport::Close, m_thread, dmq::WAIT_INFINITE)();
+
         // Close the subscriber socket and context
         if (m_zmq)
             zmq_close(m_zmq);
@@ -107,20 +128,31 @@ public:
 
     void Destroy()
     {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+            return MakeDelegate(this, &ZeroMqTransport::Destroy, m_thread, dmq::WAIT_INFINITE)();
+
         if (m_zmqContext)
-            zmq_ctx_destroy(m_zmqContext);
+            zmq_ctx_term(m_zmqContext);
         m_zmqContext = nullptr;
     }
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+            return MakeDelegate(this, &ZeroMqTransport::Send, m_thread, dmq::WAIT_INFINITE)(os, header);
+
         if (os.bad() || os.fail()) {
             std::cout << "Error: xostringstream is in a bad state!" << std::endl;
             return -1;
         }
 
         if (m_type == Type::SUB) {
-            std::cout << "Cannot send on SUB socket!" << std::endl;
+            std::cout << "Error: Cannot send on SUB socket!" << std::endl;
+            return -1;
+        }
+
+        if (m_sendTransport != this) {
+            std::cout << "Error: This transport used for receive only!" << std::endl;
             return -1;
         }
 
@@ -141,6 +173,13 @@ public:
 
         size_t length = ss.str().length();
 
+        if (id != dmq::ACK_REMOTE_ID)
+        {
+            // Add sequence number to monitor
+            if (m_transportMonitor)
+                m_transportMonitor->Add(seqNum, id);
+        }
+
         // Send delegate argument data using ZeroMQ
         int err = zmq_send(m_zmq, ss.str().c_str(), length, ZMQ_DONTWAIT);
         if (err == -1)
@@ -148,33 +187,32 @@ public:
             std::cerr << "zmq_send failed with error: " << zmq_strerror(zmq_errno()) << std::endl;
             return zmq_errno();
         }
-        else
-        {
-            if (id != dmq::ACK_REMOTE_ID)
-            {
-                // Add sequence number to monitor
-                if (m_transportMonitor)
-                    m_transportMonitor->Add(seqNum, id);
-            }
-            return 0;
-        }
+        return 0;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+            return MakeDelegate(this, &ZeroMqTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
+
         if (m_zmq == nullptr) {
-            std::cout << "Socket not created!" << std::endl;
+            std::cout << "Error: Socket not created!" << std::endl;
             return -1;
         }
 
         if (m_type == Type::PUB) {
-            std::cout << "Cannot receive on PUB socket!" << std::endl;
+            std::cout << "Error: Cannot receive on PUB socket!" << std::endl;
+            return -1;
+        }
+
+        if (m_recvTransport != this) {
+            std::cout << "Error: This transport used for send only!" << std::endl;
             return -1;
         }
 
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
-        int size = zmq_recv(m_zmq, buffer, BUFFER_SIZE, ZMQ_DONTWAIT);
+        int size = zmq_recv(m_zmq, m_buffer, BUFFER_SIZE, 0);
         if (size == -1) {
             // Check if the error is due to a timeout
             if (zmq_errno() == EAGAIN) {
@@ -189,7 +227,7 @@ public:
         }
 
         // Write the received header data into the stringstream
-        headerStream.write(buffer, DmqHeader::HEADER_SIZE);
+        headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
         headerStream.seekg(0);
 
         uint16_t marker = 0;
@@ -212,7 +250,7 @@ public:
         header.SetSeqNum(seqNum);
 
         // Write the remaining target function argument data to stream
-        is.write(buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
+        is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
         if (id == dmq::ACK_REMOTE_ID)
         {
@@ -222,23 +260,42 @@ public:
         }
         else
         {          
-            if (m_transportMonitor)
+            if (m_transportMonitor && m_sendTransport)
             {
                 // Send header with received seqNum as the ack message
                 xostringstream ss_ack;
                 DmqHeader ack;
                 ack.SetId(dmq::ACK_REMOTE_ID);
                 ack.SetSeqNum(seqNum);
-                Send(ss_ack, ack);
+                m_sendTransport->Send(ss_ack, ack);
             }
         }
 
         return 0;  // Success
     }
 
+    // Set a transport monitor for checking message ack
     void SetTransportMonitor(ITransportMonitor* transportMonitor)
     {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+            return MakeDelegate(this, &ZeroMqTransport::SetTransportMonitor, m_thread, dmq::WAIT_INFINITE)(transportMonitor);
         m_transportMonitor = transportMonitor;
+    }
+
+    // Set an alternative send transport
+    void SetSendTransport(ITransport* sendTransport)
+    {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+            return MakeDelegate(this, &ZeroMqTransport::SetSendTransport, m_thread, dmq::WAIT_INFINITE)(sendTransport);
+        m_sendTransport = sendTransport;
+    }
+
+    // Set an alternative receive transport
+    void SetRecvTransport(ITransport* recvTransport)
+    {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+            return MakeDelegate(this, &ZeroMqTransport::SetRecvTransport, m_thread, dmq::WAIT_INFINITE)(recvTransport);
+        m_recvTransport = recvTransport;
     }
 
 private:
@@ -246,10 +303,14 @@ private:
     void* m_zmq = nullptr;
     Type m_type = Type::PAIR_CLIENT;
 
+    Thread m_thread;
+
+    ITransport* m_sendTransport = nullptr;
+    ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
 
     static const int BUFFER_SIZE = 4096;
-    char buffer[BUFFER_SIZE];
+    char m_buffer[BUFFER_SIZE] = {};
 };
 
 #endif

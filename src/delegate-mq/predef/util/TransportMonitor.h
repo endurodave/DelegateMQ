@@ -28,16 +28,16 @@ public:
     TransportMonitor(const dmq::Duration timeout) : TRANSPORT_TIMEOUT(timeout) {}
     ~TransportMonitor() 
     { 
-        const std::unique_lock<std::mutex> lock(m_lock);
+        const std::lock_guard<std::mutex> lock(m_lock);
         m_pending.clear(); 
     }
 
 	/// Add a sequence number
 	/// param[in] seqNum - the delegate message sequence number
     /// param[in] remoteId - the remote ID
-    void Add(uint16_t seqNum, dmq::DelegateRemoteId remoteId)
+    virtual void Add(uint16_t seqNum, dmq::DelegateRemoteId remoteId) override
     {
-        const std::unique_lock<std::mutex> lock(m_lock);
+        const std::lock_guard<std::mutex> lock(m_lock);
         TimeoutData d;
         d.timeStamp = std::chrono::system_clock::now();
         d.remoteId = remoteId;
@@ -47,13 +47,14 @@ public:
 	/// Remove a sequence number. Invokes SendStatusCb callback to notify 
     /// registered client of removal.
 	/// param[in] seqNum - the delegate message sequence number
-    void Remove(uint16_t seqNum)
+    virtual void Remove(uint16_t seqNum) override
     {
-        const std::unique_lock<std::mutex> lock(m_lock);
-        if (m_pending.count(seqNum) != 0)
+        const std::lock_guard<std::mutex> lock(m_lock);
+        auto it = m_pending.find(seqNum);
+        if (it != m_pending.end())
         {
-            TimeoutData d = m_pending[seqNum];
-            m_pending.erase(seqNum);
+            TimeoutData d = it->second;
+            m_pending.erase(it);
             SendStatusCb(d.remoteId, seqNum, Status::SUCCESS);
         }
     }
@@ -61,7 +62,7 @@ public:
 	/// Call periodically to process message timeouts
     void Process()
     {
-        const std::unique_lock<std::mutex> lock(m_lock);
+        const std::lock_guard<std::mutex> lock(m_lock);
         auto now = std::chrono::system_clock::now();
         auto it = m_pending.begin();
         while (it != m_pending.end()) 
@@ -69,7 +70,7 @@ public:
             // Calculate the elapsed time as a duration
             auto elapsed = std::chrono::duration_cast<dmq::Duration>(now - (*it).second.timeStamp);
 
-            // Has timeout expired?
+            // Has message timeout expired?
             if (elapsed > TRANSPORT_TIMEOUT)
             {
                 SendStatusCb((*it).second.remoteId, (*it).first, Status::TIMEOUT);
