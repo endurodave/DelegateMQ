@@ -17,8 +17,6 @@ MulticastDelegateSafe<void(CommandMsg&)> NetworkMgr::CommandMsgCb;
 MulticastDelegateSafe<void(DataMsg&)> NetworkMgr::DataMsgCb;
 MulticastDelegateSafe<void(ActuatorMsg&)> NetworkMgr::ActuatorMsgCb;
 
-typedef std::function<void(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)> SendStatusCallback;
-
 NetworkMgr::NetworkMgr() :
     m_thread("NetworkMgr"),
     m_transportMonitor(RECV_TIMEOUT),

@@ -152,6 +152,8 @@ private:
     RemoteEndpoint<DataDel, DataFunc> m_dataMsgDel;
     RemoteEndpoint<ActuatorDel, ActuatorFunc> m_actuatorMsgDel;
 
+    typedef std::function<void(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)> SendStatusCallback;
+
     /// Generic helper function for invoking any remote delegate. The call blocks 
     /// until the remote acknowleges the message or an error occurs. The execution 
     /// order sequence numbers shown below in comments.
