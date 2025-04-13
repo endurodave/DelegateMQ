@@ -153,6 +153,8 @@ private:
     RemoteEndpoint<ActuatorDel, ActuatorFunc> m_actuatorMsgDel;
 
     typedef std::function<void(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)> SendStatusCallback;
+    static const std::chrono::milliseconds SEND_TIMEOUT;
+    static const std::chrono::milliseconds RECV_TIMEOUT;
 
     /// Generic helper function for invoking any remote delegate. The call blocks 
     /// until the remote acknowleges the message or an error occurs. The execution 
@@ -234,7 +236,7 @@ private:
             endpointDel(std::forward<Args>(args)...);
 
             // 5. Check if send succeeded
-            if (endpointDel.GetError() == DelegateError::SUCCESS)
+            if (endpointDel.GetError() == dmq::DelegateError::SUCCESS)
             {
                 return true;
             }

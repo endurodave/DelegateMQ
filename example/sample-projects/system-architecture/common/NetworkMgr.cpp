@@ -7,8 +7,8 @@
 using namespace dmq;
 using namespace std;
 
-static const std::chrono::milliseconds SEND_TIMEOUT(100);
-static const std::chrono::milliseconds RECV_TIMEOUT(2000);
+const std::chrono::milliseconds NetworkMgr::SEND_TIMEOUT(100);
+const std::chrono::milliseconds NetworkMgr::RECV_TIMEOUT(2000);
 
 MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::ErrorCb;
 MulticastDelegateSafe<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)> NetworkMgr::SendStatusCb;
