@@ -72,10 +72,10 @@ private:
     }
 
     // Receiver target function called when sender remote delegate is invoked
-    void DataUpdate(Data& data, DataAux& dataAux)
+    void DataUpdate(Data& data)
     {
         if (data.dataPoints.size() > 0)
-            cout << data.msg << " " << data.dataPoints[0].x << " " << data.dataPoints[0].y << " " << dataAux.auxMsg << endl;
+            cout << data.msg << " " << data.dataPoints[0].x << " " << data.dataPoints[0].y << endl;
         else
             cout << "DataUpdate incoming data error!" << endl;
     }
@@ -86,10 +86,10 @@ private:
 
     xostringstream m_argStream;
     ZeroMqTransport m_transport;
-    Serializer<void(Data&, DataAux&)> m_serializer;
+    Serializer<void(Data&)> m_serializer;
 
     // Receiver remote delegate
-    DelegateMemberRemote<Receiver, void(Data&, DataAux&)> m_recvDelegate;
+    DelegateMemberRemote<Receiver, void(Data&)> m_recvDelegate;
 };
 
 #endif

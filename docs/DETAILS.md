@@ -74,6 +74,8 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [mqtt-rapidjson](#mqtt-rapidjson)
     - [win32-pipe-serializer](#win32-pipe-serializer)
     - [win32-upd-serializer](#win32-upd-serializer)
+    - [zeromq-cereal](#zeromq-cereal)
+    - [zeromq-bitsery](#zeromq-bitsery)
     - [zeromq-serializer](#zeromq-serializer)
     - [zeromq-msgpack-cpp](#zeromq-msgpack-cpp)
     - [zeromq-rapidjson](#zeromq-rapidjson)
@@ -133,14 +135,19 @@ Some remote delegate example projects have external library dependencies. Follow
    `./vcpkg install boost`<br>
    Linux, may need:<br>
    `./vcpkg install boost:x64-linux-dynamic`
-3. Install [ZeroMQ](https://zeromq.org/) using vcpkg.<br>
+3. Transport libraries
+- Install [ZeroMQ](https://zeromq.org/) using vcpkg.<br>
    `./vcvpkg install zeromq`
-4. Clone [RapidJSON](https://github.com/Tencent/rapidjson).
-5. Clone [MessagePack C++](https://github.com/msgpack/msgpack-c/tree/cpp_master) `cpp_master` branch.
-6. Clone [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS).
-7. Clone and build [Paho C MQTT](https://github.com/eclipse-paho/paho.mqtt.c).
-8. Edit `src/delegate-mq/External.cmake` file and update external library directory locations.
-9. Build any example subproject within the `example/sample-projects` directory.<br>
+- Clone and build [Paho C MQTT](https://github.com/eclipse-paho/paho.mqtt.c).
+4. Serialization libraries
+- Clone [MessagePack C++](https://github.com/msgpack/msgpack-c/tree/cpp_master) `cpp_master` branch.
+- Clone [Cereal](https://github.com/USCiLab/cereal).
+- Clone [Bitsery](https://github.com/fraillt/bitsery).
+- Clone [RapidJSON](https://github.com/Tencent/rapidjson).
+5. Operating systems
+  - Clone [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS).
+6. Edit `src/delegate-mq/External.cmake` file and update external library directory locations.
+7. Build any example subproject within the `example/sample-projects` directory.<br>
    `cmake -B build .`
 
 See [Sample Projects](#sample-projects) for details regarding each sample project.
@@ -1794,6 +1801,8 @@ See the `examples/sample-code` directory for additional examples.
 
 See the `examples/sample-projects` directory for example project. Most projects run on Windows or Linux. Others are Windows-only. See [Examples Setup](#examples-setup) before running sample projects.
 
+Each project focuses on a transport and serialization pair, but you can freely mix and match any transport with any serializer.
+
 ### system-architecture
 
 The System Architecture example demonstrates a complex client-server DelegateMQ application using the ZeroMQ and MessagePack support libraries. This example implements the acquisition of sensor and actuator data across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
@@ -1884,6 +1893,26 @@ Remote delegate example with Windows UDP socket and `serialize`.
 | `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | `serialize` class.
 | `IDispatcher` | Windows UDP socket for dispatcher transport.
+
+### zeromq-cereal
+
+Remote delegate example using ZeroMQ and Cereal libraries.
+
+| Interface | Implementation |
+| --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
+| `ISerializer` | Cereal library.  
+| `IDispatcher` | ZeroMQ library for dispatcher transport.
+
+### zeromq-bitsery
+
+Remote delegate example using ZeroMQ and Bitsery libraries.
+
+| Interface | Implementation |
+| --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
+| `ISerializer` | Bitsery library.  
+| `IDispatcher` | ZeroMQ library for dispatcher transport.
 
 ### zeromq-serializer
 

@@ -38,6 +38,18 @@ if(DMQ_SERIALIZE STREQUAL "DMQ_SERIALIZE_MSGPACK")
     set_and_check(MSGPACK_INCLUDE_DIR "${DMQ_ROOT_DIR}/../../../msgpack-c/include")
 endif()
 
+# Cereal C++ library
+# https://github.com/USCiLab/cereal
+if(DMQ_SERIALIZE STREQUAL "DMQ_SERIALIZE_CEREAL")
+    set_and_check(CEREAL_INCLUDE_DIR "${DMQ_ROOT_DIR}/../../../cereal/include")
+endif()
+
+# Bitsery C++ library
+# https://github.com/fraillt/bitsery
+if(DMQ_SERIALIZE STREQUAL "DMQ_SERIALIZE_BITSERY")
+    set_and_check(BITSERY_INCLUDE_DIR "${DMQ_ROOT_DIR}/../../../bitsery/include")
+endif()
+
 # RapidJSON C++ library
 # https://github.com/Tencent/rapidjson
 if(DMQ_SERIALIZE STREQUAL "DMQ_SERIALIZE_RAPIDJSON")
