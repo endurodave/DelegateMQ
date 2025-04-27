@@ -72,6 +72,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [bare-metal](#bare-metal)
     - [freertos-bare-metal](#freertos-bare-metal)
     - [mqtt-rapidjson](#mqtt-rapidjson)
+    - [nng-bitsery](#nng-bitsery)
     - [win32-pipe-serializer](#win32-pipe-serializer)
     - [win32-upd-serializer](#win32-upd-serializer)
     - [zeromq-cereal](#zeromq-cereal)
@@ -138,7 +139,8 @@ Some remote delegate example projects have external library dependencies. Follow
 3. Transport libraries
 - Install [ZeroMQ](https://zeromq.org/) using vcpkg.<br>
    `./vcvpkg install zeromq`
-- Clone and build [Paho C MQTT](https://github.com/eclipse-paho/paho.mqtt.c).
+- Clone and build [NNG](https://github.com/nanomsg/nng) (nanomsg-next-gen)
+- Clone and build [Paho C MQTT](https://github.com/eclipse-paho/paho.mqtt.c)
 4. Serialization libraries
 - Clone [MessagePack C++](https://github.com/msgpack/msgpack-c/tree/cpp_master) `cpp_master` branch.
 - Clone [Cereal](https://github.com/USCiLab/cereal).
@@ -1873,6 +1875,16 @@ Remote delegate example with MQTT and RapidJSON. Execute the pub and sub project
 | `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | RapidJSON library. 
 | `IDispatcher` | Shared sender/receiver MQTT library for dispatcher transport.
+
+### nng-bitsery
+
+Remote delegate example using NNG and Bitsery libraries.
+
+| Interface | Implementation |
+| --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
+| `ISerializer` | Bitsery serialization library.  
+| `IDispatcher` | NNG library for dispatcher transport.
 
 ### win32-pipe-serializer
 

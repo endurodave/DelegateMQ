@@ -92,6 +92,9 @@
 #if defined(DMQ_TRANSPORT_ZEROMQ)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/zeromq/ZeroMqTransport.h"
+#elif defined(DMQ_TRANSPORT_NNG)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/nng/NngTransport.h"
 #elif defined(DMQ_TRANSPORT_WIN32_PIPE)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/win32-pipe/Win32PipeTransport.h"

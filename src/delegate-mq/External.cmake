@@ -21,6 +21,13 @@ if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ZEROMQ")
     endif()
 endif()
 
+# NNG library
+# https://github.com/nanomsg/nng
+if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_NNG")
+    set_and_check(NNG_INCLUDE_DIR "${DMQ_ROOT_DIR}/../../../nng/include")
+    set_and_check(NNG_LIBRARY_DIR "${DMQ_ROOT_DIR}/../../../nng/install/lib")
+endif()
+
 # MQTT C library
 # https://github.com/eclipse-paho/paho.mqtt.c
 if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_MQTT")
