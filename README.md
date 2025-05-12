@@ -1,12 +1,26 @@
 ![License MIT](https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue)
 [![conan Ubuntu](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml)
-[![conan Ubuntu](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml)
+[![conan Clang](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml)
 [![conan Windows](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml)
 [![Codecov](https://codecov.io/gh/endurodave/DelegateMQ/branch/master/graph/badge.svg)](https://app.codecov.io/gh/endurodave/DelegateMQ)
 
 # Delegates in C++
 
-The DelegateMQ C++ library enables function invocations on any callable, either synchronously, asynchronously, or on a remote endpoint. This messaging middleware library unifies function calls across threads, processes, or processors through a simple delegate interface. It provides well-defined abstract interfaces and numerous concrete examples, making it easy to port to any platform. As a header-only template library, DelegateMQ is thread-safe, unit-tested, and easy to use.
+DelegateMQ is a C++ header-only library for invoking any callable (e.g., function, method, lambda):
+
+- Synchronously
+- Asynchronously
+- Remotely across processes or processors
+
+It unifies function calls across threads or systems via a simple delegate interface. DelegateMQ is thread-safe, unit-tested, and easy to port to any platform.
+
+# Key Concepts
+
+- `MakeDelegate` – Creates a delegate instance bound to a callable (lambda, function, or method).
+- `MulticastDelegateSafe` – A thread-safe container of delegates, allowing broadcast-style invocation.
+- `Thread` – A cross-platform thread class capable of asynchronous delegate invocation.
+
+# Examples
 
 `Subscriber` registers with `Publisher` to receive asynchronous callbacks.
 
@@ -89,7 +103,8 @@ public:
     // Store data asynchronously on m_thread context (non-blocking)
     void StoreAsync(const Data& data)
     {
-        // If caller is not executing on m_thread
+        // If the caller thread is not the internal thread, reinvoke this function 
+        // asynchronously on the internal thread to ensure thread-safety
         if (m_thread.GetThreadId() != Thread::GetCurrentThreadId()) {
             // Reinvoke StoreAsync(data) on m_thread context
             return dmq::MakeDelegate(this, &DataStore::StoreAsync, m_thread)(data);
@@ -107,7 +122,7 @@ private:
 
 In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, callbacks, asynchronous APIs, or when you need to pass functions as arguments.
 
-Synchronous and asynchronous delegates are available. Asynchronous variants handle both non-blocking and blocking modes with a timeout. The library supports all types of target functions, including free functions, class member functions, static class functions, lambdas, and `std::function`. It is capable of handling any function signature, regardless of the number of arguments or return value. All argument types are supported, including by value, pointers, pointers to pointers, and references. The delegate library takes care of the intricate details of function invocation across thread boundaries. Concrete porting examples below with easy porting to others.
+Synchronous and asynchronous delegates are available. Asynchronous variants handle both non-blocking and blocking modes with a timeout. The library supports anonymous invocation of any target callable regardless of the number of arguments or return value. All argument types are supported, including by value, pointers, pointers to pointers, and references. The delegate library takes care of the intricate details of function invocation across thread boundaries. Concrete porting examples below with easy porting to others.
 
 * **Operating System:** Windows, Linux, [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS)
 
@@ -136,7 +151,9 @@ Typical use cases are:
 * Design Patterns (Active Object)
 * `std::async` Thread Targeting
 
-The DelegateMQ library asynchronous features differ from `std::async` in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into an event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.
+Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.
+
+# Modular Architecture
 
 DelegateMQ uses an external thread, transport, and serializer, all of which are based on simple, well-defined interfaces.
 
@@ -145,29 +162,28 @@ DelegateMQ uses an external thread, transport, and serializer, all of which are 
 
 The library's flexible CMake build options allow for the inclusion of only the necessary features. Synchronous, asynchronous, and remote delegates can be used individually or in combination.
 
-Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.
+# Getting Started
+
+To build and run DelegateMQ, follow these simple steps. The library uses <a href="https://www.cmake.org">CMake</a> to generate build files and supports Visual Studio, GCC, and Clang toolchains.
+
+1. Clone the repository.
+2. From the repository root, run the following CMake command:   
+   `cmake -B build .`
+3. Build and run the project within the `build` directory. 
+
+See [Example Projects](docs/DETAILS.md#example-projects) to build other project examples.
+
+# Documentation
+
+ - See [Design Details](docs/DETAILS.md) for implementation design documentation and more examples.
+ - See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation. 
+ - See [Unit Test Code Coverage](https://app.codecov.io/gh/endurodave/DelegateMQ) test results.
 
 # Motivation
 
 Systems are composed of various design patterns or libraries to implement callbacks, asynchronous APIs, and inter-thread or inter-processor communications. These elements typically lack shared commonality. Callbacks are one-off implementations by individual developers, messages between threads rely on OS message queues, and communication libraries handle data transfer complexities. However, the underlying commonality lies in the need to move argument data to the target handler function, regardless of its location.
 
 The DelegateMQ middleware effectively encapsulates all data movement and function invocation within a single library. Whether the target function is a static method, class method, or lambda—residing locally in a separate thread or remotely on a different processor—the library ensures the movement of argument data (marshalling when necessary) and invokes the target function. The low-level details of data movement and function invocation are neatly abstracted from the application layer.
-
-# Documentation
-
- See [Design Details](docs/DETAILS.md) for implementation design documentation and more examples.
-
- See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation. 
-
- See [Unit Test Code Coverage](https://app.codecov.io/gh/endurodave/DelegateMQ) test results.
-
-# Project Build
-
-<a href="https://www.cmake.org">CMake</a> is used to create the build files. Visual Studio, GCC, and Clang toolchains are supported. Easy porting to other targets. Execute CMake console commands in the project root directory. 
-
-`cmake -B build -S .`
-
-See [Example Projects](docs/DETAILS.md#example-projects) to build other project examples.
 
 # Features
 
@@ -190,16 +206,14 @@ DelegateMQ at a glance.
 | Operation System | Any. Custom `IThread` implementation may be required. |
 | Language | C++17 or higher |
 
-# Related Repositories
-
-## Alternative Implementations
+# Alternative Implementations
 
 Alternative asynchronous implementations similar in concept to DelegateMQ, simpler, and less features.
 
 * <a href="https://github.com/endurodave/AsyncCallback">Asynchronous Callbacks in C++</a> - A C++ asynchronous callback framework.
 * <a href="https://github.com/endurodave/C_AsyncCallback">Asynchronous Callbacks in C</a> - A C language asynchronous callback framework.
 
-## Other Projects Using DelegateMQ
+# Other Projects Using DelegateMQ
 
 Repositories utilizing the DelegateMQ library.
 

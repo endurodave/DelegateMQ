@@ -1,6 +1,6 @@
 ![License MIT](https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue)
 [![conan Ubuntu](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml)
-[![conan Ubuntu](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml)
+[![conan Clang](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml)
 [![conan Windows](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml)
 [![Codecov](https://codecov.io/gh/endurodave/DelegateMQ/branch/master/graph/badge.svg)](https://app.codecov.io/gh/endurodave/DelegateMQ)
 
@@ -90,7 +90,13 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 
 # Introduction
 
-The DelegateMQ C++ library enables function invocations on any callable, either synchronously, asynchronously, or on a remote endpoint. This lightweight messaging middleware library unifies function calls across threads, processes, or processors through a simple delegate interface. It provides well-defined abstract interfaces and numerous concrete examples, making it easy to port to any platform. As a header-only template library, DelegateMQ is thread-safe, unit-tested, and easy to use.
+DelegateMQ is a C++ header-only library for invoking any callable (e.g., function, method, lambda):
+
+- Synchronously
+- Asynchronously
+- Remotely across processes or processors
+
+It unifies function calls across threads or systems via a simple delegate interface. DelegateMQ is thread-safe, unit-tested, and easy to port to any platform.
 
 1. **Header-Only Library** – implemented using a small number of header files
 2. **Any Compiler** – standard C++17 code for any compiler
@@ -115,9 +121,12 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 
 # Build
 
-The repository root project build executes all unit tests and examples with no external code or library dependencies on Windows or Linux systems. [CMake](https://cmake.org/) is used to create the project files in the `build` directory.
+To build and run DelegateMQ, follow these simple steps. The library uses <a href="https://www.cmake.org">CMake</a> to generate build files and supports Visual Studio, GCC, and Clang toolchains.
 
-`cmake -B build .`
+1. Clone the repository.
+2. From the repository root, run the following CMake command:   
+   `cmake -B build .`
+3. Build and run the project within the `build` directory. 
 
 ## Example Projects
 
