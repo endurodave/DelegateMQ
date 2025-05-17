@@ -148,7 +148,7 @@ Some remote delegate example projects have external library dependencies. Follow
 3. Transport libraries
 - Install [ZeroMQ](https://zeromq.org/) using vcpkg.<br>
    `./vcvpkg install zeromq`
-- Clone and build [NNG](https://github.com/nanomsg/nng) (nanomsg-next-gen)
+- Clone and build [NNG](https://github.com/nanomsg/nng) (nanomsg-next-gen) `stable` branch.
 - Clone and build [Paho C MQTT](https://github.com/eclipse-paho/paho.mqtt.c)
 4. Serialization libraries
 - Clone [MessagePack C++](https://github.com/msgpack/msgpack-c/tree/cpp_master) `cpp_master` branch.

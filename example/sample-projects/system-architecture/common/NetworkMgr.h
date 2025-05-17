@@ -125,7 +125,7 @@ private:
     // Receive thread for incoming messages
     std::thread* m_recvThread = nullptr;
 
-    // Flag to exist the receive thread
+    // Flag to exit the receive thread
     std::atomic<bool> m_recvThreadExit = false;
 
     // Timer for processing message timeouts

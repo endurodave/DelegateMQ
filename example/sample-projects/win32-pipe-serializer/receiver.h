@@ -75,7 +75,7 @@ private:
     void DataUpdate(Data& data, DataAux& dataAux)
     {
         if (data.dataPoints.size() > 0)
-            cout << data.msg << " " << data.dataPoints[0].y << " " << data.dataPoints[0].y << " " << dataAux.auxMsg << endl;
+            cout << data.msg << " " << data.dataPoints[0].x << " " << data.dataPoints[0].y << " " << dataAux.auxMsg << endl;
         else
             cout << "DataUpdate incoming data error!" << endl;
     }
