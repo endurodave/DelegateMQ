@@ -135,10 +135,10 @@ private:
     Dispatcher m_dispatcher;
 
     // Send transport for outgoing application
-    Win32UdpTransport m_sendTransport;
+    UdpTransport m_sendTransport;
 
     // Receive transport for incoming application
-    Win32UdpTransport m_recvTransport;
+    UdpTransport m_recvTransport;
 
     // Monitor message timeouts
     TransportMonitor m_transportMonitor;

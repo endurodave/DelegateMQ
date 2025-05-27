@@ -28,7 +28,7 @@ public:
         m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, id);
 
         // Set the transport
-        m_transport.Create(Win32UdpTransport::Type::SUB, TEXT("127.0.0.1"), 8080);
+        m_transport.Create(UdpTransport::Type::SUB, "127.0.0.1", 8080);
 
         // Create the receiver thread
         m_thread.CreateThread();
@@ -85,7 +85,7 @@ private:
     Timer m_recvTimer;
 
     xostringstream m_argStream;
-    Win32UdpTransport m_transport;
+    UdpTransport m_transport;
     Serializer<void(Data&, DataAux&)> m_serializer;
 
     // Receiver remote delegate

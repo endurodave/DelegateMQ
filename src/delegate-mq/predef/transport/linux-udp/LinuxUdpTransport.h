@@ -22,7 +22,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
-class LinuxUdpTransport : public ITransport
+// Linux UDP transport example
+class UdpTransport : public ITransport
 {
 public:
     enum class Type
@@ -31,12 +32,12 @@ public:
         SUB
     };
 
-    LinuxUdpTransport() : : m_thread("Win32UdpTransport"), m_sendTransport(this), m_recvTransport(this)
+    UdpTransport() : m_thread("UdpTransport"), m_sendTransport(this), m_recvTransport(this)
     {
         m_thread.CreateThread();
     }
 
-    ~LinuxUdpTransport()
+    ~UdpTransport()
     {
         m_thread.ExitThread();
     }
@@ -44,7 +45,7 @@ public:
     int Create(Type type, const char* addr, uint16_t port)
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &Win32UdpTransport::Create, m_thread, dmq::WAIT_INFINITE)(type, addr, port);
+            return MakeDelegate(this, &UdpTransport::Create, m_thread, dmq::WAIT_INFINITE)(type, addr, port);
 
         m_type = type;
 
@@ -95,7 +96,7 @@ public:
     void Close()
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &Win32UdpTransport::Close, m_thread, dmq::WAIT_INFINITE)();
+            return MakeDelegate(this, &UdpTransport::Close, m_thread, dmq::WAIT_INFINITE)();
 
         if (m_socket >= 0)
         {
@@ -107,7 +108,7 @@ public:
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &Win32UdpTransport::Send, m_thread, dmq::WAIT_INFINITE)(os,
+            return MakeDelegate(this, &UdpTransport::Send, m_thread, dmq::WAIT_INFINITE)(os, header);
 
         if (os.bad() || os.fail()) {
             std::cerr << "Stream state error." << std::endl;
@@ -150,7 +151,7 @@ public:
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &Win32UdpTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
+            return MakeDelegate(this, &UdpTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
 
         if (m_type == Type::PUB || m_recvTransport != this) {
             std::cerr << "Receive operation not allowed." << std::endl;
@@ -212,21 +213,21 @@ public:
     void SetTransportMonitor(ITransportMonitor* transportMonitor)
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &Win32UdpTransport::SetTransportMonitor, m_thread, dmq::WAIT_INFINITE)(transportMonitor);
+            return MakeDelegate(this, &UdpTransport::SetTransportMonitor, m_thread, dmq::WAIT_INFINITE)(transportMonitor);
         m_transportMonitor = transportMonitor;
     }
 
     void SetSendTransport(ITransport* sendTransport)
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &Win32UdpTransport::SetSendTransport, m_thread, dmq::WAIT_INFINITE)(sendTransport);
+            return MakeDelegate(this, &UdpTransport::SetSendTransport, m_thread, dmq::WAIT_INFINITE)(sendTransport);
         m_sendTransport = sendTransport;
     }
 
     void SetRecvTransport(ITransport* recvTransport)
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &Win32UdpTransport::SetRecvTransport, m_thread, dmq::WAIT_INFINITE)(recvTransport);
+            return MakeDelegate(this, &UdpTransport::SetRecvTransport, m_thread, dmq::WAIT_INFINITE)(recvTransport);
         m_recvTransport = recvTransport;
     }
 

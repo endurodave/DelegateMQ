@@ -101,6 +101,9 @@
 #elif defined(DMQ_TRANSPORT_WIN32_UDP)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/win32-udp/Win32UdpTransport.h"
+#elif defined(DMQ_TRANSPORT_LINUX_UDP)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/linux-udp/LinuxUdpTransport.h"
 #elif defined(DMQ_TRANSPORT_MQTT)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/mqtt/MqttTransport.h"

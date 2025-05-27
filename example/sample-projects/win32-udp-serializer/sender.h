@@ -28,7 +28,7 @@ public:
         m_sendDelegate.SetErrorHandler(MakeDelegate(this, &Sender::ErrorHandler));
 
         // Set the transport
-        m_transport.Create(Win32UdpTransport::Type::PUB, TEXT("127.0.0.1"), 8080);
+        m_transport.Create(UdpTransport::Type::PUB, "127.0.0.1", 8080);
         m_dispatcher.SetTransport(&m_transport);
         
         // Create the sender thread
@@ -82,7 +82,7 @@ private:
 
     xostringstream m_argStream;
     Dispatcher m_dispatcher;
-    Win32UdpTransport m_transport;
+    UdpTransport m_transport;
     Serializer<void(Data&, DataAux&)> m_serializer;
 
     // Sender remote delegate

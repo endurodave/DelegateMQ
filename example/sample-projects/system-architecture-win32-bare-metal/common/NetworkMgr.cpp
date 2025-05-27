@@ -58,11 +58,11 @@ int NetworkMgr::Create()
 
     int err = 0;
 #ifdef SERVER_APP
-    err = m_sendTransport.Create(Win32UdpTransport::Type::PUB, TEXT("127.0.0.1"), 50000);
-    err = m_recvTransport.Create(Win32UdpTransport::Type::SUB, TEXT("127.0.0.1"), 50001);
+    err = m_sendTransport.Create(UdpTransport::Type::PUB, "127.0.0.1", 50000);
+    err = m_recvTransport.Create(UdpTransport::Type::SUB, "127.0.0.1", 50001);
 #else
-    err = m_sendTransport.Create(Win32UdpTransport::Type::PUB, TEXT("127.0.0.1"), 50001);
-    err = m_recvTransport.Create(Win32UdpTransport::Type::SUB, TEXT("127.0.0.1"), 50000);
+    err = m_sendTransport.Create(UdpTransport::Type::PUB, "127.0.0.1", 50001);
+    err = m_recvTransport.Create(UdpTransport::Type::SUB, "127.0.0.1", 50000);
 #endif
 
     // Set transport monitor callback to catch communication success and error
