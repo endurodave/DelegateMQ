@@ -171,7 +171,7 @@ To build and run DelegateMQ, follow these simple steps. The library uses <a href
    `cmake -B build .`
 3. Build and run the project within the `build` directory. 
 
-See [Example Projects](docs/DETAILS.md#example-projects) to build other project examples.
+See [Sample Projects](docs/DETAILS.md#sample-projects) to build other project examples.
 
 # Documentation
 
