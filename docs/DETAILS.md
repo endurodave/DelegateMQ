@@ -1817,8 +1817,8 @@ Each project focuses on a transport and serialization pair, but you can freely m
 
 The following remote delegate sample projects have no external library dependencies:
 
-* [bare-metal](../example/sample-projects/bare-metal/) - Windows and Linux.
-* [system-architecture-win32-bare-metal](../example/sample-projects/system-architecture-win32-bare-metal/) - Windows only.
+* [bare-metal](../example/sample-projects/bare-metal/) - simple remote delegate app on Windows and Linux.
+* [system-architecture-bare-metal](../example/sample-projects/system-architecture-bare-metal/) - complex remote delegate client/server apps using UDP on Windows or Linux.
 
 All other projects require external 3rd party library support. See [Examples Setup](#examples-setup) for external library installation setup.
 
@@ -1835,7 +1835,7 @@ The System Architecture example demonstrates a complex client-server DelegateMQ 
 Two System Architecture build projects exist:
 
 * [system-architecture](../example/sample-projects/system-architecture/) - builds on Windows and Linux. Requires MessagePack and ZeroMQ external libraries. See [Examples Setup](#examples-setup).
-* [system-architecture-win32-bare-metal](../example/sample-projects/system-architecture-win32-bare-metal/) - builds on Windows only. No external libraries required.
+* [system-architecture-bare-metal](../example/sample-projects/system-architecture-bare-metal/) - builds on Windows or Linux. No external libraries required.
 
 Follow the steps below to execute the projects.
 
