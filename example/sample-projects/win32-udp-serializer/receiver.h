@@ -28,7 +28,7 @@ public:
         m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, id);
 
         // Set the transport
-        m_transport.Create(Win32UdpTransport::Type::SUB, TEXT("\\\\.\\pipe\\pipedelegate"));
+        m_transport.Create(Win32UdpTransport::Type::SUB, TEXT("127.0.0.1"), 8080);
 
         // Create the receiver thread
         m_thread.CreateThread();

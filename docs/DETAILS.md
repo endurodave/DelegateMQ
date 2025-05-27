@@ -68,6 +68,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Remote Delegate Example](#remote-delegate-example)
   - [More Examples](#more-examples)
   - [Sample Projects](#sample-projects)
+    - [External Dependencies](#external-dependencies)
     - [system-architecture](#system-architecture)
     - [bare-metal](#bare-metal)
     - [freertos-bare-metal](#freertos-bare-metal)
@@ -1810,13 +1811,20 @@ See the `examples/sample-code` directory for additional examples.
 
 ## Sample Projects
 
-See the `examples/sample-projects` directory for example project. Most projects run on Windows or Linux. Others are Windows-only. See [Examples Setup](#examples-setup) before running sample projects.
+Each project focuses on a transport and serialization pair, but you can freely mix and match any transport with any serializer. See the `examples/sample-projects` directory for example project.
 
-Each project focuses on a transport and serialization pair, but you can freely mix and match any transport with any serializer.
+### External Dependencies
+
+The following remote delegate sample projects have no external library dependencies:
+
+* [bare-metal](../example/sample-projects/bare-metal/) - Windows and Linux.
+* [system-architecture-win32-bare-metal](../example/sample-projects/system-architecture-win32-bare-metal/) - Windows only.
+
+All other projects require external 3rd party library support. See [Examples Setup](#examples-setup) for external library installation setup.
 
 ### system-architecture
 
-The System Architecture example demonstrates a complex client-server DelegateMQ application using the ZeroMQ and MessagePack support libraries. This example implements the acquisition of sensor and actuator data across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
+The System Architecture example demonstrates a complex client-server DelegateMQ application. This example implements the acquisition of sensor and actuator data across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
 
 `NetworkMgr` has three types of remote delegate API examples:
 
@@ -1824,14 +1832,19 @@ The System Architecture example demonstrates a complex client-server DelegateMQ 
 2. **Blocking** - message is send and blocks waiting for the remote to acknowledge or timeout.
 3. **Future** - message is send without waiting and a `std::future` is used to capture the return value later.
 
+Two System Architecture build projects exist:
+
+* [system-architecture](../example/sample-projects/system-architecture/) - builds on Windows and Linux. Requires MessagePack and ZeroMQ external libraries. See [Examples Setup](#examples-setup).
+* [system-architecture-win32-bare-metal](../example/sample-projects/system-architecture-win32-bare-metal/) - builds on Windows only. No external libraries required.
+
 Follow the steps below to execute the projects.
 
-1. Setup ZeroMQ and MessagePack external library dependencies ([Examples Setup](#examples-setup))
+1. Setup ZeroMQ and MessagePack external library dependencies, if necessary ([Examples Setup](#examples-setup))
 2. Execute CMake command in `client` and `server` directories.  
    `cmake -B build .`
-3. Build client and server applications.
-4. Start `delegate_server_app` 
-5. Start `delegate_client_app`
+3. Build client and server applications within the `build` directory.
+4. Start `delegate_server_app` first.
+5. Start `delegate_client_app` second.
 6. Client and server communicate and output debug data to the console.
 
 | Class | Location | Details |
