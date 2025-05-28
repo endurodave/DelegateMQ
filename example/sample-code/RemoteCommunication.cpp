@@ -167,9 +167,11 @@ namespace Example
         // Send data to the remote
         void Send()
         {
+            static int pos = 0;
+
             Data data;
-            data.x = 1;
-            data.y = 2;
+            data.x = pos++;
+            data.y = pos++;
             data.msg = "Hello!";
 
             m_sendDelegate(data);
@@ -230,11 +232,6 @@ namespace Example
         // Receiver target function called when sender remote delegate is invoked
         void DataUpdate(Data& data)
         {
-            if (data.x != 1)
-            {
-                int h = 0;
-                h++;
-            }
             cout << "Receiver::DataUpdate: " << data.x;
             cout << " " << data.y;
             cout << " " << data.msg;

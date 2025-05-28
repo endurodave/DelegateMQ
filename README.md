@@ -105,7 +105,8 @@ public:
     {
         // If the caller thread is not the internal thread, reinvoke this function 
         // asynchronously on the internal thread to ensure thread-safety
-        if (m_thread.GetThreadId() != Thread::GetCurrentThreadId()) {
+        if (m_thread.GetThreadId() != Thread::GetCurrentThreadId()) 
+        {
             // Reinvoke StoreAsync(data) on m_thread context
             return dmq::MakeDelegate(this, &DataStore::StoreAsync, m_thread)(data);
         }
@@ -195,7 +196,7 @@ DelegateMQ at a glance.
 | Usages | Callbacks (synchronous and asynchronous), asynchronous API's, communication and data distribution, and more |
 | Library | Allows customizing data sharing between threads, processes, or processors |
 | Complexity | Lightweight and extensible through external library interfaces and full source code |
-| Threading | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
+| Threads | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
 | Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |
 | Transport | External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (`ITransport`)  |
 | Timeouts and Retries | Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution (`ITransportMonitor`) |

@@ -218,6 +218,9 @@ private:
                     {
                         // Timeout waiting for remote delegate message ack
                         std::cout << "Timeout RemoteInvoke()" << std::endl;
+
+                        // Set complete to true to exit wait loop
+                        complete = true; 
                     }
                 }
             }

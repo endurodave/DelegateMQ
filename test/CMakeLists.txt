@@ -5,6 +5,7 @@ set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
 # Set build options
+set(DMQ_ASSERTS "OFF")
 set(DMQ_ALLOCATOR "OFF")
 set(DMQ_UTIL "ON")
 set(DMQ_THREAD "DMQ_THREAD_STDLIB")

@@ -131,11 +131,9 @@ To build and run DelegateMQ, follow these simple steps. The library uses <a href
 
 ## Example Projects
 
-Remote delegate example projects are located within the `example/sample-projects` directory and explained in [Sample Projects](#sample-projects). Most sample projects rely upon one or more external libraries as documented in [Example Setup](#examples-setup).
+Remote delegate example projects are located within the `example/sample-projects` directory and explained in [Sample Projects](#sample-projects). 
 
-The [system-architecture](#system-architecture) project located within the `example\sample-projects\system-architecture` directory is a client-server application that runs on Windows or Linux, showcasing various delegate-based design techniques, including remote communication, asynchronous callbacks/APIs, and more. The application builds rely upon the ZeroMQ and MessagePack external libraries as explained in [Example Setup](#examples-setup).
-
-The other example projects narrowly demonstrate a particular remote delegate combination of transport and serialization libraries.
+The [system-architecture](#system-architecture) project located within the `example\sample-projects\system-architecture-no-deps` directory is a client-server application with no external library dependencies. The app runs on Windows and Linux, showcasing various delegate-based design techniques, including remote communication, asynchronous callbacks/APIs, and more.
 
 ## Examples Setup
 
@@ -172,6 +170,7 @@ Set the desired DMQ build options and include `DelegateMQ.cmake` within your `CM
 
 ```
 # Set build options
+set(DMQ_ASSERTS "OFF")
 set(DMQ_ALLOCATOR "OFF")
 set(DMQ_UTIL "ON")
 set(DMQ_THREAD "DMQ_THREAD_STDLIB")
@@ -1811,14 +1810,14 @@ See the `examples/sample-code` directory for additional examples.
 
 ## Sample Projects
 
-Each project focuses on a transport and serialization pair, but you can freely mix and match any transport with any serializer. See the `examples/sample-projects` directory for example project.
+Each project focuses on a transport and serialization pair, but you can freely mix and match any transport with any serializer. See the `examples/sample-projects` directory for example projects.
 
 ### External Dependencies
 
 The following remote delegate sample projects have no external library dependencies:
 
 * [bare-metal](../example/sample-projects/bare-metal/) - simple remote delegate app on Windows and Linux.
-* [system-architecture-bare-metal](../example/sample-projects/system-architecture-bare-metal/) - complex remote delegate client/server apps using UDP on Windows or Linux.
+* [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - complex remote delegate client/server apps using UDP on Windows or Linux.
 
 All other projects require external 3rd party library support. See [Examples Setup](#examples-setup) for external library installation setup.
 
@@ -1835,7 +1834,7 @@ The System Architecture example demonstrates a complex client-server DelegateMQ 
 Two System Architecture build projects exist:
 
 * [system-architecture](../example/sample-projects/system-architecture/) - builds on Windows and Linux. Requires MessagePack and ZeroMQ external libraries. See [Examples Setup](#examples-setup).
-* [system-architecture-bare-metal](../example/sample-projects/system-architecture-bare-metal/) - builds on Windows or Linux. No external libraries required.
+* [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - builds on Windows or Linux. No external libraries required.
 
 Follow the steps below to execute the projects.
 
