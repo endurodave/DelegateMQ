@@ -209,12 +209,14 @@ DelegateMQ at a glance.
 | Library | Allows customizing data sharing between threads, processes, or processors |
 | Complexity | Lightweight and extensible through external library interfaces and full source code |
 | Threads | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
-| Message Priority | Asynchronous delegates support prioritization to ensure timely execution of critical messages. |
+| Multicast | Broadcast invoke anonymous callable targets onto multiple threads |
+| Message Priority | Asynchronous delegates support prioritization to ensure timely execution of critical messages |
 | Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |
 | Transport | External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (`ITransport`)  |
 | Timeouts and Retries | Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution (`ITransportMonitor`) |
 | Message Buffering | Remote delegate message buffering provided by a communication library (e.g. ZeroMQ) or custom solution within transport |
 | Dynamic Memory | Heap or DelegateMQ fixed-block allocator |
+| Debug Logging | Debug logging using spdlog C++ logging library |
 | Error Handling | Configurable for return error code, assert or exception |
 | Embedded Friendly | Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "superloop"). |
 | Operation System | Any. Custom `IThread` implementation may be required. |

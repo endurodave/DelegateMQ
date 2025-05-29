@@ -20,6 +20,14 @@
 #include <utility>
 #include <future>
 
+#ifdef DMQ_LOG
+#ifdef _WIN32
+// https://github.com/gabime/spdlog
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/msvc_sink.h>  // MSVC sink
+#endif
+#endif
+
 // main.cpp
 // @see https://github.com/endurodave/DelegateMQ
 // David Lafreniere, 2025.
@@ -267,6 +275,23 @@ using namespace Main;
 //------------------------------------------------------------------------------
 int main(void)
 {
+#ifdef DMQ_LOG
+#ifdef _WIN32
+    // Create the MSVC sink (multi-threaded)
+    auto msvc_sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+
+    // Optional: Set the log level for the sink
+    msvc_sink->set_level(spdlog::level::debug);
+
+    // Create a logger using the MSVC sink
+    auto logger = std::make_shared<spdlog::logger>("msvc_logger", msvc_sink);
+
+    // Set as default logger (optional)
+    spdlog::set_default_logger(logger);
+    spdlog::set_level(spdlog::level::debug); // Show debug and above
+#endif
+#endif
+
     TestStruct testStruct;
     testStruct.x = 123;
     TestStruct* pTestStruct = &testStruct;

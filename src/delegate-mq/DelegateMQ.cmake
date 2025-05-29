@@ -10,7 +10,9 @@
 # Set DMQ build options:
 #
 #   # Set DMQ build options. Update as necessary.
+#   set(DMQ_ASSERTS "OFF")
 #   set(DMQ_ALLOCATOR "OFF")
+#   set(DMQ_LOG "OFF")
 #   set(DMQ_UTIL "ON")
 #   set(DMQ_THREAD "DMQ_THREAD_STDLIB")
 #   set(DMQ_SERIALIZE "DMQ_SERIALIZE_NONE")

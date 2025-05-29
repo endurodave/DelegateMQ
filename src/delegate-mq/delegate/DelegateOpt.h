@@ -46,4 +46,16 @@ namespace dmq
     #define XALLOCATOR
 #endif
 
+#ifdef DMQ_LOG
+    #include <spdlog/spdlog.h>
+    #define LOG_INFO(...)    spdlog::info(__VA_ARGS__)
+    #define LOG_DEBUG(...)   spdlog::debug(__VA_ARGS__)
+    #define LOG_ERROR(...)   spdlog::error(__VA_ARGS__)
+#else
+    // No-op macros when logging disabled
+    #define LOG_INFO(...)    do {} while(0)
+    #define LOG_DEBUG(...)   do {} while(0)
+    #define LOG_ERROR(...)   do {} while(0)
+#endif
+
 #endif

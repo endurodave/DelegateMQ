@@ -12,6 +12,8 @@
     #error This code must be compiled as a Win32 or Win64 application.
 #endif
 
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #pragma comment(lib, "ws2_32.lib")  // Link with Winsock library
 
 #include "predef/transport/ITransport.h"
@@ -70,7 +72,13 @@ public:
             // Set up the server address structure
             m_addr.sin_family = AF_INET;
             m_addr.sin_port = htons(port);  // Convert port to network byte order
-            m_addr.sin_addr.s_addr = inet_addr(addr);  // Convert IP address to binary
+
+            // Convert IP address string to binary form
+            if (inet_pton(AF_INET, addr, &m_addr.sin_addr) != 1)
+            {
+                std::cerr << "Invalid IP address format: " << addr << std::endl;
+                return -1;
+            }
         }
         else if (type == Type::SUB)
         {

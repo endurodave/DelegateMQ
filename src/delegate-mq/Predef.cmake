@@ -86,6 +86,10 @@ if (DMQ_ASSERTS STREQUAL "ON")
     add_compile_definitions(DMQ_ASSERTS)
 endif()
 
+if (DMQ_LOG STREQUAL "ON")
+    add_compile_definitions(DMQ_LOG)
+endif()
+
 # Combine all predef sources into DMQ_PREDEF_SOURCES
 set(DMQ_PREDEF_SOURCES "")
 list(APPEND DMQ_PREDEF_SOURCES ${TRANSPORT_SOURCES})

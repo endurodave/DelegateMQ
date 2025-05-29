@@ -34,6 +34,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Message Priority](#message-priority)
   - [Remote Delegates](#remote-delegates)
   - [Error Handling](#error-handling)
+  - [Debug Logging](#debug-logging)
   - [Usage Summary](#usage-summary)
 - [Design Details](#design-details)
   - [Library Dependencies](#library-dependencies)
@@ -156,9 +157,11 @@ Some remote delegate example projects have external library dependencies. Follow
 - Clone [Bitsery](https://github.com/fraillt/bitsery).
 - Clone [RapidJSON](https://github.com/Tencent/rapidjson).
 5. Operating systems
-  - Clone [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS).
-6. Edit `src/delegate-mq/External.cmake` file and update external library directory locations.
-7. Build any example subproject within the `example/sample-projects` directory.<br>
+- Clone [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS).
+6. Logging
+- Clone [spdlog](https://github.com/gabime/spdlog).
+7. Edit `src/delegate-mq/External.cmake` file and update external library directory locations.
+8. Build any example subproject within the `example/sample-projects` directory.<br>
    `cmake -B build .`
 
 See [Sample Projects](#sample-projects) for details regarding each sample project.
@@ -173,6 +176,7 @@ Set the desired DMQ build options and include `DelegateMQ.cmake` within your `CM
 # Set build options
 set(DMQ_ASSERTS "OFF")
 set(DMQ_ALLOCATOR "OFF")
+set(DMQ_LOG "OFF")
 set(DMQ_UTIL "ON")
 set(DMQ_THREAD "DMQ_THREAD_STDLIB")
 set(DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")
@@ -751,6 +755,37 @@ The DelegateMQ library uses dynamic memory to send asynchronous delegate message
 
 Remote delegate error handling is captured by registering a callback with  `SetErrorHandler()`. A transport monitor (`ITransportMonitor`) is optional and provides message timeout callbacks using message sequence numbers and acknowledgments.
 
+## Debug Logging 
+
+Optionally enable debug log output using [spdlog](https://github.com/gabime/spdlog) C++ logging library. Enabled within CMake:
+
+```text
+set(DMQ_LOG "ON")
+```
+
+Runtime log macro output:
+
+```cpp
+LOG_INFO("Dispatcher::Dispatch id={} seqNum={} err={}", header.GetId(), header.GetSeqNum(), err);
+```
+
+Log output can be directed to multiple sinks, such as files, consoles, or custom handlers.
+
+```text
+[2025-05-29 12:47:13.066] [msvc_logger] [info] Thread::CreateThread UdpTransport
+[2025-05-29 12:47:13.066] [msvc_logger] [info] Thread::Process NetworkMgr
+[2025-05-29 12:47:13.066] [msvc_logger] [info] Thread::CreateThread NetworkMgr
+[2025-05-29 12:47:13.067] [msvc_logger] [info] Thread::DispatchDelegate
+   thread=NetworkMgr
+   target=class dmq::DelegateMemberAsyncWait<class NetworkMgr,int __cdecl(void)>
+[2025-05-29 12:47:13.067] [msvc_logger] [info] Thread::DispatchDelegate
+   thread=UdpTransport
+   target=class dmq::DelegateMemberAsyncWait<class UdpTransport,int __cdecl(enum UdpTransport::Type,char const * __ptr64,unsigned short)>
+'delegate_client_app.exe' (Win32): Loaded 'C:\Windows\System32\mswsock.dll'. Symbol loading disabled by Include/Exclude setting.
+[2025-05-29 12:47:13.069] [msvc_logger] [info] Thread::DispatchDelegate
+   thread=UdpTransport
+   target=class dmq::DelegateMemberAsyncWait<class UdpTransport,int __cdecl(enum UdpTransport::Type,char const * __ptr64,unsigned short)>
+```
 ## Usage Summary
 
 Synchronous delegates are created using one argument for free functions and two for instance member functions.

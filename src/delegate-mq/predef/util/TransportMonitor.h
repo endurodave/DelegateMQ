@@ -74,7 +74,8 @@ public:
             if (elapsed > TRANSPORT_TIMEOUT)
             {
                 SendStatusCb((*it).second.remoteId, (*it).first, Status::TIMEOUT);
-                it = m_pending.erase(it);
+                LOG_ERROR("TransportMonitor::Process TIMEOUT {} {}", (*it).second.remoteId, (*it).first);
+                it = m_pending.erase(it);                
             }
             else 
             {

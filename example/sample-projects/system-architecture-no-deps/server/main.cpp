@@ -14,6 +14,14 @@
 #include "ServerApp.h"
 #include <thread>
 
+#ifdef DMQ_LOG
+#ifdef _WIN32
+// https://github.com/gabime/spdlog
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/msvc_sink.h>  // MSVC sink
+#endif
+#endif
+
 std::atomic<bool> processTimerExit = false;
 static void ProcessTimers()
 {
@@ -27,6 +35,23 @@ static void ProcessTimers()
 
 int main() 
 {
+#ifdef DMQ_LOG
+#ifdef _WIN32
+    // Create the MSVC sink (multi-threaded)
+    auto msvc_sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+
+    // Optional: Set the log level for the sink
+    msvc_sink->set_level(spdlog::level::debug);
+
+    // Create a logger using the MSVC sink
+    auto logger = std::make_shared<spdlog::logger>("msvc_logger", msvc_sink);
+
+    // Set as default logger (optional)
+    spdlog::set_default_logger(logger);
+    spdlog::set_level(spdlog::level::debug); // Show debug and above
+#endif
+#endif
+
     std::cout << "Server start!" << std::endl;
 
     // Start the thread that will run ProcessTimers

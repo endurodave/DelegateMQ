@@ -1,7 +1,7 @@
 #include "DelegateMQ.h"
 #include "UnitTestCommon.h"
 #include <iostream>
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
 #endif
 
@@ -2580,6 +2580,8 @@ extern void Containers_UT();
 
 void DelegateUnitTests()
 {
+	LOG_INFO("DelegateUnitTests Begin");
+
 	try
 	{
 		Containers_UT();
@@ -2591,18 +2593,20 @@ void DelegateUnitTests()
 	}
 	catch (const std::exception& e)
 	{
+		LOG_ERROR("Unit Tests Failed: {}", e.what());
 		std::cout << "Unit Tests Failed: " << e.what() << std::endl;
 		ASSERT_TRUE(false);
 	}
 	catch (...)
 	{
+		LOG_ERROR("Unit Tests Failed!");
 		std::cout << "Unit Tests Failed!" << std::endl;
 		ASSERT_TRUE(false);
 	}
 
 	testThread.CreateThread();
 
-#ifdef WIN32
+#ifdef _WIN32
 	LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds, TotalElapsedMicroseconds = { 0 };
 	LARGE_INTEGER Frequency;
 
@@ -2628,16 +2632,18 @@ void DelegateUnitTests()
 	}
 	catch(const std::exception& e)
 	{
+		LOG_ERROR("Unit Tests Failed: {}", e.what());
 		std::cout << "Unit Tests Failed: " << e.what() << std::endl;
 		ASSERT_TRUE(false);
 	}
 	catch (...)
 	{
+		LOG_ERROR("Unit Tests Failed!");
 		std::cout << "Unit Tests Failed!" << std::endl;
 		ASSERT_TRUE(false);
 	}
 
-#ifdef WIN32
+#ifdef _WIN32
 	QueryPerformanceCounter(&EndingTime);
 	ElapsedMicroseconds.QuadPart = EndingTime.QuadPart - StartingTime.QuadPart;
 	ElapsedMicroseconds.QuadPart *= 1000000;
@@ -2646,5 +2652,7 @@ void DelegateUnitTests()
 #endif
 
 	testThread.ExitThread();
+
+	LOG_INFO("DelegateUnitTests End");
 }
 

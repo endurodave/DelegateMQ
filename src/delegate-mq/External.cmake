@@ -86,5 +86,11 @@ if(DMQ_THREAD STREQUAL "DMQ_THREAD_FREERTOS")
     )
 endif()
 
+# spdlog 
+# https://github.com/gabime/spdlog
+if (DMQ_LOG STREQUAL "ON")
+    set_and_check(SPDLOG_INCLUDE_DIR "${DMQ_ROOT_DIR}/../../../spdlog/include")
+endif()
+
 
 

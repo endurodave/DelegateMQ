@@ -6,12 +6,18 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 add_compile_definitions(CLIENT_APP)
 
 # Set build options
+set(DMQ_ASSERTS "OFF")
 set(DMQ_ALLOCATOR "OFF")
+set(DMQ_LOG "OFF")
 set(DMQ_UTIL "ON")
 set(DMQ_THREAD "DMQ_THREAD_STDLIB")
 set(DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")
 set(DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")
 include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
+
+if (MSVC)
+    add_compile_options("/utf-8")   # Required by spdlog
+endif()
 
 # Collect all .cpp and *.h source files in the src directory
 file(GLOB SOURCES "*.cpp" "*.h")
@@ -29,6 +35,7 @@ include_directories(
     ${DMQ_INCLUDE_DIR}
     ${ZeroMQ_INCLUDE_DIR}
     ${MSGPACK_INCLUDE_DIR}
+    ${SPDLOG_INCLUDE_DIR}
 )
 
 add_subdirectory("../common" "${CMAKE_BINARY_DIR}/common")
