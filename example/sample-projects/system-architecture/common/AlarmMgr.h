@@ -38,7 +38,10 @@ private:
         m_thread.CreateThread();
 
         NetworkMgr::ErrorCb += MakeDelegate(this, &AlarmMgr::ErrorHandler, m_thread);
-        NetworkMgr::AlarmMsgCb += MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
+
+        auto alarmDel = MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
+        alarmDel.SetPriority(dmq::Priority::HIGH);  // Alarm messages high priority
+        NetworkMgr::AlarmMsgCb += alarmDel;
     }
 
     ~AlarmMgr()

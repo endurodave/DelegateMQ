@@ -1,5 +1,4 @@
 #include "Thread.h"
-#include "ThreadMsg.h"
 #include "predef/util/Fault.h"
 
 #ifdef WIN32
@@ -160,7 +159,8 @@ void Thread::Process()
 			if (m_queue.empty())
 				continue;
 
-			msg = m_queue.front();
+			// Get highest priority message within queue
+			msg = m_queue.top();
 			m_queue.pop();
 		}
 

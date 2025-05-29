@@ -75,8 +75,9 @@ class DelegateAsyncWaitMsg : public DelegateMsg
 public:
     /// Constructor
     /// @param[in] invoker - the invoker instance
+    /// @param[in] priority - the delegate message priority
     /// @param[in] args - a parameter pack of all target function arguments
-    DelegateAsyncWaitMsg(std::shared_ptr<IThreadInvoker> invoker, Args... args) : DelegateMsg(invoker),
+    DelegateAsyncWaitMsg(std::shared_ptr<IThreadInvoker> invoker, Priority priority, Args... args) : DelegateMsg(invoker, priority),
         m_args(std::forward<Args>(args)...) {}
 
     /// Delete the default constructor
@@ -132,7 +133,7 @@ private:
     std::mutex m_lock;                       
 
     /// True if source thread is waiting for destination thread invoke to complete
-    bool m_invokerWaiting = false;          
+    bool m_invokerWaiting = false;
 };
 
 template <class R>
@@ -171,7 +172,7 @@ public:
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateFreeAsyncWait(ClassType&& rhs) noexcept :
-        BaseType(rhs), m_thread(rhs.m_thread), m_timeout(rhs.m_timeout), m_success(rhs.m_success), m_retVal(rhs.m_retVal) {
+        BaseType(rhs), m_thread(rhs.m_thread), m_priority(rhs.m_priority), m_timeout(rhs.m_timeout), m_success(rhs.m_success), m_retVal(rhs.m_retVal) {
         rhs.Clear();
     }
 
@@ -199,6 +200,7 @@ public:
     /// @param[in] rhs The object whose state is to be copied.
     void Assign(const ClassType& rhs) {
         m_thread = rhs.m_thread;
+        m_priority = rhs.m_priority;
         m_timeout = rhs.m_timeout;
         m_success = rhs.m_success;
         m_retVal = rhs.m_retVal;
@@ -233,6 +235,7 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
+            m_priority = rhs.m_priority;    
             m_timeout = rhs.m_timeout;    
             m_success = rhs.m_success;
             m_retVal = rhs.m_retVal;
@@ -252,6 +255,7 @@ public:
         auto derivedRhs = dynamic_cast<const ClassType*>(&rhs);
         return derivedRhs &&
             m_thread == derivedRhs->m_thread &&
+            m_priority == derivedRhs->m_priority &&
             m_timeout == derivedRhs->m_timeout &&
             BaseType::Equal(rhs);
     }
@@ -322,7 +326,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread.
-            auto msg = std::make_shared<DelegateAsyncWaitMsg<Args...>>(delegate, std::forward<Args>(args)...);
+            auto msg = std::make_shared<DelegateAsyncWaitMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
             msg->SetInvokerWaiting(true);
@@ -437,6 +441,11 @@ public:
     // @return The target thread.
     IThread* GetThread() noexcept { return m_thread; }
 
+    /// @brief Get the delegate message priority
+    /// @return Delegate message priority
+    Priority GetPriority() const noexcept { return m_priority; }
+    void SetPriority(Priority priority) noexcept { m_priority = priority; }
+
 private:
     /// The target thread to invoke the delegate function.
     IThread* m_thread = nullptr;
@@ -451,7 +460,10 @@ private:
     Duration m_timeout = WAIT_INFINITE;    
 
     /// Return value of the target invoked function
-    std::any m_retVal;                      
+    std::any m_retVal;
+
+    /// The delegate message priority
+    Priority m_priority = Priority::NORMAL;
 
     // </common_code>
 };
@@ -604,6 +616,7 @@ public:
     /// @param[in] rhs The object whose state is to be copied.
     void Assign(const ClassType& rhs) {
         m_thread = rhs.m_thread;
+        m_priority = rhs.m_priority;
         m_timeout = rhs.m_timeout;
         m_success = rhs.m_success;
         m_retVal = rhs.m_retVal;
@@ -638,6 +651,7 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
+            m_priority = rhs.m_priority;    
             m_timeout = rhs.m_timeout;    
             m_success = rhs.m_success;
             m_retVal = rhs.m_retVal;
@@ -657,6 +671,7 @@ public:
         auto derivedRhs = dynamic_cast<const ClassType*>(&rhs);
         return derivedRhs &&
             m_thread == derivedRhs->m_thread &&
+            m_priority == derivedRhs->m_priority &&
             m_timeout == derivedRhs->m_timeout &&
             BaseType::Equal(rhs);
     }
@@ -727,7 +742,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread.
-            auto msg = std::make_shared<DelegateAsyncWaitMsg<Args...>>(delegate, std::forward<Args>(args)...);
+            auto msg = std::make_shared<DelegateAsyncWaitMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
             msg->SetInvokerWaiting(true);
@@ -842,6 +857,11 @@ public:
     // @return The target thread.
     IThread* GetThread() noexcept { return m_thread; }
 
+    /// @brief Get the delegate message priority
+    /// @return Delegate message priority
+    Priority GetPriority() const noexcept { return m_priority; }
+    void SetPriority(Priority priority) noexcept { m_priority = priority; }
+
 private:
     /// The target thread to invoke the delegate function.
     IThread* m_thread = nullptr;
@@ -856,7 +876,10 @@ private:
     Duration m_timeout = WAIT_INFINITE;    
 
     /// Return value of the target invoked function
-    std::any m_retVal;                      
+    std::any m_retVal;
+
+    /// The delegate message priority
+    Priority m_priority = Priority::NORMAL;
 
     // </common_code>
 };
@@ -928,6 +951,7 @@ public:
     /// @param[in] rhs The object whose state is to be copied.
     void Assign(const ClassType& rhs) {
         m_thread = rhs.m_thread;
+        m_priority = rhs.m_priority;
         m_timeout = rhs.m_timeout;
         m_success = rhs.m_success;
         m_retVal = rhs.m_retVal;
@@ -962,6 +986,7 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
+            m_priority = rhs.m_priority;    
             m_timeout = rhs.m_timeout;    
             m_success = rhs.m_success;
             m_retVal = rhs.m_retVal;
@@ -981,6 +1006,7 @@ public:
         auto derivedRhs = dynamic_cast<const ClassType*>(&rhs);
         return derivedRhs &&
             m_thread == derivedRhs->m_thread &&
+            m_priority == derivedRhs->m_priority &&
             m_timeout == derivedRhs->m_timeout &&
             BaseType::Equal(rhs);
     }
@@ -1051,7 +1077,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread.
-            auto msg = std::make_shared<DelegateAsyncWaitMsg<Args...>>(delegate, std::forward<Args>(args)...);
+            auto msg = std::make_shared<DelegateAsyncWaitMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
             msg->SetInvokerWaiting(true);
@@ -1166,6 +1192,11 @@ public:
     // @return The target thread.
     IThread* GetThread() noexcept { return m_thread; }
 
+    /// @brief Get the delegate message priority
+    /// @return Delegate message priority
+    Priority GetPriority() const noexcept { return m_priority; }
+    void SetPriority(Priority priority) noexcept { m_priority = priority; }
+
 private:
     /// The target thread to invoke the delegate function.
     IThread* m_thread = nullptr;
@@ -1180,7 +1211,10 @@ private:
     Duration m_timeout = WAIT_INFINITE;    
 
     /// Return value of the target invoked function
-    std::any m_retVal;                      
+    std::any m_retVal;
+
+    /// The delegate message priority
+    Priority m_priority = Priority::NORMAL;
 
     // </common_code>
 };

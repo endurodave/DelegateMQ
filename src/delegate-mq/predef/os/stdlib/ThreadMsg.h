@@ -20,7 +20,12 @@ public:
 	}
 
 	int GetId() const { return m_id; } 
-    std::shared_ptr<dmq::DelegateMsg> GetData() { return m_data; }
+
+    std::shared_ptr<dmq::DelegateMsg> GetData() const { return m_data; }
+
+	dmq::Priority GetPriority() const {
+		return m_data ? m_data->GetPriority() : dmq::Priority::NORMAL;
+	}
 
 private:
 	int m_id;

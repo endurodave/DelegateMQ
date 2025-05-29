@@ -5,6 +5,7 @@
 // David Lafreniere, Feb 2017.
 
 #include "delegate/IThread.h"
+#include "ThreadMsg.h"
 #include <thread>
 #include <queue>
 #include <mutex>
@@ -12,7 +13,12 @@
 #include <condition_variable>
 #include <future>
 
-class ThreadMsg;
+// Comparator for priority queue
+struct ThreadMsgComparator {
+	bool operator()(const std::shared_ptr<ThreadMsg>& a, const std::shared_ptr<ThreadMsg>& b) const {
+		return static_cast<int>(a->GetPriority()) < static_cast<int>(b->GetPriority());
+	}
+};
 
 class Thread : public dmq::IThread
 {
@@ -54,7 +60,9 @@ private:
 	void SetThreadName(std::thread::native_handle_type handle, const std::string& name);
 
 	std::unique_ptr<std::thread> m_thread;
-	std::queue<std::shared_ptr<ThreadMsg>> m_queue;
+	std::priority_queue<std::shared_ptr<ThreadMsg>,
+		std::vector<std::shared_ptr<ThreadMsg>>,
+		ThreadMsgComparator> m_queue;
 	std::mutex m_mutex;
 	std::condition_variable m_cv;
 	const std::string THREAD_NAME;

@@ -230,6 +230,29 @@ static void DelegateFreeAsyncTests()
     for (int i = 0; i < 2; i++)
         arr[i](TEST_INT);
     delete[] arr;
+
+    // Priority queue test
+    int sleepCnt = 0;
+    std::function<void(int)> LambdaSleep = [&sleepCnt](int i) {
+        static bool once = false;
+        if (!once)
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        once = true;
+        sleepCnt++;
+    };
+    auto delegateNormal = MakeDelegate(LambdaSleep, workerThread);
+    delegateNormal.SetPriority(Priority::NORMAL);
+    auto delegateLow = MakeDelegate(LambdaSleep, workerThread);
+    delegateLow.SetPriority(Priority::LOW);
+    auto delegateHigh = MakeDelegate(LambdaSleep, workerThread);
+    delegateHigh.SetPriority(Priority::HIGH);
+    MulticastDelegate<void(int)> priorityContainer;
+    priorityContainer += delegateNormal;
+    priorityContainer += delegateLow;
+    priorityContainer += delegateHigh;
+    priorityContainer(123);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    ASSERT_TRUE(sleepCnt == 3);
 }
 
 static void DelegateMemberAsyncTests()

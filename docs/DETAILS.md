@@ -31,6 +31,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Asynchronous Delegates](#asynchronous-delegates)
     - [Non-Blocking](#non-blocking)
     - [Blocking](#blocking)
+    - [Message Priority](#message-priority)
   - [Remote Delegates](#remote-delegates)
   - [Error Handling](#error-handling)
   - [Usage Summary](#usage-summary)
@@ -552,7 +553,7 @@ delegateF = nullptr;
 ```
 ## Asynchronous Delegates
 
-An asynchronous delegate invokes a callable on a user-specified thread of control.
+An asynchronous delegate invokes a callable on a user-specified thread of control. Each invoked asynchronous delegate is copied into the destination message queue with an optional message priority.
 
 ### Non-Blocking
 
@@ -644,6 +645,29 @@ std::shared_ptr<TestClass> spObject(new TestClass());
 auto delegateMemberSp = MakeDelegate(spObject, &TestClass::MemberFuncStdString);
 delegateMemberSp("Hello world using shared_ptr", 2020);
 ```
+
+### Message Priority
+
+Asynchronous delegate priority determines the dispatch order when multiple asynchronous delegates are pending in the message queue.
+
+```cpp
+// Async delegate message priority
+enum class Priority
+{
+	LOW,
+	NORMAL,
+	HIGH
+};
+```
+
+Use `SetPriority()` to adjust the delegate priority level.
+
+```cpp
+auto alarmDel = MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
+alarmDel.SetPriority(dmq::Priority::HIGH);  // Alarm messages high priority
+NetworkMgr::AlarmMsgCb += alarmDel;
+```
+
 ## Remote Delegates
 
 A remote delegate asynchronously invokes a remote target function. The sender must implement the `ISerializer` and `IDispatcher` interfaces:

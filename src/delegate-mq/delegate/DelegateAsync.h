@@ -83,9 +83,10 @@ class DelegateAsyncMsg : public DelegateMsg
 public:
     /// Constructor
     /// @param[in] invoker - the invoker instance
+    /// @param[in] priority - the delegate message priority
     /// @param[in] args - a parameter pack of all target function arguments
     /// @throws std::bad_alloc If make_tuble_heap() fails to obtain memory and DMQ_ASSERTS not defined.
-    DelegateAsyncMsg(std::shared_ptr<IThreadInvoker> invoker, Args... args) : DelegateMsg(invoker),
+    DelegateAsyncMsg(std::shared_ptr<IThreadInvoker> invoker, Priority priority, Args... args) : DelegateMsg(invoker, priority),
         m_args(make_tuple_heap(m_heapMem, m_start, std::forward<Args>(args)...)) { }
 
     /// Delete the default constructor
@@ -145,14 +146,14 @@ public:
     /// set the state of the new instance.
     /// @param[in] rhs The object to copy from.
     DelegateFreeAsync(const ClassType& rhs) :
-        BaseType(rhs), m_thread(rhs.m_thread) {
+        BaseType(rhs), m_thread(rhs.m_thread), m_priority(rhs.m_priority) {
         Assign(rhs);
     }
 
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateFreeAsync(ClassType&& rhs) noexcept : 
-        BaseType(rhs), m_thread(rhs.m_thread) {
+        BaseType(rhs), m_thread(rhs.m_thread), m_priority(rhs.m_priority) {
         rhs.Clear();
     }
 
@@ -177,6 +178,7 @@ public:
     /// @param[in] rhs The object whose state is to be copied.
     void Assign(const ClassType& rhs) {
         m_thread = rhs.m_thread;
+        m_priority = rhs.m_priority;
         BaseType::Assign(rhs);
     }
     /// @brief Creates a copy of the current object.
@@ -207,6 +209,7 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
+            m_priority = rhs.m_priority;
         }
         return *this;
     }
@@ -223,6 +226,7 @@ public:
         auto derivedRhs = dynamic_cast<const ClassType*>(&rhs);
         return derivedRhs &&
             m_thread == derivedRhs->m_thread &&
+            m_priority == derivedRhs->m_priority &&
             BaseType::Equal(rhs);
     }
 
@@ -284,7 +288,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread
-            auto msg = std::make_shared<DelegateAsyncMsg<Args...>>(delegate, std::forward<Args>(args)...);
+            auto msg = std::make_shared<DelegateAsyncMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
 
@@ -339,16 +343,24 @@ public:
         return true;
     }
 
-    ///@brief Get the destination thread that the target function is invoked on.
-    // @return The target thread.
-    IThread* GetThread() noexcept { return m_thread; }
+    /// @brief Get the destination thread that the target function is invoked on.
+    /// @return The target thread.
+    IThread* GetThread() const noexcept { return m_thread; } 
+
+    /// @brief Get the delegate message priority
+    /// @return Delegate message priority
+    Priority GetPriority() const noexcept { return m_priority; } 
+    void SetPriority(Priority priority) noexcept { m_priority = priority; } 
 
 private:
     /// The target thread to invoke the delegate function.
     IThread* m_thread = nullptr;   
 
     /// Flag to control synchronous vs asynchronous target invoke behavior.
-    bool m_sync = false;        
+    bool m_sync = false;
+
+    /// The delegate message priority
+    Priority m_priority = Priority::NORMAL;
 
     // </common_code>
 };
@@ -477,6 +489,7 @@ public:
     /// @param[in] rhs The object whose state is to be copied.
     void Assign(const ClassType& rhs) {
         m_thread = rhs.m_thread;
+        m_priority = rhs.m_priority;
         BaseType::Assign(rhs);
     }
     /// @brief Creates a copy of the current object.
@@ -507,6 +520,7 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
+            m_priority = rhs.m_priority;
         }
         return *this;
     }
@@ -523,6 +537,7 @@ public:
         auto derivedRhs = dynamic_cast<const ClassType*>(&rhs);
         return derivedRhs &&
             m_thread == derivedRhs->m_thread &&
+            m_priority == derivedRhs->m_priority &&
             BaseType::Equal(rhs);
     }
 
@@ -584,7 +599,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread
-            auto msg = std::make_shared<DelegateAsyncMsg<Args...>>(delegate, std::forward<Args>(args)...);
+            auto msg = std::make_shared<DelegateAsyncMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
 
@@ -639,16 +654,24 @@ public:
         return true;
     }
 
-    ///@brief Get the destination thread that the target function is invoked on.
-    // @return The target thread.
-    IThread* GetThread() noexcept { return m_thread; }
+    /// @brief Get the destination thread that the target function is invoked on.
+    /// @return The target thread.
+    IThread* GetThread() const noexcept { return m_thread; } 
+
+    /// @brief Get the delegate message priority
+    /// @return Delegate message priority
+    Priority GetPriority() const noexcept { return m_priority; } 
+    void SetPriority(Priority priority) noexcept { m_priority = priority; } 
 
 private:
     /// The target thread to invoke the delegate function.
     IThread* m_thread = nullptr;   
 
     /// Flag to control synchronous vs asynchronous target invoke behavior.
-    bool m_sync = false;        
+    bool m_sync = false;
+
+    /// The delegate message priority
+    Priority m_priority = Priority::NORMAL;
 
     // </common_code>
 };
@@ -718,6 +741,7 @@ public:
     /// @param[in] rhs The object whose state is to be copied.
     void Assign(const ClassType& rhs) {
         m_thread = rhs.m_thread;
+        m_priority = rhs.m_priority;
         BaseType::Assign(rhs);
     }
     /// @brief Creates a copy of the current object.
@@ -748,6 +772,7 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
+            m_priority = rhs.m_priority;
         }
         return *this;
     }
@@ -764,6 +789,7 @@ public:
         auto derivedRhs = dynamic_cast<const ClassType*>(&rhs);
         return derivedRhs &&
             m_thread == derivedRhs->m_thread &&
+            m_priority == derivedRhs->m_priority &&
             BaseType::Equal(rhs);
     }
 
@@ -825,7 +851,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread
-            auto msg = std::make_shared<DelegateAsyncMsg<Args...>>(delegate, std::forward<Args>(args)...);
+            auto msg = std::make_shared<DelegateAsyncMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
 
@@ -880,16 +906,24 @@ public:
         return true;
     }
 
-    ///@brief Get the destination thread that the target function is invoked on.
-    // @return The target thread.
-    IThread* GetThread() noexcept { return m_thread; }
+    /// @brief Get the destination thread that the target function is invoked on.
+    /// @return The target thread.
+    IThread* GetThread() const noexcept { return m_thread; } 
+
+    /// @brief Get the delegate message priority
+    /// @return Delegate message priority
+    Priority GetPriority() const noexcept { return m_priority; } 
+    void SetPriority(Priority priority) noexcept { m_priority = priority; } 
 
 private:
     /// The target thread to invoke the delegate function.
     IThread* m_thread = nullptr;   
 
     /// Flag to control synchronous vs asynchronous target invoke behavior.
-    bool m_sync = false;        
+    bool m_sync = false;
+
+    /// The delegate message priority
+    Priority m_priority = Priority::NORMAL;
 
     // </common_code>
 };

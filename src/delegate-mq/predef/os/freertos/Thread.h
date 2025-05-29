@@ -13,6 +13,10 @@
 #include <condition_variable>
 #include <future>
 
+/// @TODO: Implement a priority queue for the thread messages like 
+/// std::priority_queue<ThreadMsg*, std::vector<ThreadMsg*>, ThreadMsgComparator>
+/// as implemented in stdlib\Thread.h if necessary.
+
 class ThreadMsg;
 
 class Thread : public dmq::IThread

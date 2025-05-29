@@ -123,15 +123,29 @@ private:
 
 In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, callbacks, asynchronous APIs, or when you need to pass functions as arguments.
 
-Synchronous and asynchronous delegates are available. Asynchronous variants handle both non-blocking and blocking modes with a timeout. The library supports anonymous invocation of any target callable regardless of the number of arguments or return value. All argument types are supported, including by value, pointers, pointers to pointers, and references. The delegate library takes care of the intricate details of function invocation across thread boundaries. Concrete porting examples below with easy porting to others.
+Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.
+
+## Sync Delegates
+
+Synchronous delegates invoke the target function anonymously within the current execution context. No external library dependencies are required.
+
+## Async Delegates
+
+Asynchronous delegates support both non-blocking and blocking invocation modes, including optional timeouts. The library enables anonymous invocation of any callable target, regardless of the number or type of arguments, or the presence of a return value. All argument types are supported — including by value, pointers, pointer-to-pointer, and references.
+
+The delegate library abstracts the complexities of invoking functions across thread boundaries. Concrete examples are provided below, with straightforward paths to porting across platforms.
 
 * **Operating System:** Windows, Linux, [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS)
 
-Remote delegates enable function invocation across processes or processors by using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callable endpoints with any function signature. Minimal effort is required to extend support to any new library. Concrete examples are provided using support libraries below. 
+## Remote Delegates
+
+Remote delegates enable function invocation across processes or processors using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callables with any function signature. The design allows easy integration with new transport or serialization libraries. Concrete examples using supported libraries are provided below. 
 
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [Cereal](https://github.com/USCiLab/cereal), [Bitsery](https://github.com/fraillt/bitsery), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
 * **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), UDP, data pipe, memory buffer
  
+## Delegate Semantics and Use Cases
+
 It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to `nullptr`. Const correctness is maintained; stored const objects can only be called by const member functions.
 
  A delegate instance can be:
@@ -151,8 +165,6 @@ Typical use cases are:
 * Asynchronous Method Invocation (AMI) 
 * Design Patterns (Active Object)
 * `std::async` Thread Targeting
-
-Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.
 
 # Modular Architecture
 
@@ -197,10 +209,11 @@ DelegateMQ at a glance.
 | Library | Allows customizing data sharing between threads, processes, or processors |
 | Complexity | Lightweight and extensible through external library interfaces and full source code |
 | Threads | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
+| Message Priority | Asynchronous delegates support prioritization to ensure timely execution of critical messages. |
 | Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |
 | Transport | External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (`ITransport`)  |
 | Timeouts and Retries | Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution (`ITransportMonitor`) |
-| Message Buffering | Provided by a communication library (e.g. ZeroMQ) or custom solution within transport |
+| Message Buffering | Remote delegate message buffering provided by a communication library (e.g. ZeroMQ) or custom solution within transport |
 | Dynamic Memory | Heap or DelegateMQ fixed-block allocator |
 | Error Handling | Configurable for return error code, assert or exception |
 | Embedded Friendly | Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "superloop"). |
