@@ -12,7 +12,8 @@ var classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "Bind", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a53f76c19cba9e2ef42bbcd8a036879ee", null ],
     [ "Clone", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a146f09b553cf0239dd880ac86b0462a4", null ],
     [ "Equal", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a3b7652d9792ac2b89e4abb3cc0bc4d39", null ],
-    [ "GetThread", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#adf0bbfd520311e07bd0881b5f833af8f", null ],
+    [ "GetPriority", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a3b2e9d9fbcb7e268ed45908e03149dad", null ],
+    [ "GetThread", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#aa2e9f3ac0d2253e81a560dba0028e61f", null ],
     [ "Invoke", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a43e59c2beb004a0b0f9d500228b9f5c8", null ],
     [ "operator!=", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a8f8c1311b9329b5199c4b552a8b37885", null ],
     [ "operator()", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a9de4a1505cdb73b03cc6e6c0e60c38ea", null ],
@@ -21,6 +22,7 @@ var classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "operator=", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#adf7ea9aa150b315d75be0b2eab540a2b", null ],
     [ "operator==", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#aba85dee7ba675e8d4f24bbc5b395a935", null ],
     [ "operator==", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a8f4a672283823dd2e5f7a22f323627a4", null ],
+    [ "SetPriority", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#acec841a61c71545cce27e680c6506681", null ],
     [ "operator!=", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],
     [ "operator==", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797", null ]
 ];

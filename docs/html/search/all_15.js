@@ -1,5 +1,31 @@
 var searchData=
 [
-  ['zeromqtransport_0',['ZeroMqTransport',['../class_zero_mq_transport.html',1,'']]],
-  ['zeromqtransport_2eh_1',['ZeroMqTransport.h',['../_zero_mq_transport_8h.html',1,'']]]
+  ['xalloc_5fdestroy_0',['xalloc_destroy',['../xallocator_8cpp.html#ab15c84ed4c7ef8268c3e1e3ca40ac261',1,'xalloc_destroy():&#160;xallocator.cpp'],['../xallocator_8h.html#ab15c84ed4c7ef8268c3e1e3ca40ac261',1,'xalloc_destroy():&#160;xallocator.cpp']]],
+  ['xalloc_5finit_1',['xalloc_init',['../xallocator_8cpp.html#a2ef0f77be4ef8dcbed8bfc80791d29a7',1,'xalloc_init():&#160;xallocator.cpp'],['../xallocator_8h.html#a2ef0f77be4ef8dcbed8bfc80791d29a7',1,'xalloc_init():&#160;xallocator.cpp']]],
+  ['xalloc_5fstats_2',['xalloc_stats',['../xallocator_8cpp.html#a9afc43dc6a9e7f37b31984837bce5e6e',1,'xalloc_stats():&#160;xallocator.cpp'],['../xallocator_8h.html#a9afc43dc6a9e7f37b31984837bce5e6e',1,'xalloc_stats():&#160;xallocator.cpp']]],
+  ['xallocator_3',['XALLOCATOR',['../_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c',1,'DelegateOpt.h']]],
+  ['xallocator_2ecpp_4',['xallocator.cpp',['../xallocator_8cpp.html',1,'']]],
+  ['xallocator_2eh_5',['xallocator.h',['../xallocator_8h.html',1,'']]],
+  ['xallocator_5fget_5fallocator_6',['xallocator_get_allocator',['../xallocator_8cpp.html#a1ec53eb8420d7c45a0df5aa632605699',1,'xallocator.cpp']]],
+  ['xfree_7',['xfree',['../xallocator_8cpp.html#a976e14808b9247ec952c262553f09f8f',1,'xfree(void *ptr):&#160;xallocator.cpp'],['../xallocator_8h.html#a976e14808b9247ec952c262553f09f8f',1,'xfree(void *ptr):&#160;xallocator.cpp']]],
+  ['xlist_8',['xlist',['../_delegate_opt_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c',1,'xlist:&#160;DelegateOpt.h'],['../xlist_8h.html#a9e6c72a4d9879e662d02c096cf16ff3c',1,'xlist:&#160;xlist.h']]],
+  ['xlist_2eh_9',['xlist.h',['../xlist_8h.html',1,'']]],
+  ['xmalloc_10',['xmalloc',['../xallocator_8cpp.html#af7b6b8fd37a3c4b944c71b783d50fc96',1,'xmalloc(size_t size):&#160;xallocator.cpp'],['../xallocator_8h.html#af7b6b8fd37a3c4b944c71b783d50fc96',1,'xmalloc(size_t size):&#160;xallocator.cpp']]],
+  ['xmap_11',['xmap',['../xmap_8h.html#a469c70e22b4e113778864ed7568d7474',1,'xmap.h']]],
+  ['xmap_2eh_12',['xmap.h',['../xmap_8h.html',1,'']]],
+  ['xmultimap_13',['xmultimap',['../xmap_8h.html#ae6e99a0ad5b40dd413347112d7049833',1,'xmap.h']]],
+  ['xmultiset_14',['xmultiset',['../xset_8h.html#ae58e845a30ad7ec68502a4a9a90aa2ba',1,'xset.h']]],
+  ['xostringstream_15',['xostringstream',['../_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc',1,'xostringstream:&#160;DelegateOpt.h'],['../xsstream_8h.html#a31a26eccdbdbd59beb7ee9735a7a17db',1,'xostringstream:&#160;xsstream.h']]],
+  ['xqueue_16',['xqueue',['../xqueue_8h.html#ab491ae9d713da6cb9faba7cead6a03e0',1,'xqueue.h']]],
+  ['xqueue_2eh_17',['xqueue.h',['../xqueue_8h.html',1,'']]],
+  ['xrealloc_18',['xrealloc',['../xallocator_8cpp.html#a51a9bfbb1448216ca4660577dc6b0e79',1,'xrealloc(void *oldMem, size_t size):&#160;xallocator.cpp'],['../xallocator_8h.html#af1634ff7d575d04a5ad3bd26343b4e51',1,'xrealloc(void *ptr, size_t size):&#160;xallocator.cpp']]],
+  ['xset_19',['xset',['../xset_8h.html#a3c4b96ae2ee586e687c2f29a8cd2f6b1',1,'xset.h']]],
+  ['xset_2eh_20',['xset.h',['../xset_8h.html',1,'']]],
+  ['xsstream_2eh_21',['xsstream.h',['../xsstream_8h.html',1,'']]],
+  ['xstring_22',['xstring',['../xstring_8h.html#a50612654f5d2a8436a8006f48560256a',1,'xstring.h']]],
+  ['xstring_2eh_23',['xstring.h',['../xstring_8h.html',1,'']]],
+  ['xstringstream_24',['xstringstream',['../_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae',1,'xstringstream:&#160;DelegateOpt.h'],['../xsstream_8h.html#a055d3311b69b67770df52fcf4948744e',1,'xstringstream:&#160;xsstream.h']]],
+  ['xwostringstream_25',['xwostringstream',['../xsstream_8h.html#aedac73adf3363c46070bff77a0e47e3a',1,'xsstream.h']]],
+  ['xwstring_26',['xwstring',['../xstring_8h.html#a8e7790b4edcc21d50d93d7f148a3c3b9',1,'xstring.h']]],
+  ['xwstringstream_27',['xwstringstream',['../xsstream_8h.html#a80796ed46a3d7f87bd5b49bba9152961',1,'xsstream.h']]]
 ];

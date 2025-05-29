@@ -12,6 +12,7 @@ var classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "Bind", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a63ac945659cd905c98524322e7edbd6d", null ],
     [ "Clone", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#af58a3470296560a9e3becbfade1fd63c", null ],
     [ "Equal", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a1dab598f977f8928e98f1a16aef0a0fb", null ],
+    [ "GetPriority", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a0941ac14007d9355c87d0db7cdb7ec52", null ],
     [ "GetRetVal", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#ad46494710479bfe0508267b4c942f993", null ],
     [ "GetThread", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a200fcbab2a22c1662e5021c2e255837c", null ],
     [ "Invoke", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#ae5857a946a3833cd27d8423f5bcaeb80", null ],
@@ -23,6 +24,7 @@ var classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "operator=", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#af8dc26be8b55a3875bcb0e813f2930d5", null ],
     [ "operator==", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a38a703ef4d85c02719e317c000bd4b8f", null ],
     [ "operator==", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a8475e52a68e5b10d050745f78e1b6fcb", null ],
+    [ "SetPriority", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#ab72b9159d4cae6d33a518d7eed2c6c6a", null ],
     [ "operator!=", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],
     [ "operator==", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797", null ]
 ];

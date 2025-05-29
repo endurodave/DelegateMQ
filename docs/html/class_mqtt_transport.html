@@ -133,8 +133,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa5d545cc5369fff01db6f65c6cc39d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf3523876fdfdb05a520645fcd823408" id="r_acf3523876fdfdb05a520645fcd823408"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf3523876fdfdb05a520645fcd823408">Send</a> (<a class="el" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
 <tr class="separator:acf3523876fdfdb05a520645fcd823408"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a760c039d661da84e124cfb70875f9a15" id="r_a760c039d661da84e124cfb70875f9a15"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a760c039d661da84e124cfb70875f9a15">Receive</a> (<a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
-<tr class="separator:a760c039d661da84e124cfb70875f9a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d261a52f40407875b290116f36dc20d" id="r_a5d261a52f40407875b290116f36dc20d"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d261a52f40407875b290116f36dc20d">Receive</a> (<a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> &amp;is, <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
+<tr class="separator:a5d261a52f40407875b290116f36dc20d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3a399e5e93e3610af1f5a5da384cf48" id="r_ab3a399e5e93e3610af1f5a5da384cf48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3a399e5e93e3610af1f5a5da384cf48">SetReceiveHandler</a> (<a class="el" href="class_i_mqtt_receive_handler.html">IMqttReceiveHandler</a> *handler)</td></tr>
 <tr class="separator:ab3a399e5e93e3610af1f5a5da384cf48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf7f669ce7541f778b6b42239b3b3fca" id="r_aaf7f669ce7541f778b6b42239b3b3fca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf7f669ce7541f778b6b42239b3b3fca">SetTransportMonitor</a> (<a class="el" href="class_i_transport_monitor.html">ITransportMonitor</a> *transportMonitor)</td></tr>
@@ -221,8 +221,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a760c039d661da84e124cfb70875f9a15" name="a760c039d661da84e124cfb70875f9a15"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a760c039d661da84e124cfb70875f9a15">&#9670;&#160;</a></span>Receive()</h2>
+<a id="a5d261a52f40407875b290116f36dc20d" name="a5d261a52f40407875b290116f36dc20d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d261a52f40407875b290116f36dc20d">&#9670;&#160;</a></span>Receive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -231,10 +231,14 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> MqttTransport::Receive </td>
+          <td class="memname">virtual int MqttTransport::Receive </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>is</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -245,13 +249,14 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Receive data from a remote </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">is</td><td>The received incoming data bytes, not including the header. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">header</td><td>Incoming delegate message header. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The received incoming data bytes, not including the header. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if success. </dd></dl>
 
-<p>Implements <a class="el" href="class_i_transport.html#a0484467f5333330a859e4dad39df01bb">ITransport</a>.</p>
+<p>Implements <a class="el" href="class_i_transport.html#a5ecc4885a8c3210519c234298c48c427">ITransport</a>.</p>
 
 </div>
 </div>

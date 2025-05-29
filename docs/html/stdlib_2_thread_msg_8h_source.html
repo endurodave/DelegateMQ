@@ -114,18 +114,28 @@ $(function(){initNavTree('stdlib_2_thread_msg_8h_source.html',''); initResizable
 </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593">   22</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593">GetId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_id; } </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="class_thread_msg.html#a9ade162182d4633f65f0d4492d5ccd3f">   23</a></span>    std::shared_ptr&lt;dmq::DelegateMsg&gt; <a class="code hl_function" href="class_thread_msg.html#a9ade162182d4633f65f0d4492d5ccd3f">GetData</a>() { <span class="keywordflow">return</span> m_data; }</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">int</span> m_id;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    std::shared_ptr&lt;dmq::DelegateMsg&gt; m_data;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="class_thread_msg.html#ad512b37cd27ca8e238b2ec30e686b236">   24</a></span>    std::shared_ptr&lt;dmq::DelegateMsg&gt; <a class="code hl_function" href="class_thread_msg.html#ad512b37cd27ca8e238b2ec30e686b236">GetData</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_data; }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="class_thread_msg.html#aa0b27dbf61a2b2416a5a055336b4c73a">   26</a></span>    <a class="code hl_enumeration" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a> <a class="code hl_function" href="class_thread_msg.html#aa0b27dbf61a2b2416a5a055336b4c73a">GetPriority</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">return</span> m_data ? m_data-&gt;GetPriority() : <a class="code hl_enumvalue" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordtype">int</span> m_id;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::shared_ptr&lt;dmq::DelegateMsg&gt; m_data;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclass_thread_msg_html"><div class="ttname"><a href="class_thread_msg.html">ThreadMsg</a></div><div class="ttdoc">A class to hold a platform-specific thread messsage that will be passed through the OS message queue.</div><div class="ttdef"><b>Definition</b> freertos/ThreadMsg.h:7</div></div>
 <div class="ttc" id="aclass_thread_msg_html_a752a7235f4ea1ec437186a935f85f1cb"><div class="ttname"><a href="class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb">ThreadMsg::ThreadMsg</a></div><div class="ttdeci">ThreadMsg(int id, std::shared_ptr&lt; dmq::DelegateMsg &gt; data)</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:16</div></div>
-<div class="ttc" id="aclass_thread_msg_html_a9ade162182d4633f65f0d4492d5ccd3f"><div class="ttname"><a href="class_thread_msg.html#a9ade162182d4633f65f0d4492d5ccd3f">ThreadMsg::GetData</a></div><div class="ttdeci">std::shared_ptr&lt; dmq::DelegateMsg &gt; GetData()</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:23</div></div>
+<div class="ttc" id="aclass_thread_msg_html_aa0b27dbf61a2b2416a5a055336b4c73a"><div class="ttname"><a href="class_thread_msg.html#aa0b27dbf61a2b2416a5a055336b4c73a">ThreadMsg::GetPriority</a></div><div class="ttdeci">dmq::Priority GetPriority() const</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:26</div></div>
 <div class="ttc" id="aclass_thread_msg_html_abbfb9a9191a8bab76541077c3303d593"><div class="ttname"><a href="class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593">ThreadMsg::GetId</a></div><div class="ttdeci">int GetId() const</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:22</div></div>
+<div class="ttc" id="aclass_thread_msg_html_ad512b37cd27ca8e238b2ec30e686b236"><div class="ttname"><a href="class_thread_msg.html#ad512b37cd27ca8e238b2ec30e686b236">ThreadMsg::GetData</a></div><div class="ttdeci">std::shared_ptr&lt; dmq::DelegateMsg &gt; GetData() const</div><div class="ttdef"><b>Definition</b> stdlib/ThreadMsg.h:24</div></div>
+<div class="ttc" id="anamespacedmq_html_a6364022151f2bf1802343322638e8f25"><div class="ttname"><a href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a></div><div class="ttdeci">Priority</div><div class="ttdef"><b>Definition</b> DelegateMsg.h:21</div></div>
+<div class="ttc" id="anamespacedmq_html_a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051"><div class="ttname"><a href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a></div><div class="ttdeci">@ NORMAL</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

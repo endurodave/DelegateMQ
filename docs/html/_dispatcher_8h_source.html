@@ -104,78 +104,73 @@ $(function(){initNavTree('_dispatcher_8h_source.html',''); initResizable(true); 
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="_i_dispatcher_8h.html">delegate/IDispatcher.h</a>&quot;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#if defined(DMQ_TRANSPORT_ZEROMQ)</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">    #include &quot;<a class="code" href="_zero_mq_transport_8h.html">predef/transport/zeromq/ZeroMqTransport.h</a>&quot;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#elif defined (DMQ_TRANSPORT_WIN32_PIPE)</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">    #include &quot;<a class="code" href="_win32_pipe_transport_8h.html">predef/transport/win32-pipe/Win32PipeTransport.h</a>&quot;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#elif defined (DMQ_TRANSPORT_WIN32_UDP)</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">    #include &quot;<a class="code" href="_win32_udp_transport_8h.html">predef/transport/win32-udp/Win32UdpTransport.h</a>&quot;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#elif defined (DMQ_TRANSPORT_MQTT)</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">    #include &quot;<a class="code" href="_mqtt_transport_8h.html">predef/transport/mqtt/MqttTransport.h</a>&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">    #error &quot;Include a transport header.&quot;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="_dmq_header_8h.html">predef/transport/DmqHeader.h</a>&quot;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="_dmq_header_8h.html">predef/transport/DmqHeader.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_8h.html">predef/transport/ITransport.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="class_dispatcher.html">   17</a></span><span class="keyword">class </span><a class="code hl_class" href="class_dispatcher.html">Dispatcher</a> : <span class="keyword">public</span> <a class="code hl_class" href="classdmq_1_1_i_dispatcher.html">dmq::IDispatcher</a></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="class_dispatcher.html#ab7dabf79371e1372d16d2c979c35d27d">   20</a></span>    <a class="code hl_function" href="class_dispatcher.html#ab7dabf79371e1372d16d2c979c35d27d">Dispatcher</a>() = <span class="keywordflow">default</span>;</div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="}">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="class_dispatcher.html#a52fc4e8bef278fa415723b39b61c28a7">   21</a></span>    <a class="code hl_function" href="class_dispatcher.html#a52fc4e8bef278fa415723b39b61c28a7">~Dispatcher</a>()</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        m_transport = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
+</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="class_dispatcher.html">   27</a></span><span class="keyword">class </span><a class="code hl_class" href="class_dispatcher.html">Dispatcher</a> : <span class="keyword">public</span> <a class="code hl_class" href="classdmq_1_1_i_dispatcher.html">dmq::IDispatcher</a></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="class_dispatcher.html#ab7dabf79371e1372d16d2c979c35d27d">   30</a></span>    <a class="code hl_function" href="class_dispatcher.html#ab7dabf79371e1372d16d2c979c35d27d">Dispatcher</a>() = <span class="keywordflow">default</span>;</div>
-<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="class_dispatcher.html#a52fc4e8bef278fa415723b39b61c28a7">   31</a></span>    <a class="code hl_function" href="class_dispatcher.html#a52fc4e8bef278fa415723b39b61c28a7">~Dispatcher</a>()</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    {</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        m_transport = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="class_dispatcher.html#aa418b0cac5ff62d150632420700690f3">   26</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_dispatcher.html#aa418b0cac5ff62d150632420700690f3">SetTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* transport)</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        m_transport = transport;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    }</div>
 </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="class_dispatcher.html#aa418b0cac5ff62d150632420700690f3">   36</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_dispatcher.html#aa418b0cac5ff62d150632420700690f3">SetTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* transport)</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    {</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        m_transport = transport;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
-</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// Send argument data to the transport</span></div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="class_dispatcher.html#a4f9e2ae95d440cc624d2f8caa46fb4f4">   32</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_dispatcher.html#a4f9e2ae95d440cc624d2f8caa46fb4f4">Dispatch</a>(std::ostream&amp; os, <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> <span class="keywordtype">id</span>) </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>* ss = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>*<span class="keyword">&gt;</span>(&amp;os);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">if</span> (!ss)</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <a class="code hl_define" href="_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63">LOG_ERROR</a>(<span class="stringliteral">&quot;Dispatcher::Dispatch - Null ss, id={}&quot;</span>, <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        }</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// Send argument data to the transport</span></div>
-<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="class_dispatcher.html#a4f9e2ae95d440cc624d2f8caa46fb4f4">   42</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_dispatcher.html#a4f9e2ae95d440cc624d2f8caa46fb4f4">Dispatch</a>(std::ostream&amp; os, <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> <span class="keywordtype">id</span>) </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    {</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>* ss = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>*<span class="keyword">&gt;</span>(&amp;os);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (!ss)</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">if</span> (m_transport)</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        {</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a> header(<span class="keywordtype">id</span>, <a class="code hl_function" href="class_dmq_header.html#a091df1a5355465870f7ad0aca6a5794b">DmqHeader::GetNextSeqNum</a>());</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordtype">int</span> err = m_transport-&gt;<a class="code hl_function" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">Send</a>(*ss, header);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">return</span> err;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        }</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">if</span> (m_transport)</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a> header(<span class="keywordtype">id</span>, <a class="code hl_function" href="class_dmq_header.html#a091df1a5355465870f7ad0aca6a5794b">DmqHeader::GetNextSeqNum</a>());</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keywordtype">int</span> err = m_transport-&gt;<a class="code hl_function" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">Send</a>(*ss, header);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <a class="code hl_define" href="_delegate_opt_8h.html#a378e28bfcb78d17285210d6bbb70a083">LOG_INFO</a>(<span class="stringliteral">&quot;Dispatcher::Dispatch id={} seqNum={} err={}&quot;</span>, header.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>(), header.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>(), err);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keywordflow">return</span> err;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
 </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_class" href="class_i_transport.html">ITransport</a>* m_transport = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_class" href="class_i_transport.html">ITransport</a>* m_transport = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>};</div>
 </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a378e28bfcb78d17285210d6bbb70a083"><div class="ttname"><a href="_delegate_opt_8h.html#a378e28bfcb78d17285210d6bbb70a083">LOG_INFO</a></div><div class="ttdeci">#define LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:56</div></div>
 <div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:42</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_ad4a9117ce894e3319e903142347a0f63"><div class="ttname"><a href="_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63">LOG_ERROR</a></div><div class="ttdeci">#define LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:58</div></div>
 <div class="ttc" id="a_dmq_header_8h_html"><div class="ttname"><a href="_dmq_header_8h.html">DmqHeader.h</a></div></div>
 <div class="ttc" id="a_i_dispatcher_8h_html"><div class="ttname"><a href="_i_dispatcher_8h.html">IDispatcher.h</a></div><div class="ttdoc">Delegate dispatcher interface class.</div></div>
-<div class="ttc" id="a_mqtt_transport_8h_html"><div class="ttname"><a href="_mqtt_transport_8h.html">MqttTransport.h</a></div></div>
-<div class="ttc" id="a_win32_pipe_transport_8h_html"><div class="ttname"><a href="_win32_pipe_transport_8h.html">Win32PipeTransport.h</a></div></div>
-<div class="ttc" id="a_win32_udp_transport_8h_html"><div class="ttname"><a href="_win32_udp_transport_8h.html">Win32UdpTransport.h</a></div></div>
-<div class="ttc" id="a_zero_mq_transport_8h_html"><div class="ttname"><a href="_zero_mq_transport_8h.html">ZeroMqTransport.h</a></div></div>
-<div class="ttc" id="aclass_dispatcher_html"><div class="ttname"><a href="class_dispatcher.html">Dispatcher</a></div><div class="ttdoc">Dispatcher sends data to the transport for transmission to the endpoint.</div><div class="ttdef"><b>Definition</b> Dispatcher.h:28</div></div>
-<div class="ttc" id="aclass_dispatcher_html_a4f9e2ae95d440cc624d2f8caa46fb4f4"><div class="ttname"><a href="class_dispatcher.html#a4f9e2ae95d440cc624d2f8caa46fb4f4">Dispatcher::Dispatch</a></div><div class="ttdeci">virtual int Dispatch(std::ostream &amp;os, dmq::DelegateRemoteId id)</div><div class="ttdef"><b>Definition</b> Dispatcher.h:42</div></div>
-<div class="ttc" id="aclass_dispatcher_html_a52fc4e8bef278fa415723b39b61c28a7"><div class="ttname"><a href="class_dispatcher.html#a52fc4e8bef278fa415723b39b61c28a7">Dispatcher::~Dispatcher</a></div><div class="ttdeci">~Dispatcher()</div><div class="ttdef"><b>Definition</b> Dispatcher.h:31</div></div>
-<div class="ttc" id="aclass_dispatcher_html_aa418b0cac5ff62d150632420700690f3"><div class="ttname"><a href="class_dispatcher.html#aa418b0cac5ff62d150632420700690f3">Dispatcher::SetTransport</a></div><div class="ttdeci">void SetTransport(ITransport *transport)</div><div class="ttdef"><b>Definition</b> Dispatcher.h:36</div></div>
+<div class="ttc" id="a_i_transport_8h_html"><div class="ttname"><a href="_i_transport_8h.html">ITransport.h</a></div></div>
+<div class="ttc" id="aclass_dispatcher_html"><div class="ttname"><a href="class_dispatcher.html">Dispatcher</a></div><div class="ttdoc">Dispatcher sends data to the transport for transmission to the endpoint.</div><div class="ttdef"><b>Definition</b> Dispatcher.h:18</div></div>
+<div class="ttc" id="aclass_dispatcher_html_a4f9e2ae95d440cc624d2f8caa46fb4f4"><div class="ttname"><a href="class_dispatcher.html#a4f9e2ae95d440cc624d2f8caa46fb4f4">Dispatcher::Dispatch</a></div><div class="ttdeci">virtual int Dispatch(std::ostream &amp;os, dmq::DelegateRemoteId id)</div><div class="ttdef"><b>Definition</b> Dispatcher.h:32</div></div>
+<div class="ttc" id="aclass_dispatcher_html_a52fc4e8bef278fa415723b39b61c28a7"><div class="ttname"><a href="class_dispatcher.html#a52fc4e8bef278fa415723b39b61c28a7">Dispatcher::~Dispatcher</a></div><div class="ttdeci">~Dispatcher()</div><div class="ttdef"><b>Definition</b> Dispatcher.h:21</div></div>
+<div class="ttc" id="aclass_dispatcher_html_aa418b0cac5ff62d150632420700690f3"><div class="ttname"><a href="class_dispatcher.html#aa418b0cac5ff62d150632420700690f3">Dispatcher::SetTransport</a></div><div class="ttdeci">void SetTransport(ITransport *transport)</div><div class="ttdef"><b>Definition</b> Dispatcher.h:26</div></div>
 <div class="ttc" id="aclass_dispatcher_html_ab7dabf79371e1372d16d2c979c35d27d"><div class="ttname"><a href="class_dispatcher.html#ab7dabf79371e1372d16d2c979c35d27d">Dispatcher::Dispatcher</a></div><div class="ttdeci">Dispatcher()=default</div></div>
 <div class="ttc" id="aclass_dmq_header_html"><div class="ttname"><a href="class_dmq_header.html">DmqHeader</a></div><div class="ttdoc">Header for remote delegate messages. Handles endinesses byte swaps as necessary.</div><div class="ttdef"><b>Definition</b> DmqHeader.h:14</div></div>
 <div class="ttc" id="aclass_dmq_header_html_a091df1a5355465870f7ad0aca6a5794b"><div class="ttname"><a href="class_dmq_header.html#a091df1a5355465870f7ad0aca6a5794b">DmqHeader::GetNextSeqNum</a></div><div class="ttdeci">static uint16_t GetNextSeqNum()</div><div class="ttdef"><b>Definition</b> DmqHeader.h:60</div></div>
+<div class="ttc" id="aclass_dmq_header_html_a2c57d61c9846d221cf3734c1247c651c"><div class="ttname"><a href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">DmqHeader::GetId</a></div><div class="ttdeci">uint16_t GetId() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:31</div></div>
+<div class="ttc" id="aclass_dmq_header_html_a9778607b12e1127d472e63cb7b56c978"><div class="ttname"><a href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">DmqHeader::GetSeqNum</a></div><div class="ttdeci">uint16_t GetSeqNum() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:37</div></div>
 <div class="ttc" id="aclass_i_transport_html"><div class="ttname"><a href="class_i_transport.html">ITransport</a></div><div class="ttdoc">DelegateMQ transport interface.</div><div class="ttdef"><b>Definition</b> ITransport.h:9</div></div>
 <div class="ttc" id="aclass_i_transport_html_a5d901674c5ff4e1c52ac651280adde71"><div class="ttname"><a href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">ITransport::Send</a></div><div class="ttdeci">virtual int Send(xostringstream &amp;os, const DmqHeader &amp;header)=0</div></div>
 <div class="ttc" id="aclassdmq_1_1_i_dispatcher_html"><div class="ttname"><a href="classdmq_1_1_i_dispatcher.html">dmq::IDispatcher</a></div><div class="ttdoc">Delegate interface class to dispatch serialized function argument data to a remote destination....</div><div class="ttdef"><b>Definition</b> IDispatcher.h:26</div></div>

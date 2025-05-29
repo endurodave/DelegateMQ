@@ -76,6 +76,11 @@ var namespacedmq =
       [ "ERR_NO_DISPATCHER", "namespacedmq.html#a62ea8a73887af62d409322557b4e757da9de4b9d71ed3fcd9c33bdd9306574594", null ],
       [ "ERR_DISPATCH", "namespacedmq.html#a62ea8a73887af62d409322557b4e757da9474f3b03888eaf0576eabf7a0f5e1fb", null ]
     ] ],
+    [ "Priority", "namespacedmq.html#a6364022151f2bf1802343322638e8f25", [
+      [ "LOW", "namespacedmq.html#a6364022151f2bf1802343322638e8f25a41bc94cbd8eebea13ce0491b2ac11b88", null ],
+      [ "NORMAL", "namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051", null ],
+      [ "HIGH", "namespacedmq.html#a6364022151f2bf1802343322638e8f25ab89de3b4b81c4facfac906edf29aec8c", null ]
+    ] ],
     [ "ArgValueOf", "namespacedmq.html#ab494047f3f6f52df9a9d5293449f316f", null ],
     [ "make_tuple_heap", "namespacedmq.html#af29d8c3f370422dfe61232f1226c9c09", null ],
     [ "make_tuple_heap", "namespacedmq.html#a98d422bc615570f6e05bcf1d92317309", null ],

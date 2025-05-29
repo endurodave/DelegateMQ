@@ -120,18 +120,20 @@ Inheritance diagram for dmq::DelegateMsg:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5ff95d82bde33aa27c09cb27fdb3cd3d" id="r_a5ff95d82bde33aa27c09cb27fdb3cd3d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ff95d82bde33aa27c09cb27fdb3cd3d">DelegateMsg</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_i_thread_invoker.html">IThreadInvoker</a> &gt; invoker)</td></tr>
-<tr class="separator:a5ff95d82bde33aa27c09cb27fdb3cd3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2a4e8fc485fe36b196f425fe6f307cf" id="r_ad2a4e8fc485fe36b196f425fe6f307cf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2a4e8fc485fe36b196f425fe6f307cf">DelegateMsg</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_i_thread_invoker.html">IThreadInvoker</a> &gt; invoker, <a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">Priority</a> priority)</td></tr>
+<tr class="separator:ad2a4e8fc485fe36b196f425fe6f307cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec162428ef92af0c6401518884ac5415" id="r_aec162428ef92af0c6401518884ac5415"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec162428ef92af0c6401518884ac5415">~DelegateMsg</a> ()=default</td></tr>
 <tr class="separator:aec162428ef92af0c6401518884ac5415"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9313fb470f24e6d61c3370242bcc4345" id="r_a9313fb470f24e6d61c3370242bcc4345"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classdmq_1_1_i_thread_invoker.html">IThreadInvoker</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9313fb470f24e6d61c3370242bcc4345">GetInvoker</a> () const</td></tr>
 <tr class="separator:a9313fb470f24e6d61c3370242bcc4345"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4411c0b6ce739fca6ce1ecbb21b63b25" id="r_a4411c0b6ce739fca6ce1ecbb21b63b25"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">Priority</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4411c0b6ce739fca6ce1ecbb21b63b25">GetPriority</a> ()</td></tr>
+<tr class="separator:a4411c0b6ce739fca6ce1ecbb21b63b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for all delegate inter-thread messages. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a5ff95d82bde33aa27c09cb27fdb3cd3d" name="a5ff95d82bde33aa27c09cb27fdb3cd3d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ff95d82bde33aa27c09cb27fdb3cd3d">&#9670;&#160;</a></span>DelegateMsg()</h2>
+<a id="ad2a4e8fc485fe36b196f425fe6f307cf" name="ad2a4e8fc485fe36b196f425fe6f307cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2a4e8fc485fe36b196f425fe6f307cf">&#9670;&#160;</a></span>DelegateMsg()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -142,8 +144,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">dmq::DelegateMsg::DelegateMsg </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classdmq_1_1_i_thread_invoker.html">IThreadInvoker</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>invoker</em></span></td><td>)</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classdmq_1_1_i_thread_invoker.html">IThreadInvoker</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>invoker</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">Priority</a></td>          <td class="paramname"><span class="paramname"><em>priority</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -211,6 +217,32 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Get the delegate invoker instance the delegate is registered with. </p><dl class="section return"><dt>Returns</dt><dd>The invoker instance. <br  />
  </dd></dl>
+
+</div>
+</div>
+<a id="a4411c0b6ce739fca6ce1ecbb21b63b25" name="a4411c0b6ce739fca6ce1ecbb21b63b25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4411c0b6ce739fca6ce1ecbb21b63b25">&#9670;&#160;</a></span>GetPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">Priority</a> dmq::DelegateMsg::GetPriority </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the delegate message priority </p><dl class="section return"><dt>Returns</dt><dd><a class="el" href="structdmq_1_1_delegate.html">Delegate</a> message priority </dd></dl>
 
 </div>
 </div>

@@ -12,7 +12,8 @@ var classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "Bind", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a5697a9255ed8f6459f845cffb90e36de", null ],
     [ "Clone", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a7c43429e7f71dc6c65e8e76e13c45438", null ],
     [ "Equal", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#acd79d8c12fa17d33c5ec43f8b848dbd8", null ],
-    [ "GetThread", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a9b474fabba96c415c7b6502746cb705f", null ],
+    [ "GetPriority", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a16e23324c2be6696758e59df2aeaacce", null ],
+    [ "GetThread", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#acf12d5c541f87ee4523ed19ce19e39a9", null ],
     [ "Invoke", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#aa6a23cc9c3003f031ad39e944356c6d5", null ],
     [ "operator!=", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a6e70e28dda5d6c9f64a68112cbec6ebc", null ],
     [ "operator()", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#afb579fef836eb48de271caa414d10f34", null ],
@@ -21,6 +22,7 @@ var classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "operator=", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a59fa40c94f9c9af5780e202fd7f42caf", null ],
     [ "operator==", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#affeadf7c9499aa7e5b381cc14e81390c", null ],
     [ "operator==", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a4f4a248179478ec1404c0f6cd9218681", null ],
+    [ "SetPriority", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a7db36fdc7961dad4243a8548cab63b86", null ],
     [ "operator!=", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],
     [ "operator==", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797", null ]
 ];

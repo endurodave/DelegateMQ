@@ -222,6 +222,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3c6f57adde780dabe806556644510e12" id="r_a3c6f57adde780dabe806556644510e12"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdmq_1_1_i_thread.html">IThread</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c6f57adde780dabe806556644510e12">GetThread</a> () noexcept</td></tr>
 <tr class="memdesc:a3c6f57adde780dabe806556644510e12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the destination thread that the target function is invoked on.  <br /></td></tr>
 <tr class="separator:a3c6f57adde780dabe806556644510e12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd50e1c25b819614e1781ed09c556a68" id="r_afd50e1c25b819614e1781ed09c556a68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">Priority</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd50e1c25b819614e1781ed09c556a68">GetPriority</a> () const noexcept</td></tr>
+<tr class="memdesc:afd50e1c25b819614e1781ed09c556a68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the delegate message priority.  <br /></td></tr>
+<tr class="separator:afd50e1c25b819614e1781ed09c556a68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d292bcce3a7e0b077aa8b068fe83d2f" id="r_a2d292bcce3a7e0b077aa8b068fe83d2f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d292bcce3a7e0b077aa8b068fe83d2f">SetPriority</a> (<a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">Priority</a> priority) noexcept</td></tr>
+<tr class="separator:a2d292bcce3a7e0b077aa8b068fe83d2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html">dmq::DelegateMember&lt; TClass, RetType(Args...)&gt;</a></td></tr>
 <tr class="memitem:a65f892bfa9d6c5e6cbfd326f57f3eff1 inherit pub_methods_classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" id="r_a65f892bfa9d6c5e6cbfd326f57f3eff1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a65f892bfa9d6c5e6cbfd326f57f3eff1">DelegateMember</a> (<a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9691eff49499fb9ba2f2f981daf5e084">SharedPtr</a> object, <a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ac4b8ca4068b0fdeeb8c7c5623c67ff02">MemberFunc</a> func)</td></tr>
 <tr class="memdesc:a65f892bfa9d6c5e6cbfd326f57f3eff1 inherit pub_methods_classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to create a class instance.  <br /></td></tr>
@@ -1074,6 +1079,36 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 
 </div>
 </div>
+<a id="afd50e1c25b819614e1781ed09c556a68" name="afd50e1c25b819614e1781ed09c556a68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd50e1c25b819614e1781ed09c556a68">&#9670;&#160;</a></span>GetPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class TClass , class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">Priority</a> <a class="el" href="structdmq_1_1_delegate_member_async_wait.html">dmq::DelegateMemberAsyncWait</a>&lt; TClass, RetType(Args...)&gt;::GetPriority </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the delegate message priority. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="structdmq_1_1_delegate.html">Delegate</a> message priority </dd></dl>
+
+</div>
+</div>
 <a id="a5f2d607a893f98e71a0846886fad23da" name="a5f2d607a893f98e71a0846886fad23da"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5f2d607a893f98e71a0846886fad23da">&#9670;&#160;</a></span>GetRetVal()</h2>
 
@@ -1427,6 +1462,33 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 <p>Overload operator== to compare the delegate to nullptr </p><dl class="section return"><dt>Returns</dt><dd><code>true</code> if delegate is null. </dd></dl>
 
 <p>Reimplemented from <a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a98c78a49a7d3407d5259626375d81601">dmq::DelegateMember&lt; TClass, RetType(Args...)&gt;</a>.</p>
+
+</div>
+</div>
+<a id="a2d292bcce3a7e0b077aa8b068fe83d2f" name="a2d292bcce3a7e0b077aa8b068fe83d2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d292bcce3a7e0b077aa8b068fe83d2f">&#9670;&#160;</a></span>SetPriority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class TClass , class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="structdmq_1_1_delegate_member_async_wait.html">dmq::DelegateMemberAsyncWait</a>&lt; TClass, RetType(Args...)&gt;::SetPriority </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">Priority</a></td>          <td class="paramname"><span class="paramname"><em>priority</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

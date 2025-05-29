@@ -6,6 +6,6 @@ var class_win32_pipe_transport =
     ] ],
     [ "Close", "class_win32_pipe_transport.html#ad647f9019e2628ff7852d665caf1d558", null ],
     [ "Create", "class_win32_pipe_transport.html#a0429417d6063ffc5bca41e0f8a0f7cc4", null ],
-    [ "Receive", "class_win32_pipe_transport.html#a2abc80e157b6ccbed44ab9cc4244d911", null ],
+    [ "Receive", "class_win32_pipe_transport.html#a4a12a9ea10f6ca54cbe7f4c5edec587e", null ],
     [ "Send", "class_win32_pipe_transport.html#a1d3d1d095712800240cfbb4c2e5f2579", null ]
 ];

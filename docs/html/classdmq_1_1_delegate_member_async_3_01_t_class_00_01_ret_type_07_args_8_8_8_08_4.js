@@ -21,7 +21,8 @@ var classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8
     [ "Bind", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ae0244389a03b0eb4f5b4f4d17867acd4", null ],
     [ "Clone", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a98bd97965713710643ef491e42d83a7b", null ],
     [ "Equal", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a57048220483ee72868c55f4cb9174a79", null ],
-    [ "GetThread", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a91b657d9c22994d87b70d029cda66fc7", null ],
+    [ "GetPriority", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a3f22c57656959b975ded37b52562f230", null ],
+    [ "GetThread", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a0fd5a21a26f7ab385d12cd60df2a2edb", null ],
     [ "Invoke", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a0a202a4e70fe60d8c5c4dbc94ad9feea", null ],
     [ "operator!=", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#aae297efd60fbcd2fffd3f109d54e79c4", null ],
     [ "operator()", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a7374388d3b0ef99e30a66b880a60d36c", null ],
@@ -30,6 +31,7 @@ var classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8
     [ "operator=", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#abcb40a2fd33d58c02c14b69f38b0d925", null ],
     [ "operator==", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ac7690ac964dc95a5a391533c22deccc5", null ],
     [ "operator==", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a05a37d84ce293c63a0102861436c9433", null ],
+    [ "SetPriority", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ad343dc9eaac8d4c2fb7f05728e8284e1", null ],
     [ "operator!=", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],
     [ "operator==", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797", null ]
 ];

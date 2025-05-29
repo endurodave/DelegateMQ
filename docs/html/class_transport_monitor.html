@@ -132,10 +132,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4a16d0eaff72cafb2258a24537e9d510"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ceea7674a94dc7fafbd9136f3af83b6" id="r_a7ceea7674a94dc7fafbd9136f3af83b6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ceea7674a94dc7fafbd9136f3af83b6">~TransportMonitor</a> ()</td></tr>
 <tr class="separator:a7ceea7674a94dc7fafbd9136f3af83b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac075b87729d68d666773a7b4e6badb88" id="r_ac075b87729d68d666773a7b4e6badb88"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac075b87729d68d666773a7b4e6badb88">Add</a> (uint16_t seqNum, <a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId)</td></tr>
-<tr class="separator:ac075b87729d68d666773a7b4e6badb88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4a86fbe9c52d32bd4b21053cda25f732" id="r_a4a86fbe9c52d32bd4b21053cda25f732"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a86fbe9c52d32bd4b21053cda25f732">Remove</a> (uint16_t seqNum)</td></tr>
-<tr class="separator:a4a86fbe9c52d32bd4b21053cda25f732"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5dcc7c093c4649f3e1b01f1c64b0399" id="r_aa5dcc7c093c4649f3e1b01f1c64b0399"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5dcc7c093c4649f3e1b01f1c64b0399">Add</a> (uint16_t seqNum, <a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId) override</td></tr>
+<tr class="separator:aa5dcc7c093c4649f3e1b01f1c64b0399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87b33e2d501022bd697b8b68719d9b06" id="r_a87b33e2d501022bd697b8b68719d9b06"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a87b33e2d501022bd697b8b68719d9b06">Remove</a> (uint16_t seqNum) override</td></tr>
+<tr class="separator:a87b33e2d501022bd697b8b68719d9b06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4dd814fb686a053c4505829c8c21b40" id="r_ac4dd814fb686a053c4505829c8c21b40"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac4dd814fb686a053c4505829c8c21b40">Process</a> ()</td></tr>
 <tr class="memdesc:ac4dd814fb686a053c4505829c8c21b40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call periodically to process message timeouts.  <br /></td></tr>
 <tr class="separator:ac4dd814fb686a053c4505829c8c21b40"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -227,8 +227,8 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ac075b87729d68d666773a7b4e6badb88" name="ac075b87729d68d666773a7b4e6badb88"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac075b87729d68d666773a7b4e6badb88">&#9670;&#160;</a></span>Add()</h2>
+<a id="aa5dcc7c093c4649f3e1b01f1c64b0399" name="aa5dcc7c093c4649f3e1b01f1c64b0399"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5dcc7c093c4649f3e1b01f1c64b0399">&#9670;&#160;</a></span>Add()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -237,7 +237,7 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void TransportMonitor::Add </td>
+          <td class="memname">virtual void TransportMonitor::Add </td>
           <td>(</td>
           <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>seqNum</em></span>, </td>
         </tr>
@@ -249,7 +249,7 @@ Public Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -286,8 +286,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4a86fbe9c52d32bd4b21053cda25f732" name="a4a86fbe9c52d32bd4b21053cda25f732"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4a86fbe9c52d32bd4b21053cda25f732">&#9670;&#160;</a></span>Remove()</h2>
+<a id="a87b33e2d501022bd697b8b68719d9b06" name="a87b33e2d501022bd697b8b68719d9b06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87b33e2d501022bd697b8b68719d9b06">&#9670;&#160;</a></span>Remove()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -296,7 +296,7 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void TransportMonitor::Remove </td>
+          <td class="memname">virtual void TransportMonitor::Remove </td>
           <td>(</td>
           <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>seqNum</em></span></td><td>)</td>
           <td></td>
@@ -304,7 +304,7 @@ Public Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

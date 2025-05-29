@@ -104,7 +104,8 @@ $(function(){initNavTree('class_zero_mq_transport.html',''); initResizable(true)
 </div><!--header-->
 <div class="contents">
 
-<p>ZeroMQ transport example. Each Transport object must only be called by a single thread of control per ZeroMQ library.  
+<p>ZeroMQ transport class. ZeroMQ socket instances must only be called by a single thread of control. Each transport instance has its own internal thread of control and all transport APIs are asynchronous. Each instances is an "active 
+object" with a private internal thread of control and async public APIs.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_zero_mq_transport_8h_source.html">ZeroMqTransport.h</a>&gt;</code></p>
@@ -129,6 +130,10 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a7aeaaf3a760cf1085ba353bbe1f16554" id="r_a7aeaaf3a760cf1085ba353bbe1f16554"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7aeaaf3a760cf1085ba353bbe1f16554">ZeroMqTransport</a> ()</td></tr>
+<tr class="separator:a7aeaaf3a760cf1085ba353bbe1f16554"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a373ba2039ee4607938c5486338deaf49" id="r_a373ba2039ee4607938c5486338deaf49"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a373ba2039ee4607938c5486338deaf49">~ZeroMqTransport</a> ()</td></tr>
+<tr class="separator:a373ba2039ee4607938c5486338deaf49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a180c60a8845d6eb436f4a1296a3bfe68" id="r_a180c60a8845d6eb436f4a1296a3bfe68"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a180c60a8845d6eb436f4a1296a3bfe68">Create</a> (<a class="el" href="#a2e5776b171a8cce08ff9d3afeb40a93b">Type</a> type, const char *addr)</td></tr>
 <tr class="separator:a180c60a8845d6eb436f4a1296a3bfe68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a622b3e3e52ff2226d29f1a1a33edab59" id="r_a622b3e3e52ff2226d29f1a1a33edab59"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a622b3e3e52ff2226d29f1a1a33edab59">Close</a> ()</td></tr>
@@ -137,14 +142,19 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a488dc382184e736c47ac9058104ba222"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8064789233491016310d45d740de095d" id="r_a8064789233491016310d45d740de095d"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8064789233491016310d45d740de095d">Send</a> (<a class="el" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
 <tr class="separator:a8064789233491016310d45d740de095d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ad206313487f0fa79df948a20898006" id="r_a2ad206313487f0fa79df948a20898006"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ad206313487f0fa79df948a20898006">Receive</a> (<a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
-<tr class="separator:a2ad206313487f0fa79df948a20898006"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf1a3d2fb47ed5f5f053b0b7193aaae8" id="r_abf1a3d2fb47ed5f5f053b0b7193aaae8"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf1a3d2fb47ed5f5f053b0b7193aaae8">Receive</a> (<a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> &amp;is, <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
+<tr class="separator:abf1a3d2fb47ed5f5f053b0b7193aaae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a300f5a6e3a7b08863d77894ab3e816b3" id="r_a300f5a6e3a7b08863d77894ab3e816b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a300f5a6e3a7b08863d77894ab3e816b3">SetTransportMonitor</a> (<a class="el" href="class_i_transport_monitor.html">ITransportMonitor</a> *transportMonitor)</td></tr>
 <tr class="separator:a300f5a6e3a7b08863d77894ab3e816b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5a4ccf9f7d7852b1cd057a947512c25" id="r_ac5a4ccf9f7d7852b1cd057a947512c25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac5a4ccf9f7d7852b1cd057a947512c25">SetSendTransport</a> (<a class="el" href="class_i_transport.html">ITransport</a> *sendTransport)</td></tr>
+<tr class="separator:ac5a4ccf9f7d7852b1cd057a947512c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9842b62c0e973a92d75d94c13b4cc3d" id="r_ad9842b62c0e973a92d75d94c13b4cc3d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9842b62c0e973a92d75d94c13b4cc3d">SetRecvTransport</a> (<a class="el" href="class_i_transport.html">ITransport</a> *recvTransport)</td></tr>
+<tr class="separator:ad9842b62c0e973a92d75d94c13b4cc3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_i_transport"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_i_transport')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_i_transport.html">ITransport</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>ZeroMQ transport example. Each Transport object must only be called by a single thread of control per ZeroMQ library. </p>
+<div class="textblock"><p>ZeroMQ transport class. ZeroMQ socket instances must only be called by a single thread of control. Each transport instance has its own internal thread of control and all transport APIs are asynchronous. Each instances is an "active 
+object" with a private internal thread of control and async public APIs. </p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a2e5776b171a8cce08ff9d3afeb40a93b" name="a2e5776b171a8cce08ff9d3afeb40a93b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2e5776b171a8cce08ff9d3afeb40a93b">&#9670;&#160;</a></span>Type</h2>
@@ -171,6 +181,57 @@ Public Member Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a2e5776b171a8cce08ff9d3afeb40a93ba9aba7127268ef2f384fdc95498c7bb1a" name="a2e5776b171a8cce08ff9d3afeb40a93ba9aba7127268ef2f384fdc95498c7bb1a"></a>PUB&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a2e5776b171a8cce08ff9d3afeb40a93ba241dd841abade20fcb27b8a9f494e1eb" name="a2e5776b171a8cce08ff9d3afeb40a93ba241dd841abade20fcb27b8a9f494e1eb"></a>SUB&#160;</td><td class="fielddoc"></td></tr>
 </table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a7aeaaf3a760cf1085ba353bbe1f16554" name="a7aeaaf3a760cf1085ba353bbe1f16554"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aeaaf3a760cf1085ba353bbe1f16554">&#9670;&#160;</a></span>ZeroMqTransport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ZeroMqTransport::ZeroMqTransport </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a373ba2039ee4607938c5486338deaf49" name="a373ba2039ee4607938c5486338deaf49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a373ba2039ee4607938c5486338deaf49">&#9670;&#160;</a></span>~ZeroMqTransport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ZeroMqTransport::~ZeroMqTransport </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -254,8 +315,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a2ad206313487f0fa79df948a20898006" name="a2ad206313487f0fa79df948a20898006"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2ad206313487f0fa79df948a20898006">&#9670;&#160;</a></span>Receive()</h2>
+<a id="abf1a3d2fb47ed5f5f053b0b7193aaae8" name="abf1a3d2fb47ed5f5f053b0b7193aaae8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf1a3d2fb47ed5f5f053b0b7193aaae8">&#9670;&#160;</a></span>Receive()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -264,10 +325,14 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> ZeroMqTransport::Receive </td>
+          <td class="memname">virtual int ZeroMqTransport::Receive </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>is</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -278,13 +343,14 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Receive data from a remote </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">is</td><td>The received incoming data bytes, not including the header. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">header</td><td>Incoming delegate message header. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The received incoming data bytes, not including the header. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if success. </dd></dl>
 
-<p>Implements <a class="el" href="class_i_transport.html#a0484467f5333330a859e4dad39df01bb">ITransport</a>.</p>
+<p>Implements <a class="el" href="class_i_transport.html#a5ecc4885a8c3210519c234298c48c427">ITransport</a>.</p>
 
 </div>
 </div>
@@ -324,6 +390,56 @@ Public Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>0 if success. </dd></dl>
 
 <p>Implements <a class="el" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">ITransport</a>.</p>
+
+</div>
+</div>
+<a id="ad9842b62c0e973a92d75d94c13b4cc3d" name="ad9842b62c0e973a92d75d94c13b4cc3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9842b62c0e973a92d75d94c13b4cc3d">&#9670;&#160;</a></span>SetRecvTransport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZeroMqTransport::SetRecvTransport </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_i_transport.html">ITransport</a> *</td>          <td class="paramname"><span class="paramname"><em>recvTransport</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac5a4ccf9f7d7852b1cd057a947512c25" name="ac5a4ccf9f7d7852b1cd057a947512c25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5a4ccf9f7d7852b1cd057a947512c25">&#9670;&#160;</a></span>SetSendTransport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZeroMqTransport::SetSendTransport </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_i_transport.html">ITransport</a> *</td>          <td class="paramname"><span class="paramname"><em>sendTransport</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

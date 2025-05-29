@@ -93,6 +93,7 @@ var annotated_dup =
     [ "ITransport", "class_i_transport.html", "class_i_transport" ],
     [ "ITransportMonitor", "class_i_transport_monitor.html", "class_i_transport_monitor" ],
     [ "MqttTransport", "class_mqtt_transport.html", "class_mqtt_transport" ],
+    [ "NngTransport", "class_nng_transport.html", "class_nng_transport" ],
     [ "serialize", "classserialize.html", "classserialize" ],
     [ "Serializer", "struct_serializer.html", null ],
     [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4" ],
@@ -100,9 +101,10 @@ var annotated_dup =
     [ "stl_allocator< void >", "classstl__allocator_3_01void_01_4.html", "classstl__allocator_3_01void_01_4" ],
     [ "Thread", "class_thread.html", "class_thread" ],
     [ "ThreadMsg", "class_thread_msg.html", "class_thread_msg" ],
+    [ "ThreadMsgComparator", "struct_thread_msg_comparator.html", "struct_thread_msg_comparator" ],
     [ "Timer", "class_timer.html", "class_timer" ],
     [ "TransportMonitor", "class_transport_monitor.html", "class_transport_monitor" ],
+    [ "UdpTransport", "class_udp_transport.html", "class_udp_transport" ],
     [ "Win32PipeTransport", "class_win32_pipe_transport.html", "class_win32_pipe_transport" ],
-    [ "Win32UdpTransport", "class_win32_udp_transport.html", "class_win32_udp_transport" ],
     [ "ZeroMqTransport", "class_zero_mq_transport.html", "class_zero_mq_transport" ]
 ];

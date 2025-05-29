@@ -69,6 +69,8 @@ var hierarchy =
     [ "dmq::ISerializer< RetType(Args...)>", "classdmq_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", [
       [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+      [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+      [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
     ] ],
     [ "dmq::IThread", "classdmq_1_1_i_thread.html", [
@@ -85,8 +87,10 @@ var hierarchy =
     ] ],
     [ "ITransport", "class_i_transport.html", [
       [ "MqttTransport", "class_mqtt_transport.html", null ],
+      [ "NngTransport", "class_nng_transport.html", null ],
+      [ "UdpTransport", "class_udp_transport.html", null ],
+      [ "UdpTransport", "class_udp_transport.html", null ],
       [ "Win32PipeTransport", "class_win32_pipe_transport.html", null ],
-      [ "Win32UdpTransport", "class_win32_udp_transport.html", null ],
       [ "ZeroMqTransport", "class_zero_mq_transport.html", null ]
     ] ],
     [ "ITransportMonitor", "class_i_transport_monitor.html", [
@@ -109,6 +113,7 @@ var hierarchy =
     [ "Serializer< R >", "struct_serializer.html", null ],
     [ "stl_allocator< void >", "classstl__allocator_3_01void_01_4.html", null ],
     [ "ThreadMsg", "class_thread_msg.html", null ],
+    [ "ThreadMsgComparator", "struct_thread_msg_comparator.html", null ],
     [ "Timer", "class_timer.html", null ],
     [ "std::true_type", null, [
       [ "dmq::is_shared_ptr< const std::shared_ptr< T > & >", "structdmq_1_1is__shared__ptr_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],

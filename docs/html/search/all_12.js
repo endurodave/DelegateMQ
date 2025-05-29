@@ -1,5 +1,16 @@
 var searchData=
 [
-  ['value_5ftype_0',['value_type',['../classstl__allocator_3_01void_01_4.html#adda4ff9c0566dfeb687621a9ba0ee913',1,'stl_allocator&lt; void &gt;::value_type'],['../classstl__allocator.html#ab6b0750c53bb3557b729cbfdc7668651',1,'stl_allocator::value_type']]],
-  ['vector_1',['VECTOR',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a87752381b583740610f1dfeb07fdad7e',1,'serialize']]]
+  ['udptransport_0',['UdpTransport',['../class_udp_transport.html',1,'UdpTransport'],['../class_udp_transport.html#a45f13a3e6e0d98c7990aa40c50fe0c49',1,'UdpTransport::UdpTransport()'],['../class_udp_transport.html#a45f13a3e6e0d98c7990aa40c50fe0c49',1,'UdpTransport::UdpTransport()']]],
+  ['unicastdelegate_1',['UnicastDelegate',['../structdmq_1_1_unicast_delegate.html',1,'dmq::UnicastDelegate&lt; R &gt;'],['../classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a3cf1539a6fa9b2e06bdcb3ad7618950b',1,'dmq::UnicastDelegate&lt; RetType(Args...)&gt;::UnicastDelegate()=default'],['../classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a92bb3773eed2b1a2f2d5c7450295be45',1,'dmq::UnicastDelegate&lt; RetType(Args...)&gt;::UnicastDelegate(const UnicastDelegate &amp;rhs)'],['../classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ac233ff64038a87f84a5b279893fa7697',1,'dmq::UnicastDelegate&lt; RetType(Args...)&gt;::UnicastDelegate(UnicastDelegate &amp;&amp;rhs) noexcept']]],
+  ['unicastdelegate_2eh_2',['UnicastDelegate.h',['../_unicast_delegate_8h.html',1,'']]],
+  ['unicastdelegate_3c_20rettype_28args_2e_2e_2e_29_3e_3',['UnicastDelegate&lt; RetType(Args...)&gt;',['../classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
+  ['unicastdelegate_3c_20void_28delegateremoteid_2c_20delegateerror_2c_20delegateerroraux_29_3e_4',['UnicastDelegate&lt; void(DelegateRemoteId, DelegateError, DelegateErrorAux)&gt;',['../structdmq_1_1_unicast_delegate.html',1,'dmq']]],
+  ['unicastdelegatesafe_5',['UnicastDelegateSafe',['../structdmq_1_1_unicast_delegate_safe.html',1,'dmq::UnicastDelegateSafe&lt; R &gt;'],['../classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a8fef5d2cb43bc2acdb8de0145e0f79f4',1,'dmq::UnicastDelegateSafe&lt; RetType(Args...)&gt;::UnicastDelegateSafe()=default'],['../classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#ae792c19d9799f9d9de59e3a8ca8ec434',1,'dmq::UnicastDelegateSafe&lt; RetType(Args...)&gt;::UnicastDelegateSafe(const UnicastDelegateSafe &amp;rhs)'],['../classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#abab654d41c5837bfd4e8932fdd42924b',1,'dmq::UnicastDelegateSafe&lt; RetType(Args...)&gt;::UnicastDelegateSafe(UnicastDelegateSafe &amp;&amp;rhs)']]],
+  ['unicastdelegatesafe_2eh_6',['UnicastDelegateSafe.h',['../_unicast_delegate_safe_8h.html',1,'']]],
+  ['unicastdelegatesafe_3c_20rettype_28args_2e_2e_2e_29_3e_7',['UnicastDelegateSafe&lt; RetType(Args...)&gt;',['../classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
+  ['unicastdelegatesafe_3c_20void_28void_29_3e_8',['UnicastDelegateSafe&lt; void(void)&gt;',['../structdmq_1_1_unicast_delegate_safe.html',1,'dmq']]],
+  ['unknown_9',['UNKNOWN',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a696b031073e74bf2cb98e5ef201d4aa3',1,'serialize']]],
+  ['use_20cases_10',['Delegate Semantics and Use Cases',['../index.html#autotoc_md7',1,'']]],
+  ['user_5fdefined_11',['USER_DEFINED',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a5123cb514ff95a726922950380866e00',1,'serialize']]],
+  ['using_20delegatemq_12',['Other Projects Using DelegateMQ',['../index.html#autotoc_md14',1,'']]]
 ];

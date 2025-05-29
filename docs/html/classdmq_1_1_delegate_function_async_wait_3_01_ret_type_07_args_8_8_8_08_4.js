@@ -12,6 +12,7 @@ var classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "Bind", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#ad3e9be21f267bb2ec5060af946504ee3", null ],
     [ "Clone", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a3202c35e0faa57f6b6a2045c29811b3d", null ],
     [ "Equal", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a10a54a5e99d08cb036528da680c54c29", null ],
+    [ "GetPriority", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a7ec3291f570cf93e98a43f19e2587937", null ],
     [ "GetRetVal", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a3f0d855b47ddfb8b88d7931ef6350c28", null ],
     [ "GetThread", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#ae810c5ab59c10f4aeb14603b5979cdaf", null ],
     [ "Invoke", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a5009490a38291a2fc1e458e58376c197", null ],
@@ -23,6 +24,7 @@ var classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "operator=", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#af0d4a44e2de2eff5d60c1800bb02a299", null ],
     [ "operator==", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a79ba67c2044549a0d59cabd145ed66fb", null ],
     [ "operator==", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a0ec2b7b6634a22f95759812313e7f773", null ],
+    [ "SetPriority", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#adbb76b14e6a79454869d947994edf42f", null ],
     [ "operator!=", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],
     [ "operator==", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797", null ]
 ];

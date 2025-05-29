@@ -21,6 +21,7 @@ var classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_
     [ "Bind", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ab2f7544b430d26855916bf4db6e30300", null ],
     [ "Clone", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#afcd4c9887dbae83a762dc3a78050910e", null ],
     [ "Equal", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#af66e41147a57a822b301019db8965387", null ],
+    [ "GetPriority", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#afd50e1c25b819614e1781ed09c556a68", null ],
     [ "GetRetVal", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a5f2d607a893f98e71a0846886fad23da", null ],
     [ "GetThread", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a3c6f57adde780dabe806556644510e12", null ],
     [ "Invoke", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#aab3ff921afe493b4e2122f094cdb1f2f", null ],
@@ -32,6 +33,7 @@ var classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_
     [ "operator=", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a477004ea0d56bd5ff9016e59eee4bbea", null ],
     [ "operator==", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#aac829b7c743e181faa438ff878205a62", null ],
     [ "operator==", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a8bf4bf8e983dfd1ecd4a13fdf111adf5", null ],
+    [ "SetPriority", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a2d292bcce3a7e0b077aa8b068fe83d2f", null ],
     [ "operator!=", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],
     [ "operator==", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a4c3606cc50df42a8086afe833332c797", null ]
 ];

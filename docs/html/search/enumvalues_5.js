@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['none_0',['NONE',['../classserialize.html#acfb1afef8776c22530f83bec54ea89b0ab50339a10e1de285ac99d4c3990b8693',1,'serialize']]]
+  ['map_0',['MAP',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a5af1a3a285c2bdee4192223e31e1f833',1,'serialize']]]
 ];

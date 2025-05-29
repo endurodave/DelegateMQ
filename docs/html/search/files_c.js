@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['workerthreadstd_2ecpp_0',['WorkerThreadStd.cpp',['../_worker_thread_std_8cpp.html',1,'']]],
-  ['workerthreadstd_2eh_1',['WorkerThreadStd.h',['../_worker_thread_std_8h.html',1,'']]]
+  ['unicastdelegate_2eh_0',['UnicastDelegate.h',['../_unicast_delegate_8h.html',1,'']]],
+  ['unicastdelegatesafe_2eh_1',['UnicastDelegateSafe.h',['../_unicast_delegate_safe_8h.html',1,'']]]
 ];

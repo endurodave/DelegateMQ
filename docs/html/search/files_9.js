@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['win32pipetransport_2eh_0',['Win32PipeTransport.h',['../_win32_pipe_transport_8h.html',1,'']]],
-  ['win32udptransport_2eh_1',['Win32UdpTransport.h',['../_win32_udp_transport_8h.html',1,'']]]
+  ['rapidjson_2fserializer_2eh_0',['Serializer.h',['../rapidjson_2_serializer_8h.html',1,'']]],
+  ['readme_2emd_1',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]]
 ];
