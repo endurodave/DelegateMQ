@@ -104,6 +104,9 @@ $(function(){initNavTree('class_thread.html',''); initResizable(true); });
 </div><!--header-->
 <div class="contents">
 
+<p>Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="freertos_2_thread_8h_source.html">Thread.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for Thread:</div>
@@ -140,10 +143,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a37d9edd3a1a776cbc27dedff949c9726" id="r_a37d9edd3a1a776cbc27dedff949c9726"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37d9edd3a1a776cbc27dedff949c9726">~Thread</a> ()</td></tr>
 <tr class="memdesc:a37d9edd3a1a776cbc27dedff949c9726"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="separator:a37d9edd3a1a776cbc27dedff949c9726"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ac27cb95d8af8be6dd6f8e7c24e24ee" id="r_a7ac27cb95d8af8be6dd6f8e7c24e24ee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">CreateThread</a> ()</td></tr>
-<tr class="separator:a7ac27cb95d8af8be6dd6f8e7c24e24ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae39a39fcabf49e086bf484ad6c140e79" id="r_ae39a39fcabf49e086bf484ad6c140e79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae39a39fcabf49e086bf484ad6c140e79">CreateThread</a> (std::optional&lt; <a class="el" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a> &gt; watchdogTimeout=std::nullopt)</td></tr>
+<tr class="separator:ae39a39fcabf49e086bf484ad6c140e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabf05b92a7bc081a464b8adcb916f321" id="r_aabf05b92a7bc081a464b8adcb916f321"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabf05b92a7bc081a464b8adcb916f321">ExitThread</a> ()</td></tr>
-<tr class="memdesc:aabf05b92a7bc081a464b8adcb916f321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once a program exit to exit the worker thread.  <br /></td></tr>
+<tr class="memdesc:aabf05b92a7bc081a464b8adcb916f321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once at program exit to shut down the worker thread.  <br /></td></tr>
 <tr class="separator:aabf05b92a7bc081a464b8adcb916f321"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2294b75a90c36b4f14e32ae8d975a0fb" id="r_a2294b75a90c36b4f14e32ae8d975a0fb"><td class="memItemLeft" align="right" valign="top">std::thread::id&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a> ()</td></tr>
 <tr class="memdesc:a2294b75a90c36b4f14e32ae8d975a0fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID of this thread instance.  <br /></td></tr>
@@ -170,7 +173,13 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a25dc0ec2d5c28fafeaae5b3d7ca1f40a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID of the currently executing thread.  <br /></td></tr>
 <tr class="separator:a25dc0ec2d5c28fafeaae5b3d7ca1f40a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux). </p>
+<p>The <a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> class creates a worker thread capable of dispatching and invoking asynchronous delegates.</p>
+<p>// Create thread with a watchdog timeout thread-&gt;CreateThread(std::chrono::milliseconds(2000));</p>
+<p>// Or create without a watchdog thread-&gt;<a class="el" href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">CreateThread()</a>;</p>
+<p>WatchdogCheck() is invoked by a <a class="el" href="class_timer.html" title="A timer class provides periodic timer callbacks on the client&#39;s thread of control....">Timer</a> instance. In a real-time operating system (RTOS), <a class="el" href="class_timer.html#a3b641630467cbe44c959370c43be1002" title="Called on a periodic basic to service all timer instances.">Timer::ProcessTimers()</a> is typically called from the highest-priority task in the system. This ensures that any user thread becoming unresponsive can still be detected, since WatchdogCheck() runs at a higher priority. For mission-critical systems, a hardware watchdog should also be used as a fail-safe. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a192e02ca6e9efd7b7da940157fb9438a" name="a192e02ca6e9efd7b7da940157fb9438a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a192e02ca6e9efd7b7da940157fb9438a">&#9670;&#160;</a></span>Thread() <span class="overload">[1/2]</span></h2>
 
@@ -267,8 +276,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a7ac27cb95d8af8be6dd6f8e7c24e24ee" name="a7ac27cb95d8af8be6dd6f8e7c24e24ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[2/2]</span></h2>
+<a id="ae39a39fcabf49e086bf484ad6c140e79" name="ae39a39fcabf49e086bf484ad6c140e79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae39a39fcabf49e086bf484ad6c140e79">&#9670;&#160;</a></span>CreateThread() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -276,12 +285,18 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">bool Thread::CreateThread </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>watchdogTimeout</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::nullopt</span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Called once to create the worker thread </p><dl class="section return"><dt>Returns</dt><dd>TRUE if thread is created. FALSE otherise. <br  />
+<p>Called once to create the worker thread. If watchdogTimeout value provided, the maximum watchdog interval is used. Otherwise no watchdog. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">watchdogTimeout</td><td>- optional watchdog timeout. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>TRUE if thread is created. FALSE otherise. <br  />
  </dd></dl>
 
 </div>
@@ -342,13 +357,12 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Dispatch a <code>DelegateMsg</code> onto this thread. The implementer is responsible for getting the <code>DelegateMsg</code> into an OS message queue. Once <code>DelegateMsg</code> is on the destination thread of control, the <code>IDelegateInvoker::Invoke()</code> function must be called to execute the target function. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Dispatch and invoke a delegate target on the destination thread. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>A shared pointer to the message. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>- Delegate message containing target function arguments. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section post"><dt>Postcondition</dt><dd>The destination thread calls <code>IThreadInvoker::Invoke()</code> when <code>DelegateMsg</code> is received. </dd></dl>
 
 <p>Implements <a class="el" href="classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433">dmq::IThread</a>.</p>
 
@@ -369,7 +383,7 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Called once a program exit to exit the worker thread. </p>
+<p>Called once at program exit to shut down the worker thread. </p>
 
 </div>
 </div>

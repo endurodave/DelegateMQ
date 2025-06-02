@@ -130,9 +130,9 @@ $(function(){initNavTree('_delegate_m_q_8h.html',''); initResizable(true); });
 <ul>
 <li>Asynchronous Method Invocation(AMI)</li>
 <li>Publish / Subscribe(Observer) Pattern</li>
-<li>Anonymous, Asynchronous <a class="el" href="class_thread.html">Thread</a> - Safe Callbacks</li>
+<li>Anonymous, Asynchronous <a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> - Safe Callbacks</li>
 <li>Event - Driven Programming</li>
-<li><a class="el" href="class_thread.html">Thread</a> - Safe Asynchronous API</li>
+<li><a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> - Safe Asynchronous API</li>
 <li>Design Patterns(Active Object)</li>
 </ul>
 <p>The delegate library's asynchronous features differ from <code>std::async</code> in that the caller-specified thread of control is used to invoke the target function bound to the delegate, rather than a random thread from the thread pool. The asynchronous variants copy the argument data into the event queue, ensuring safe transport to the destination thread, regardless of the argument type. This approach provides 'fire and forget' functionality, allowing the caller to avoid waiting or worrying about out-of-scope stack variables being accessed by the target thread.</p>

@@ -106,86 +106,99 @@ $(function(){initNavTree('stdlib_2_thread_8h_source.html',''); initResizable(tru
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// David Lafreniere, Feb 2017.</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_i_thread_8h.html">delegate/IThread.h</a>&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="stdlib_2_thread_msg_8h.html">ThreadMsg.h</a>&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;thread&gt;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;queue&gt;</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;condition_variable&gt;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;future&gt;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">// Comparator for priority queue</span></div>
-<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="struct_thread_msg_comparator.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_thread_msg_comparator.html">ThreadMsgComparator</a> {</div>
-<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="struct_thread_msg_comparator.html#a763c200db1e1ab6ca1d2aebeb26ef6fc">   18</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="struct_thread_msg_comparator.html#a763c200db1e1ab6ca1d2aebeb26ef6fc">operator()</a>(<span class="keyword">const</span> std::shared_ptr&lt;ThreadMsg&gt;&amp; a, <span class="keyword">const</span> std::shared_ptr&lt;ThreadMsg&gt;&amp; b)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(a-&gt;GetPriority()) &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(b-&gt;GetPriority());</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    }</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_timer_8h.html">./predef/util/Timer.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="stdlib_2_thread_msg_8h.html">ThreadMsg.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;queue&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;condition_variable&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;future&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">// Comparator for priority queue</span></div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="struct_thread_msg_comparator.html">   19</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_thread_msg_comparator.html">ThreadMsgComparator</a> {</div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="}">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="struct_thread_msg_comparator.html#a763c200db1e1ab6ca1d2aebeb26ef6fc">   20</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="struct_thread_msg_comparator.html#a763c200db1e1ab6ca1d2aebeb26ef6fc">operator()</a>(<span class="keyword">const</span> std::shared_ptr&lt;ThreadMsg&gt;&amp; a, <span class="keyword">const</span> std::shared_ptr&lt;ThreadMsg&gt;&amp; b)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(a-&gt;GetPriority()) &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(b-&gt;GetPriority());</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    }</div>
 </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>};</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
 </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span><a class="code hl_class" href="class_thread.html">Thread</a> : <span class="keyword">public</span> <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="class_thread.html#a192e02ca6e9efd7b7da940157fb9438a">   27</a></span>    <a class="code hl_function" href="class_thread.html#a192e02ca6e9efd7b7da940157fb9438a">Thread</a>(<span class="keyword">const</span> std::string&amp; threadName);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="class_thread.html#a37d9edd3a1a776cbc27dedff949c9726">   30</a></span>    <a class="code hl_function" href="class_thread.html#a37d9edd3a1a776cbc27dedff949c9726">~Thread</a>();</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_thread.html#a7ac27cb95d8af8be6dd6f8e7c24e24ee">   34</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_thread.html#a7ac27cb95d8af8be6dd6f8e7c24e24ee">CreateThread</a>();</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#aabf05b92a7bc081a464b8adcb916f321">ExitThread</a>();</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">   40</a></span>    std::thread::id <a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>();</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="class_thread.html#a25dc0ec2d5c28fafeaae5b3d7ca1f40a">   43</a></span>    <span class="keyword">static</span> std::thread::id <a class="code hl_function" href="class_thread.html#a25dc0ec2d5c28fafeaae5b3d7ca1f40a">GetCurrentThreadId</a>();</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">   46</a></span>    std::string <a class="code hl_function" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a>() { <span class="keywordflow">return</span> THREAD_NAME; }</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="class_thread.html#a964e7f80fe043c7a7c3c047f30335a16">GetQueueSize</a>();</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a2271b62a98277944bdf38c5c2304a078">DispatchDelegate</a>(std::shared_ptr&lt;dmq::DelegateMsg&gt; msg);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_function" href="class_thread.html#a192e02ca6e9efd7b7da940157fb9438a">Thread</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_class" href="class_thread.html">Thread</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">void</span> Process();</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> SetThreadName(std::thread::native_handle_type handle, <span class="keyword">const</span> std::string&amp; name);</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::unique_ptr&lt;std::thread&gt; m_thread;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::priority_queue&lt;std::shared_ptr&lt;ThreadMsg&gt;,</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        std::vector&lt;std::shared_ptr&lt;ThreadMsg&gt;&gt;,</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <a class="code hl_struct" href="struct_thread_msg_comparator.html">ThreadMsgComparator</a>&gt; m_queue;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::mutex m_mutex;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::condition_variable m_cv;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">const</span> std::string THREAD_NAME;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">class </span><a class="code hl_class" href="class_thread.html">Thread</a> : <span class="keyword">public</span> <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>{</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="class_thread.html#a192e02ca6e9efd7b7da940157fb9438a">   44</a></span>    <a class="code hl_function" href="class_thread.html#a192e02ca6e9efd7b7da940157fb9438a">Thread</a>(<span class="keyword">const</span> std::string&amp; threadName);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="class_thread.html#a37d9edd3a1a776cbc27dedff949c9726">   47</a></span>    <a class="code hl_function" href="class_thread.html#a37d9edd3a1a776cbc27dedff949c9726">~Thread</a>();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_thread.html#a7ac27cb95d8af8be6dd6f8e7c24e24ee">CreateThread</a>(std::optional&lt;dmq::Duration&gt; watchdogTimeout = std::nullopt);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#aabf05b92a7bc081a464b8adcb916f321">ExitThread</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">   59</a></span>    std::thread::id <a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="class_thread.html#a25dc0ec2d5c28fafeaae5b3d7ca1f40a">   62</a></span>    <span class="keyword">static</span> std::thread::id <a class="code hl_function" href="class_thread.html#a25dc0ec2d5c28fafeaae5b3d7ca1f40a">GetCurrentThreadId</a>();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">   65</a></span>    std::string <a class="code hl_function" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a>() { <span class="keywordflow">return</span> THREAD_NAME; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="class_thread.html#a964e7f80fe043c7a7c3c047f30335a16">GetQueueSize</a>();</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="comment">// Promise and future to synchronize thread start</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::promise&lt;void&gt; m_threadStartPromise;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    std::future&lt;void&gt; m_threadStartFuture;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    std::atomic&lt;bool&gt; m_exit;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">#endif </span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a2271b62a98277944bdf38c5c2304a078">DispatchDelegate</a>(std::shared_ptr&lt;dmq::DelegateMsg&gt; msg);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_function" href="class_thread.html#a192e02ca6e9efd7b7da940157fb9438a">Thread</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_class" href="class_thread.html">Thread</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span> Process();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordtype">void</span> SetThreadName(std::thread::native_handle_type handle, <span class="keyword">const</span> std::string&amp; name);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordtype">void</span> WatchdogCheck();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">void</span> ThreadCheck();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    std::unique_ptr&lt;std::thread&gt; m_thread;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    std::priority_queue&lt;std::shared_ptr&lt;ThreadMsg&gt;,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        std::vector&lt;std::shared_ptr&lt;ThreadMsg&gt;&gt;,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <a class="code hl_struct" href="struct_thread_msg_comparator.html">ThreadMsgComparator</a>&gt; m_queue;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    std::mutex m_mutex;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::condition_variable m_cv;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">const</span> std::string THREAD_NAME;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="comment">// Promise and future to synchronize thread start</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    std::promise&lt;void&gt; m_threadStartPromise;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::future&lt;void&gt; m_threadStartFuture;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::atomic&lt;bool&gt; m_exit;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="comment">// Watchdog related members</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    std::atomic&lt;dmq::Duration&gt; m_lastAliveTime;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    std::unique_ptr&lt;Timer&gt; m_watchdogTimer;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::unique_ptr&lt;Timer&gt; m_threadTimer;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    std::atomic&lt;dmq::Duration&gt; m_watchdogTimeout;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>};</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="preprocessor">#endif </span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
 <div class="ttc" id="a_i_thread_8h_html"><div class="ttname"><a href="_i_thread_8h.html">IThread.h</a></div><div class="ttdoc">A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...</div></div>
-<div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdef"><b>Definition</b> freertos/Thread.h:23</div></div>
-<div class="ttc" id="aclass_thread_html_a093b95e8def5030fd8b0033ce14edc81"><div class="ttname"><a href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">Thread::GetThreadName</a></div><div class="ttdeci">std::string GetThreadName()</div><div class="ttdoc">Get thread name.</div><div class="ttdef"><b>Definition</b> stdlib/Thread.h:46</div></div>
+<div class="ttc" id="a_timer_8h_html"><div class="ttname"><a href="_timer_8h.html">Timer.h</a></div></div>
+<div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdoc">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).</div><div class="ttdef"><b>Definition</b> freertos/Thread.h:24</div></div>
+<div class="ttc" id="aclass_thread_html_a093b95e8def5030fd8b0033ce14edc81"><div class="ttname"><a href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">Thread::GetThreadName</a></div><div class="ttdeci">std::string GetThreadName()</div><div class="ttdoc">Get thread name.</div><div class="ttdef"><b>Definition</b> stdlib/Thread.h:65</div></div>
 <div class="ttc" id="aclass_thread_html_a192e02ca6e9efd7b7da940157fb9438a"><div class="ttname"><a href="class_thread.html#a192e02ca6e9efd7b7da940157fb9438a">Thread::Thread</a></div><div class="ttdeci">Thread(const std::string &amp;threadName)</div><div class="ttdoc">Constructor.</div></div>
 <div class="ttc" id="aclass_thread_html_a2271b62a98277944bdf38c5c2304a078"><div class="ttname"><a href="class_thread.html#a2271b62a98277944bdf38c5c2304a078">Thread::DispatchDelegate</a></div><div class="ttdeci">virtual void DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg)</div></div>
 <div class="ttc" id="aclass_thread_html_a2294b75a90c36b4f14e32ae8d975a0fb"><div class="ttname"><a href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">Thread::GetThreadId</a></div><div class="ttdeci">std::thread::id GetThreadId()</div><div class="ttdoc">Get the ID of this thread instance.</div></div>
 <div class="ttc" id="aclass_thread_html_a25dc0ec2d5c28fafeaae5b3d7ca1f40a"><div class="ttname"><a href="class_thread.html#a25dc0ec2d5c28fafeaae5b3d7ca1f40a">Thread::GetCurrentThreadId</a></div><div class="ttdeci">static std::thread::id GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div></div>
 <div class="ttc" id="aclass_thread_html_a37d9edd3a1a776cbc27dedff949c9726"><div class="ttname"><a href="class_thread.html#a37d9edd3a1a776cbc27dedff949c9726">Thread::~Thread</a></div><div class="ttdeci">~Thread()</div><div class="ttdoc">Destructor.</div></div>
-<div class="ttc" id="aclass_thread_html_a7ac27cb95d8af8be6dd6f8e7c24e24ee"><div class="ttname"><a href="class_thread.html#a7ac27cb95d8af8be6dd6f8e7c24e24ee">Thread::CreateThread</a></div><div class="ttdeci">bool CreateThread()</div></div>
-<div class="ttc" id="aclass_thread_html_a964e7f80fe043c7a7c3c047f30335a16"><div class="ttname"><a href="class_thread.html#a964e7f80fe043c7a7c3c047f30335a16">Thread::GetQueueSize</a></div><div class="ttdeci">size_t GetQueueSize()</div><div class="ttdoc">Get size of thread message queue.</div><div class="ttdef"><b>Definition</b> stdlib/Thread.cpp:73</div></div>
-<div class="ttc" id="aclass_thread_html_aabf05b92a7bc081a464b8adcb916f321"><div class="ttname"><a href="class_thread.html#aabf05b92a7bc081a464b8adcb916f321">Thread::ExitThread</a></div><div class="ttdeci">void ExitThread()</div><div class="ttdoc">Called once a program exit to exit the worker thread.</div><div class="ttdef"><b>Definition</b> stdlib/Thread.cpp:98</div></div>
+<div class="ttc" id="aclass_thread_html_a7ac27cb95d8af8be6dd6f8e7c24e24ee"><div class="ttname"><a href="class_thread.html#a7ac27cb95d8af8be6dd6f8e7c24e24ee">Thread::CreateThread</a></div><div class="ttdeci">bool CreateThread()</div><div class="ttdef"><b>Definition</b> freertos/Thread.cpp:28</div></div>
+<div class="ttc" id="aclass_thread_html_a964e7f80fe043c7a7c3c047f30335a16"><div class="ttname"><a href="class_thread.html#a964e7f80fe043c7a7c3c047f30335a16">Thread::GetQueueSize</a></div><div class="ttdeci">size_t GetQueueSize()</div><div class="ttdoc">Get size of thread message queue.</div><div class="ttdef"><b>Definition</b> stdlib/Thread.cpp:95</div></div>
+<div class="ttc" id="aclass_thread_html_aabf05b92a7bc081a464b8adcb916f321"><div class="ttname"><a href="class_thread.html#aabf05b92a7bc081a464b8adcb916f321">Thread::ExitThread</a></div><div class="ttdeci">void ExitThread()</div><div class="ttdoc">Called once at program exit to shut down the worker thread.</div><div class="ttdef"><b>Definition</b> stdlib/Thread.cpp:120</div></div>
 <div class="ttc" id="aclassdmq_1_1_i_thread_html"><div class="ttname"><a href="classdmq_1_1_i_thread.html">dmq::IThread</a></div><div class="ttdef"><b>Definition</b> IThread.h:17</div></div>
 <div class="ttc" id="astdlib_2_thread_msg_8h_html"><div class="ttname"><a href="stdlib_2_thread_msg_8h.html">ThreadMsg.h</a></div></div>
-<div class="ttc" id="astruct_thread_msg_comparator_html"><div class="ttname"><a href="struct_thread_msg_comparator.html">ThreadMsgComparator</a></div><div class="ttdef"><b>Definition</b> stdlib/Thread.h:17</div></div>
-<div class="ttc" id="astruct_thread_msg_comparator_html_a763c200db1e1ab6ca1d2aebeb26ef6fc"><div class="ttname"><a href="struct_thread_msg_comparator.html#a763c200db1e1ab6ca1d2aebeb26ef6fc">ThreadMsgComparator::operator()</a></div><div class="ttdeci">bool operator()(const std::shared_ptr&lt; ThreadMsg &gt; &amp;a, const std::shared_ptr&lt; ThreadMsg &gt; &amp;b) const</div><div class="ttdef"><b>Definition</b> stdlib/Thread.h:18</div></div>
+<div class="ttc" id="astruct_thread_msg_comparator_html"><div class="ttname"><a href="struct_thread_msg_comparator.html">ThreadMsgComparator</a></div><div class="ttdef"><b>Definition</b> stdlib/Thread.h:19</div></div>
+<div class="ttc" id="astruct_thread_msg_comparator_html_a763c200db1e1ab6ca1d2aebeb26ef6fc"><div class="ttname"><a href="struct_thread_msg_comparator.html#a763c200db1e1ab6ca1d2aebeb26ef6fc">ThreadMsgComparator::operator()</a></div><div class="ttdeci">bool operator()(const std::shared_ptr&lt; ThreadMsg &gt; &amp;a, const std::shared_ptr&lt; ThreadMsg &gt; &amp;b) const</div><div class="ttdef"><b>Definition</b> stdlib/Thread.h:20</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
