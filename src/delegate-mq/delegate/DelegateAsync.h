@@ -146,7 +146,7 @@ public:
     /// set the state of the new instance.
     /// @param[in] rhs The object to copy from.
     DelegateFreeAsync(const ClassType& rhs) :
-        BaseType(rhs), m_thread(rhs.m_thread), m_priority(rhs.m_priority) {
+        BaseType(rhs) {
         Assign(rhs);
     }
 
@@ -420,14 +420,14 @@ public:
     /// set the state of the new instance.
     /// @param[in] rhs The object to copy from.
     DelegateMemberAsync(const ClassType& rhs) :
-        BaseType(rhs), m_thread(rhs.m_thread) {
+        BaseType(rhs) {
         Assign(rhs);
     }
 
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateMemberAsync(ClassType&& rhs) noexcept :
-        BaseType(rhs), m_thread(rhs.m_thread) {
+        BaseType(rhs), m_thread(rhs.m_thread), m_priority(rhs.m_priority) {
         rhs.Clear();
     }
 
@@ -709,14 +709,14 @@ public:
     /// set the state of the new instance.
     /// @param[in] rhs The object to copy from.
     DelegateFunctionAsync(const ClassType& rhs) :
-        BaseType(rhs), m_thread(rhs.m_thread) {
+        BaseType(rhs) {
         Assign(rhs);
     }
 
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateFunctionAsync(ClassType&& rhs) noexcept :
-        BaseType(rhs), m_thread(rhs.m_thread) {
+        BaseType(rhs), m_thread(rhs.m_thread), m_priority(rhs.m_priority) {
         rhs.Clear();
     }
 

@@ -25,8 +25,8 @@ NetworkMgr::NetworkMgr() :
     m_dataMsgDel(ids::DATA_MSG_ID, &m_dispatcher),
     m_actuatorMsgDel(ids::ACTUATOR_MSG_ID, &m_dispatcher)
 {
-    // Create the threads
-    m_thread.CreateThread();
+    // Create the threads with a 5s watchdog timeout
+    m_thread.CreateThread(std::chrono::milliseconds(5000));
 }
 
 NetworkMgr::~NetworkMgr()

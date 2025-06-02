@@ -59,8 +59,10 @@ static void DelegateFreeAsyncTests()
     delegate1(TEST_INT);
     std::invoke(delegate1, TEST_INT);
 
+    delegate1.SetPriority(Priority::HIGH);
     auto delegate2 = delegate1;
     ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(delegate2.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate1.Empty());
     ASSERT_TRUE(!delegate2.Empty());
 
@@ -77,6 +79,7 @@ static void DelegateFreeAsyncTests()
     ASSERT_TRUE(*delegate4 == delegate1);
 
     auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 
@@ -233,12 +236,30 @@ static void DelegateFreeAsyncTests()
 
     // Priority queue test
     int sleepCnt = 0;
-    std::function<void(int)> LambdaSleep = [&sleepCnt](int i) {
+    bool failed = false;
+    std::function<void(dmq::Priority)> LambdaSleep = [&sleepCnt, &failed](dmq::Priority priority) {
         static bool once = false;
+        std::cout << "LambdaSleep: " << sleepCnt << ", priority: " << static_cast<int>(priority) << std::endl;
         if (!once)
+        {
+            sleepCnt++;
+            once = true;
+
+            // Let priority queue fill with other messages
             std::this_thread::sleep_for(std::chrono::seconds(1));
-        once = true;
-        sleepCnt++;
+        }
+        else
+        {
+            // Check priority queue behavior
+            if (priority == dmq::Priority::HIGH && (sleepCnt == 1 || sleepCnt == 2))
+                sleepCnt++;
+            else if (priority == dmq::Priority::NORMAL && (sleepCnt == 3 || sleepCnt == 4))
+                sleepCnt++;
+            else if (priority == dmq::Priority::LOW && (sleepCnt == 5 || sleepCnt == 6))
+                sleepCnt++;
+            else
+                failed = true;  // Priority queue not working as expected
+        }
     };
     auto delegateNormal = MakeDelegate(LambdaSleep, workerThread);
     delegateNormal.SetPriority(Priority::NORMAL);
@@ -246,13 +267,18 @@ static void DelegateFreeAsyncTests()
     delegateLow.SetPriority(Priority::LOW);
     auto delegateHigh = MakeDelegate(LambdaSleep, workerThread);
     delegateHigh.SetPriority(Priority::HIGH);
-    MulticastDelegate<void(int)> priorityContainer;
-    priorityContainer += delegateNormal;
-    priorityContainer += delegateLow;
-    priorityContainer += delegateHigh;
-    priorityContainer(123);
+
+    delegateHigh(dmq::Priority::HIGH);
+    delegateLow(dmq::Priority::LOW);
+    delegateNormal(dmq::Priority::NORMAL);
+    delegateHigh(dmq::Priority::HIGH);
+    delegateLow(dmq::Priority::LOW);
+    delegateHigh(dmq::Priority::HIGH);
+    delegateNormal(dmq::Priority::NORMAL);
+
     std::this_thread::sleep_for(std::chrono::seconds(3));
-    ASSERT_TRUE(sleepCnt == 3);
+    ASSERT_TRUE(sleepCnt == 7);
+    ASSERT_TRUE(failed == false);
 }
 
 static void DelegateMemberAsyncTests()
@@ -265,8 +291,10 @@ static void DelegateMemberAsyncTests()
     delegate1(TEST_INT);
     std::invoke(delegate1, TEST_INT);
 
+    delegate1.SetPriority(Priority::HIGH);
     auto delegate2 = delegate1;
     ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(delegate2.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate1.Empty());
     ASSERT_TRUE(!delegate2.Empty());
 
@@ -283,6 +311,7 @@ static void DelegateMemberAsyncTests()
     ASSERT_TRUE(*delegate4 == delegate1);
 
     auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 
@@ -418,8 +447,10 @@ static void DelegateMemberSpAsyncTests()
     delegate1(TEST_INT);
     std::invoke(delegate1, TEST_INT);
 
+    delegate1.SetPriority(Priority::HIGH);
     auto delegate2 = delegate1;
     ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(delegate2.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate1.Empty());
     ASSERT_TRUE(!delegate2.Empty());
 
@@ -436,6 +467,7 @@ static void DelegateMemberSpAsyncTests()
     ASSERT_TRUE(*delegate4 == delegate1);
 
     auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 
@@ -516,8 +548,10 @@ static void DelegateFunctionAsyncTests()
     delegate1(TEST_INT);
     std::invoke(delegate1, TEST_INT);
 
+    delegate1.SetPriority(Priority::HIGH);
     auto delegate2 = delegate1;
     ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(delegate2.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate1.Empty());
     ASSERT_TRUE(!delegate2.Empty());
 
@@ -534,6 +568,7 @@ static void DelegateFunctionAsyncTests()
     ASSERT_TRUE(*delegate4 == delegate1);
 
     auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 

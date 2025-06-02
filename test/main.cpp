@@ -298,8 +298,8 @@ int main(void)
 
     TestClass testClass;
 
-    // Create the worker threads
-    workerThread1.CreateThread();
+    // Create a worker thread with a 5s watchdog timeout
+    workerThread1.CreateThread(std::chrono::milliseconds(5000));
     SysDataNoLock::GetInstance();
 
     // Create a timer that expires every 250mS and calls 

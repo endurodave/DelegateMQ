@@ -41,8 +41,10 @@ static void DelegateFreeAsyncWaitTests()
     std::invoke(delegate1, TEST_INT);
     ASSERT_TRUE(delegate1.IsSuccess());
 
+    delegate1.SetPriority(Priority::HIGH);
     auto delegate2 = delegate1;
     ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(delegate2.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate1.Empty());
     ASSERT_TRUE(!delegate2.Empty());
 
@@ -59,6 +61,7 @@ static void DelegateFreeAsyncWaitTests()
     ASSERT_TRUE(*delegate4 == delegate1);
 
     auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 
@@ -233,8 +236,10 @@ static void DelegateMemberAsyncWaitTests()
     std::invoke(delegate1, TEST_INT);
     ASSERT_TRUE(delegate1.IsSuccess());
 
+    delegate1.SetPriority(Priority::HIGH);
     auto delegate2 = delegate1;
     ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(delegate2.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate1.Empty());
     ASSERT_TRUE(!delegate2.Empty());
 
@@ -251,6 +256,7 @@ static void DelegateMemberAsyncWaitTests()
     ASSERT_TRUE(*delegate4 == delegate1);
 
     auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 
@@ -414,8 +420,10 @@ static void DelegateMemberSpAsyncWaitTests()
     std::invoke(delegate1, TEST_INT);
     ASSERT_TRUE(delegate1.IsSuccess());
 
+    delegate1.SetPriority(Priority::HIGH);
     auto delegate2 = delegate1;
     ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(delegate2.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate1.Empty());
     ASSERT_TRUE(!delegate2.Empty());
 
@@ -432,6 +440,7 @@ static void DelegateMemberSpAsyncWaitTests()
     ASSERT_TRUE(*delegate4 == delegate1);
 
     auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 
@@ -547,8 +556,10 @@ static void DelegateFunctionAsyncWaitTests()
     std::invoke(delegate1, TEST_INT);
     ASSERT_TRUE(delegate1.IsSuccess());
 
+    delegate1.SetPriority(Priority::HIGH);
     auto delegate2 = delegate1;
     ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(delegate2.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate1.Empty());
     ASSERT_TRUE(!delegate2.Empty());
 
@@ -565,6 +576,7 @@ static void DelegateFunctionAsyncWaitTests()
     ASSERT_TRUE(*delegate4 == delegate1);
 
     auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
     ASSERT_TRUE(!delegate5.Empty());
     ASSERT_TRUE(delegate1.Empty());
 

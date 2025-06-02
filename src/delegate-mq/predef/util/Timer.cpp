@@ -7,7 +7,6 @@ using namespace dmq;
 
 std::mutex Timer::m_lock;
 bool Timer::m_timerStopped = false;
-xlist<Timer*> Timer::m_timers;
 
 //------------------------------------------------------------------------------
 // TimerDisabled
@@ -31,8 +30,21 @@ Timer::Timer()
 //------------------------------------------------------------------------------
 Timer::~Timer()
 {
-    const std::lock_guard<std::mutex> lock(m_lock);
-    m_timers.remove(this);
+    try {
+        const std::lock_guard<std::mutex> lock(m_lock);
+        auto& timers = GetTimers();
+
+        if (timers.size() != 0) {
+            // Safely check before removing
+            auto it = std::find(timers.begin(), timers.end(), this);
+            if (it != timers.end()) {
+                timers.erase(it);
+            }
+        }
+    }
+    catch (...) {
+        // Failsafe during static destruction
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -51,10 +63,12 @@ void Timer::Start(dmq::Duration timeout, bool once)
     m_enabled = true;
 
     // Remove the existing entry, if any, to prevent duplicates in the list
-    m_timers.remove(this);
+    GetTimers().remove(this);
 
     // Add this timer to the list for servicing
-    m_timers.push_back(this);
+    GetTimers().push_back(this);
+
+    LOG_INFO("Timer::Start timeout={}", m_timeout.count());
 }
 
 //------------------------------------------------------------------------------
@@ -66,6 +80,10 @@ void Timer::Stop()
 
     m_enabled = false;
     m_timerStopped = true;
+
+    GetTimers().remove(this);
+
+    LOG_INFO("Timer::Stop timeout={}", m_timeout.count());
 }
 
 //------------------------------------------------------------------------------
@@ -95,6 +113,11 @@ void Timer::CheckExpired()
         {
             // The timer has fallen behind so set time expiration further forward.
             m_expireTime = GetTime();
+
+            // Timer processing is falling behind. Maybe user timer expiration is too 
+            // short, time processing takings too long, or CheckExpired not called 
+            // frequently enough. 
+            LOG_INFO("Timer::CheckExpired Timer Processing Falling Behind");
         }
     }
 
@@ -120,13 +143,13 @@ void Timer::ProcessTimers()
     // Remove disabled timer from the list if stopped
     if (m_timerStopped)
     {
-        m_timers.remove_if(TimerDisabled);
+        GetTimers().remove_if(TimerDisabled);
         m_timerStopped = false;
     }
 
     // Iterate through each timer and check for expirations
     TimersIterator it;
-    for (it = m_timers.begin() ; it != m_timers.end(); it++ )
+    for (it = GetTimers().begin() ; it != GetTimers().end(); it++ )
     {
         if ((*it) != NULL)
             (*it)->CheckExpired();

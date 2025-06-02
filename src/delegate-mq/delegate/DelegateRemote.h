@@ -147,7 +147,7 @@ public:
     /// set the state of the new instance.
     /// @param[in] rhs The object to copy from.
     DelegateFreeRemote(const ClassType& rhs) :
-        BaseType(rhs), m_id(rhs.m_id) {
+        BaseType(rhs) {
         Assign(rhs);
     }
 
@@ -621,7 +621,7 @@ public:
     /// set the state of the new instance.
     /// @param[in] rhs The object to copy from.
     DelegateMemberRemote(const ClassType& rhs) :
-        BaseType(rhs), m_id(rhs.m_id) {
+        BaseType(rhs) {
         Assign(rhs);
     }
 
@@ -1109,7 +1109,7 @@ public:
     /// set the state of the new instance.
     /// @param[in] rhs The object to copy from.
     DelegateFunctionRemote(const ClassType& rhs) :
-        BaseType(rhs), m_id(rhs.m_id) {
+        BaseType(rhs) {
         Assign(rhs);
     }
 

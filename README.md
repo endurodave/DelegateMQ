@@ -204,7 +204,7 @@ DelegateMQ at a glance.
 
 | Category | DelegateMQ |
 | --- | --- |
-| Purpose | DelegateMQ is a library used for invoking any callable synchronously, asynchronously, or remotely |
+| Purpose | Unify callable invocation across threads, processes, and networks |
 | Usages | Callbacks (synchronous and asynchronous), asynchronous API's, communication and data distribution, and more |
 | Library | Allows customizing data sharing between threads, processes, or processors |
 | Complexity | Lightweight and extensible through external library interfaces and full source code |

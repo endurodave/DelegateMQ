@@ -16,6 +16,7 @@
 /// @TODO: Implement a priority queue for the thread messages like 
 /// std::priority_queue<ThreadMsg*, std::vector<ThreadMsg*>, ThreadMsgComparator>
 /// as implemented in stdlib\Thread.h if necessary.
+/// Optionally implement a watchdog mechanism as shown in stdlib\Thread.h.
 
 class ThreadMsg;
 

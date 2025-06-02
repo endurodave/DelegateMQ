@@ -1,6 +1,8 @@
 #include "Fault.h"
 #include <assert.h>
 #include <iostream>
+#include "DelegateMQ.h"
+
 #if WIN32
 	#include "windows.h"
 #endif
@@ -19,6 +21,8 @@ void FaultHandler(const char* file, unsigned short line)
 
     cout << "FaultHandler called. Application terminated." << endl;
     cout << "File: " << file << " Line: " << line << endl;
+
+    LOG_ERROR("FaultHandler File={} Line={}", file, line);
 
 	assert(0);
 }

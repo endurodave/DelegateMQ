@@ -27,7 +27,7 @@ public:
     virtual void Receive() = 0;
 };
 
-void debugTrace(enum MQTTCLIENT_TRACE_LEVELS level, char* message) {
+static void debugTrace(enum MQTTCLIENT_TRACE_LEVELS level, char* message) {
     //printf("TRACE [%d]: %s\n", level, message);
 }
 

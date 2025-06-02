@@ -35,7 +35,8 @@ public:
 
     UdpTransport() : m_thread("UdpTransport"), m_sendTransport(this), m_recvTransport(this)
     {
-        m_thread.CreateThread();
+        // Create thread with a 5s watchdog timeout
+        m_thread.CreateThread(std::chrono::milliseconds(5000));
     }
 
     ~UdpTransport()

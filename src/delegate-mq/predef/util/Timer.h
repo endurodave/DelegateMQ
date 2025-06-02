@@ -53,9 +53,12 @@ private:
     /// Called to check for expired timers and callback registered clients.
     void CheckExpired();
 
-    /// List of all system timers to be serviced.
-    static xlist<Timer*> m_timers;
     typedef xlist<Timer*>::iterator TimersIterator;
+    static xlist<Timer*>& GetTimers()
+    {
+        static xlist<Timer*> instance;
+        return instance;
+    }
 
     /// A lock to make this class thread safe.
     static std::mutex m_lock;

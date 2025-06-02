@@ -1,3 +1,4 @@
+#include "DelegateMQ.h"
 #include "Thread.h"
 #include "predef/util/Fault.h"
 
@@ -29,7 +30,7 @@ Thread::~Thread()
 //----------------------------------------------------------------------------
 // CreateThread
 //----------------------------------------------------------------------------
-bool Thread::CreateThread()
+bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 {
 	if (!m_thread)
 	{
@@ -42,6 +43,27 @@ bool Thread::CreateThread()
 
 		// Wait for the thread to enter the Process method
 		m_threadStartFuture.get();
+
+		m_lastAliveTime.store(Timer::GetTime());
+
+		// Caller wants a watchdog timer?
+		if (watchdogTimeout.has_value())
+		{
+			// Create watchdog timer
+			m_watchdogTimeout = watchdogTimeout.value();
+
+			// Timer to ensure the Thread instance runs periodically. ThreadCheck invoked
+			// on this thread instance.
+			m_threadTimer = std::make_unique<Timer>();
+			m_threadTimer->Expired = MakeDelegate(this, &Thread::ThreadCheck, *this);
+			m_threadTimer->Start(m_watchdogTimeout.load() / 4);
+
+			// Timer to check that this Thread instance runs. WatchdogCheck invoked 
+			// on Timer::ProcessTimers() thread.
+			m_watchdogTimer = std::make_unique<Timer>();
+			m_watchdogTimer->Expired = MakeDelegate(this, &Thread::WatchdogCheck);
+			m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
+		}
 
 		LOG_INFO("Thread::CreateThread {}", THREAD_NAME);
 	}
@@ -100,6 +122,11 @@ void Thread::ExitThread()
 	if (!m_thread)
 		return;
 
+	if (m_watchdogTimer)
+		m_watchdogTimer->Stop();
+	if (m_threadTimer)
+		m_threadTimer->Stop();
+
 	// Create a new ThreadMsg
 	std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_EXIT_THREAD, 0));
 
@@ -148,6 +175,34 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 }
 
 //----------------------------------------------------------------------------
+// WatchdogCheck
+//----------------------------------------------------------------------------
+void Thread::WatchdogCheck()
+{
+	auto now = Timer::GetTime();
+	auto lastAlive = m_lastAliveTime.load();
+
+	auto delta = Timer::Difference(lastAlive, now);
+
+	// Watchdog expired?
+	if (delta > m_watchdogTimeout.load())
+	{
+		LOG_ERROR("Watchdog detected unresponsive thread: {}", THREAD_NAME);
+
+		// @TODO You can optionally trigger recovery, restart, or further actions here
+		// For example, throw or notify external system
+	}
+}
+
+//----------------------------------------------------------------------------
+// ThreadCheck
+//----------------------------------------------------------------------------
+void Thread::ThreadCheck()
+{
+	// Do nothing
+}
+
+//----------------------------------------------------------------------------
 // Process
 //----------------------------------------------------------------------------
 void Thread::Process()
@@ -155,10 +210,12 @@ void Thread::Process()
 	// Signal that the thread has started processing to notify CreateThread
 	m_threadStartPromise.set_value();
 
-	LOG_INFO("Thread::Process {}", THREAD_NAME);
+	LOG_INFO("Thread::Process Start {}", THREAD_NAME);
 
 	while (1)
 	{
+		m_lastAliveTime.store(Timer::GetTime());
+
 		std::shared_ptr<ThreadMsg> msg;
 		{
 			// Wait for a message to be added to the queue
@@ -193,11 +250,15 @@ void Thread::Process()
 
 			case MSG_EXIT_THREAD:
 			{
+				LOG_INFO("Thread::Process Exit Thread {}", THREAD_NAME);
                 return;
 			}
 
 			default:
+			{
+				LOG_INFO("Thread::Process Invalid Message {}", THREAD_NAME);
 				throw std::invalid_argument("Invalid message ID");
+			}
 		}
 	}
 }
