@@ -1,6 +1,7 @@
 #include "Timer.h"
 #include "Fault.h"
 #include <chrono>
+#include <algorithm>
 
 using namespace std;
 using namespace dmq;
