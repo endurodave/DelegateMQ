@@ -4,14 +4,16 @@ cmake_minimum_required(VERSION 3.10)
 set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
-# Set build options
-set(DMQ_ASSERTS "OFF")
-set(DMQ_ALLOCATOR "OFF")
-set(DMQ_LOG "OFF")
-set(DMQ_UTIL "ON")
-set(DMQ_THREAD "DMQ_THREAD_STDLIB")
-set(DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")
-set(DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")
+# Set build options (see Predef.cmake)
+set(DMQ_ASSERTS "OFF")                        # ON for assert faults
+set(DMQ_ALLOCATOR "OFF")                      # ON for fixed-block allocator
+set(DMQ_LOG "OFF")                            # ON for spglog output
+set(DMQ_UTIL "ON")                            # ON for delegate utility classes
+set(DMQ_THREAD "DMQ_THREAD_STDLIB")           # Set thread support library or none
+set(DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")  # Set serialization support library or none
+set(DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")       # Set transport support library or none
+
+# Include master delegate cmake build options
 include("${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.cmake")
 
 if (MSVC)

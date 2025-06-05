@@ -108,19 +108,17 @@ It unifies function calls across threads or systems via a simple delegate interf
 5. **Multiple Arguments** – supports N number of function arguments for the bound function
 6. **Synchronous Invocation** – call the bound function synchronously
 7. **Asynchronous Invocation** – call the bound function asynchronously on a client specified thread
-8. **Remote Invocation** - call a function located on a remote endpoint.
-9. **Blocking Asynchronous Invocation** - invoke asynchronously using blocking or non-blocking delegates
-10. **Smart Pointer Support** - bind an instance function using a raw object pointer or `std::shared_ptr`
-11. **Lambda Support** - bind and invoke lambda functions asynchronously using delegates
-12. **Automatic Heap Handling** – automatically copy argument data to the heap for safe transport through a message queue
-13. **Memory Management** - support for global heap or fixed-block memory allocator
-14. **Any OS** – easy porting to any OS. C++11 `std::thread` port included
-15. **32/64-bit** - Support for 32 and 64-bit projects
-16. **Dynamic Storage Allocation** - optional fixed-block memory allocator
-17. **CMake Build** - CMake supports most toolchains including Windows and Linux
-18. **Unit Tests** - extensive unit testing of the delegate library included
-19. **No External Libraries** – delegate does not rely upon external libraries
-20. **Ease of Use** – function signature template arguments (e.g., `DelegateFree<void(TestStruct*)>`)
+8. **Blocking Asynchronous Invocation** - invoke asynchronously using blocking or non-blocking delegates
+9. **Remote Invocation** - call a function located on a remote endpoint.
+11. **Smart Pointer Support** - bind an instance function using a raw object pointer or `std::shared_ptr`
+12. **Lambda Support** - bind and invoke lambda functions asynchronously using delegates
+13. **Automatic Heap Handling** – automatically copy argument data to the heap for safe transport through a message queue
+14. **Memory Management** - support for global heap or fixed-block memory allocator
+15. **Any OS** – easy porting to any OS. Windows, Linux and FreeRTOS port included
+16. **32/64-bit** - Support for 32 and 64-bit projects
+17. **Dynamic Storage Allocation** - optional fixed-block memory allocator
+18. **CMake Build** - CMake supports most toolchains including Windows and Linux
+19. **Unit Tests** - extensive unit testing of the delegate library included
 
 # Build
 
@@ -131,15 +129,41 @@ To build and run DelegateMQ, follow these simple steps. The library uses <a href
    `cmake -B build .`
 3. Build and run the project within the `build` directory. 
 
+To build and run the client/server [system architecture](#system-architecture) projects, follow these steps.
+
+1. From `example/sample-projects/system-architecture-no-deps`, execute CMake command within `client` and `server` subdirectories.  
+   `cmake -B build .`
+2. Build client and server applications within each `build` directory.
+3. Start `delegate_server_app` first.
+4. Start `delegate_client_app` second.
+5. Client and server communicate and output debug data to the console.
+
 ## Example Projects
 
 Remote delegate example projects are located within the `example/sample-projects` directory and explained in [Sample Projects](#sample-projects). 
 
-The [system-architecture](#system-architecture) project located within the `example\sample-projects\system-architecture-no-deps` directory is a client-server application with no external library dependencies. The app runs on Windows and Linux, showcasing various delegate-based design techniques, including remote communication, asynchronous callbacks/APIs, and more.
+The [system-architecture](#system-architecture) project located within the `example/sample-projects/system-architecture-no-deps` directory is a client-server application with no external library dependencies. The app runs on Windows and Linux, showcasing various delegate-based design techniques, including remote communication, asynchronous callbacks/APIs, and more.
 
 ## Examples Setup
 
-Some remote delegate example projects have external library dependencies. Follow the setup instructions below to build and run any sample project. Not all external libraries are required, as it depended on the example executed.
+Some remote delegate example projects depend on external libraries. For sample project testing, these libraries—along with **DelegateMQ**—are typically organized within a single parent directory. Clone desired supporting library into the directory locations shown below. *Not all external libraries are required*, as it depended on the example executed.
+
+```text
+DelegateMQWorkspace/
+├── bitsery/
+├── cereal/
+├── DelegateMQ/
+├── FreeRTOSv202212.00/
+├── msgpack-c/
+├── mqtt/
+├── nng/
+├── rapidjson/
+├── spdlog/
+└── zeromq/
+```
+Alternatively, you can modify `src/delegate-mq/External.cmake` to specify custom paths for the external libraries.
+
+Follow the setup instructions below to build and run any sample project. 
 
 1. Install [vcpkg](https://github.com/microsoft/vcpkg).
 2. Install [Boost](https://www.boost.org/) using vcpkg. DelegateMQ does not use Boost, but some external libraries below require.<br>
@@ -170,17 +194,19 @@ See [Sample Projects](#sample-projects) for details regarding each sample projec
 
 Follow these steps to integrate DelegateMQ into a project.
 
-Set the desired DMQ build options and include `DelegateMQ.cmake` within your `CMakeLists.txt` file.
+Set the desired DMQ build options and include `DelegateMQ.cmake` within your `CMakeLists.txt` file. See `Predef.cmake` for all available DMQ build configuration variables.
 
 ```
-# Set build options
-set(DMQ_ASSERTS "OFF")
-set(DMQ_ALLOCATOR "OFF")
-set(DMQ_LOG "OFF")
-set(DMQ_UTIL "ON")
-set(DMQ_THREAD "DMQ_THREAD_STDLIB")
-set(DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")
-set(DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")
+# Set build options (see Predef.cmake)
+set(DMQ_ASSERTS "OFF")                      # ON for assert faults
+set(DMQ_ALLOCATOR "OFF")                    # ON for fixed-block allocator
+set(DMQ_LOG "OFF")                          # ON for spglog debug output
+set(DMQ_UTIL "ON")                          # ON for delegate utility classes
+set(DMQ_THREAD "DMQ_THREAD_STDLIB")         # Set thread support library or none
+set(DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")  # Set serialization support library or none
+set(DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")   # Set transport support library or none
+
+# Include master delegate cmake build options
 include("${CMAKE_SOURCE_DIR}/../../src/delegate-mq/DelegateMQ.cmake")
 ```
 
@@ -1882,7 +1908,7 @@ All other projects require external 3rd party library support. See [Examples Set
 
 ### system-architecture
 
-The System Architecture example demonstrates a complex client-server DelegateMQ application. This example implements the acquisition of sensor and actuator data across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
+The System Architecture example demonstrates a complex client-server DelegateMQ application. This example implements a (simulated) sensor and actuator data acquisition across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
 
 `NetworkMgr` has three types of remote delegate API examples:
 

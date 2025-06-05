@@ -218,7 +218,7 @@ DelegateMQ at a glance.
 | Dynamic Memory | Heap or DelegateMQ fixed-block allocator |
 | Debug Logging | Debug logging using spdlog C++ logging library |
 | Error Handling | Configurable for return error code, assert or exception |
-| Embedded Friendly | Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "superloop"). |
+| Embedded Friendly | Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "super loop"). |
 | Operation System | Any. Custom `IThread` implementation may be required. |
 | Language | C++17 or higher |
 
