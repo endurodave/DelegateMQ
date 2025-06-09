@@ -22,6 +22,50 @@ It unifies function calls across threads or systems via a simple delegate interf
 
 # Examples
 
+Invoke `MsgOut()` using delegates.
+
+```cpp
+#include "DelegateMQ.h"
+
+size_t MsgOut(const std::string& msg)
+{
+    std::cout << msg << std::endl;
+    return msg.size();
+}
+
+int main(void)
+{
+    Thread thread("WorkerThread");
+    thread.CreateThread();
+
+    auto sync = dmq::MakeDelegate(&MsgOut);
+    sync("Invoke MsgOut sync!");
+
+    auto async = dmq::MakeDelegate(&MsgOut, workerThread1);
+    async("Invoke MsgOut async (non-blocking)!");
+
+    auto asyncWait = dmq::MakeDelegate(&MsgOut, workerThread1, dmq::WAIT_INFINITE);
+    size_t size = asyncWait("Invoke MsgOut async wait (blocking)!");
+
+    auto asyncWait1s = dmq::MakeDelegate(&MsgOut, workerThread1, std::chrono::seconds(1));
+    auto retVal = asyncWait1s.AsyncInvoke("Invoke MsgOut async wait (blocking max 1s)!");
+    if (retVal.has_value())     // Async invoke completed within 1 second?
+        size = retVal.value();  // Get return value
+
+    std::ostringstream stream(ios::out | ios::binary);
+    Dispatcher dispatcher;
+    Serializer<void(const std::string&)> serializer;
+    
+    dmq::DelegateFreeRemote<void(const std::string&)> remote(dmq::DelegateRemoteId(1));
+    remote.SetStream(&stream);
+    remote.SetDispatcher(&dispatcher);
+    remote.SetSerializer(&serializer);
+    remote("Invoke MsgOut remote!");
+
+    return 0;
+}
+```
+
 `Subscriber` registers with `Publisher` to receive asynchronous callbacks.
 
 ```cpp
@@ -40,7 +84,7 @@ public:
     void SetMsg(const std::string& msg) 
     {
         m_msg = msg;    // Store message
-        MsgCb(m_msg);   // Invoke all callbacks
+        MsgCb(m_msg);   // Invoke all registered callbacks
     }
 
 private:
@@ -55,7 +99,7 @@ public:
     {
         m_thread.CreateThread();
 
-        // Register for publisher callback on m_thread context
+        // Register for publisher async callback on m_thread context
         Publisher::Instance().MsgCb += dmq::MakeDelegate(this, &Subscriber::HandleMsgCb, m_thread);
     }
 
@@ -209,6 +253,7 @@ DelegateMQ at a glance.
 | Library | Allows customizing data sharing between threads, processes, or processors |
 | Complexity | Lightweight and extensible through external library interfaces and full source code |
 | Threads | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
+| Watchdog | Configurable timeout to detect and handle unresponsive threads. |
 | Multicast | Broadcast invoke anonymous callable targets onto multiple threads |
 | Message Priority | Asynchronous delegates support prioritization to ensure timely execution of critical messages |
 | Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |

@@ -266,6 +266,12 @@ namespace Main
     };
 }
 
+size_t MsgOut(const std::string& msg)
+{
+    std::cout << msg << std::endl;
+    return msg.size();
+}
+
 extern void DelegateUnitTests();
 
 using namespace Main;
@@ -310,6 +316,42 @@ int main(void)
 
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);
+
+    {
+        class Dispatcher : public IDispatcher
+        {
+        public:
+            virtual int Dispatch(std::ostream& os, DelegateRemoteId id) {
+                // TODO: Send argument data to the transport for sending
+                cout << "Dispatch DelegateRemoteId=" << id << endl;
+                return 0;
+            }
+        };
+
+        auto sync = dmq::MakeDelegate(&MsgOut);
+        sync("Invoke MsgOut sync!");
+
+        auto async = dmq::MakeDelegate(&MsgOut, workerThread1);
+        async("Invoke MsgOut async (non-blocking)!");
+
+        auto asyncWait = dmq::MakeDelegate(&MsgOut, workerThread1, dmq::WAIT_INFINITE);
+        size_t size = asyncWait("Invoke MsgOut async wait (blocking)!");
+
+        auto asyncWait1s = dmq::MakeDelegate(&MsgOut, workerThread1, std::chrono::seconds(1));
+        auto retVal = asyncWait1s.AsyncInvoke("Invoke MsgOut async wait (blocking max 1s)!");
+        if (retVal.has_value())     // Async invoke completed within 1 second?
+            size = retVal.value();  // Get return value
+
+        std::ostringstream stream(ios::out | ios::binary);
+        Dispatcher dispatcher;
+        Serializer<void(const std::string&)> serializer;
+
+        dmq::DelegateFreeRemote<void(const std::string&)> remote(dmq::DelegateRemoteId(1));
+        remote.SetStream(&stream);
+        remote.SetDispatcher(&dispatcher);
+        remote.SetSerializer(&serializer);
+        remote("Invoke MsgOut remote!");
+    }
 
     // Create a delegate bound to a free function then invoke
     auto delegateFree = MakeDelegate(&FreeFuncInt);
