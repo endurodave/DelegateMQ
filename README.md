@@ -41,18 +41,18 @@ int main(void)
     auto sync = dmq::MakeDelegate(&MsgOut);
     sync("Invoke MsgOut sync!");
 
-    auto async = dmq::MakeDelegate(&MsgOut, workerThread1);
+    auto async = dmq::MakeDelegate(&MsgOut, thread);
     async("Invoke MsgOut async (non-blocking)!");
 
-    auto asyncWait = dmq::MakeDelegate(&MsgOut, workerThread1, dmq::WAIT_INFINITE);
+    auto asyncWait = dmq::MakeDelegate(&MsgOut, thread, dmq::WAIT_INFINITE);
     size_t size = asyncWait("Invoke MsgOut async wait (blocking)!");
 
-    auto asyncWait1s = dmq::MakeDelegate(&MsgOut, workerThread1, std::chrono::seconds(1));
+    auto asyncWait1s = dmq::MakeDelegate(&MsgOut, thread, std::chrono::seconds(1));
     auto retVal = asyncWait1s.AsyncInvoke("Invoke MsgOut async wait (blocking max 1s)!");
     if (retVal.has_value())     // Async invoke completed within 1 second?
         size = retVal.value();  // Get return value
 
-    std::ostringstream stream(ios::out | ios::binary);
+    std::ostringstream stream(std::ios::out | std::ios::binary);
     Dispatcher dispatcher;
     Serializer<void(const std::string&)> serializer;
     
