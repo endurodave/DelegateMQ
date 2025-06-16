@@ -12,28 +12,6 @@
 #include "msg_serialize.h"
 #include <iostream>
 
-// make_serialized serializes each remote function argument
-template<typename Arg1, typename... Args>
-void make_serialized(serialize& ser, std::ostream& os, Arg1& arg1, Args... args) {
-    ser.write(os, arg1);
-
-    // Recursively call for other arguments
-    if constexpr (sizeof...(args) > 0) {
-        make_serialized(ser, os, args...);
-    }
-}
-
-// make_unserialized unserializes each remote function argument
-template<typename Arg1, typename... Args>
-void make_unserialized(serialize& ser, std::istream& is, Arg1& arg1, Args&&... args) {
-    ser.read(is, arg1);
-
-    // Recursively call for other arguments
-    if constexpr (sizeof...(args) > 0) {
-        make_unserialized(ser, is, args...);
-    }
-}
-
 template <class R>
 struct Serializer; // Not defined
 
@@ -47,7 +25,7 @@ public:
         try {
             os.seekp(0, std::ios::beg);
             serialize ser;
-            make_serialized(ser, os, args...);
+            (ser.write(os, args), ...);  // C++17 fold expression to serialize each argument
         }
         catch (const std::exception& e) {
             std::cerr << "Serialize error: " << e.what() << std::endl;
@@ -60,7 +38,7 @@ public:
     virtual std::istream& Read(std::istream& is, Args&... args) override {
         try {
             serialize ser;
-            make_unserialized(ser, is, args...);
+            (ser.read(is, args), ...);  // C++17 fold expression to unserialize each argument
         }
         catch (const std::exception& e) {
             std::cerr << "Deserialize error: " << e.what() << std::endl;

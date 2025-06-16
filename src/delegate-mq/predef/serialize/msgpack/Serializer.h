@@ -18,14 +18,9 @@ template <typename T>
 using is_const_type = std::is_const<std::remove_reference_t<T>>;
 
 // make_serialized serializes each remote function argument
-template<typename Arg1, typename... Args>
-void make_serialized(msgpack::sbuffer& buffer, Arg1& arg1, Args... args) {
-    msgpack::pack(buffer, arg1);
-
-    // Recursively call for other arguments
-    if constexpr (sizeof...(args) > 0) {
-        make_serialized(buffer, args...);
-    }
+template<typename... Args>
+void make_serialized(msgpack::sbuffer& buffer, Args&&... args) {
+    (msgpack::pack(buffer, args), ...);  // C++17 fold expression to serialize
 }
 
 // make_unserialized unserializes each remote function argument

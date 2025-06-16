@@ -13,31 +13,6 @@
 #include "rapidjson/prettywriter.h"
 #include <iostream>
 
-// make_serialized serializes each remote function argument
-template<typename Arg1, typename... Args>
-void make_serialized(rapidjson::PrettyWriter<rapidjson::StringBuffer>& writer, std::ostream& os, Arg1& arg1, Args... args) {
-    arg1.Write(writer, os);
-
-    // Recursively call for other arguments
-    if constexpr (sizeof...(args) > 0) {
-        make_serialized(writer, os, args...);
-    }
-}
-
-// make_unserialized unserializes each remote function argument
-template<typename... Ts>
-void make_unserialized(rapidjson::Document& doc, std::istream& is) { }
-
-template<typename Arg1, typename... Args>
-void make_unserialized(rapidjson::Document& doc, std::istream& is, Arg1& arg1, Args&&... args) {
-    arg1.Read(doc, is);
-
-    // Recursively call for other arguments
-    if constexpr (sizeof...(args) > 0) {
-        make_unserialized(doc, is, args...);
-    }
-}
-
 template <class R>
 struct Serializer; // Not defined
 
@@ -53,7 +28,8 @@ public:
             rapidjson::StringBuffer sb;
             rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
 
-            make_serialized(writer, os, args...);
+            (args.Write(writer, os), ...);  // C++17 fold expression to write each argument
+
             if (writer.IsComplete())
                 os << sb.GetString();
             else
@@ -89,6 +65,7 @@ public:
             // Parse JSON
             rapidjson::Document doc;
             doc.Parse(buf);
+            free(buf);
 
             // Check for parsing errors
             if (doc.HasParseError())
@@ -97,12 +74,10 @@ public:
                 is.setstate(std::ios::failbit);
                 std::cout << "Parse error: " << doc.GetParseError() << std::endl;
                 std::cout << "Error offset: " << doc.GetErrorOffset() << std::endl;
-                free(buf);
                 return is;
             }
 
-            make_unserialized(doc, is, args...);
-            free(buf);
+            (args.Read(doc, is), ...);  // C++17 fold expression to read each argument
             return is;
         }
         catch (const std::exception& e) {

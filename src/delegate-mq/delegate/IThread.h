@@ -21,7 +21,7 @@ public:
 
 	/// Dispatch a `DelegateMsg` onto this thread. The implementer is responsible for
 	/// getting the `DelegateMsg` into an OS message queue. Once `DelegateMsg` is
-	/// on the destination thread of control, the `IDelegateInvoker::Invoke()` function
+	/// on the destination thread of control, the `IInvoker::Invoke()` function
 	/// must be called to execute the target function.
 	/// @param[in] msg A shared pointer to the message.
 	/// @post The destination thread calls `IThreadInvoker::Invoke()` when `DelegateMsg`
