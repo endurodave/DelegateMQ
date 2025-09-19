@@ -2,7 +2,7 @@
 /// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
-/// @brief NNG (nanomsg-next-gen) and MsgPack with remote delegates examples. 
+/// @brief NNG (nanomsg-next-gen) and Bitsery with remote delegates examples. 
 
 #include "sender.h"
 #include "receiver.h"

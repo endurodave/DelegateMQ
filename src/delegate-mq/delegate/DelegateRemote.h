@@ -40,7 +40,7 @@
 /// * `std::function` compares the function signature type, not the underlying object instance.
 /// See `DelegateFunction<>` class for more info.
 /// 
-/// Code within `<common_code>` and `</common_code>` is updated using sync_src.py. Manually update 
+/// Code within `<common_code>` and `</common_code>` is updated using src_dup.py. Manually update 
 /// the code within the `DelegateFreeRemote` `common_code` tags, then run the script to 
 /// propagate to the remaining delegate classes to simplify code maintenance.
 /// 
@@ -634,7 +634,7 @@ public:
 
     DelegateMemberRemote() = default;
 
-    /// @brief Bind a const member function to the delegate.
+    /// @brief Bind a member function to the delegate.
     /// @details This method associates a member function (`func`) with the delegate. 
     /// Once the function is bound, the delegate can be used to invoke the function.
     /// @param[in] object The target object instance.
@@ -646,7 +646,7 @@ public:
         BaseType::Bind(object, func);
     }
 
-    /// @brief Bind a member function to the delegate.
+    /// @brief Bind a const member function to the delegate.
     /// @details This method associates a member function (`func`) with the delegate. 
     /// Once the function is bound, the delegate can be used to invoke the function.
     /// @param[in] object The target object instance.
@@ -658,7 +658,7 @@ public:
         BaseType::Bind(object, func);
     }
 
-    /// @brief Bind a const member function to the delegate.
+    /// @brief Bind a member function to the delegate.
     /// @details This method associates a member function (`func`) with the delegate. 
     /// Once the function is bound, the delegate can be used to invoke the function.
     /// @param[in] object The target object instance.
@@ -670,7 +670,7 @@ public:
         BaseType::Bind(object, func);
     }
 
-    /// @brief Bind a member function to the delegate.
+    /// @brief Bind a const member function to the delegate.
     /// @details This method associates a member function (`func`) with the delegate. 
     /// Once the function is bound, the delegate can be used to invoke the function.
     /// @param[in] object The target object instance.
