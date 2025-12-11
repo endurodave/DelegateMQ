@@ -169,10 +169,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a20e6be95ea04d1f4bba20cfd487f9b0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a const member function to the delegate.  <br /></td></tr>
 <tr class="separator:a20e6be95ea04d1f4bba20cfd487f9b0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5db89c94671d47f6c0adaab09554d613" id="r_a5db89c94671d47f6c0adaab09554d613"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5db89c94671d47f6c0adaab09554d613">Bind</a> (<a class="el" href="#af192dcbfe57f4341fb7e78780e71033c">ObjectPtr</a> object, <a class="el" href="#ac4b8ca4068b0fdeeb8c7c5623c67ff02">MemberFunc</a> func)</td></tr>
-<tr class="memdesc:a5db89c94671d47f6c0adaab09554d613"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a member function to the delegate.  <br /></td></tr>
+<tr class="memdesc:a5db89c94671d47f6c0adaab09554d613"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a member function to a raw pointer.  <br /></td></tr>
 <tr class="separator:a5db89c94671d47f6c0adaab09554d613"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a747d068524b416af7cd993552578bd13" id="r_a747d068524b416af7cd993552578bd13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a747d068524b416af7cd993552578bd13">Bind</a> (<a class="el" href="#af192dcbfe57f4341fb7e78780e71033c">ObjectPtr</a> object, <a class="el" href="#afd2a8314abf70d86574f66542099f6e6">ConstMemberFunc</a> func)</td></tr>
-<tr class="memdesc:a747d068524b416af7cd993552578bd13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a const member function to the delegate.  <br /></td></tr>
+<tr class="memdesc:a747d068524b416af7cd993552578bd13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a const member function to a raw pointer.  <br /></td></tr>
 <tr class="separator:a747d068524b416af7cd993552578bd13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c8c0a41aefd724586316576327b0332" id="r_a4c8c0a41aefd724586316576327b0332"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="#abac88357ef5057884355352bf3a08d89">ClassType</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c8c0a41aefd724586316576327b0332">Clone</a> () const override</td></tr>
 <tr class="memdesc:a4c8c0a41aefd724586316576327b0332"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a copy of the current object.  <br /></td></tr>
@@ -676,11 +676,11 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Bind a const member function to the delegate. </p>
-<p>This method associates a member function (<code>func</code>) with the delegate. Once the function is bound, the delegate can be used to invoke the function. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Bind a const member function to a raw pointer. </p>
+<p>Wraps the raw object pointer in a <code>std::shared_ptr</code> with a no-op deleter, ensuring the delegate references the object without taking ownership or attempting to delete it. The caller must ensure the object outlives the delegate. Once the function is bound, the delegate can be used to invoke the function. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">object</td><td>The target object instance. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">func</td><td>The function to bind to the delegate. The member function to bind to the delegate. This function must match the signature of the delegate. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">object</td><td>The target object instance (raw pointer). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">func</td><td>The const member function to bind. </td></tr>
   </table>
   </dd>
 </dl>
@@ -716,11 +716,11 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Bind a member function to the delegate. </p>
-<p>This method associates a member function (<code>func</code>) with the delegate. Once the function is bound, the delegate can be used to invoke the function. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Bind a member function to a raw pointer. </p>
+<p>Wraps the raw object pointer in a <code>std::shared_ptr</code> with a no-op deleter, ensuring the delegate references the object without taking ownership or attempting to delete it. The caller must ensure the object outlives the delegate. Once the function is bound, the delegate can be used to invoke the function. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">object</td><td>The target object instance. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">func</td><td>The member function to bind to the delegate. This function must match the signature of the delegate. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">object</td><td>The target object instance (raw pointer). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">func</td><td>The const member function to bind. </td></tr>
   </table>
   </dd>
 </dl>

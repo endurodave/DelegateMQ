@@ -323,7 +323,7 @@ Static Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Dispatch a <code>DelegateMsg</code> onto this thread. The implementer is responsible for getting the <code>DelegateMsg</code> into an OS message queue. Once <code>DelegateMsg</code> is on the destination thread of control, the <code>IDelegateInvoker::Invoke()</code> function must be called to execute the target function. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Dispatch a <code>DelegateMsg</code> onto this thread. The implementer is responsible for getting the <code>DelegateMsg</code> into an OS message queue. Once <code>DelegateMsg</code> is on the destination thread of control, the <code>IInvoker::Invoke()</code> function must be called to execute the target function. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>A shared pointer to the message. </td></tr>
   </table>

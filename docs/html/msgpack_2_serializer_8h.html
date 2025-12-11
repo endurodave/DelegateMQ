@@ -123,9 +123,9 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:af791c2d5fa37795a60613fe50101b5ca" id="r_af791c2d5fa37795a60613fe50101b5ca"><td class="memTemplParams" colspan="2">template&lt;typename Arg1 , typename... Args&gt; </td></tr>
-<tr class="memitem:af791c2d5fa37795a60613fe50101b5ca"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af791c2d5fa37795a60613fe50101b5ca">make_serialized</a> (msgpack::sbuffer &amp;buffer, Arg1 &amp;arg1, Args... args)</td></tr>
-<tr class="separator:af791c2d5fa37795a60613fe50101b5ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16f45cc16e7c158ae2883e1f09afe642" id="r_a16f45cc16e7c158ae2883e1f09afe642"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:a16f45cc16e7c158ae2883e1f09afe642"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a16f45cc16e7c158ae2883e1f09afe642">make_serialized</a> (msgpack::sbuffer &amp;buffer, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:a16f45cc16e7c158ae2883e1f09afe642"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50697fa79105d830b15d8056f63ac1aa" id="r_a50697fa79105d830b15d8056f63ac1aa"><td class="memTemplParams" colspan="2">template&lt;typename Arg1 , typename... Args&gt; </td></tr>
 <tr class="memitem:a50697fa79105d830b15d8056f63ac1aa"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a50697fa79105d830b15d8056f63ac1aa">make_unserialized</a> (msgpack::unpacker &amp;unpacker, Arg1 &amp;arg1, Args &amp;&amp;... args)</td></tr>
 <tr class="separator:a50697fa79105d830b15d8056f63ac1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,13 +152,13 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="af791c2d5fa37795a60613fe50101b5ca" name="af791c2d5fa37795a60613fe50101b5ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af791c2d5fa37795a60613fe50101b5ca">&#9670;&#160;</a></span>make_serialized()</h2>
+<a id="a16f45cc16e7c158ae2883e1f09afe642" name="a16f45cc16e7c158ae2883e1f09afe642"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16f45cc16e7c158ae2883e1f09afe642">&#9670;&#160;</a></span>make_serialized()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Arg1 , typename... Args&gt; </div>
+template&lt;typename... Args&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void make_serialized </td>
@@ -168,12 +168,7 @@ template&lt;typename Arg1 , typename... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Arg1 &amp;</td>          <td class="paramname"><span class="paramname"><em>arg1</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Args...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
+          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

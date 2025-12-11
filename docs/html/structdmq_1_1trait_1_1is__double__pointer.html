@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DelegateMQ: dmq::RemoteArg&lt; Arg * &gt; Class Template Reference</title>
+<title>DelegateMQ: dmq::trait::is_double_pointer&lt; T &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(function(){initNavTree('classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html',''); initResizable(true); });
+$(function(){initNavTree('structdmq_1_1trait_1_1is__double__pointer.html',''); initResizable(true); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -97,86 +97,79 @@ $(function(){initNavTree('classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html',''); 
 
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classdmq_1_1_remote_arg_3_01_arg_01_5_01_4-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">dmq::RemoteArg&lt; Arg * &gt; Class Template Reference</div></div>
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="structdmq_1_1trait_1_1is__double__pointer-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">dmq::trait::is_double_pointer&lt; T &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="_delegate_remote_8h_source.html">DelegateRemote.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_delegate_async_8h_source.html">DelegateAsync.h</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:aaffeafd0d89ade4b2b433cee1a75aa7c" id="r_aaffeafd0d89ade4b2b433cee1a75aa7c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaffeafd0d89ade4b2b433cee1a75aa7c">RemoteArg</a> ()</td></tr>
-<tr class="separator:aaffeafd0d89ade4b2b433cee1a75aa7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0efd13e51556d8e96819bfde456044d7" id="r_a0efd13e51556d8e96819bfde456044d7"><td class="memItemLeft" align="right" valign="top">Arg *&amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0efd13e51556d8e96819bfde456044d7">Get</a> ()</td></tr>
-<tr class="separator:a0efd13e51556d8e96819bfde456044d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a12883897fe7612cc392055f33748efd5" id="r_a12883897fe7612cc392055f33748efd5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12883897fe7612cc392055f33748efd5">RawT</a> = std::remove_cv_t&lt;std::remove_reference_t&lt;T&gt;&gt;</td></tr>
+<tr class="separator:a12883897fe7612cc392055f33748efd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a2ad4b08c6fed6690043b3f3ea92945fc" id="r_a2ad4b08c6fed6690043b3f3ea92945fc"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ad4b08c6fed6690043b3f3ea92945fc">value</a></td></tr>
+<tr class="separator:a2ad4b08c6fed6690043b3f3ea92945fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aaffeafd0d89ade4b2b433cee1a75aa7c" name="aaffeafd0d89ade4b2b433cee1a75aa7c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaffeafd0d89ade4b2b433cee1a75aa7c">&#9670;&#160;</a></span>RemoteArg()</h2>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a12883897fe7612cc392055f33748efd5" name="a12883897fe7612cc392055f33748efd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12883897fe7612cc392055f33748efd5">&#9670;&#160;</a></span>RawT</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class Arg &gt; </div>
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structdmq_1_1trait_1_1is__double__pointer.html">dmq::trait::is_double_pointer</a>&lt; T &gt;::RawT = std::remove_cv_t&lt;std::remove_reference_t&lt;T&gt;&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a2ad4b08c6fed6690043b3f3ea92945fc" name="a2ad4b08c6fed6690043b3f3ea92945fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ad4b08c6fed6690043b3f3ea92945fc">&#9670;&#160;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classdmq_1_1_remote_arg.html">dmq::RemoteArg</a>&lt; Arg * &gt;::RemoteArg </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
+          <td class="memname">bool <a class="el" href="structdmq_1_1trait_1_1is__double__pointer.html">dmq::trait::is_double_pointer</a>&lt; T &gt;::value</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">            std::is_pointer_v&lt;RawT&gt; &amp;&amp;</div>
+<div class="line">            std::is_pointer_v&lt;std::remove_pointer_t&lt;RawT&gt;&gt;</div>
+</div><!-- fragment -->
 </div>
 </div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0efd13e51556d8e96819bfde456044d7" name="a0efd13e51556d8e96819bfde456044d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0efd13e51556d8e96819bfde456044d7">&#9670;&#160;</a></span>Get()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class Arg &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Arg *&amp; <a class="el" href="classdmq_1_1_remote_arg.html">dmq::RemoteArg</a>&lt; Arg * &gt;::Get </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
-<li><a class="el" href="_delegate_remote_8h_source.html">DelegateRemote.h</a></li>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li><a class="el" href="_delegate_async_8h_source.html">DelegateAsync.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="namespacedmq.html">dmq</a></li><li class="navelem"><a class="el" href="classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html">RemoteArg&lt; Arg * &gt;</a></li>
+    <li class="navelem"><a class="el" href="namespacedmq.html">dmq</a></li><li class="navelem"><a class="el" href="namespacedmq_1_1trait.html">trait</a></li><li class="navelem"><a class="el" href="structdmq_1_1trait_1_1is__double__pointer.html">is_double_pointer</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

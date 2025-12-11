@@ -113,6 +113,7 @@ $(function(){initNavTree('_delegate_remote_8h.html',''); initResizable(true); })
 <code>#include &quot;<a class="el" href="_i_dispatcher_8h_source.html">IDispatcher.h</a>&quot;</code><br />
 <code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
 </div>
 <p><a href="_delegate_remote_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -121,8 +122,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_remote_arg.html">dmq::RemoteArg&lt; Arg &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html">dmq::RemoteArg&lt; Arg * &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4.html">dmq::RemoteArg&lt; Arg ** &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html">dmq::RemoteArg&lt; Arg &amp; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -206,7 +205,7 @@ Functions</h2></td></tr>
 <li>Cannot insert <code>DelegateRemoteAsync</code> into an ordered container. e.g. <code>std::list</code> ok, <code>std::set</code> not ok.</li>
 <li><code>std::function</code> compares the function signature type, not the underlying object instance. See <code>DelegateFunction&lt;&gt;</code> class for more info.</li>
 </ul>
-<p>Code within <code>&lt;common_code&gt;</code> and <code>&lt;/common_code&gt;</code> is updated using sync_src.py. Manually update the code within the <code>DelegateFreeRemote</code> <code>common_code</code> tags, then run the script to propagate to the remaining delegate classes to simplify code maintenance.</p>
+<p>Code within <code>&lt;common_code&gt;</code> and <code>&lt;/common_code&gt;</code> is updated using <a class="el" href="src__dup_8py.html">src_dup.py</a>. Manually update the code within the <code>DelegateFreeRemote</code> <code>common_code</code> tags, then run the script to propagate to the remaining delegate classes to simplify code maintenance.</p>
 <p><code>python <a class="el" href="src__dup_8py.html">src_dup.py</a> <a class="el" href="_delegate_remote_8h.html" title="Delegate &quot;`Remote`&quot; series of classes used to invoke a function remotely (i.e. different CPU,...">DelegateRemote.h</a></code> <br  />
  </p>
 </div></div><!-- contents -->

@@ -2,6 +2,7 @@ var annotated_dup =
 [
     [ "dmq", "namespacedmq.html", [
       [ "trait", "namespacedmq_1_1trait.html", [
+        [ "is_double_pointer", "structdmq_1_1trait_1_1is__double__pointer.html", "structdmq_1_1trait_1_1is__double__pointer" ],
         [ "is_shared_ptr_reference", "structdmq_1_1trait_1_1is__shared__ptr__reference.html", null ],
         [ "is_shared_ptr_reference< const std::shared_ptr< T > & >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
         [ "is_shared_ptr_reference< const std::shared_ptr< T > * >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
@@ -63,7 +64,6 @@ var annotated_dup =
       [ "RemoteArg", "classdmq_1_1_remote_arg.html", "classdmq_1_1_remote_arg" ],
       [ "RemoteArg< Arg & >", "classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html", "classdmq_1_1_remote_arg_3_01_arg_01_6_01_4" ],
       [ "RemoteArg< Arg * >", "classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html", "classdmq_1_1_remote_arg_3_01_arg_01_5_01_4" ],
-      [ "RemoteArg< Arg ** >", "classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4.html", "classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4" ],
       [ "Semaphore", "classdmq_1_1_semaphore.html", "classdmq_1_1_semaphore" ],
       [ "UnicastDelegate", "structdmq_1_1_unicast_delegate.html", null ],
       [ "UnicastDelegate< RetType(Args...)>", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],

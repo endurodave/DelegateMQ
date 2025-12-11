@@ -125,6 +125,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1trait_1_1is__shared__ptr__reference_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html">dmq::trait::is_shared_ptr_reference&lt; const std::shared_ptr&lt; T &gt; * &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1trait_1_1is__double__pointer.html">dmq::trait::is_double_pointer&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_delegate_async_msg.html">dmq::DelegateAsyncMsg&lt; Args &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores all function arguments suitable for non-blocking asynchronous calls. Argument data is stored in the heap.  <a href="classdmq_1_1_delegate_async_msg.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,7 +186,7 @@ Functions</h2></td></tr>
 <li>Cannot insert <code>DelegateMemberAsync</code> into an ordered container. e.g. <code>std::list</code> ok, <code>std::set</code> not ok.</li>
 <li><code>std::function</code> compares the function signature type, not the underlying object instance. See <code>DelegateFunction&lt;&gt;</code> class for more info.</li>
 </ul>
-<p>Code within <code>&lt;common_code&gt;</code> and <code>&lt;/common_code&gt;</code> is updated using sync_src.py. Manually update the code within the <code>DelegateFreeAsync</code> <code>common_code</code> tags, then run the script to propagate to the remaining delegate classes to simplify code maintenance.</p>
+<p>Code within <code>&lt;common_code&gt;</code> and <code>&lt;/common_code&gt;</code> is updated using <a class="el" href="src__dup_8py.html">src_dup.py</a>. Manually update the code within the <code>DelegateFreeAsync</code> <code>common_code</code> tags, then run the script to propagate to the remaining delegate classes to simplify code maintenance.</p>
 <p><code>python <a class="el" href="src__dup_8py.html">src_dup.py</a> <a class="el" href="_delegate_async_8h.html" title="Delegate &quot;`Async`&quot; series of classes used to invoke a function asynchronously.">DelegateAsync.h</a></code> </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->

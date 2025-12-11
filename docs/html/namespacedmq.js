@@ -56,7 +56,6 @@ var namespacedmq =
     [ "RemoteArg", "classdmq_1_1_remote_arg.html", "classdmq_1_1_remote_arg" ],
     [ "RemoteArg< Arg & >", "classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html", "classdmq_1_1_remote_arg_3_01_arg_01_6_01_4" ],
     [ "RemoteArg< Arg * >", "classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html", "classdmq_1_1_remote_arg_3_01_arg_01_5_01_4" ],
-    [ "RemoteArg< Arg ** >", "classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4.html", "classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4" ],
     [ "Semaphore", "classdmq_1_1_semaphore.html", "classdmq_1_1_semaphore" ],
     [ "UnicastDelegate", "structdmq_1_1_unicast_delegate.html", null ],
     [ "UnicastDelegate< RetType(Args...)>", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],

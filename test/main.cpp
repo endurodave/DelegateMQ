@@ -69,9 +69,9 @@ int main(void)
     std::thread timerThread(ProcessTimers);
 
     // Run all test code
-    //RunSimpleExamples();
-    //RunAllExamples();
-    RunMiscExamples();  // TODO: Uncommenting this link causes delegate5 stack corruption
+    RunSimpleExamples();
+    RunAllExamples();
+    RunMiscExamples();
     RunDelegateUnitTests();
 
     // Ensure the timer thread completes before main exits
@@ -83,6 +83,8 @@ int main(void)
     GetTimer().Expired.Clear();
 
    	workerThread1.ExitThread();
+
+    cout << "Success!" << endl;
 	return 0;
 }
 

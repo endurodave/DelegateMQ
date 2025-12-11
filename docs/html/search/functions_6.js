@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['get_0',['Get',['../classdmq_1_1_remote_arg.html#a7dec6fc7b5007e3795f9e30eb06fcfc2',1,'dmq::RemoteArg::Get()'],['../classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html#afd457a5243e8962a49df6434c0a6dc13',1,'dmq::RemoteArg&lt; Arg * &gt;::Get()'],['../classdmq_1_1_remote_arg_3_01_arg_01_5_5_01_4.html#a2c951123f730fe8dd555224f659a9b02',1,'dmq::RemoteArg&lt; Arg ** &gt;::Get()'],['../classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html#adf4de40f4ce5d925b6a564295a241206',1,'dmq::RemoteArg&lt; Arg &amp; &gt;::Get()']]],
+  ['get_0',['Get',['../classdmq_1_1_remote_arg.html#a7dec6fc7b5007e3795f9e30eb06fcfc2',1,'dmq::RemoteArg::Get()'],['../classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html#a0efd13e51556d8e96819bfde456044d7',1,'dmq::RemoteArg&lt; Arg * &gt;::Get()'],['../classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html#adf4de40f4ce5d925b6a564295a241206',1,'dmq::RemoteArg&lt; Arg &amp; &gt;::Get()']]],
   ['getallocations_1',['GetAllocations',['../class_allocator.html#afa0a88cfc26a8f01d60e46383a03aec7',1,'Allocator']]],
   ['getargs_2',['GetArgs',['../classdmq_1_1_delegate_async_msg.html#a2886c28f18a858500f5e2bb816209449',1,'dmq::DelegateAsyncMsg::GetArgs()'],['../classdmq_1_1_delegate_async_wait_msg.html#ad73f27fd4f3ff250d232873b198362ab',1,'dmq::DelegateAsyncWaitMsg::GetArgs()']]],
   ['getblockcount_3',['GetBlockCount',['../class_allocator.html#a57feef0d82d5304dbd77801085e16691',1,'Allocator']]],

@@ -1,10 +1,5 @@
 var NAVTREEINDEX7 =
 {
-"xmap_8h.html#ae6e99a0ad5b40dd413347112d7049833":[13,0,0,0,1,0,6,1],
-"xmap_8h_source.html":[13,0,0,0,1,0,6],
-"xqueue_8h.html":[13,0,0,0,1,0,7],
-"xqueue_8h.html#ab491ae9d713da6cb9faba7cead6a03e0":[13,0,0,0,1,0,7,0],
-"xqueue_8h_source.html":[13,0,0,0,1,0,7],
 "xset_8h.html":[13,0,0,0,1,0,8],
 "xset_8h.html#a3c4b96ae2ee586e687c2f29a8cd2f6b1":[13,0,0,0,1,0,8,1],
 "xset_8h.html#ae58e845a30ad7ec68502a4a9a90aa2ba":[13,0,0,0,1,0,8,0],

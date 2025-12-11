@@ -97,8 +97,7 @@ $(function(){initNavTree('serialize_2_serializer_8h.html',''); initResizable(tru
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle"><div class="title">Serializer.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -112,88 +111,12 @@ $(function(){initNavTree('serialize_2_serializer_8h.html',''); initResizable(tru
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html">Serializer&lt; RetType(Args...)&gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:aacc9d7ff58bfa99925b5280b7f1849d0" id="r_aacc9d7ff58bfa99925b5280b7f1849d0"><td class="memTemplParams" colspan="2">template&lt;typename Arg1 , typename... Args&gt; </td></tr>
-<tr class="memitem:aacc9d7ff58bfa99925b5280b7f1849d0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aacc9d7ff58bfa99925b5280b7f1849d0">make_serialized</a> (<a class="el" href="classserialize.html">serialize</a> &amp;ser, std::ostream &amp;os, Arg1 &amp;arg1, Args... args)</td></tr>
-<tr class="separator:aacc9d7ff58bfa99925b5280b7f1849d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fe08a1a970a68b406e90987cde0355f" id="r_a8fe08a1a970a68b406e90987cde0355f"><td class="memTemplParams" colspan="2">template&lt;typename Arg1 , typename... Args&gt; </td></tr>
-<tr class="memitem:a8fe08a1a970a68b406e90987cde0355f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a8fe08a1a970a68b406e90987cde0355f">make_unserialized</a> (<a class="el" href="classserialize.html">serialize</a> &amp;ser, std::istream &amp;is, Arg1 &amp;arg1, Args &amp;&amp;... args)</td></tr>
-<tr class="separator:a8fe08a1a970a68b406e90987cde0355f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
 <p>Serialize callable argument data using serialize class for transport to a remote. Endinaness correctly handled by serialize class. <br  />
  </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="aacc9d7ff58bfa99925b5280b7f1849d0" name="aacc9d7ff58bfa99925b5280b7f1849d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aacc9d7ff58bfa99925b5280b7f1849d0">&#9670;&#160;</a></span>make_serialized()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Arg1 , typename... Args&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void make_serialized </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classserialize.html">serialize</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>ser</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::ostream &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Arg1 &amp;</td>          <td class="paramname"><span class="paramname"><em>arg1</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Args...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a8fe08a1a970a68b406e90987cde0355f" name="a8fe08a1a970a68b406e90987cde0355f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8fe08a1a970a68b406e90987cde0355f">&#9670;&#160;</a></span>make_unserialized()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename Arg1 , typename... Args&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void make_unserialized </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classserialize.html">serialize</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>ser</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::istream &amp;</td>          <td class="paramname"><span class="paramname"><em>is</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Arg1 &amp;</td>          <td class="paramname"><span class="paramname"><em>arg1</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
