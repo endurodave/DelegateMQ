@@ -51,6 +51,7 @@
 #include "IDispatcher.h"
 #include <tuple>
 #include <iostream>
+#include <stdexcept>
 
 namespace dmq {
 
@@ -90,21 +91,33 @@ template <class Arg>
 class RemoteArg<Arg*>
 {
 public:
-    Arg* Get() { return &m_arg; }
+    // Initialize the member pointer to point to the internal storage
+    RemoteArg() : m_ptr(&m_arg) {}
+
+    // Return a REFERENCE to the pointer (L-value), satisfying ISerializer::Read
+    Arg*& Get() { return m_ptr; }
+
 private:
-    Arg m_arg;
+    Arg m_arg;   // The actual object storage
+    Arg* m_ptr;  // The persistent pointer variable
 };
 
+#if 0  // Arg** not supported on remote delegates
 template <class Arg>
 class RemoteArg<Arg**>
 {
 public:
-    RemoteArg() { m_pArg = &m_arg; }
-    Arg** Get() { return &m_pArg; }
+    RemoteArg() : m_pArg(&m_arg), m_ppArg(&m_pArg) {}
+
+    // Return reference to the pointer-to-pointer
+    Arg**& Get() { return m_ppArg; }
+
 private:
     Arg m_arg;
     Arg* m_pArg;
+    Arg** m_ppArg;
 };
+#endif
 
 template <class Arg>
 class RemoteArg<Arg&>
@@ -154,7 +167,7 @@ public:
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateFreeRemote(ClassType&& rhs) noexcept : 
-        BaseType(rhs), m_id(rhs.m_id) {
+        BaseType(std::move(rhs)), m_id(rhs.m_id) {
         rhs.Clear();
     }
 
@@ -327,6 +340,9 @@ public:
             static_assert(!(
                 std::disjunction_v<trait::is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
+
+            static_assert(!(std::disjunction_v<trait::is_double_pointer<Args>...>),
+                "Double pointer arguments (Arg**) are not allowed on remote delegates");
         }
     }
 
@@ -363,100 +379,29 @@ public:
             if constexpr (ArgCnt::value == 0) {
                 BaseType::operator()();
             }
-            else if constexpr (ArgCnt::value == 1) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                Arg1 a1 = rp1.Get();
-
-                m_serializer->Read(is, a1);
-                if (!is.bad() && !is.fail())
-                    operator()(a1);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 2) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-
-                m_serializer->Read(is, a1, a2);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 3) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-                using Arg3 = ArgTypeOf<2, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                RemoteArg<Arg3> rp3;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-                Arg3 a3 = rp3.Get();
-
-                m_serializer->Read(is, a1, a2, a3);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2, a3);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 4) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-                using Arg3 = ArgTypeOf<2, Args...>;
-                using Arg4 = ArgTypeOf<3, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                RemoteArg<Arg3> rp3;
-                RemoteArg<Arg4> rp4;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-                Arg3 a3 = rp3.Get();
-                Arg4 a4 = rp4.Get();
-
-                m_serializer->Read(is, a1, a2, a3, a4);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2, a3, a4);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 5) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-                using Arg3 = ArgTypeOf<2, Args...>;
-                using Arg4 = ArgTypeOf<3, Args...>;
-                using Arg5 = ArgTypeOf<4, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                RemoteArg<Arg3> rp3;
-                RemoteArg<Arg4> rp4;
-                RemoteArg<Arg5> rp5;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-                Arg3 a3 = rp3.Get();
-                Arg4 a4 = rp4.Get();
-                Arg5 a5 = rp5.Get();
-
-                m_serializer->Read(is, a1, a2, a3, a4, a5);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2, a3, a4, a5);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
             else {
-                static_assert(ArgCnt::value <= 5, "Too many target function arguments");
+                // 1. Create a tuple of RemoteArg<T> to hold the temporary storage
+                std::tuple<RemoteArg<Args>...> remoteArgs;
+
+                // 2. Use std::apply to unpack the tuple elements
+                std::apply([this, &is](auto&... rArgs) {
+
+                    // 3. Deserialize: Expand the pack to call Read(is, arg1, arg2...)
+                    // rArgs.Get() returns the reference/pointer to the internal storage
+                    m_serializer->Read(is, rArgs.Get()...);
+
+                    if (!is.bad() && !is.fail()) {
+                        // 4. Invoke: Expand the pack to call operator()(arg1, arg2...)
+                        this->operator()(rArgs.Get()...);
+                    }
+                    else {
+                        this->RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
+                    }
+
+                    }, remoteArgs);
             }
-        } catch (std::exception&) {
+        } 
+        catch (std::exception&) {
             RaiseError(m_id, DelegateError::ERR_DESERIALIZE_EXCEPTION);
         }
 
@@ -628,7 +573,7 @@ public:
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateMemberRemote(ClassType&& rhs) noexcept :
-        BaseType(rhs), m_id(rhs.m_id) {
+        BaseType(std::move(rhs)), m_id(rhs.m_id) {
         rhs.Clear();
     }
 
@@ -838,6 +783,9 @@ public:
             static_assert(!(
                 std::disjunction_v<trait::is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
+
+            static_assert(!(std::disjunction_v<trait::is_double_pointer<Args>...>),
+                "Double pointer arguments (Arg**) are not allowed on remote delegates");
         }
     }
 
@@ -874,100 +822,29 @@ public:
             if constexpr (ArgCnt::value == 0) {
                 BaseType::operator()();
             }
-            else if constexpr (ArgCnt::value == 1) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                Arg1 a1 = rp1.Get();
-
-                m_serializer->Read(is, a1);
-                if (!is.bad() && !is.fail())
-                    operator()(a1);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 2) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-
-                m_serializer->Read(is, a1, a2);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 3) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-                using Arg3 = ArgTypeOf<2, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                RemoteArg<Arg3> rp3;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-                Arg3 a3 = rp3.Get();
-
-                m_serializer->Read(is, a1, a2, a3);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2, a3);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 4) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-                using Arg3 = ArgTypeOf<2, Args...>;
-                using Arg4 = ArgTypeOf<3, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                RemoteArg<Arg3> rp3;
-                RemoteArg<Arg4> rp4;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-                Arg3 a3 = rp3.Get();
-                Arg4 a4 = rp4.Get();
-
-                m_serializer->Read(is, a1, a2, a3, a4);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2, a3, a4);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 5) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-                using Arg3 = ArgTypeOf<2, Args...>;
-                using Arg4 = ArgTypeOf<3, Args...>;
-                using Arg5 = ArgTypeOf<4, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                RemoteArg<Arg3> rp3;
-                RemoteArg<Arg4> rp4;
-                RemoteArg<Arg5> rp5;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-                Arg3 a3 = rp3.Get();
-                Arg4 a4 = rp4.Get();
-                Arg5 a5 = rp5.Get();
-
-                m_serializer->Read(is, a1, a2, a3, a4, a5);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2, a3, a4, a5);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
             else {
-                static_assert(ArgCnt::value <= 5, "Too many target function arguments");
+                // 1. Create a tuple of RemoteArg<T> to hold the temporary storage
+                std::tuple<RemoteArg<Args>...> remoteArgs;
+
+                // 2. Use std::apply to unpack the tuple elements
+                std::apply([this, &is](auto&... rArgs) {
+
+                    // 3. Deserialize: Expand the pack to call Read(is, arg1, arg2...)
+                    // rArgs.Get() returns the reference/pointer to the internal storage
+                    m_serializer->Read(is, rArgs.Get()...);
+
+                    if (!is.bad() && !is.fail()) {
+                        // 4. Invoke: Expand the pack to call operator()(arg1, arg2...)
+                        this->operator()(rArgs.Get()...);
+                    }
+                    else {
+                        this->RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
+                    }
+
+                    }, remoteArgs);
             }
-        } catch (std::exception&) {
+        } 
+        catch (std::exception&) {
             RaiseError(m_id, DelegateError::ERR_DESERIALIZE_EXCEPTION);
         }
 
@@ -1116,7 +993,7 @@ public:
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateFunctionRemote(ClassType&& rhs) noexcept :
-        BaseType(rhs), m_id(rhs.m_id) {
+        BaseType(std::move(rhs)), m_id(rhs.m_id) {
         rhs.Clear();
     }
 
@@ -1289,6 +1166,9 @@ public:
             static_assert(!(
                 std::disjunction_v<trait::is_shared_ptr_reference<Args>...>),
                 "std::shared_ptr reference argument not allowed");
+
+            static_assert(!(std::disjunction_v<trait::is_double_pointer<Args>...>),
+                "Double pointer arguments (Arg**) are not allowed on remote delegates");
         }
     }
 
@@ -1325,100 +1205,29 @@ public:
             if constexpr (ArgCnt::value == 0) {
                 BaseType::operator()();
             }
-            else if constexpr (ArgCnt::value == 1) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                Arg1 a1 = rp1.Get();
-
-                m_serializer->Read(is, a1);
-                if (!is.bad() && !is.fail())
-                    operator()(a1);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 2) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-
-                m_serializer->Read(is, a1, a2);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 3) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-                using Arg3 = ArgTypeOf<2, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                RemoteArg<Arg3> rp3;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-                Arg3 a3 = rp3.Get();
-
-                m_serializer->Read(is, a1, a2, a3);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2, a3);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 4) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-                using Arg3 = ArgTypeOf<2, Args...>;
-                using Arg4 = ArgTypeOf<3, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                RemoteArg<Arg3> rp3;
-                RemoteArg<Arg4> rp4;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-                Arg3 a3 = rp3.Get();
-                Arg4 a4 = rp4.Get();
-
-                m_serializer->Read(is, a1, a2, a3, a4);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2, a3, a4);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
-            else if constexpr (ArgCnt::value == 5) {
-                using Arg1 = ArgTypeOf<0, Args...>;
-                using Arg2 = ArgTypeOf<1, Args...>;
-                using Arg3 = ArgTypeOf<2, Args...>;
-                using Arg4 = ArgTypeOf<3, Args...>;
-                using Arg5 = ArgTypeOf<4, Args...>;
-
-                RemoteArg<Arg1> rp1;
-                RemoteArg<Arg2> rp2;
-                RemoteArg<Arg3> rp3;
-                RemoteArg<Arg4> rp4;
-                RemoteArg<Arg5> rp5;
-                Arg1 a1 = rp1.Get();
-                Arg2 a2 = rp2.Get();
-                Arg3 a3 = rp3.Get();
-                Arg4 a4 = rp4.Get();
-                Arg5 a5 = rp5.Get();
-
-                m_serializer->Read(is, a1, a2, a3, a4, a5);
-                if (!is.bad() && !is.fail())
-                    operator()(a1, a2, a3, a4, a5);
-                else
-                    RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
-            }
             else {
-                static_assert(ArgCnt::value <= 5, "Too many target function arguments");
+                // 1. Create a tuple of RemoteArg<T> to hold the temporary storage
+                std::tuple<RemoteArg<Args>...> remoteArgs;
+
+                // 2. Use std::apply to unpack the tuple elements
+                std::apply([this, &is](auto&... rArgs) {
+
+                    // 3. Deserialize: Expand the pack to call Read(is, arg1, arg2...)
+                    // rArgs.Get() returns the reference/pointer to the internal storage
+                    m_serializer->Read(is, rArgs.Get()...);
+
+                    if (!is.bad() && !is.fail()) {
+                        // 4. Invoke: Expand the pack to call operator()(arg1, arg2...)
+                        this->operator()(rArgs.Get()...);
+                    }
+                    else {
+                        this->RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
+                    }
+
+                    }, remoteArgs);
             }
-        } catch (std::exception&) {
+        } 
+        catch (std::exception&) {
             RaiseError(m_id, DelegateError::ERR_DESERIALIZE_EXCEPTION);
         }
 

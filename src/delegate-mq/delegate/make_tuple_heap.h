@@ -131,6 +131,8 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
     }
     std::shared_ptr<heap_arg_deleter_base> deleter(new(std::nothrow) heap_arg_deleter<Arg**>(heap_arg));
     if (!deleter) {
+        delete* heap_arg;
+        delete heap_arg;
         BAD_ALLOC();
     }
     try {
@@ -156,6 +158,7 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
     }
     std::shared_ptr<heap_arg_deleter_base> deleter(new(std::nothrow) heap_arg_deleter<Arg*>(heap_arg));
     if (!deleter) {
+        delete heap_arg;
         BAD_ALLOC();
     }
     try {
@@ -178,6 +181,7 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
     }
     std::shared_ptr<heap_arg_deleter_base> deleter(new(std::nothrow) heap_arg_deleter<Arg*>(heap_arg));
     if (!deleter) {
+        delete heap_arg;
         BAD_ALLOC();
     }
     try {

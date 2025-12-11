@@ -295,11 +295,13 @@ static void DelegateFreeRemoteTests()
     auto delShared = MakeDelegate(&SetClassSingletonShared, REMOTE_ID);
     delShared(singletonSp);
 
+#if 0  // Arg** not supported on remote delegate
     // Test nullptr arguments
     auto nullPtrArg = MakeDelegate(&NullPtrArg, REMOTE_ID);
     nullPtrArg(nullptr);
     auto nullPtrPtrArg = MakeDelegate(&NullPtrPtrArg, REMOTE_ID);
     nullPtrPtrArg(nullptr);
+#endif
 
     // Test outgoing ptr argument
     // Target function does *not* change local instance data. A copy of delegate
@@ -313,12 +315,14 @@ static void DelegateFreeRemoteTests()
     ASSERT_TRUE(sparam.val == TEST_INT);
     ASSERT_TRUE(iparam == 100);
 
+#if 0  // Arg** not supported on remote delegate
     // Test outgoing ptr-ptr argument
     StructParam* psparam = nullptr;
     auto outgoingArg2 = MakeDelegate(&OutgoingPtrPtrArg, REMOTE_ID);
     outgoingArg2(&psparam);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     ASSERT_TRUE(psparam == nullptr);
+#endif
 
     // Test outgoing ref argument
     sparam.val = TEST_INT;

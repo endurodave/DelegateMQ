@@ -3,7 +3,8 @@
 
 /// @file
 /// @brief Delegate container for storing and iterating over a collection of 
-/// delegate instances. Class is not thread-safe.
+/// delegate instances. Supports reentrant removal during invocation. 
+/// Class is not thread-safe.
 
 #include "Delegate.h"
 #include <list>
@@ -38,12 +39,20 @@ public:
     /// @param[in] rhs The object to move from.
     MulticastDelegate(MulticastDelegate&& rhs) noexcept : m_delegates(std::move(rhs.m_delegates)) { }
 
-    /// Invoke all bound target functions. A void return value is used 
-    /// since multiple targets invoked.
+    /// Invoke all bound target functions. Safe to remove delegates during invocation.
+    /// A void return value is used since multiple targets invoked.
     /// @param[in] args The arguments used when invoking the target functions
     void operator()(Args... args) {
-        for (auto delegate : m_delegates)
-            (*delegate)(args...);	// Invoke delegate callback
+        // RAII Guard: Increments now, Decrements + Cleans up on return/throw
+        BroadcastGuard guard(m_broadcastCount, this);
+
+        // Iterate safely
+        for (auto it = m_delegates.begin(); it != m_delegates.end(); ++it) {
+            std::shared_ptr<DelegateType>& delegate = *it;
+            if (delegate) {
+                (*delegate)(args...);
+            }
+        }
     }
 
     /// Invoke all bound target functions. A void return value is used 
@@ -85,8 +94,7 @@ public:
     /// @return A reference to the current object.
     MulticastDelegate& operator=(MulticastDelegate&& rhs) noexcept {
         if (&rhs != this) {
-            m_delegates = rhs.m_delegates;
-            rhs.Clear();
+            m_delegates = std::move(rhs.m_delegates);
         }
         return *this;
     }
@@ -113,15 +121,23 @@ public:
     /// Remove a delegate into the container.
     /// @param[in] delegate The delegate target to remove.
     void Remove(const DelegateType& delegate) {
-        // Use std::find_if to locate the matching delegate
         auto it = std::find_if(m_delegates.begin(), m_delegates.end(),
             [&delegate](const std::shared_ptr<DelegateType>& item) {
-                return *item == delegate;
+                // Must check if item is valid before comparing!
+                return item && (*item == delegate);
             });
 
-        // If found, erase the delegate
         if (it != m_delegates.end()) {
-            m_delegates.erase(it);
+            if (m_broadcastCount > 0) {
+                // REENTRANCY DETECTED: 
+                // Do not erase(). Just null out the pointer.
+                // The iterator in operator() stays valid, but next access sees null.
+                it->reset();
+            }
+            else {
+                // Safe to erase immediately
+                m_delegates.erase(it);
+            }
         }
     }
 
@@ -159,8 +175,35 @@ private:
         }
     }
 
+    void Cleanup() {
+        // Efficiently remove all null pointers from the list
+        m_delegates.remove_if([](const std::shared_ptr<DelegateType>& item) {
+            return item == nullptr;
+            });
+    }
+
+    class BroadcastGuard {
+    public:
+        BroadcastGuard(int& cnt, MulticastDelegate* container)
+            : m_cnt(cnt), m_container(container) {
+            m_cnt++; // Lock
+        }
+        ~BroadcastGuard() {
+            m_cnt--; // Unlock
+            if (m_cnt == 0 && m_container) {
+                m_container->Cleanup();
+            }
+        }
+    private:
+        int& m_cnt;
+        MulticastDelegate* m_container;
+    };
+
     /// List of registered delegates
     xlist<std::shared_ptr<DelegateType>> m_delegates;
+
+    /// Count of active nested broadcasts
+    int m_broadcastCount = 0;
 };
 
 }

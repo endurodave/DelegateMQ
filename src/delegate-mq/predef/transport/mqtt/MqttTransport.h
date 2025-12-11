@@ -13,7 +13,8 @@
 #include "predef/transport/DmqHeader.h"
 #include "MQTTClient.h"
 
-#define MQTT_ADDRESS     "tcp://mqtt.eclipseprojects.io:1883"
+//#define MQTT_ADDRESS     "tcp://test.mosquitto.org:1883"
+#define MQTT_ADDRESS     "tcp://broker.hivemq.com:1883"
 #define MQTT_TOPIC       "Delegate_MQTT"
 #define MQTT_QOS         1
 #define MQTT_TIMEOUT     10000L

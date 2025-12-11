@@ -172,7 +172,7 @@ public:
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateFreeAsyncWait(ClassType&& rhs) noexcept :
-        BaseType(rhs), m_thread(rhs.m_thread), m_priority(rhs.m_priority), m_timeout(rhs.m_timeout), m_success(rhs.m_success), m_retVal(rhs.m_retVal) {
+        BaseType(std::move(rhs)), m_thread(rhs.m_thread), m_priority(rhs.m_priority), m_timeout(rhs.m_timeout), m_success(rhs.m_success), m_retVal(rhs.m_retVal) {
         rhs.Clear();
     }
 
@@ -302,7 +302,7 @@ public:
     /// Use `IsSuccess()` to check for success before using the return value. Alternatively, 
     /// use `AsyncInvoke()` and check the `std::optional` return value.
     /// 
-    /// The `DelegateAsyncWaitMsg` does not duplicated and copy the function arguments into heap
+    /// The `DelegateAsyncWaitMsg` does not duplicate and copy the function arguments into heap
     /// memory. The source thread waits on the destintation thread to complete, therefore argument
     /// data is shared between the source and destination threads and simultaneous access is prevented
     /// using a mutex.
@@ -338,8 +338,12 @@ public:
                 thread->DispatchDelegate(msg);
 
                 // Wait for destination thread to execute the delegate function and get return value
-                if ((m_success = msg->GetSema().Wait(m_timeout)))
+                if (msg->GetSema().Wait(m_timeout)) {
+                    // Wait succeeded. Now acquire lock to safely read the value.
+                    const std::lock_guard<std::mutex> lock(msg->GetLock());
+                    m_success = true;
                     m_retVal = delegate->m_retVal;
+                }
             }
 
             // Protect data shared between source and destination threads
@@ -542,7 +546,7 @@ public:
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateMemberAsyncWait(ClassType&& rhs) noexcept :
-        BaseType(rhs), m_thread(rhs.m_thread), m_priority(rhs.m_priority), m_timeout(rhs.m_timeout), m_success(rhs.m_success), m_retVal(rhs.m_retVal) {
+        BaseType(std::move(rhs)), m_thread(rhs.m_thread), m_priority(rhs.m_priority), m_timeout(rhs.m_timeout), m_success(rhs.m_success), m_retVal(rhs.m_retVal) {
         rhs.Clear();
     }
 
@@ -718,7 +722,7 @@ public:
     /// Use `IsSuccess()` to check for success before using the return value. Alternatively, 
     /// use `AsyncInvoke()` and check the `std::optional` return value.
     /// 
-    /// The `DelegateAsyncWaitMsg` does not duplicated and copy the function arguments into heap
+    /// The `DelegateAsyncWaitMsg` does not duplicate and copy the function arguments into heap
     /// memory. The source thread waits on the destintation thread to complete, therefore argument
     /// data is shared between the source and destination threads and simultaneous access is prevented
     /// using a mutex.
@@ -754,8 +758,12 @@ public:
                 thread->DispatchDelegate(msg);
 
                 // Wait for destination thread to execute the delegate function and get return value
-                if ((m_success = msg->GetSema().Wait(m_timeout)))
+                if (msg->GetSema().Wait(m_timeout)) {
+                    // Wait succeeded. Now acquire lock to safely read the value.
+                    const std::lock_guard<std::mutex> lock(msg->GetLock());
+                    m_success = true;
                     m_retVal = delegate->m_retVal;
+                }
             }
 
             // Protect data shared between source and destination threads
@@ -923,7 +931,7 @@ public:
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateFunctionAsyncWait(ClassType&& rhs) noexcept :
-        BaseType(rhs), m_thread(rhs.m_thread), m_priority(rhs.m_priority), m_timeout(rhs.m_timeout), m_success(rhs.m_success), m_retVal(rhs.m_retVal) {
+        BaseType(std::move(rhs)), m_thread(rhs.m_thread), m_priority(rhs.m_priority), m_timeout(rhs.m_timeout), m_success(rhs.m_success), m_retVal(rhs.m_retVal) {
         rhs.Clear();
     }
 
@@ -1053,7 +1061,7 @@ public:
     /// Use `IsSuccess()` to check for success before using the return value. Alternatively, 
     /// use `AsyncInvoke()` and check the `std::optional` return value.
     /// 
-    /// The `DelegateAsyncWaitMsg` does not duplicated and copy the function arguments into heap
+    /// The `DelegateAsyncWaitMsg` does not duplicate and copy the function arguments into heap
     /// memory. The source thread waits on the destintation thread to complete, therefore argument
     /// data is shared between the source and destination threads and simultaneous access is prevented
     /// using a mutex.
@@ -1089,8 +1097,12 @@ public:
                 thread->DispatchDelegate(msg);
 
                 // Wait for destination thread to execute the delegate function and get return value
-                if ((m_success = msg->GetSema().Wait(m_timeout)))
+                if (msg->GetSema().Wait(m_timeout)) {
+                    // Wait succeeded. Now acquire lock to safely read the value.
+                    const std::lock_guard<std::mutex> lock(msg->GetLock());
+                    m_success = true;
                     m_retVal = delegate->m_retVal;
+                }
             }
 
             // Protect data shared between source and destination threads

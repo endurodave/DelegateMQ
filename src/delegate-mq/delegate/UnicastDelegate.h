@@ -29,10 +29,12 @@ public:
     /// provided `rhs` (right-hand side) object. The `rhs` object is used to 
     /// set the state of the new instance.
     /// @param[in] rhs The object to copy from.
-    UnicastDelegate(const UnicastDelegate& rhs) { 
-        auto delegateClone = rhs.m_delegate->Clone();
-        std::shared_ptr<DelegateType> sharedDelegate(delegateClone);
-        m_delegate = sharedDelegate;
+    UnicastDelegate(const UnicastDelegate& rhs) {
+        if (rhs.m_delegate) {
+            auto delegateClone = rhs.m_delegate->Clone();
+            if (!delegateClone) BAD_ALLOC();
+            m_delegate = std::shared_ptr<DelegateType>(delegateClone);
+        }
     }
 
     /// @brief Move constructor that transfers ownership of resources.
@@ -59,26 +61,31 @@ public:
     /// @param[in] rhs A delegate target to assign
     void operator=(const DelegateType& rhs) {
         auto delegateClone = rhs.Clone();
-        std::shared_ptr<DelegateType> sharedDelegate(delegateClone);
-        m_delegate = sharedDelegate;
+        if (!delegateClone) BAD_ALLOC();
+        m_delegate = std::shared_ptr<DelegateType>(delegateClone);
     }
 
     /// Assign a delegate to the container.
     /// @param[in] rhs A delegate target to assign
     void operator=(DelegateType&& rhs) {
         auto delegateClone = rhs.Clone();
-        std::shared_ptr<DelegateType> sharedDelegate(delegateClone);
-        m_delegate = std::move(sharedDelegate);
+        if (!delegateClone) BAD_ALLOC();
+        m_delegate = std::shared_ptr<DelegateType>(delegateClone);
     }
 
     /// @brief Assignment operator that assigns the state of one object to another.
     /// @param[in] rhs The object whose state is to be assigned to the current object.
     /// @return A reference to the current object.
     UnicastDelegate& operator=(const UnicastDelegate& rhs) {
-        if (&rhs != this) {
-            auto delegateClone = rhs.m_delegate->Clone();
-            std::shared_ptr<DelegateType> sharedDelegate(delegateClone);
-            m_delegate = sharedDelegate;
+        if (this != &rhs) {
+            if (rhs.m_delegate) {
+                auto delegateClone = rhs.m_delegate->Clone();
+                if (!delegateClone) BAD_ALLOC();
+                m_delegate = std::shared_ptr<DelegateType>(delegateClone);
+            }
+            else {
+                m_delegate = nullptr;
+            }
         }
         return *this;
     }
@@ -87,9 +94,8 @@ public:
     /// @param[in] rhs The object to move from.
     /// @return A reference to the current object.
     UnicastDelegate& operator=(UnicastDelegate&& rhs) noexcept {
-        if (&rhs != this) {
-            m_delegate = rhs.m_delegate;
-            rhs.Clear();
+        if (this != &rhs) {
+            m_delegate = std::move(rhs.m_delegate);
         }
         return *this;
     }

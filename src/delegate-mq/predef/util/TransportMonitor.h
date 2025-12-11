@@ -87,7 +87,7 @@ public:
 private:
     struct TimeoutData
     {
-        dmq::DelegateRemoteId remoteId;
+        dmq::DelegateRemoteId remoteId = 0;
         std::chrono::system_clock::time_point timeStamp;
     };
 

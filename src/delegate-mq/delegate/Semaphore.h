@@ -7,7 +7,6 @@
 #include "DelegateOpt.h"
 #include <condition_variable>
 #include <mutex>
-#include <atomic>
 
 // Fix compiler error on Windows
 #undef max

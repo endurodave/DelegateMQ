@@ -2578,7 +2578,7 @@ extern void DelegateRemote_UT();
 extern void DelegateThreads_UT();
 extern void Containers_UT();
 
-void DelegateUnitTests()
+void RunDelegateUnitTests()
 {
 	LOG_INFO("DelegateUnitTests Begin");
 
