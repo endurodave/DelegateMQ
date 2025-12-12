@@ -6,7 +6,7 @@
 using namespace std;
 using namespace dmq;
 
-std::mutex Timer::m_lock;
+std::recursive_mutex Timer::m_lock;
 bool Timer::m_timerStopped = false;
 
 //------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ static bool TimerDisabled (Timer* value)
 //------------------------------------------------------------------------------
 Timer::Timer() 
 {
-    const std::lock_guard<std::mutex> lock(m_lock);
+    const std::lock_guard<std::recursive_mutex> lock(m_lock);
     m_enabled = false;
 }
 
@@ -32,7 +32,7 @@ Timer::Timer()
 Timer::~Timer()
 {
     try {
-        const std::lock_guard<std::mutex> lock(m_lock);
+        const std::lock_guard<std::recursive_mutex> lock(m_lock);
         auto& timers = GetTimers();
 
         if (timers.size() != 0) {
@@ -56,7 +56,7 @@ void Timer::Start(dmq::Duration timeout, bool once)
     if (timeout <= dmq::Duration(0))
         throw std::invalid_argument("Timeout cannot be 0");
 
-    const std::lock_guard<std::mutex> lock(m_lock);
+    const std::lock_guard<std::recursive_mutex> lock(m_lock);
 
     m_timeout = timeout;
     m_once = once;
@@ -77,7 +77,7 @@ void Timer::Start(dmq::Duration timeout, bool once)
 //------------------------------------------------------------------------------
 void Timer::Stop()
 {
-    const std::lock_guard<std::mutex> lock(m_lock);
+    const std::lock_guard<std::recursive_mutex> lock(m_lock);
 
     m_enabled = false;
     m_timerStopped = true;
@@ -139,7 +139,7 @@ dmq::Duration Timer::Difference(dmq::Duration time1, dmq::Duration time2)
 //------------------------------------------------------------------------------
 void Timer::ProcessTimers()
 {
-    const std::lock_guard<std::mutex> lock(m_lock);
+    const std::lock_guard<std::recursive_mutex> lock(m_lock);
 
     // Remove disabled timer from the list if stopped
     if (m_timerStopped)
@@ -148,18 +148,26 @@ void Timer::ProcessTimers()
         m_timerStopped = false;
     }
 
-    // Iterate through each timer and check for expirations
-    TimersIterator it;
-    for (it = GetTimers().begin() ; it != GetTimers().end(); it++ )
+    // Iterate safely handling potential deletion during callback
+    auto it = GetTimers().begin();
+    while (it != GetTimers().end())
     {
-        if ((*it) != NULL)
-            (*it)->CheckExpired();
+        Timer* t = *it;
+
+        // INCREMENT NOW: Move 'it' to the next element BEFORE calling the function
+        // that might delete the current element 't'.
+        it++;
+
+        // Now call the function. If 't' destroys itself, it is removed from the list,
+        // but our local 'it' variable is already safe at the next node.
+        if (t != nullptr)
+            t->CheckExpired();
     }
 }
 
 dmq::Duration Timer::GetTime()
 {
-    auto now = std::chrono::system_clock::now().time_since_epoch();
+    auto now = std::chrono::steady_clock::now().time_since_epoch();
     auto duration = std::chrono::duration_cast<dmq::Duration>(now);
     return duration;
 }

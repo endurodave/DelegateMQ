@@ -28,7 +28,7 @@ public:
     TransportMonitor(const dmq::Duration timeout) : TRANSPORT_TIMEOUT(timeout) {}
     ~TransportMonitor() 
     { 
-        const std::lock_guard<std::mutex> lock(m_lock);
+        const std::lock_guard<std::recursive_mutex> lock(m_lock);
         m_pending.clear(); 
     }
 
@@ -37,9 +37,9 @@ public:
     /// param[in] remoteId - the remote ID
     virtual void Add(uint16_t seqNum, dmq::DelegateRemoteId remoteId) override
     {
-        const std::lock_guard<std::mutex> lock(m_lock);
+        const std::lock_guard<std::recursive_mutex> lock(m_lock);
         TimeoutData d;
-        d.timeStamp = std::chrono::system_clock::now();
+        d.timeStamp = std::chrono::steady_clock::now();
         d.remoteId = remoteId;
         m_pending[seqNum] = d;
     }
@@ -49,7 +49,7 @@ public:
 	/// param[in] seqNum - the delegate message sequence number
     virtual void Remove(uint16_t seqNum) override
     {
-        const std::lock_guard<std::mutex> lock(m_lock);
+        const std::lock_guard<std::recursive_mutex> lock(m_lock);
         auto it = m_pending.find(seqNum);
         if (it != m_pending.end())
         {
@@ -62,8 +62,8 @@ public:
 	/// Call periodically to process message timeouts
     void Process()
     {
-        const std::lock_guard<std::mutex> lock(m_lock);
-        auto now = std::chrono::system_clock::now();
+        const std::lock_guard<std::recursive_mutex> lock(m_lock);
+        auto now = std::chrono::steady_clock::now();
         auto it = m_pending.begin();
         while (it != m_pending.end()) 
         {
@@ -88,12 +88,12 @@ private:
     struct TimeoutData
     {
         dmq::DelegateRemoteId remoteId = 0;
-        std::chrono::system_clock::time_point timeStamp;
+        std::chrono::steady_clock::time_point timeStamp;
     };
 
 	std::map<uint16_t, TimeoutData> m_pending;
 	const dmq::Duration TRANSPORT_TIMEOUT;
-    std::mutex m_lock;
+    std::recursive_mutex m_lock;
 };
 
 #endif

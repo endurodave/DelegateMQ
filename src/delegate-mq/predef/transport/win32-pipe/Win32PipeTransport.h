@@ -141,7 +141,7 @@ public:
 
         if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
-            return -1;  // TODO: Optionally handle this case more gracefully
+            return -1;  // @TODO: Optionally handle this case more gracefully
         }
 
         // Read the DelegateRemoteId (2 bytes) into the `id` variable

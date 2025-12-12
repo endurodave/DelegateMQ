@@ -13,6 +13,7 @@ typedef uint16_t DelegateRemoteId;
 const uint16_t INVALID_REMOTE_ID = -1;
 const uint16_t ACK_REMOTE_ID = 0;
 
+/// @TODO Implement the IDispatcher interface if necessary.
 /// @brief Delegate interface class to dispatch serialized function argument data
 /// to a remote destination. Implemented by the application if using remote delegates.
 /// 

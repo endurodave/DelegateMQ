@@ -4,6 +4,7 @@
 #include "DmqHeader.h"
 #include "../../delegate/DelegateOpt.h"
 
+/// @TODO Implement the ITransport interface if necessary.
 /// @brief DelegateMQ transport interface. 
 class ITransport
 {

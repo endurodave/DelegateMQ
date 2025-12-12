@@ -43,6 +43,7 @@ public:
     static dmq::Duration Difference(dmq::Duration time1, dmq::Duration time2);
 
     /// Called on a periodic basic to service all timer instances. 
+    /// @TODO: Call periodically for timer expiration handling.
     static void ProcessTimers();
 
 private:
@@ -61,7 +62,7 @@ private:
     }
 
     /// A lock to make this class thread safe.
-    static std::mutex m_lock;
+    static std::recursive_mutex m_lock;
 
     dmq::Duration m_timeout = dmq::Duration(0);		
     dmq::Duration m_expireTime = dmq::Duration(0);

@@ -5,7 +5,7 @@
 
 namespace dmq {
 
-/// @file
+/// @TODO Implement the IThread interface if necessary.
 /// @brief A base class for a delegate enabled execution thread. Implemented by 
 /// application code if asynchronous delegates are used. 
 /// 

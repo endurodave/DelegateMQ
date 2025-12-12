@@ -34,7 +34,9 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 {
 	if (!m_thread)
 	{
+		m_threadStartPromise = std::promise<void>();
 		m_threadStartFuture = m_threadStartPromise.get_future();
+		m_exit = false;
 
 		m_thread = std::unique_ptr<std::thread>(new thread(&Thread::Process, this));
 
@@ -140,11 +142,24 @@ void Thread::ExitThread()
 	m_exit.store(true);
     m_thread->join();
 
-	// Clear the queue if anything added while waiting for join
+	// Prevent deadlock if ExitThread is called from within the thread itself
+	if (m_thread->joinable())
+	{
+		if (std::this_thread::get_id() != m_thread->get_id())
+		{
+			m_thread->join();
+		}
+		else
+		{
+			// We are killing ourselves. Detach so the thread object cleans up naturally.
+			m_thread->detach();
+		}
+	}
+
 	{
 		lock_guard<mutex> lock(m_mutex);
 		m_thread = nullptr;
-		while (!m_queue.empty()) 
+		while (!m_queue.empty())
 			m_queue.pop();
 	}
 
@@ -189,7 +204,7 @@ void Thread::WatchdogCheck()
 	{
 		LOG_ERROR("Watchdog detected unresponsive thread: {}", THREAD_NAME);
 
-		// @TODO You can optionally trigger recovery, restart, or further actions here
+		// @TODO Optionally trigger recovery, restart, or further actions here
 		// For example, throw or notify external system
 	}
 }
@@ -235,6 +250,8 @@ void Thread::Process()
 		{
 			case MSG_DISPATCH_DELEGATE:
 			{
+				// @TODO: Update error handling below if necessary.
+				
 				// Get pointer to DelegateMsg data from queue msg data
 				auto delegateMsg = msg->GetData();
 				ASSERT_TRUE(delegateMsg);

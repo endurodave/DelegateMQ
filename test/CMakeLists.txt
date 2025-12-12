@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
-# Set build options (see Predef.cmake)
+# @TODO: Set build options (see Predef.cmake)
 set(DMQ_ASSERTS "OFF")                        # ON for assert faults
 set(DMQ_ALLOCATOR "OFF")                      # ON for fixed-block allocator
 set(DMQ_LOG "OFF")                            # ON for spglog output

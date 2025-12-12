@@ -11,6 +11,7 @@ namespace dmq
     using Duration = std::chrono::duration<uint32_t, std::milli>;
 }
 
+// @TODO: Select the desired software fault handling (see Predef.cmake).
 #ifdef DMQ_ASSERTS
     #include <cassert>
     // Use assert error handling. Change assert to a different error 
@@ -22,6 +23,7 @@ namespace dmq
     #define BAD_ALLOC() throw std::bad_alloc()
 #endif
 
+// @TODO: Select the desired heap allocation (see Predef.cmake).
 // If DMQ_ASSERTS defined above, consider defining DMQ_ALLOCATOR to prevent 
 // std::list usage within delegate library from throwing a std::bad_alloc 
 // exception. The std_allocator calls assert if out of memory. 
@@ -46,6 +48,7 @@ namespace dmq
     #define XALLOCATOR
 #endif
 
+// @TODO: Select the desired logging (see Predef.cmake).
 #ifdef DMQ_LOG
     #include <spdlog/spdlog.h>
     #define LOG_INFO(...)    spdlog::info(__VA_ARGS__)

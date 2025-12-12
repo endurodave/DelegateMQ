@@ -99,6 +99,8 @@ void Thread::Process(void* instance)
 			{
 				case MSG_DISPATCH_DELEGATE:
 				{
+					// @TODO: Update error handling below if necessary.
+					
 					// Get pointer to DelegateMsg data from queue msg data
 					auto delegateMsg = msg->GetData();
 					ASSERT_TRUE(delegateMsg);

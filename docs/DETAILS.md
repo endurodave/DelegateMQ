@@ -17,6 +17,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Example Projects](#example-projects)
   - [Examples Setup](#examples-setup)
   - [Build Integration](#build-integration)
+- [Porting Guide](#porting-guide)
 - [Quick Start](#quick-start)
   - [Basic Examples](#basic-examples)
   - [Publish/Subscribe Example](#publishsubscribe-example)
@@ -229,6 +230,22 @@ include_directories(
 ```
 
 Include `DelegateMQ.h` to use the delegate library features. Build and execute the project.
+
+# Porting Guide
+
+Numerous predefined platforms are already supported such as Windows, Linux, and FreeRTOS. Ready-made plugins for threading and communication interfaces exist, or you can create new ones. The library also supports different configurable items such as error handling and heap allocation options.
+
+1.  **Search codebase for `@TODO`**: Find specific decision locations tagged in the source files.
+2.  **Implement `IThread`**: Required to use **Asynchronous** delegates. 
+3.  **Implement `ISerializer` and `ITransport`**: Required to use **Remote** delegates across processes/processors.
+    * *Optional:* Implement `ITransportMonitor` if your application layer requires command acknowledgments (ACKs).
+    * See [Sample Projects](#sample-projects) for numerous remote delegate examples.
+4.  **Check System Clock**: Ensure `std::chrono::steady_clock` is supported on your target hardware, as it is required for timers and transport timeouts.
+5.  **Call `Timer::ProcessTimers()`**: Periodically call `ProcessTimers()` (e.g., from a main loop or hardware timer ISR) to support timers and thread watchdogs.
+6.  **Configure Build Options**: Set CMake DMQ library build options within `CMakeLists.txt`.
+    * Example: `DMQ_ASSERTS` for debug assertions.
+    * Example: `DMQ_ALLOCATOR` to switch between standard Heap (new/delete) and the deterministic Fixed Block Allocator.
+7.  **Implement Fault Handling**: Customize `Fault.cpp` to route errors to your system's logger or crash handler. 
 
 # Quick Start
 

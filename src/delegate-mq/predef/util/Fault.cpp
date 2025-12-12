@@ -14,6 +14,8 @@ using namespace std;
 //----------------------------------------------------------------------------
 void FaultHandler(const char* file, unsigned short line)
 {
+    // @TODO: Implement appropriate fault handling.
+
 #if WIN32
 	// If you hit this line, it means one of the ASSERT macros failed.
     DebugBreak();

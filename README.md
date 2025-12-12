@@ -52,16 +52,19 @@ int main(void)
     if (retVal.has_value())     // Async invoke completed within 1 second?
         size = retVal.value();  // Get return value
 
+    // Create remote delegate support objects
     std::ostringstream stream(std::ios::out | std::ios::binary);
     Dispatcher dispatcher;
     Serializer<void(const std::string&)> serializer;
     
+    // Configure remote delegate
     dmq::DelegateFreeRemote<void(const std::string&)> remote(dmq::DelegateRemoteId(1));
     remote.SetStream(&stream);
     remote.SetDispatcher(&dispatcher);
     remote.SetSerializer(&serializer);
-    remote("Invoke MsgOut remote!");
 
+    // Invoke remote delegate
+    remote("Invoke MsgOut remote!");
     return 0;
 }
 ```
@@ -228,11 +231,11 @@ To build and run DelegateMQ, follow these simple steps. The library uses <a href
    `cmake -B build .`
 3. Build and run the project within the `build` directory. 
 
-See [Sample Projects](docs/DETAILS.md#sample-projects) to build other project examples.
+See [Sample Projects](docs/DETAILS.md#sample-projects) to build other project examples. See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
 
 # Documentation
 
- - See [Design Details](docs/DETAILS.md) for implementation design documentation and more examples.
+ - See [Design Details](docs/DETAILS.md) for a [porting guide](docs/DETAILS.md#porting-guide), design documentation and [more examples](docs/DETAILS.md#sample-projects).
  - See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation. 
  - See [Unit Test Code Coverage](https://app.codecov.io/gh/endurodave/DelegateMQ) test results.
 
