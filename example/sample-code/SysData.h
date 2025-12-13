@@ -5,15 +5,13 @@
 #include <mutex>
 #include "SysDataTypes.h"
 
-using namespace dmq;
-
 /// @brief SysData stores common data accessible by any system thread. This class
 /// is thread-safe.
 class SysData
 {
 public:
 	/// Clients register with MulticastDelegateSafe to get callbacks when system mode changes
-    MulticastDelegateSafe<void(const SystemModeChanged&)> SystemModeChangedDelegate;
+    dmq::MulticastDelegateSafe<void(const SystemModeChanged&)> SystemModeChangedDelegate;
 
 	/// Get singleton instance of this class
 	static SysData& GetInstance();

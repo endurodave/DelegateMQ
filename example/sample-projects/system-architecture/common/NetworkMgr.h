@@ -108,7 +108,7 @@ private:
     void RecvThread();
 
     // Incoming message handler
-    void Incoming(DmqHeader& header, xstringstream& arg_data);
+    void Incoming(DmqHeader& header, std::shared_ptr<xstringstream> arg_data);
 
     // Process message timeouts 
     void Timeout();
@@ -172,23 +172,27 @@ private:
         {
             // *** Caller's thread executes this control branch ***
 
-            std::atomic<bool> success(false);
-            bool complete = false;
-            std::mutex mtx;
-            std::condition_variable cv;
+            struct SyncState {
+                std::atomic<bool> success{ false };
+                bool complete = false;
+                std::mutex mtx;
+                std::condition_variable cv;
+            };
+
+            auto state = std::make_shared<SyncState>();
             dmq::DelegateRemoteId remoteId = endpointDel.GetRemoteId();
 
             // 8. Callback lambda handler for transport monitor when remote receives message (success or failure).
             //    Callback context is m_thread.
-            SendStatusCallback statusCb = [&success, &complete, &remoteId, &cv, &mtx](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
+            SendStatusCallback statusCb = [state, remoteId](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
                 if (id == remoteId) {
                     {
-                        std::lock_guard<std::mutex> lock(mtx);
-                        complete = true;
+                        std::lock_guard<std::mutex> lock(state->mtx);
+                        state->complete = true;
                         if (status == TransportMonitor::Status::SUCCESS)
-                            success.store(true);   // Client received message
+                            state->success.store(true);   // Client received message
                     }
-                    cv.notify_one();
+                    state->cv.notify_one();
                 }
             };
 
@@ -211,16 +215,16 @@ private:
             {
                 // 7. Wait for statusCb callback to be invoked. Callback invoked when the 
                 //    receiver ack's the message or transport monitor timeout.
-                std::unique_lock<std::mutex> lock(mtx);
-                while (!complete)
+                std::unique_lock<std::mutex> lock(state->mtx);
+                while (!state->complete)
                 {
-                    if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout)
+                    if (state->cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout)
                     {
                         // Timeout waiting for remote delegate message ack
                         std::cout << "Timeout RemoteInvoke()" << std::endl;
 
                         // Set complete to true to exit wait loop
-                        complete = true; 
+                        state->complete = true; 
                     }
                 }
             }
@@ -229,7 +233,7 @@ private:
             m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
 
             // 10. Return the blocking async function invoke status to caller
-            return success.load();
+            return state->success.load();
         }
         else
         {

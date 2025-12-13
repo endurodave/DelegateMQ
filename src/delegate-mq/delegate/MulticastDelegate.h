@@ -133,6 +133,7 @@ public:
                 // Do not erase(). Just null out the pointer.
                 // The iterator in operator() stays valid, but next access sees null.
                 it->reset();
+                m_cleanup = true;
             }
             else {
                 // Safe to erase immediately
@@ -175,11 +176,18 @@ private:
         }
     }
 
+    /// Deferred cleanup (soft delete) if reentrency detected
     void Cleanup() {
+        // Skip cleanup if nothing removed
+        if (!m_cleanup)
+            return;
+
         // Efficiently remove all null pointers from the list
         m_delegates.remove_if([](const std::shared_ptr<DelegateType>& item) {
             return item == nullptr;
             });
+
+        m_cleanup = false;
     }
 
     class BroadcastGuard {
@@ -204,6 +212,9 @@ private:
 
     /// Count of active nested broadcasts
     int m_broadcastCount = 0;
+    
+    /// Flag for handling lazy delete
+    bool m_cleanup = false;
 };
 
 }

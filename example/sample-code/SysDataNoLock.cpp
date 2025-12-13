@@ -74,7 +74,7 @@ SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type syste
 	{
 		// Create an asynchronous delegate and reinvoke the function call on workerThread2
 		auto delegate =
-			MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncWaitAPI, workerThread2, WAIT_INFINITE);
+			MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncWaitAPI, workerThread2, dmq::WAIT_INFINITE);
 		return delegate(systemMode);
 	}
 

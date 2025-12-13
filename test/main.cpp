@@ -7,7 +7,6 @@
 // Search codebase for @TODO comments if porting to a new platform. Section 
 // "Porting Guide" within DETAILS.md offers complete porting guidance.
 
-#include "main.h"
 #include "DelegateMQ.h"
 #include "ProducerConsumer.h"
 #include "CountdownLatch.h"
@@ -22,9 +21,12 @@
 #include "Command.h"
 #include "BindingProperty.h"
 #include "RemoteCommunication.h"
+#include "main.h"
 
 extern void RunDelegateUnitTests();
 void RunSimpleExamples();
+void RunAsyncCallbackExamples();
+void RunAsyncAPIExamples();
 void RunAllExamples();
 void RunMiscExamples();
 
@@ -76,6 +78,8 @@ int main(void)
 
     // Run all test code
     RunSimpleExamples();
+    RunAsyncCallbackExamples();
+    RunAsyncAPIExamples();
     RunAllExamples();
     RunMiscExamples();
     RunDelegateUnitTests();
@@ -94,14 +98,18 @@ int main(void)
 	return 0;
 }
 
+//------------------------------------------------------------------------------
 // Examples to create and invoke sync, async and remote delegates
+//------------------------------------------------------------------------------
 void RunSimpleExamples()
 {
     class Dispatcher : public IDispatcher
     {
     public:
         virtual int Dispatch(std::ostream& os, DelegateRemoteId id) {
-            // @TODO: Send argument data to the transport for sending
+            // @TODO: Send argument data to the transport for sending.
+            // See example\sample-projects\system-architecture-no-deps
+            // for a complete working remote delegate client/server example.
             cout << "Dispatch DelegateRemoteId=" << id << endl;
             return 0;
         }
@@ -122,20 +130,146 @@ void RunSimpleExamples()
     if (retVal.has_value())     // Async invoke completed within 1 second?
         size = retVal.value();  // Get return value
 
-    // Configure remote delegate
+    // Create remote delegate support objects
     std::ostringstream stream(ios::out | ios::binary);
     Dispatcher dispatcher;
     Serializer<void(const std::string&)> serializer;
 
-    // Invoke remote delegate
+    // Configure remote delegate
     dmq::DelegateFreeRemote<void(const std::string&)> remote(dmq::DelegateRemoteId(1));
     remote.SetStream(&stream);
     remote.SetDispatcher(&dispatcher);
     remote.SetSerializer(&serializer);
+
+    // Invoke remote delegate
     remote("Invoke MsgOut remote!");
 }
 
+class Publisher
+{
+public:
+    // Thread-safe container to store registered callbacks
+    dmq::MulticastDelegateSafe<void(const std::string& msg)> MsgCb;
+
+    static Publisher& Instance()
+    {
+        static Publisher instance;
+        return instance;
+    }
+
+    void SetMsg(const std::string& msg)
+    {
+        m_msg = msg;    // Store message
+        MsgCb(m_msg);   // Invoke all registered callbacks
+    }
+
+private:
+    Publisher() = default;
+    std::string m_msg;
+};
+
+class Subscriber
+{
+public:
+    Subscriber() : m_thread("SubscriberThread")
+    {
+        m_thread.CreateThread();
+
+        // Register for publisher async callback on m_thread context
+        Publisher::Instance().MsgCb += dmq::MakeDelegate(this, &Subscriber::HandleMsgCb, m_thread);
+    }
+
+    ~Subscriber()
+    {
+        Publisher::Instance().MsgCb -= dmq::MakeDelegate(this, &Subscriber::HandleMsgCb, m_thread);
+    }
+
+private:
+    // Handle publisher callback on m_thread
+    void HandleMsgCb(const std::string& msg)
+    {
+        // This runs on m_thread
+        std::cout << "Writing data on thread: " << Thread::GetCurrentThreadId() << std::endl;
+        std::cout << msg << std::endl;
+    }
+    Thread m_thread;
+};
+
+//------------------------------------------------------------------------------
+// Run pub/sub example
+//------------------------------------------------------------------------------
+Subscriber sub;
+void RunAsyncCallbackExamples()
+{
+    // Subscriber::HandleMsgCallback invoked when Publisher::SetMsg is called
+    Publisher::Instance().SetMsg("Hello World!");
+}
+
+class Data
+{
+public:
+    int x = 0;
+};
+
+// Store data using asynchronous public API. Class is thread-safe.
+class DataStore
+{
+public:
+    DataStore() : m_thread("DataStoreThread")
+    {
+        m_thread.CreateThread();
+    }
+
+    // Store data asynchronously on m_thread context (non-blocking)
+    void StoreAsync(const Data& data)
+    {
+        // If the caller thread is not the internal thread, reinvoke this function 
+        // asynchronously on the internal thread to ensure thread-safety
+        if (m_thread.GetThreadId() != Thread::GetCurrentThreadId())
+        {
+            // Reinvoke StoreAsync(data) on m_thread context
+            return dmq::MakeDelegate(this, &DataStore::StoreAsync, m_thread)(data);
+        }
+        std::cout << "Writing data on thread: " << Thread::GetCurrentThreadId() << std::endl;
+        m_data = data;  // Data stored on m_thread context
+    }
+
+    // Alternate approach using AsyncInvoke helper function (blocking with 
+    // return value)
+    bool StoreAsync2(const Data& data)
+    {
+        auto storeLambda = [this](const Data& data) -> bool {
+            // This runs on m_thread
+            std::cout << "Writing data on thread: " << Thread::GetCurrentThreadId() << std::endl;
+            m_data = data;
+            return true;
+            };
+
+        return AsyncInvoke(storeLambda, m_thread, WAIT_INFINITE, data);
+    }
+
+private:
+    Data m_data;        // Data storage
+    Thread m_thread;    // Internal thread
+};
+
+//------------------------------------------------------------------------------
+// Asynchronous API examples
+//------------------------------------------------------------------------------
+DataStore dataStore;
+void RunAsyncAPIExamples()
+{
+    Data d;
+    d.x = 123;
+
+    // Invoke async API functions
+    dataStore.StoreAsync(d);
+    bool rv2 = dataStore.StoreAsync2(d);
+}
+
+//------------------------------------------------------------------------------
 // Run all example modules
+//------------------------------------------------------------------------------
 void RunAllExamples()
 {
     using namespace Example;
@@ -183,7 +317,10 @@ void RunAllExamples()
 #endif
 }
 
+//------------------------------------------------------------------------------
 // Run misc delegate examples
+//------------------------------------------------------------------------------
+TestClass testClass;
 void RunMiscExamples()
 {
     // Create a worker thread with a 5s watchdog timeout
@@ -192,9 +329,7 @@ void RunMiscExamples()
 
     TestStruct testStruct;
     testStruct.x = 123;
-    TestStruct* pTestStruct = &testStruct;
-
-    TestClass testClass;
+    TestStruct* pTestStruct = &testStruct;    
 
     // Create a delegate bound to a free function then invoke
     auto delegateFree = MakeDelegate(&FreeFuncInt);

@@ -70,6 +70,18 @@ namespace Example
             return data.size();  // Return the 'bytes_sent' sent result
         }
 
+        // Alternate async API using a lambda
+        size_t SendDataV3(const std::string& data)
+        {
+            auto sendDataLambda = [this](const std::string& data) -> bool {
+                std::this_thread::sleep_for(std::chrono::seconds(2));  // Simulate sending
+                cout << data << endl;
+                return data.size();  // Return the 'bytes_sent' sent result
+                };
+
+            return AsyncInvoke(sendDataLambda, comm_thread, WAIT_INFINITE, data);
+        }
+
         void SetMode(bool mode) {
             AsyncInvoke(this, &Communication::SetModePrivate, comm_thread, WAIT_INFINITE, mode);
         }
@@ -104,6 +116,7 @@ namespace Example
         bool mode = comm.GetMode();
         comm.SendData("SendData message");
         comm.SendDataV2("SendDataV2 message");
+        comm.SendDataV3("SendDataV3 message");
 
         // Test async invoke of free functions
         set_mode(true);

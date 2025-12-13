@@ -1,3 +1,5 @@
+<img src="docs/DelegateMQ2.jpg" alt="DelegateMQ Layer Diagram" style="width:70%;"><br>
+
 ![License MIT](https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue)
 [![conan Ubuntu](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml)
 [![conan Clang](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml)
@@ -33,6 +35,7 @@ size_t MsgOut(const std::string& msg)
     return msg.size();
 }
 
+// Examples to create and invoke sync, async and remote delegates
 int main(void)
 {
     Thread thread("WorkerThread");

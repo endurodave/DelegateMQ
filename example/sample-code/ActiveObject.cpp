@@ -1,6 +1,7 @@
 /// @file
 /// @brief Implement an active object pattern using delegates. 
-/// An example of asynchronous method invocation.
+/// An example of asynchronous method invocation. See AsyncAPI.cpp
+/// for more examples.
 
 #include "ActiveObject.h"
 #include "DelegateMQ.h"

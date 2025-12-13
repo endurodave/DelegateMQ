@@ -6,6 +6,7 @@
 #include <map>
 #include <cstdint>
 #include <chrono>
+#include <mutex>
 
 /// @brief Monitors remote delegate send message timeouts. Class is thread safe.
 /// Call TransportMonitor::Process() periodically for timeout handling.

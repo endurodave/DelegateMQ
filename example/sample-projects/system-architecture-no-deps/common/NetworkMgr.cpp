@@ -31,6 +31,7 @@ NetworkMgr::NetworkMgr() :
 
 NetworkMgr::~NetworkMgr()
 {
+    Stop();
     m_thread.ExitThread();
     delete m_recvThread;
     m_recvThread = nullptr;
@@ -108,6 +109,10 @@ void NetworkMgr::Stop()
     // Reinvoke Stop() function call on m_thread and wait for call to complete
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
     {
+        // Close transports BEFORE joining to unblock the RecvThread
+        m_recvTransport.Close();
+        m_sendTransport.Close();
+
         // Ensure the receive thread loop completes 
         m_recvThreadExit.store(true);
         if (m_recvThread && m_recvThread->joinable())
@@ -119,8 +124,6 @@ void NetworkMgr::Stop()
     m_timeoutTimer.Stop();
     m_timeoutTimer.Expired = nullptr;
 
-    m_sendTransport.Close();
-    m_recvTransport.Close();
     //m_sendTransport.Destroy();
     //m_recvTransport.Destroy();
 }
@@ -191,11 +194,11 @@ void NetworkMgr::RecvThread()
     {
         {
             DmqHeader header;
-            xstringstream arg_data(std::ios::in | std::ios::out | std::ios::binary);
+            auto arg_data = std::make_shared<xstringstream>(std::ios::in | std::ios::out | std::ios::binary);
 
             // Poll for incoming message
-            int error = m_recvTransport.Receive(arg_data, header);
-            if (!error && !arg_data.str().empty() && !m_recvThreadExit.load())
+            int error = m_recvTransport.Receive(*arg_data, header);
+            if (!error && !arg_data->str().empty() && !m_recvThreadExit.load())
             {
                 // Async invoke the incoming message handler function. A delegate blocking async
                 // invoke here means header and arg_data argument are not copied but instead passed to 
@@ -211,7 +214,7 @@ void NetworkMgr::RecvThread()
     }
 }
 
-void NetworkMgr::Incoming(DmqHeader& header, xstringstream& arg_data)
+void NetworkMgr::Incoming(DmqHeader& header, std::shared_ptr<xstringstream> arg_data)
 {
     // Process incoming message
     if (header.GetId() != ACK_REMOTE_ID)
@@ -222,7 +225,7 @@ void NetworkMgr::Incoming(DmqHeader& header, xstringstream& arg_data)
         {
             // Invoke the receiver target callable with the sender's 
             // incoming argument data
-            receiveDelegate->Invoke(arg_data);
+            receiveDelegate->Invoke(*arg_data);
         }
         else
         {

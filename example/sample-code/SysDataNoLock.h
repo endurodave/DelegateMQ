@@ -4,15 +4,13 @@
 #include "DelegateMQ.h"
 #include "SysDataTypes.h"
 
-using namespace dmq;
-
 /// @brief SysData stores common data accessible by any system thread. This class
 /// is thread-safe.
 class SysDataNoLock
 {
 public:
 	/// Clients register with MulticastDelegateSafe to get callbacks when system mode changes
-	MulticastDelegateSafe<void(const SystemModeChanged&)> SystemModeChangedDelegate;
+	dmq::MulticastDelegateSafe<void(const SystemModeChanged&)> SystemModeChangedDelegate;
 
 	/// Get singleton instance of this class
 	static SysDataNoLock& GetInstance();
@@ -39,7 +37,7 @@ private:
 	SysDataNoLock(const SysDataNoLock&) = delete;
 
 	/// Private callback to get the SetSystemMode call onto a common thread
-	MulticastDelegateSafe<void(SystemMode::Type)> SetSystemModeDelegate; 
+	dmq::MulticastDelegateSafe<void(SystemMode::Type)> SetSystemModeDelegate; 
 
 	/// Sets the system mode and notify registered clients via SystemModeChangedDelegate.
 	/// @param[in] systemMode - the new system mode. 
