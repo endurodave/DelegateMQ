@@ -124,10 +124,17 @@ void Thread::ExitThread()
 	if (!m_thread)
 		return;
 
-	if (m_watchdogTimer)
+	if (m_watchdogTimer) 
+	{
 		m_watchdogTimer->Stop();
-	if (m_threadTimer)
+		m_watchdogTimer->Expired.Clear();
+	}
+
+	if (m_threadTimer) 
+	{
 		m_threadTimer->Stop();
+		m_threadTimer->Expired.Clear();
+	}
 
 	// Create a new ThreadMsg
 	std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_EXIT_THREAD, 0));

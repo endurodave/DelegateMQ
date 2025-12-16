@@ -1831,6 +1831,9 @@ Users create an instance of the timer and register for the expiration. In this c
 m_timer.Expired = MakeDelegate(&myClass, &MyClass::MyCallback, myThread);
 m_timer.Start(std::chrono::milliseconds(1000));
 ```
+
+See example `SafeTimer.cpp` to prevent a latent callback on a dead object and [Object Lifetime and Async Delegates](#object-lifetime-and-async-delegates) for an explaination.
+
 ## `std::async` Thread Targeting Example
 
 An example combining `std::async`/`std::future` and an asynchronous delegate to target a specific worker thread during communication transmission.

@@ -8,6 +8,7 @@
 // "Porting Guide" within DETAILS.md offers complete porting guidance.
 
 #include "DelegateMQ.h"
+#include "SafeTimer.h"
 #include "ProducerConsumer.h"
 #include "CountdownLatch.h"
 #include "ActiveObject.h"
@@ -292,6 +293,9 @@ void RunAllExamples()
     // Run all target types example
     AllTargetsExample();
 
+    // Run safe timer example
+    SafeTimerExample();
+
     // Run asynchronous API using delegates example 
     AsyncAPIExample();
 
@@ -523,12 +527,16 @@ void RunMiscExamples()
     // Could be helpful if T is very large and two or more clients register to receive asynchronous
     // callbacks.
     CoordinatesHandler coordinatesHandler;
-    CoordinatesHandler::CoordinatesChanged += MakeDelegate(&CoordinatesChangedCallback, workerThread1);
+
+    auto coordDelegate = MakeDelegate(&CoordinatesChangedCallback, workerThread1);
+    CoordinatesHandler::CoordinatesChanged += coordDelegate;
 
     Coordinates coordinates;
     coordinates.x = 11;
     coordinates.y = 99;
     coordinatesHandler.SetData(coordinates);
+
+    CoordinatesHandler::CoordinatesChanged -= coordDelegate;
 
     // Invoke virtual base function example
     std::shared_ptr<Base> base = std::make_shared<Derived>();

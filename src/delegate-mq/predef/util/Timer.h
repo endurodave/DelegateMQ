@@ -7,6 +7,7 @@
 
 /// @brief A timer class provides periodic timer callbacks on the client's 
 /// thread of control. Timer is thread safe.
+/// See example SafeTimer.cpp to prevent a latent callback on a dead object.
 class Timer 
 {
 public:

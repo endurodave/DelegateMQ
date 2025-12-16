@@ -694,10 +694,6 @@ private:
     // </common_code>
 };
 
-// ----------------------------------------------------------------------------------------------
-// NEW CLASS: DelegateMemberAsyncShared
-// ----------------------------------------------------------------------------------------------
-
 template <class C, class R>
 struct DelegateMemberAsyncShared; // Not defined
 
