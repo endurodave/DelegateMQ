@@ -77,12 +77,15 @@ int main(void)
     std::thread timerThread(ProcessTimers);
 
     // Run all test code
-    RunSimpleExamples();
-    RunAsyncCallbackExamples();
-    RunAsyncAPIExamples();
-    RunAllExamples();
-    RunMiscExamples();
-    RunDelegateUnitTests();
+    for (int i = 0; i < 3; i++) 
+    {
+        RunSimpleExamples();
+        RunAsyncCallbackExamples();
+        RunAsyncAPIExamples();
+        RunAllExamples();
+        RunMiscExamples();
+        RunDelegateUnitTests();
+    }
 
     // Ensure the timer thread completes before main exits
     processTimerExit.store(true);
@@ -92,7 +95,7 @@ int main(void)
     GetTimer().Stop();
     GetTimer().Expired.Clear();
 
-   	workerThread1.ExitThread();
+    workerThread1.ExitThread();
 
     cout << "Success!" << endl;
 	return 0;
@@ -198,9 +201,15 @@ private:
 //------------------------------------------------------------------------------
 // Run pub/sub example
 //------------------------------------------------------------------------------
-Subscriber sub;
 void RunAsyncCallbackExamples()
 {
+    // We use shared_ptr to ensure the object remains alive for the duration of the
+    // asynchronous call. If we allocated Subscriber on the stack, it would be destroyed 
+    // immediately when this function returns. The worker thread would then attempt 
+    // to access a dead object (Use-After-Free), resulting in a crash.
+    // See DETAILS.md section Object Lifetime and Async Delegates.
+    auto subscriber = std::make_shared<Subscriber>();
+
     // Subscriber::HandleMsgCallback invoked when Publisher::SetMsg is called
     Publisher::Instance().SetMsg("Hello World!");
 }
@@ -256,15 +265,21 @@ private:
 //------------------------------------------------------------------------------
 // Asynchronous API examples
 //------------------------------------------------------------------------------
-DataStore dataStore;
 void RunAsyncAPIExamples()
 {
+    // We use shared_ptr to ensure the object remains alive for the duration of the
+    // asynchronous call. If we allocated DataStore on the stack, it would be destroyed 
+    // immediately when this function returns. The worker thread would then attempt 
+    // to access a dead object (Use-After-Free), resulting in a crash.
+    // See DETAILS.md section Object Lifetime and Async Delegates.
+    auto dataStore = std::make_shared<DataStore>();
+
     Data d;
     d.x = 123;
 
     // Invoke async API functions
-    dataStore.StoreAsync(d);
-    bool rv2 = dataStore.StoreAsync2(d);
+    dataStore->StoreAsync(d);
+    bool rv2 = dataStore->StoreAsync2(d);
 }
 
 //------------------------------------------------------------------------------
@@ -616,12 +631,10 @@ void RunMiscExamples()
     safe += MakeDelegate(f2);
     safe -= MakeDelegate(f2);   // Should remove f2, not f1!
 
-    // Create a SysDataClient instance. Use std::make_shared to ensure 
-    // all SysData and SysDataNoLock callbacks complete before SysDataClient 
-    // destructor is executed. If a stack-allocated SysDataClient goes out of 
-    // scope, it gets destroyed immediately. Using shared_ptr ensures the 
-    // object stays alive until the async callback releases its reference.
-    auto sysDataClient = std::make_shared<SysDataClient>();
+    // Example of safely creating a shared object that receives async callbacks.
+    // SysDataClient will only be destroyed after all outstanding callbacks complete.
+    auto client = std::make_shared<Main::SysDataClient>();
+    client->Init();
 
     // Set new SystemMode values. Each call will invoke callbacks to all 
     // registered client subscribers.
@@ -640,6 +653,8 @@ void RunMiscExamples()
     SystemMode::Type previousMode;
     previousMode = SysDataNoLock::GetInstance().SetSystemModeAsyncWaitAPI(SystemMode::STARTING);
     previousMode = SysDataNoLock::GetInstance().SetSystemModeAsyncWaitAPI(SystemMode::NORMAL);
+
+    client->Term();
 }
 
 

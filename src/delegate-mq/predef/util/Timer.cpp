@@ -59,7 +59,7 @@ void Timer::Start(dmq::Duration timeout, bool once)
 
     m_timeout = timeout;
     m_once = once;
-    m_expireTime = GetTime();
+    m_expireTime = GetNow();
     m_enabled = true;
 
     // If 'this' is the 'next' item in the ProcessTimers loop, removing it 
@@ -101,8 +101,8 @@ void Timer::CheckExpired()
         return;
 
     // Has the timer expired?
-    if (Difference(m_expireTime, GetTime()) < m_timeout)
-        return;
+    if (GetNow() < m_expireTime)
+        return;     // Not expired yet
 
     if (m_once)
     {
@@ -114,11 +114,12 @@ void Timer::CheckExpired()
         // Increment the timer to the next expiration
         m_expireTime += m_timeout;
 
-        // Is the timer already expired after we incremented above?
-        if (Difference(m_expireTime, GetTime()) > m_timeout)
+        // Check if we are still behind (timer starvation)
+        // If the new deadline is STILL in the past, we are falling behind.
+        if (GetNow() > m_expireTime)
         {
             // The timer has fallen behind so set time expiration further forward.
-            m_expireTime = GetTime();
+            m_expireTime = GetNow();
 
             // Timer processing is falling behind. Maybe user timer expiration is too 
             // short, time processing takings too long, or CheckExpired not called 
@@ -129,14 +130,6 @@ void Timer::CheckExpired()
 
     // Call the client's expired callback function
     Expired();
-}
-
-//------------------------------------------------------------------------------
-// Difference
-//------------------------------------------------------------------------------
-dmq::Duration Timer::Difference(dmq::Duration time1, dmq::Duration time2)
-{
-    return (time2 - time1);
 }
 
 //------------------------------------------------------------------------------
@@ -171,12 +164,12 @@ void Timer::ProcessTimers()
 }
 
 //------------------------------------------------------------------------------
-// GetTime
+// GetNow
 //------------------------------------------------------------------------------
-dmq::Duration Timer::GetTime()
+dmq::TimePoint Timer::GetNow()
 {
-    auto now = std::chrono::steady_clock::now().time_since_epoch();
-    auto duration = std::chrono::duration_cast<dmq::Duration>(now);
-    return duration;
+    // time_point_cast converts the internal clock resolution (nanos) 
+    // to your custom resolution (millis) inside the time_point wrapper.
+    return std::chrono::time_point_cast<dmq::Duration>(dmq::Clock::now());
 }
 

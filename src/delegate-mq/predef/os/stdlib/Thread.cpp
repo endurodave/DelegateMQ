@@ -46,7 +46,7 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 		// Wait for the thread to enter the Process method
 		m_threadStartFuture.get();
 
-		m_lastAliveTime.store(Timer::GetTime());
+		m_lastAliveTime.store(Timer::GetNow());
 
 		// Caller wants a watchdog timer?
 		if (watchdogTimeout.has_value())
@@ -140,7 +140,6 @@ void Thread::ExitThread()
 	}
 
 	m_exit.store(true);
-    m_thread->join();
 
 	// Prevent deadlock if ExitThread is called from within the thread itself
 	if (m_thread->joinable())
@@ -176,8 +175,8 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 	if (m_thread == nullptr)
 		throw std::invalid_argument("Thread pointer is null");
 
-	// Create a new ThreadMsg
-    std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_DISPATCH_DELEGATE, msg));
+	// If using XALLOCATOR explicit operator new required. See xallocator.h.
+	std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_DISPATCH_DELEGATE, msg));
 
 	// Add dispatch delegate msg to queue and notify worker thread
 	std::unique_lock<std::mutex> lk(m_mutex);
@@ -194,10 +193,10 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 //----------------------------------------------------------------------------
 void Thread::WatchdogCheck()
 {
-	auto now = Timer::GetTime();
+	auto now = Timer::GetNow();
 	auto lastAlive = m_lastAliveTime.load();
 
-	auto delta = Timer::Difference(lastAlive, now);
+	auto delta = now - lastAlive;
 
 	// Watchdog expired?
 	if (delta > m_watchdogTimeout.load())
@@ -214,7 +213,9 @@ void Thread::WatchdogCheck()
 //----------------------------------------------------------------------------
 void Thread::ThreadCheck()
 {
-	// Do nothing
+	// Invoked by m_threadTimer on this thread context. Execution proves the 
+	// thread is responsive. Actual m_lastAliveTime update occurs in the 
+	// main Process() loop.
 }
 
 //----------------------------------------------------------------------------
@@ -229,7 +230,7 @@ void Thread::Process()
 
 	while (1)
 	{
-		m_lastAliveTime.store(Timer::GetTime());
+		m_lastAliveTime.store(Timer::GetNow());
 
 		std::shared_ptr<ThreadMsg> msg;
 		{
@@ -279,4 +280,3 @@ void Thread::Process()
 		}
 	}
 }
-

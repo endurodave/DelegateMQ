@@ -224,11 +224,10 @@ static void DelegateFreeAsyncWaitTests()
     //ASSERT_TRUE(zeroWait.IsSuccess() == false);
 }
 
+static TestClass1 testClass1;
 static void DelegateMemberAsyncWaitTests()
 {
     using Del = DelegateMemberAsyncWait<TestClass1, void(int)>;
-
-    TestClass1 testClass1;
 
     Del delegate1(&testClass1, &TestClass1::MemberFuncInt1, workerThread);
     delegate1(TEST_INT);
@@ -546,6 +545,135 @@ static void DelegateMemberSpAsyncWaitTests()
     //ASSERT_TRUE(zeroWait.IsSuccess() == false);
 }
 
+static void DelegateMemberAsyncWaitSharedTests()
+{
+    // Define the delegate type explicitly
+    using Del = DelegateMemberAsyncWaitShared<TestClass1, void(int)>;
+
+    // 1. Basic Setup
+    auto testClass1 = std::make_shared<TestClass1>();
+
+    Del delegate1(testClass1, &TestClass1::MemberFuncInt1, workerThread);
+
+    // Blocking call - waits for execution
+    delegate1(TEST_INT);
+    ASSERT_TRUE(delegate1.IsSuccess());
+
+    // Invoke via std::invoke
+    std::invoke(delegate1, TEST_INT);
+    ASSERT_TRUE(delegate1.IsSuccess());
+
+    // 2. Priority and Copy
+    delegate1.SetPriority(Priority::HIGH);
+    auto delegate2 = delegate1;
+    ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(delegate2.GetPriority() == Priority::HIGH);
+    ASSERT_TRUE(!delegate1.Empty());
+    ASSERT_TRUE(!delegate2.Empty());
+
+    // 3. Assignment
+    Del delegate3(testClass1, &TestClass1::MemberFuncInt1, workerThread);
+    delegate3 = delegate1;
+    ASSERT_TRUE(delegate3 == delegate1);
+    ASSERT_TRUE(delegate3);
+
+    delegate3.Clear();
+    ASSERT_TRUE(delegate3.Empty());
+    ASSERT_TRUE(!delegate3);
+
+    // 4. Cloning
+    auto* delegate4 = delegate1.Clone();
+    ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
+
+    // 5. Move Semantics
+    auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
+    ASSERT_TRUE(!delegate5.Empty());
+    ASSERT_TRUE(delegate1.Empty());
+
+    // ==========================================================
+    // 6. RETURN VALUE TEST (Alive Object)
+    // ==========================================================
+    {
+        using DelRet = DelegateMemberAsyncWaitShared<TestClass1, int(int)>;
+        // Use MakeDelegate helper if available, otherwise constructor
+        DelRet delRet(testClass1, &TestClass1::MemberFuncIntWithReturn1, workerThread, WAIT_INFINITE);
+
+        // This should block until workerThread finishes, then return the value
+        int retVal = delRet(TEST_INT);
+        ASSERT_TRUE(delRet.IsSuccess());
+        ASSERT_TRUE(retVal == TEST_INT);
+    }
+
+    // ==========================================================
+    // 7. THE CRITICAL TEST: Object Expiration (Zombie Object)
+    // ==========================================================
+    {
+        using DelZombie = DelegateMemberAsyncWaitShared<TestClass1, int(int)>;
+        DelZombie zombieDel;
+
+        {
+            // Create a temporary object
+            auto tempObj = std::make_shared<TestClass1>();
+
+            // Bind delegate to temporary object
+            zombieDel.Bind(tempObj, &TestClass1::MemberFuncIntWithReturn1, workerThread, WAIT_INFINITE);
+
+            // Invoke while alive - should return actual value
+            int retAlive = zombieDel(TEST_INT);
+            ASSERT_TRUE(retAlive == TEST_INT);
+        }
+        // 'tempObj' is destroyed here. Ref count drops to 0.
+        // 'zombieDel' now holds a weak_ptr to a dead object.
+
+        // Invoke after death:
+        // 1. Caller blocks.
+        // 2. Worker thread attempts to lock weak_ptr -> FAILS.
+        // 3. Worker signals completion immediately.
+        // 4. Caller unblocks.
+        // 5. Return value should be default int (0).
+        int retDead = zombieDel(TEST_INT);
+
+        // If the object is dead, the function is not invoked. 
+        // The delegate system safely returns a default-constructed return value (0).
+        ASSERT_TRUE(retDead == 0);
+    }
+
+    // 8. Const Correctness
+    auto c = std::make_shared<const Class>();
+    DelegateMemberAsyncWaitShared<const Class, std::uint16_t(void)> dConstClass;
+    // dConstClass.Bind(c, &Class::Func, workerThread);      // Not OK. Compile Error.
+    dConstClass.Bind(c, &Class::FuncConst, workerThread);    // OK
+    auto rConst = dConstClass();
+    ASSERT_TRUE(rConst == 0); // Assuming FuncConst returns 0
+
+    // NOTE: std::unique_ptr return types are NOT supported in AsyncWait delegates 
+    // because std::any (used for storage) requires CopyConstructible types.
+    // The previous test case for unique_ptr has been removed to fix the build error.
+
+    // 9. Equality Checks
+    // Direct construction:
+    Del delS1(testClass1, &TestClass1::MemberFuncInt1, workerThread);
+    Del delS2(testClass1, &TestClass1::MemberFuncInt1_2, workerThread);
+
+    ASSERT_TRUE(!(delS1 == delS2));
+
+    delS1.Clear();
+    ASSERT_TRUE(delS1.Empty());
+    std::swap(delS1, delS2);
+    ASSERT_TRUE(!delS1.Empty());
+    ASSERT_TRUE(delS2.Empty());
+
+    // 10. Timeout Test
+    // Create a delegate with a 0 timeout
+    Del delTimeout(testClass1, &TestClass1::MemberFuncInt1, workerThread, std::chrono::milliseconds(0));
+
+    // Try to invoke. Depending on OS scheduler, this might succeed or fail, 
+    // but the API calls should be valid.
+    auto result = delTimeout.AsyncInvoke(TEST_INT);
+}
+
 static void DelegateFunctionAsyncWaitTests()
 {
     using Del = DelegateFunctionAsyncWait<void(int)>;
@@ -734,6 +862,7 @@ void DelegateAsyncWait_UT()
     DelegateFreeAsyncWaitTests();
     DelegateMemberAsyncWaitTests();
     DelegateMemberSpAsyncWaitTests();
+    DelegateMemberAsyncWaitSharedTests();
     DelegateFunctionAsyncWaitTests();
 
     workerThread.ExitThread();

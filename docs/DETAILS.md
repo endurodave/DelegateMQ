@@ -38,11 +38,15 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Debug Logging](#debug-logging)
   - [Usage Summary](#usage-summary)
 - [Design Details](#design-details)
+  - [Object Lifetime and Async Delegates](#object-lifetime-and-async-delegates)
+    - [The Risk: Raw Pointers](#the-risk-raw-pointers)
+    - [The Solution: Shared Pointers](#the-solution-shared-pointers)
+  - [Register and Unregister](#register-and-unregister)
+    - [The Init/Term Pattern](#the-initterm-pattern)
   - [Library Dependencies](#library-dependencies)
   - [Fixed-Block Memory Allocator](#fixed-block-memory-allocator)
   - [Function Argument Copy](#function-argument-copy)
   - [Caution Using `std::bind`](#caution-using-stdbind)
-  - [Caution Using Raw Object Pointers](#caution-using-raw-object-pointers)
   - [Alternatives Considered](#alternatives-considered)
     - [`std::function`](#stdfunction)
     - [`std::async` and `std::future`](#stdasync-and-stdfuture)
@@ -469,6 +473,9 @@ DelegateBase
             DelegateMemberAsync<>
             DelegateMemberAsyncWait<>
             DelegateMemberRemote<>
+        DelegateMemberShared<>
+            DelegateMemberAsyncShared<>
+            DelegateMemberAsyncWaitShared<>
         DelegateFunction<>
             DelegateFunctionAsync<>
             DelegateFunctionAsyncWait<>
@@ -905,6 +912,107 @@ if (myDelegate)
 
 # Design Details
 
+## Object Lifetime and Async Delegates
+
+### The Risk: Raw Pointers
+
+Invoking an asynchronous delegate on a raw pointer (`T*`) is dangerous. If the target object is deleted before the worker thread processes the message, the application will crash (Use-After-Free).
+
+```cpp
+// DANGER: If workerThread is slow, the object dies before the callback runs.
+TestClass* rawObj = new TestClass();
+auto unsafeDel = MakeDelegate(rawObj, &TestClass::Func, workerThread);
+unsafeDel("Crash waiting to happen!"); 
+delete rawObj; // Object destroyed immediately
+```
+
+### The Solution: Shared Pointers
+
+When you bind a delegate using `std::shared_ptr`, the delegate stores a `std::weak_ptr` internally. This provides automatic safety without forcibly extending the object's lifetime:
+
+1. No Reference Cycles: The delegate does not keep the object alive artificially.
+2. Thread Safety: When the worker thread picks up the message, it attempts to lock the weak pointer.  
+a. If the object is Alive: The function executes normally.  
+b. If the object is Dead: The callback is safely ignored (No-Op).
+
+```cpp
+// SAFE: The delegate holds a weak reference.
+auto safeObj = std::make_shared<TestClass>();
+auto safeDel = MakeDelegate(safeObj, &TestClass::Func, workerThread);
+
+safeDel("This works!");
+
+// If we destroy the object while the message is still in the queue...
+safeObj.reset(); 
+
+// ...the worker thread detects the dead object later and skips execution.
+// Result: No crash, no leak.
+```
+
+## Register and Unregister
+
+When using `std::shared_ptr` and `std::enable_shared_from_this`, you must follow a specific pattern to manually register and unregister delegates.
+
+Critical Rule: You cannot call `shared_from_this()` inside a destructor. Doing so causes a std::bad_weak_ptr crash because the ownership of the object has already expired. Therefore, if you require manual unregistration (to stop receiving events immediately), you must use an explicit Init/Term pattern.
+
+### The Init/Term Pattern
+
+`Init()`: Called after the object is fully constructed and owned by a `shared_ptr`. Registers the delegate.
+
+`Term()`: Called explicitly before the object goes out of scope. Unregisters the delegate while `shared_from_this()` is still valid.
+
+```cpp
+class SysDataClient : public std::enable_shared_from_this<SysDataClient>
+{
+public:
+    // 1. Registration
+    // Call this after creating the shared_ptr<SysDataClient>
+    void Init()
+    {
+        // Register for callbacks using shared_from_this()
+        SysData::GetInstance().SystemModeChangedDelegate += 
+            MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
+    }
+
+    // 2. Unregistration
+    // Call this explicitly BEFORE the object is destroyed
+    void Term() 
+    {
+        // Unsubscribe safely while "this" is still valid
+        SysData::GetInstance().SystemModeChangedDelegate -= 
+            MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
+    }
+
+    // 3. Destructor
+    ~SysDataClient()
+    {
+        // WARNING: Do NOT attempt to unregister here using shared_from_this().
+        // It will cause a crash (std::bad_weak_ptr).
+    }
+
+private:
+    void CallbackFunction(const SystemModeChanged& data) { /* ... */ }
+};
+
+// Usage Example
+void RunClient()
+{
+    // Create the client
+    auto client = std::make_shared<SysDataClient>();
+    
+    // Register
+    client->Init();
+
+    // ... Application runs ...
+
+    // Unregister (Clean up)
+    client->Term();
+
+    // Destroy
+    client.reset(); 
+}
+```
+
 ## Library Dependencies
 
 The `DelegateMQ` library external dependencies are based upon on the intended use. Interfaces provide the delegate library with platform-specific features to ease porting to a target system. Complete example code offer ready-made solutions or create your own.
@@ -955,46 +1063,6 @@ MulticastDelegateSafe<void(int)> safe;
 safe += MakeDelegate(&t1, &Test::Func);
 safe += MakeDelegate(&t2, &Test::Func2);
 safe -= MakeDelegate(&t2, &Test::Func2);   // Works correctly!
-```
-
-## Caution Using Raw Object Pointers
-
-Certain asynchronous delegate usage patterns can cause a callback invocation to occur on a deleted object. The problem is this: an object function is bound to a delegate and invoked asynchronously, but before the invocation occurs on the target thread, the target object is deleted. In other words, it is possible for an object bound to a delegate to be deleted before the target thread message queue has had a chance to invoke the callback. The following code exposes the issue:
-
-```cpp
-// Example of a bug where the testClassHeap is deleted before the asynchronous delegate
-// is invoked on the workerThread1. In other words, by the time workerThread1 calls
-// the bound delegate function the testClassHeap instance is deleted and no longer valid.
-TestClass* testClassHeap = new TestClass();
-auto delegateMemberAsync = 
-       MakeDelegate(testClassHeap, &TestClass::MemberFuncStdString, workerThread1);
-delegateMemberAsync("Function async invoked on deleted object. Bug!", 2020);
-delegateMemberAsync.Clear();
-delete testClassHeap;
-```
-
-The example above is contrived, but it does clearly show that nothing prevents an object being deleted while waiting for the asynchronous invocation to occur. In many embedded system architectures, the registrations might occur on singleton objects or objects that have a lifetime that spans the entire execution. In this way, the application's usage pattern prevents callbacks into deleted objects. However, if objects pop into existence, temporarily subscribe to a delegate for callbacks, then get deleted later the possibility of a latent delegate stuck in a message queue could invoke a function on a deleted object.
-
-A smart pointer solves this complex object lifetime issue. A `DelegateMemberAsync` delegate binds using a `std::shared_ptr` instead of a raw object pointer. Now that the delegate has a shared pointer, the danger of the object being prematurely deleted is eliminated. The shared pointer will only delete the object pointed to once all references are no longer in use. In the code snippet below, all references to `testClassSp` are removed by the client code yet the delegate's copy placed into the queue prevents `TestClass` deletion until after the asynchronous delegate callback occurs.
-
-```cpp
-// Example of the smart pointer function version of the delegate. The testClassSp instance
-// is only deleted after workerThread1 invokes the callback function thus solving the bug.
-std::shared_ptr<TestClass> testClassSp(new TestClass());
-auto delegateMemberSpAsync = MakeDelegate
-     (testClassSp, &TestClass::MemberFuncStdString, workerThread1);
-delegateMemberSpAsync("Function async invoked using smart pointer. Bug solved!", 2020);
-delegateMemberSpAsync.Clear();
-testClassSp.reset();
-```
-
-This technique can be used to call an object function, and then the object automatically deletes after the callback occurs. Using the above example, create a shared pointer instance, bind a delegate, and invoke the delegate. Now `testClassSp` can go out of scope and `TestClass::MemberFuncStdString` will still be safely called on `workerThread1`. The `TestClass` instance will delete by way of `std::shared_ptr<TestClass>` once the smart pointer reference count goes to 0 after the callback completes without any extra programmer involvement.
-
-```cpp
-std::shared_ptr<TestClass> testClassSp(new TestClass());
-auto delegateMemberSpAsync =
-    MakeDelegate(testClassSp, &TestClass::MemberFuncStdString, workerThread1);
-delegateMemberSpAsync("testClassSp deletes after delegate invokes", 2020);
 ```
 
 ## Alternatives Considered
@@ -1081,6 +1149,9 @@ DelegateBase
             DelegateMemberAsync<>
             DelegateMemberAsyncWait<>
             DelegateMemberRemote<>
+        DelegateMemberShared<>
+            DelegateMemberAsyncShared<>
+            DelegateMemberAsyncWaitShared<>
         DelegateFunction<>
             DelegateFunctionAsync<>
             DelegateFunctionAsyncWait<>

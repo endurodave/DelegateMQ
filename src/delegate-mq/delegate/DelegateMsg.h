@@ -52,6 +52,9 @@ private:
 
 	/// The delegate message priority
 	Priority m_priority = Priority::NORMAL;
+
+	// Use fixed-block memory allocator if DMQ_ALLOCATOR set
+	XALLOCATOR
 };
 
 }

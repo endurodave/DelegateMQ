@@ -88,7 +88,7 @@ namespace Example
         }
 
     private:
-        std::map<EventType, DelegateMember<EventHandler, void(void)>> eventHandlers_;
+        std::map<EventType, DelegateMemberShared<EventHandler, void(void)>> eventHandlers_;
         std::mutex mutex_;
     };
 

@@ -74,6 +74,20 @@ void xalloc_stats();
     // Macro to overload new/delete with xalloc/xfree. Add macro to any class to enable
     // fixed-block memory allocation. Add to a base class provides fixed-block memory
     // for the base and all derived classes.
+    // 
+    // While std::make_shared is usually recommended for standard C++, in a fixed-block 
+    // memory architecture, explicit 'new' is required to trigger the overloaded operator.
+    //
+    // Example:
+    //   class MyMsg { 
+    //       XALLOCATOR 
+    //   };
+    //
+    //   // BAD: Allocates global memory (Bypasses XALLOCATOR)
+    //   auto msg = std::make_shared<MyMsg>(); 
+    //
+    //   // GOOD: Allocates fixed-block memory (Uses XALLOCATOR)
+    //   std::shared_ptr<MyMsg> msg(new MyMsg());
     #define XALLOCATOR \
         public: \
             void* operator new(size_t size) { \
@@ -98,7 +112,6 @@ void xalloc_stats();
                 xfree(pData); \
             }
 #endif
-
 
 #ifdef __cplusplus 
 }

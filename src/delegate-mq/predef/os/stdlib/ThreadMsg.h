@@ -30,6 +30,9 @@ public:
 private:
 	int m_id;
     std::shared_ptr<dmq::DelegateMsg> m_data;
+
+	// Use fixed-block memory allocator if DMQ_ALLOCATOR set
+	XALLOCATOR
 };
 
 #endif

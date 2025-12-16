@@ -31,16 +31,9 @@ public:
     /// @return TRUE if the timer is enabled, FALSE otherwise.
     bool Enabled() { return m_enabled; }
 
-    /// Get the current time. 
-    /// @return The current time. 
-    static dmq::Duration GetTime();
-
-    /// Computes the time difference between two duration values taking into
-    /// account rollover.
-    /// @param[in] 	time1 - time stamp 1.
-    /// @param[in] 	time2 - time stamp 2.
-    /// @return		The time difference.
-    static dmq::Duration Difference(dmq::Duration time1, dmq::Duration time2);
+    /// Get the time. 
+    /// @return The time now. 
+    static dmq::TimePoint GetNow();
 
     /// Called on a periodic basic to service all timer instances. 
     /// @TODO: Call periodically for timer expiration handling.
@@ -75,7 +68,7 @@ private:
     }
 
     dmq::Duration m_timeout = dmq::Duration(0);		
-    dmq::Duration m_expireTime = dmq::Duration(0);
+    dmq::TimePoint m_expireTime;
     bool m_enabled = false;
     bool m_once = false;
     static bool m_timerStopped;

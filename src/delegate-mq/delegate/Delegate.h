@@ -475,6 +475,149 @@ private:
     MemberFunc m_func = nullptr;
 };
 
+template <class C, class R>
+struct DelegateMemberShared; // Not defined
+
+/// @brief `DelegateMemberShared<>` class synchronously invokes a class member target 
+/// function using a weak pointer.
+/// @details This class is a "safe" version of DelegateMember. It holds a std::weak_ptr 
+/// to the target. If the target is destroyed, the callback is silently dropped.
+/// @tparam TClass The class type that contains the member function.
+/// @tparam RetType The return type of the bound delegate function.
+/// @tparam Args The argument types of the bound delegate function.
+template <class TClass, class RetType, class... Args>
+class DelegateMemberShared<TClass, RetType(Args...)> : public Delegate<RetType(Args...)> {
+public:
+    typedef TClass* ObjectPtr;
+    typedef std::shared_ptr<TClass> SharedPtr;
+    typedef std::weak_ptr<TClass> WeakPtr; 
+    typedef RetType(TClass::* MemberFunc)(Args...);
+    typedef RetType(TClass::* ConstMemberFunc)(Args...) const;
+    using ClassType = DelegateMemberShared<TClass, RetType(Args...)>;
+
+    /// @brief Constructor to create a class instance.
+    /// @param[in] object The target object pointer to store.
+    /// @param[in] func The target member function to store.
+    DelegateMemberShared(SharedPtr object, MemberFunc func) { Bind(object, func); }
+
+    /// @brief Constructor to create a class instance.
+    /// @param[in] object The target object pointer to store.
+    /// @param[in] func The target const member function to store.
+    DelegateMemberShared(SharedPtr object, ConstMemberFunc func) { Bind(object, func); }
+
+    /// @brief Copy constructor.
+    DelegateMemberShared(const ClassType& rhs) { Assign(rhs); }
+
+    /// @brief Move constructor.
+    DelegateMemberShared(ClassType&& rhs) noexcept : m_object(std::move(rhs.m_object)), m_func(rhs.m_func) { rhs.Clear(); }
+
+    /// @brief Default constructor.
+    DelegateMemberShared() = default;
+
+    /// @brief Destructor.
+    ~DelegateMemberShared() { Clear(); }
+
+    /// @brief Bind a member function to the delegate.
+    void Bind(SharedPtr object, MemberFunc func) {
+        static_assert(!std::is_const<TClass>::value, "Cannot bind non-const function to const object.");
+        m_object = object; // Implicit conversion from shared_ptr to weak_ptr
+        m_func = func;
+    }
+
+    /// @brief Bind a const member function to the delegate.
+    void Bind(SharedPtr object, ConstMemberFunc func) {
+        m_object = object; // Implicit conversion from shared_ptr to weak_ptr
+        m_func = reinterpret_cast<MemberFunc>(func);
+    }
+
+    /// @brief Creates a copy of the current object.
+    virtual ClassType* Clone() const override {
+        return new(std::nothrow) ClassType(*this);
+    }
+
+    /// @brief Assigns the state of one object to another.
+    void Assign(const ClassType& rhs) {
+        m_object = rhs.m_object;
+        m_func = rhs.m_func;
+    }
+
+    /// @brief Invoke the bound delegate function synchronously.
+    /// @details SAFELY locks the weak pointer. If object is dead, returns default.
+    virtual RetType operator()(Args... args) override {
+        // 1. Try to promote weak_ptr to strong shared_ptr
+        if (auto strongPtr = m_object.lock())
+        {
+            // 2. SUCCESS: Object is alive. Invoke.
+            if constexpr (std::is_const<TClass>::value)
+                return std::invoke(reinterpret_cast<ConstMemberFunc>(m_func), strongPtr, std::forward<Args>(args)...);
+            else
+                return std::invoke(m_func, strongPtr, std::forward<Args>(args)...);
+        }
+
+        // 3. FAILURE: Object is dead. Silently ignore.
+        return RetType();
+    }
+
+    /// @brief Assignment operator.
+    ClassType& operator=(const ClassType& rhs) {
+        if (&rhs != this) {
+            Assign(rhs);
+        }
+        return *this;
+    }
+
+    /// @brief Move assignment operator.
+    ClassType& operator=(ClassType&& rhs) noexcept {
+        if (&rhs != this) {
+            m_object = std::move(rhs.m_object);
+            m_func = rhs.m_func;
+            rhs.Clear();
+        }
+        return *this;
+    }
+
+    /// @brief Clear the target function.
+    virtual void operator=(std::nullptr_t) noexcept {
+        return Clear();
+    }
+
+    /// @brief Compares two delegate objects for equality.
+    virtual bool Equal(const DelegateBase& rhs) const override {
+        auto derivedRhs = dynamic_cast<const ClassType*>(&rhs);
+        if (!derivedRhs) return false;
+
+        // Compare Weak Pointers by locking them first
+        auto ptr1 = m_object.lock();
+        auto ptr2 = derivedRhs->m_object.lock();
+
+        return (ptr1 == ptr2) && (m_func == derivedRhs->m_func);
+    }
+
+    // Standard operator== overloads
+    bool operator==(const ClassType& rhs) const noexcept { return Equal(rhs); }
+    virtual bool operator==(std::nullptr_t) const noexcept override { return Empty(); }
+    virtual bool operator!=(std::nullptr_t) const noexcept override { return !Empty(); }
+    friend bool operator==(std::nullptr_t, const ClassType& rhs) noexcept { return rhs.Empty(); }
+    friend bool operator!=(std::nullptr_t, const ClassType& rhs) noexcept { return !rhs.Empty(); }
+
+    /// @brief Check if the delegate is bound (Note: Doesn't check if object is alive).
+    bool Empty() const noexcept { return m_object.expired() || !m_func; }
+
+    /// @brief Clear the target function.
+    void Clear() noexcept { m_object.reset(); m_func = nullptr; }
+
+    explicit operator bool() const noexcept { return !Empty(); }
+
+private:
+    bool operator<(const ClassType& rhs) const = delete;
+
+    /// Weak pointer to the target object.
+    WeakPtr m_object; 
+
+    /// Pointer to a member function.
+    MemberFunc m_func = nullptr;
+};
+
 template <class R>
 class DelegateFunction; // Not defined
 
@@ -721,7 +864,7 @@ auto MakeDelegate(const TClass* object, RetType(TClass::* func)(Args... args) co
 /// @return A `DelegateMember` shared pointer bound to the specified non-const member function.
 template <class TClass, class RetType, class... Args>
 auto MakeDelegate(std::shared_ptr<TClass> object, RetType(TClass::* func)(Args... args)) {
-    return DelegateMember<TClass, RetType(Args...)>(object, func);
+    return DelegateMemberShared<TClass, RetType(Args...)>(object, func);
 }
 
 /// @brief Creates a delegate that binds to a const member function with a shared pointer to the object.
@@ -733,7 +876,7 @@ auto MakeDelegate(std::shared_ptr<TClass> object, RetType(TClass::* func)(Args..
 /// @return A `DelegateMember` shared pointer bound to the specified const member function.
 template <class TClass, class RetType, class... Args>
 auto MakeDelegate(std::shared_ptr<TClass> object, RetType(TClass::* func)(Args... args) const) {
-    return DelegateMember<TClass, RetType(Args...)>(object, func);
+    return DelegateMemberShared<TClass, RetType(Args...)>(object, func);
 }
 
 /// @brief Creates a delegate that binds to a `std::function`.

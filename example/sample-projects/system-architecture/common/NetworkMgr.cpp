@@ -195,7 +195,11 @@ void NetworkMgr::RecvThread()
     {
         {
             DmqHeader header;
-            auto arg_data = std::make_shared<xstringstream>(std::ios::in | std::ios::out | std::ios::binary);
+
+            // If using XALLOCATOR explicit operator new required. See xallocator.h.
+            std::shared_ptr<xstringstream> arg_data(
+                new xstringstream(std::ios::in | std::ios::out | std::ios::binary)
+            );
 
             // Poll for incoming message
             int error = m_recvTransport.Receive(*arg_data, header);

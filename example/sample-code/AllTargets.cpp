@@ -144,6 +144,7 @@ namespace Example
     {
         workerThread1.CreateThread();
 
+        callCnt = 0;
         TestAllTargetTypes();
 
         workerThread1.ExitThread();

@@ -423,7 +423,7 @@ static void DelegateMemberSpTests()
     ASSERT_TRUE(delegate6 == nullptr);
 
     std::shared_ptr<Base> base = std::make_shared<Derive>();
-    DelegateMember<Base, int(void)> delegate7;
+    DelegateMemberShared<Base, int(void)> delegate7;
     delegate7 = MakeDelegate(base, &Base::Func);
     ASSERT_TRUE(delegate7() == TEST_INT);
 
@@ -493,6 +493,122 @@ static void DelegateMemberSpTests()
     for (int i = 0; i < 2; i++)
         arr[i](TEST_INT);
     delete[] arr;
+}
+
+static void DelegateMemberSharedTests()
+{
+    // 1. Basic Setup using DelegateMemberShared
+    using Del = DelegateMemberShared<TestClass1, void(int)>;
+
+    // Create a shared pointer
+    auto testClass1 = std::make_shared<TestClass1>();
+
+    // Constructor binding
+    Del delegate1(testClass1, &TestClass1::MemberFuncInt1);
+    delegate1(TEST_INT);
+    std::invoke(delegate1, TEST_INT);
+
+    // 2. Copy and Assignment
+    auto delegate2 = delegate1;
+    ASSERT_TRUE(delegate1 == delegate2);
+    ASSERT_TRUE(!delegate1.Empty());
+    ASSERT_TRUE(!delegate2.Empty());
+
+    Del delegate3;
+    delegate3 = delegate1;
+    ASSERT_TRUE(delegate3 == delegate1);
+    ASSERT_TRUE(delegate3);
+
+    delegate3.Clear();
+    ASSERT_TRUE(delegate3.Empty());
+    ASSERT_TRUE(!delegate3);
+
+    // 3. Cloning
+    auto* delegate4 = delegate1.Clone();
+    ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
+
+    // 4. Move Semantics
+    auto delegate5 = std::move(delegate1);
+    ASSERT_TRUE(!delegate5.Empty());
+    ASSERT_TRUE(delegate1.Empty());
+
+    // 5. MakeDelegate Helper
+    auto delS1 = MakeDelegate(testClass1, &TestClass1::MemberFuncInt1);
+    auto delS2 = MakeDelegate(testClass1, &TestClass1::MemberFuncInt1_2);
+    ASSERT_TRUE(!(delS1 == delS2));
+
+    // 6. Const Correctness
+    auto c = std::make_shared<const Class>();
+    DelegateMemberShared<const Class, std::uint16_t(void)> dConstClass;
+    // dConstClass.Bind(c, &Class::Func);      // Not OK. Should fail compile (const object, non-const func).
+    dConstClass.Bind(c, &Class::FuncConst);    // OK
+    auto rConst = dConstClass();
+    ASSERT_TRUE(rConst == 0); // Assuming FuncConst returns 0
+
+    // ==========================================================
+    // 7. THE CRITICAL TEST: Object Expiration (Weak Pointer Check)
+    // ==========================================================
+    {
+        // Define a delegate that returns an int
+        DelegateMemberShared<TestClass1, int(int)> d_expired;
+
+        {
+            // Create a temporary object
+            auto tempObj = std::make_shared<TestClass1>();
+
+            // Bind delegate to temporary object
+            d_expired = MakeDelegate(tempObj, &TestClass1::MemberFuncIntWithReturn1);
+
+            // Invoke while alive: Should return TEST_INT
+            int retAlive = d_expired(TEST_INT);
+            ASSERT_TRUE(retAlive == TEST_INT);
+
+            // Prove it is valid
+            ASSERT_TRUE(!d_expired.Empty());
+        }
+        // 'tempObj' is now destroyed. 'd_expired' holds a weak_ptr to a dead object.
+
+        // Invoke after death: 
+        // 1. Should NOT CRASH.
+        // 2. Should return default constructed value (0 for int).
+        int retDead = d_expired(TEST_INT);
+        ASSERT_TRUE(retDead == 0);
+    }
+
+    // 8. Test void return on expired object
+    {
+        DelegateMemberShared<TestClass1, void(int)> d_void_expired;
+        {
+            auto tempObj = std::make_shared<TestClass1>();
+            d_void_expired = MakeDelegate(tempObj, &TestClass1::MemberFuncInt1);
+            d_void_expired(TEST_INT); // Works
+        }
+        // Object dead. Call should be safe no-op.
+        d_void_expired(TEST_INT);
+    }
+
+    // 9. Inheritance
+    std::shared_ptr<Base> base = std::make_shared<Derive>();
+    DelegateMemberShared<Base, int(void)> delegate7;
+    delegate7 = MakeDelegate(base, &Base::Func);
+    ASSERT_TRUE(delegate7() == TEST_INT);
+
+    // 10. Unique Ptr Return type
+    // Note: DelegateMemberShared usually requires default constructible return types
+    // because it must return *something* if the object is dead. 
+    // std::unique_ptr is default constructible (nullptr), so this works.
+    auto c2 = std::make_shared<Class>();
+    DelegateMemberShared<Class, std::unique_ptr<int>(int)> delUnique;
+    delUnique.Bind(c2, &Class::FuncUnique);
+    std::unique_ptr<int> up = delUnique(12);
+    ASSERT_TRUE(up != nullptr);
+    ASSERT_TRUE(*up == 12);
+
+    // Test unique ptr on dead object
+    c2.reset(); // Kill object
+    std::unique_ptr<int> upDead = delUnique(12);
+    ASSERT_TRUE(upDead == nullptr); // Should return default std::unique_ptr (nullptr)
 }
 
 static void DelegateFunctionTests()
@@ -667,6 +783,7 @@ void Delegate_UT()
 {
     DelegateFreeTests();
     DelegateMemberTests();
-    DelegateMemberSpTests();
+    DelegateMemberSpTests();        // Tests raw DelegateMember with shared_ptr passed in
+    DelegateMemberSharedTests();    // Tests the actual WeakPtr delegate
     DelegateFunctionTests();
 }

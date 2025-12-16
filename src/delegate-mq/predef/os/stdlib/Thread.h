@@ -108,7 +108,7 @@ private:
 	std::atomic<bool> m_exit;
 
 	// Watchdog related members
-	std::atomic<dmq::Duration> m_lastAliveTime;
+	std::atomic<dmq::TimePoint> m_lastAliveTime;
 	std::unique_ptr<Timer> m_watchdogTimer;
 	std::unique_ptr<Timer> m_threadTimer;
 	std::atomic<dmq::Duration> m_watchdogTimeout;

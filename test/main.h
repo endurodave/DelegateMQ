@@ -29,25 +29,34 @@ namespace Main
 
     /// @brief Test client to get callbacks from SysData::SystemModeChangedDelgate and 
     /// SysDataNoLock::SystemModeChangedDelegate
-    class SysDataClient
+    class SysDataClient : public std::enable_shared_from_this<SysDataClient>
     {
     public:
         // Constructor
         SysDataClient() :
             m_numberOfCallbacks(0)
         {
-            // Register for async delegate callbacks
-            SysData::GetInstance().SystemModeChangedDelegate += MakeDelegate(this, &SysDataClient::CallbackFunction, workerThread1);
-            SysDataNoLock::GetInstance().SystemModeChangedDelegate += MakeDelegate(this, &SysDataClient::CallbackFunction, workerThread1);
         }
 
         ~SysDataClient()
         {
-            // Unregister the all registered delegates at once
-            SysData::GetInstance().SystemModeChangedDelegate.Clear();
+            // WARNING: Do NOT attempt to unregister here using shared_from_this().
+            // It will cause a crash (std::bad_weak_ptr).
+        }
 
-            // Alternatively unregister a single delegate
-            SysDataNoLock::GetInstance().SystemModeChangedDelegate -= MakeDelegate(this, &SysDataClient::CallbackFunction, workerThread1);
+        // Call this immediately after creating the shared_ptr
+        // See DETAILS.md section Object Lifetime and Async Delegates.
+        void Init()
+        {
+            // Register for callbacks
+            SysData::GetInstance().SystemModeChangedDelegate += MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
+            SysDataNoLock::GetInstance().SystemModeChangedDelegate += MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
+        }
+
+        void Term() {
+            // Unsubscribe safely while "this" is still valid
+            SysData::GetInstance().SystemModeChangedDelegate -= MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
+            SysDataNoLock::GetInstance().SystemModeChangedDelegate -= MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
         }
 
     private:
@@ -57,7 +66,7 @@ namespace Main
             cout << "CallbackFunction " << data.CurrentSystemMode << endl;
         }
 
-        int m_numberOfCallbacks;
+        std::atomic<int> m_numberOfCallbacks;
 
         // See USE_ALLOCATOR in DelegateOpt.h for info about optional fixed-block allocator use
         XALLOCATOR

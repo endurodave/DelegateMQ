@@ -177,6 +177,9 @@ private:
                 bool complete = false;
                 std::mutex mtx;
                 std::condition_variable cv;
+
+                // Use fix-block memory allocator if DMQ_ALLOCATOR set
+                XALLOCATOR
             };
 
             auto state = std::make_shared<SyncState>();

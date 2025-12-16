@@ -181,7 +181,7 @@ Synchronous delegates invoke the target function anonymously within the current 
 
 ## Async Delegates
 
-Asynchronous delegates support both non-blocking and blocking invocation modes, including optional timeouts. The library enables anonymous invocation of any callable target, regardless of the number or type of arguments, or the presence of a return value. All argument types are supported — including by value, pointers, pointer-to-pointer, and references.
+Asynchronous delegates support both non-blocking and blocking invocation modes, including optional timeouts. The library enables anonymous invocation of any callable target, regardless of the number or type of arguments, or the presence of a return value. All argument types are supported — including by value, pointers, pointer-to-pointer, and references. Smart pointer delegates prevents async invocation on destroyed target objects.
 
 The delegate library abstracts the complexities of invoking functions across thread boundaries. Concrete examples are provided below, with straightforward paths to porting across platforms.
 
@@ -257,6 +257,7 @@ DelegateMQ at a glance.
 | Purpose | Unify callable invocation across threads, processes, and networks |
 | Usages | Callbacks (synchronous and asynchronous), asynchronous API's, communication and data distribution, and more |
 | Library | Allows customizing data sharing between threads, processes, or processors |
+| Object Lifetime | Thread-safe management via smart pointers (`std::weak_ptr`) prevents async invocation on destroyed objects (no dangling pointers). |
 | Complexity | Lightweight and extensible through external library interfaces and full source code |
 | Threads | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
 | Watchdog | Configurable timeout to detect and handle unresponsive threads. |

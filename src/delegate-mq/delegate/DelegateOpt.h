@@ -8,7 +8,10 @@
 
 namespace dmq
 {
-    using Duration = std::chrono::duration<uint32_t, std::milli>;
+    // @TODO: Change aliases to switch clocks globally if necessary
+    using Clock = std::chrono::steady_clock;
+    using Duration = std::chrono::duration<int64_t, std::milli>;
+    using TimePoint = std::chrono::time_point<Clock, Duration>;
 }
 
 // @TODO: Select the desired software fault handling (see Predef.cmake).
@@ -37,15 +40,20 @@ namespace dmq
     #include <list>
     #include <sstream>
 
+    // Not using xallocator; define as nothing
+    #undef XALLOCATOR
+    #define XALLOCATOR
+
     // Use default std::allocator for dynamic storage allocation
     template <typename T, typename Alloc = std::allocator<T>>
-    using xlist = std::list<T, Alloc>;
+    class xlist : public std::list<T, Alloc> {
+    public:
+        using std::list<T, Alloc>::list; // Inherit constructors
+        using std::list<T, Alloc>::operator=;
+    };
 
     typedef std::basic_ostringstream<char, std::char_traits<char>> xostringstream;
     typedef std::basic_stringstream<char, std::char_traits<char>> xstringstream;
-
-    // Not using xallocator; define as nothing
-    #define XALLOCATOR
 #endif
 
 // @TODO: Select the desired logging (see Predef.cmake).
