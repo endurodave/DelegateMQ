@@ -124,6 +124,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="structdmq_1_1_delegate.html">Delegate</a> interface class to dispatch serialized function argument data to a remote destination. Implemented by the application if using remote delegates. </p>
+<p>@TODO Implement the <a class="el" href="classdmq_1_1_i_dispatcher.html" title="Delegate interface class to dispatch serialized function argument data to a remote destination....">IDispatcher</a> interface if necessary. </p>
 <p>Incoming data from the remote must the <code><a class="el" href="#a4a9710cb642631f21be1072b5ff2d179">IDispatcher::Dispatch()</a></code> to invoke the target function using argument data. The argument data is serialized for transport using a concrete class implementing the <code>ISerialzer</code> interface allowing any data argument serialization method is supported. </p><dl class="section post"><dt>Postcondition</dt><dd>The receiver calls <code><a class="el" href="classdmq_1_1_i_remote_invoker.html#a4ff0d6e3d1d355d645524a84176b2822">IRemoteInvoker::Invoke()</a></code> when the dispatched message is received. </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a4a9710cb642631f21be1072b5ff2d179" name="a4a9710cb642631f21be1072b5ff2d179"></a>

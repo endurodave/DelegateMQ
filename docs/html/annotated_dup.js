@@ -34,10 +34,16 @@ var annotated_dup =
       [ "DelegateMember< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
       [ "DelegateMemberAsync", "structdmq_1_1_delegate_member_async.html", null ],
       [ "DelegateMemberAsync< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
+      [ "DelegateMemberAsyncShared", "structdmq_1_1_delegate_member_async_shared.html", null ],
+      [ "DelegateMemberAsyncShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_async_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
       [ "DelegateMemberAsyncWait", "structdmq_1_1_delegate_member_async_wait.html", null ],
       [ "DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
+      [ "DelegateMemberAsyncWaitShared", "structdmq_1_1_delegate_member_async_wait_shared.html", null ],
+      [ "DelegateMemberAsyncWaitShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_async_wait_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
       [ "DelegateMemberRemote", "structdmq_1_1_delegate_member_remote.html", null ],
       [ "DelegateMemberRemote< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
+      [ "DelegateMemberShared", "structdmq_1_1_delegate_member_shared.html", null ],
+      [ "DelegateMemberShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
       [ "DelegateMsg", "classdmq_1_1_delegate_msg.html", "classdmq_1_1_delegate_msg" ],
       [ "heap_arg_deleter", "classdmq_1_1heap__arg__deleter.html", "classdmq_1_1heap__arg__deleter" ],
       [ "heap_arg_deleter< T * >", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4" ],
@@ -106,5 +112,6 @@ var annotated_dup =
     [ "TransportMonitor", "class_transport_monitor.html", "class_transport_monitor" ],
     [ "UdpTransport", "class_udp_transport.html", "class_udp_transport" ],
     [ "Win32PipeTransport", "class_win32_pipe_transport.html", "class_win32_pipe_transport" ],
+    [ "xlist", "classxlist.html", null ],
     [ "ZeroMqTransport", "class_zero_mq_transport.html", "class_zero_mq_transport" ]
 ];

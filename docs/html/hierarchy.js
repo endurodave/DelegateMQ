@@ -23,6 +23,10 @@ var hierarchy =
           [ "dmq::DelegateMemberAsync< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
           [ "dmq::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
           [ "dmq::DelegateMemberRemote< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
+        ] ],
+        [ "dmq::DelegateMemberShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", [
+          [ "dmq::DelegateMemberAsyncShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
+          [ "dmq::DelegateMemberAsyncWaitShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
         ] ]
       ] ]
     ] ],
@@ -36,8 +40,11 @@ var hierarchy =
     [ "dmq::DelegateFunctionRemote< R >", "structdmq_1_1_delegate_function_remote.html", null ],
     [ "dmq::DelegateMember< C, R >", "structdmq_1_1_delegate_member.html", null ],
     [ "dmq::DelegateMemberAsync< C, R >", "structdmq_1_1_delegate_member_async.html", null ],
+    [ "dmq::DelegateMemberAsyncShared< C, R >", "structdmq_1_1_delegate_member_async_shared.html", null ],
     [ "dmq::DelegateMemberAsyncWait< C, R >", "structdmq_1_1_delegate_member_async_wait.html", null ],
+    [ "dmq::DelegateMemberAsyncWaitShared< C, R >", "structdmq_1_1_delegate_member_async_wait_shared.html", null ],
     [ "dmq::DelegateMemberRemote< C, R >", "structdmq_1_1_delegate_member_remote.html", null ],
+    [ "dmq::DelegateMemberShared< C, R >", "structdmq_1_1_delegate_member_shared.html", null ],
     [ "dmq::DelegateMsg", "classdmq_1_1_delegate_msg.html", [
       [ "dmq::DelegateAsyncMsg< Args >", "classdmq_1_1_delegate_async_msg.html", null ],
       [ "dmq::DelegateAsyncWaitMsg< Args >", "classdmq_1_1_delegate_async_wait_msg.html", null ]
@@ -84,7 +91,9 @@ var hierarchy =
       [ "dmq::DelegateFunctionAsync< RetType(Args...)>", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "dmq::DelegateFunctionAsyncWait< RetType(Args...)>", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "dmq::DelegateMemberAsync< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
-      [ "dmq::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
+      [ "dmq::DelegateMemberAsyncShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
+      [ "dmq::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
+      [ "dmq::DelegateMemberAsyncWaitShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
     ] ],
     [ "ITransport", "class_i_transport.html", [
       [ "MqttTransport", "class_mqtt_transport.html", null ],
@@ -96,6 +105,15 @@ var hierarchy =
     ] ],
     [ "ITransportMonitor", "class_i_transport_monitor.html", [
       [ "TransportMonitor", "class_transport_monitor.html", null ]
+    ] ],
+    [ "std::list", null, [
+      [ "xlist< T, Alloc >", "classxlist.html", null ]
+    ] ],
+    [ "std::list< std::shared_ptr< dmq::Delegate< RetType(Args...)> >, std::allocator< std::shared_ptr< dmq::Delegate< RetType(Args...)> > > >", null, [
+      [ "xlist< std::shared_ptr< dmq::Delegate< RetType(Args...)> > >", "classxlist.html", null ]
+    ] ],
+    [ "std::list< std::shared_ptr< dmq::heap_arg_deleter_base >, std::allocator< std::shared_ptr< dmq::heap_arg_deleter_base > > >", null, [
+      [ "xlist< std::shared_ptr< dmq::heap_arg_deleter_base > >", "classxlist.html", null ]
     ] ],
     [ "dmq::MulticastDelegate< R >", "structdmq_1_1_multicast_delegate.html", null ],
     [ "dmq::MulticastDelegate< RetType(Args...)>", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", [

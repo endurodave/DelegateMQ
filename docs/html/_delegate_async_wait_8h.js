@@ -3,6 +3,7 @@ var _delegate_async_wait_8h =
     [ "dmq::DelegateAsyncWaitMsg< Args >", "classdmq_1_1_delegate_async_wait_msg.html", "classdmq_1_1_delegate_async_wait_msg" ],
     [ "dmq::DelegateFreeAsyncWait< RetType(Args...)>", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4" ],
     [ "dmq::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
+    [ "dmq::DelegateMemberAsyncWaitShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_async_wait_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
     [ "dmq::DelegateFunctionAsyncWait< RetType(Args...)>", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4" ],
     [ "MakeDelegate", "_delegate_async_wait_8h.html#aa179907ed2f66812991b96dd4a38e118", null ],
     [ "MakeDelegate", "_delegate_async_wait_8h.html#abba553d856fd21a274ff93f6470f7469", null ],

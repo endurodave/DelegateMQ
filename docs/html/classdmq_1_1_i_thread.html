@@ -103,6 +103,9 @@ $(function(){initNavTree('classdmq_1_1_i_thread.html',''); initResizable(true); 
 </div><!--header-->
 <div class="contents">
 
+<p>A base class for a delegate enabled execution thread. Implemented by application code if asynchronous delegates are used.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_i_thread_8h_source.html">IThread.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for dmq::IThread:</div>
@@ -123,7 +126,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a79a35ad35dd7564be046e01bade22433" id="r_a79a35ad35dd7564be046e01bade22433"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79a35ad35dd7564be046e01bade22433">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">DelegateMsg</a> &gt; msg)=0</td></tr>
 <tr class="separator:a79a35ad35dd7564be046e01bade22433"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A base class for a delegate enabled execution thread. Implemented by application code if asynchronous delegates are used. </p>
+<p>@TODO Implement the <a class="el" href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...">IThread</a> interface if necessary. </p>
+<p>Each platform specific implementation must inherit from <code><a class="el" href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...">IThread</a></code> and provide an implementation for <code><a class="el" href="#a79a35ad35dd7564be046e01bade22433">DispatchDelegate()</a></code>. The <code><a class="el" href="#a79a35ad35dd7564be046e01bade22433">DispatchDelegate()</a></code> function is called by the source thread to initiate an asynchronous function call onto the destination thread of control. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9e6ada351d8e8f32bdee5cb8ae70b5bb" name="a9e6ada351d8e8f32bdee5cb8ae70b5bb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9e6ada351d8e8f32bdee5cb8ae70b5bb">&#9670;&#160;</a></span>~IThread()</h2>
 

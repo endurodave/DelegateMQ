@@ -114,8 +114,8 @@ Inheritance diagram for Thread:</div>
  <div class="center">
   <img src="class_thread.png" usemap="#Thread_map" alt=""/>
   <map id="Thread_map" name="Thread_map">
-<area href="classdmq_1_1_i_thread.html" alt="dmq::IThread" shape="rect" coords="0,0,83,24"/>
-<area href="classdmq_1_1_i_thread.html" alt="dmq::IThread" shape="rect" coords="93,0,176,24"/>
+<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="0,0,83,24"/>
+<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="93,0,176,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -143,7 +143,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a37d9edd3a1a776cbc27dedff949c9726" id="r_a37d9edd3a1a776cbc27dedff949c9726"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37d9edd3a1a776cbc27dedff949c9726">~Thread</a> ()</td></tr>
 <tr class="memdesc:a37d9edd3a1a776cbc27dedff949c9726"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="separator:a37d9edd3a1a776cbc27dedff949c9726"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae39a39fcabf49e086bf484ad6c140e79" id="r_ae39a39fcabf49e086bf484ad6c140e79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae39a39fcabf49e086bf484ad6c140e79">CreateThread</a> (std::optional&lt; <a class="el" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a> &gt; watchdogTimeout=std::nullopt)</td></tr>
+<tr class="memitem:ae39a39fcabf49e086bf484ad6c140e79" id="r_ae39a39fcabf49e086bf484ad6c140e79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae39a39fcabf49e086bf484ad6c140e79">CreateThread</a> (std::optional&lt; <a class="el" href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">dmq::Duration</a> &gt; watchdogTimeout=std::nullopt)</td></tr>
 <tr class="separator:ae39a39fcabf49e086bf484ad6c140e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabf05b92a7bc081a464b8adcb916f321" id="r_aabf05b92a7bc081a464b8adcb916f321"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabf05b92a7bc081a464b8adcb916f321">ExitThread</a> ()</td></tr>
 <tr class="memdesc:aabf05b92a7bc081a464b8adcb916f321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once at program exit to shut down the worker thread.  <br /></td></tr>
@@ -178,7 +178,7 @@ Static Public Member Functions</h2></td></tr>
 <p>The <a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> class creates a worker thread capable of dispatching and invoking asynchronous delegates.</p>
 <p>// Create thread with a watchdog timeout thread-&gt;CreateThread(std::chrono::milliseconds(2000));</p>
 <p>// Or create without a watchdog thread-&gt;<a class="el" href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">CreateThread()</a>;</p>
-<p>WatchdogCheck() is invoked by a <a class="el" href="class_timer.html" title="A timer class provides periodic timer callbacks on the client&#39;s thread of control....">Timer</a> instance. In a real-time operating system (RTOS), <a class="el" href="class_timer.html#a3b641630467cbe44c959370c43be1002" title="Called on a periodic basic to service all timer instances.">Timer::ProcessTimers()</a> is typically called from the highest-priority task in the system. This ensures that any user thread becoming unresponsive can still be detected, since WatchdogCheck() runs at a higher priority. For mission-critical systems, a hardware watchdog should also be used as a fail-safe. </p>
+<p>WatchdogCheck() is invoked by a <a class="el" href="class_timer.html" title="A timer class provides periodic timer callbacks on the client&#39;s thread of control....">Timer</a> instance. In a real-time operating system (RTOS), <a class="el" href="class_timer.html#a3b641630467cbe44c959370c43be1002">Timer::ProcessTimers()</a> is typically called from the highest-priority task in the system. This ensures that any user thread becoming unresponsive can still be detected, since WatchdogCheck() runs at a higher priority. For mission-critical systems, a hardware watchdog should also be used as a fail-safe. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a192e02ca6e9efd7b7da940157fb9438a" name="a192e02ca6e9efd7b7da940157fb9438a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a192e02ca6e9efd7b7da940157fb9438a">&#9670;&#160;</a></span>Thread() <span class="overload">[1/2]</span></h2>
@@ -285,7 +285,7 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">bool Thread::CreateThread </td>
           <td>(</td>
-          <td class="paramtype">std::optional&lt; <a class="el" href="namespacedmq.html#a13ee4c32c184d1339bf5dc2657948156">dmq::Duration</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>watchdogTimeout</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::nullopt</span></td><td>)</td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">dmq::Duration</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>watchdogTimeout</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::nullopt</span></td><td>)</td>
           <td></td>
         </tr>
       </table>
