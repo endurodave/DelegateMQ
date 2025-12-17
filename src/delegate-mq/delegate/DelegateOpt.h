@@ -8,7 +8,7 @@
 
 namespace dmq
 {
-    // @TODO: Change aliases to switch clocks globally if necessary
+    // @TODO: Change aliases to switch clock type globally if necessary
     using Clock = std::chrono::steady_clock;
     using Duration = std::chrono::duration<int64_t, std::milli>;
     using TimePoint = std::chrono::time_point<Clock, Duration>;

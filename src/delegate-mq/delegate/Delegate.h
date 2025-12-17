@@ -476,9 +476,9 @@ private:
 };
 
 template <class C, class R>
-struct DelegateMemberShared; // Not defined
+struct DelegateMemberSp; // Not defined
 
-/// @brief `DelegateMemberShared<>` class synchronously invokes a class member target 
+/// @brief `DelegateMemberSp<>` class synchronously invokes a class member target 
 /// function using a weak pointer.
 /// @details This class is a "safe" version of DelegateMember. It holds a std::weak_ptr 
 /// to the target. If the target is destroyed, the callback is silently dropped.
@@ -486,36 +486,36 @@ struct DelegateMemberShared; // Not defined
 /// @tparam RetType The return type of the bound delegate function.
 /// @tparam Args The argument types of the bound delegate function.
 template <class TClass, class RetType, class... Args>
-class DelegateMemberShared<TClass, RetType(Args...)> : public Delegate<RetType(Args...)> {
+class DelegateMemberSp<TClass, RetType(Args...)> : public Delegate<RetType(Args...)> {
 public:
     typedef TClass* ObjectPtr;
     typedef std::shared_ptr<TClass> SharedPtr;
     typedef std::weak_ptr<TClass> WeakPtr; 
     typedef RetType(TClass::* MemberFunc)(Args...);
     typedef RetType(TClass::* ConstMemberFunc)(Args...) const;
-    using ClassType = DelegateMemberShared<TClass, RetType(Args...)>;
+    using ClassType = DelegateMemberSp<TClass, RetType(Args...)>;
 
     /// @brief Constructor to create a class instance.
     /// @param[in] object The target object pointer to store.
     /// @param[in] func The target member function to store.
-    DelegateMemberShared(SharedPtr object, MemberFunc func) { Bind(object, func); }
+    DelegateMemberSp(SharedPtr object, MemberFunc func) { Bind(object, func); }
 
     /// @brief Constructor to create a class instance.
     /// @param[in] object The target object pointer to store.
     /// @param[in] func The target const member function to store.
-    DelegateMemberShared(SharedPtr object, ConstMemberFunc func) { Bind(object, func); }
+    DelegateMemberSp(SharedPtr object, ConstMemberFunc func) { Bind(object, func); }
 
     /// @brief Copy constructor.
-    DelegateMemberShared(const ClassType& rhs) { Assign(rhs); }
+    DelegateMemberSp(const ClassType& rhs) { Assign(rhs); }
 
     /// @brief Move constructor.
-    DelegateMemberShared(ClassType&& rhs) noexcept : m_object(std::move(rhs.m_object)), m_func(rhs.m_func) { rhs.Clear(); }
+    DelegateMemberSp(ClassType&& rhs) noexcept : m_object(std::move(rhs.m_object)), m_func(rhs.m_func) { rhs.Clear(); }
 
     /// @brief Default constructor.
-    DelegateMemberShared() = default;
+    DelegateMemberSp() = default;
 
     /// @brief Destructor.
-    ~DelegateMemberShared() { Clear(); }
+    ~DelegateMemberSp() { Clear(); }
 
     /// @brief Bind a member function to the delegate.
     void Bind(SharedPtr object, MemberFunc func) {
@@ -864,7 +864,7 @@ auto MakeDelegate(const TClass* object, RetType(TClass::* func)(Args... args) co
 /// @return A `DelegateMember` shared pointer bound to the specified non-const member function.
 template <class TClass, class RetType, class... Args>
 auto MakeDelegate(std::shared_ptr<TClass> object, RetType(TClass::* func)(Args... args)) {
-    return DelegateMemberShared<TClass, RetType(Args...)>(object, func);
+    return DelegateMemberSp<TClass, RetType(Args...)>(object, func);
 }
 
 /// @brief Creates a delegate that binds to a const member function with a shared pointer to the object.
@@ -876,7 +876,7 @@ auto MakeDelegate(std::shared_ptr<TClass> object, RetType(TClass::* func)(Args..
 /// @return A `DelegateMember` shared pointer bound to the specified const member function.
 template <class TClass, class RetType, class... Args>
 auto MakeDelegate(std::shared_ptr<TClass> object, RetType(TClass::* func)(Args... args) const) {
-    return DelegateMemberShared<TClass, RetType(Args...)>(object, func);
+    return DelegateMemberSp<TClass, RetType(Args...)>(object, func);
 }
 
 /// @brief Creates a delegate that binds to a `std::function`.

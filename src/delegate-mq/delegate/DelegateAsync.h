@@ -695,39 +695,39 @@ private:
 };
 
 template <class C, class R>
-struct DelegateMemberAsyncShared; // Not defined
+struct DelegateMemberAsyncSp; // Not defined
 
-/// @brief `DelegateMemberAsyncShared<>` class asynchronously invokes a class member target function
+/// @brief `DelegateMemberAsyncSp<>` class asynchronously invokes a class member target function
 /// using a weak pointer (safe from use-after-free).
 /// @tparam TClass The class type that contains the member function.
 /// @tparam RetType The return type of the bound delegate function.
 /// @tparam Args The argument types of the bound delegate function.
 template <class TClass, class RetType, class... Args>
-class DelegateMemberAsyncShared<TClass, RetType(Args...)> : public DelegateMemberShared<TClass, RetType(Args...)>, public IThreadInvoker {
+class DelegateMemberAsyncSp<TClass, RetType(Args...)> : public DelegateMemberSp<TClass, RetType(Args...)>, public IThreadInvoker {
 public:
     typedef TClass* ObjectPtr;
     typedef std::shared_ptr<TClass> SharedPtr;
     typedef RetType(TClass::* MemberFunc)(Args...);
     typedef RetType(TClass::* ConstMemberFunc)(Args...) const;
-    using ClassType = DelegateMemberAsyncShared<TClass, RetType(Args...)>;
-    using BaseType = DelegateMemberShared<TClass, RetType(Args...)>;
+    using ClassType = DelegateMemberAsyncSp<TClass, RetType(Args...)>;
+    using BaseType = DelegateMemberSp<TClass, RetType(Args...)>;
 
-    DelegateMemberAsyncShared(SharedPtr object, MemberFunc func, IThread& thread) : BaseType(object, func), m_thread(&thread) {
+    DelegateMemberAsyncSp(SharedPtr object, MemberFunc func, IThread& thread) : BaseType(object, func), m_thread(&thread) {
         Bind(object, func, thread);
     }
 
-    DelegateMemberAsyncShared(SharedPtr object, ConstMemberFunc func, IThread& thread) : BaseType(object, func), m_thread(&thread) {
+    DelegateMemberAsyncSp(SharedPtr object, ConstMemberFunc func, IThread& thread) : BaseType(object, func), m_thread(&thread) {
         Bind(object, func, thread);
     }
 
-    DelegateMemberAsyncShared(const ClassType& rhs) : BaseType(rhs) { Assign(rhs); }
+    DelegateMemberAsyncSp(const ClassType& rhs) : BaseType(rhs) { Assign(rhs); }
 
-    DelegateMemberAsyncShared(ClassType&& rhs) noexcept :
+    DelegateMemberAsyncSp(ClassType&& rhs) noexcept :
         BaseType(std::move(rhs)), m_thread(rhs.m_thread), m_priority(rhs.m_priority) {
         rhs.Clear();
     }
 
-    DelegateMemberAsyncShared() = default;
+    DelegateMemberAsyncSp() = default;
 
     void Bind(SharedPtr object, MemberFunc func, IThread& thread) {
         m_thread = &thread;
@@ -1249,10 +1249,10 @@ auto MakeDelegate(const TClass* object, RetType(TClass::* func)(Args... args) co
 /// @param[in] object A shared pointer to the instance of `TClass` that will be used for the delegate.
 /// @param[in] func A pointer to the non-const member function of `TClass` to bind to the delegate.
 /// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
-/// @return A `DelegateMemberAsyncShared` (SAFE) bound to the specified non-const member function and thread.
+/// @return A `DelegateMemberAsyncSp` (SAFE) bound to the specified non-const member function and thread.
 template <class TClass, class RetVal, class... Args>
 auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args... args), IThread& thread) {
-    return DelegateMemberAsyncShared<TClass, RetVal(Args...)>(object, func, thread);
+    return DelegateMemberAsyncSp<TClass, RetVal(Args...)>(object, func, thread);
 }
 
 
@@ -1263,10 +1263,10 @@ auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args...
 /// @param[in] object A shared pointer to the instance of `TClass` that will be used for the delegate.
 /// @param[in] func A pointer to the const member function of `TClass` to bind to the delegate.
 /// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
-/// @return A `DelegateMemberAsyncShared` (SAFE) bound to the specified const member function and thread.
+/// @return A `DelegateMemberAsyncSp` (SAFE) bound to the specified const member function and thread.
 template <class TClass, class RetVal, class... Args>
 auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args... args) const, IThread& thread) {
-    return DelegateMemberAsyncShared<TClass, RetVal(Args...)>(object, func, thread);
+    return DelegateMemberAsyncSp<TClass, RetVal(Args...)>(object, func, thread);
 }
 
 /// @brief Creates an asynchronous delegate that binds to a `std::function`.

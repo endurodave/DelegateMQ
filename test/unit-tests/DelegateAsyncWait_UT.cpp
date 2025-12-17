@@ -545,10 +545,10 @@ static void DelegateMemberSpAsyncWaitTests()
     //ASSERT_TRUE(zeroWait.IsSuccess() == false);
 }
 
-static void DelegateMemberAsyncWaitSharedTests()
+static void DelegateMemberAsyncWaitSpTests()
 {
     // Define the delegate type explicitly
-    using Del = DelegateMemberAsyncWaitShared<TestClass1, void(int)>;
+    using Del = DelegateMemberAsyncWaitSp<TestClass1, void(int)>;
 
     // 1. Basic Setup
     auto testClass1 = std::make_shared<TestClass1>();
@@ -596,7 +596,7 @@ static void DelegateMemberAsyncWaitSharedTests()
     // 6. RETURN VALUE TEST (Alive Object)
     // ==========================================================
     {
-        using DelRet = DelegateMemberAsyncWaitShared<TestClass1, int(int)>;
+        using DelRet = DelegateMemberAsyncWaitSp<TestClass1, int(int)>;
         // Use MakeDelegate helper if available, otherwise constructor
         DelRet delRet(testClass1, &TestClass1::MemberFuncIntWithReturn1, workerThread, WAIT_INFINITE);
 
@@ -610,7 +610,7 @@ static void DelegateMemberAsyncWaitSharedTests()
     // 7. THE CRITICAL TEST: Object Expiration (Zombie Object)
     // ==========================================================
     {
-        using DelZombie = DelegateMemberAsyncWaitShared<TestClass1, int(int)>;
+        using DelZombie = DelegateMemberAsyncWaitSp<TestClass1, int(int)>;
         DelZombie zombieDel;
 
         {
@@ -642,7 +642,7 @@ static void DelegateMemberAsyncWaitSharedTests()
 
     // 8. Const Correctness
     auto c = std::make_shared<const Class>();
-    DelegateMemberAsyncWaitShared<const Class, std::uint16_t(void)> dConstClass;
+    DelegateMemberAsyncWaitSp<const Class, std::uint16_t(void)> dConstClass;
     // dConstClass.Bind(c, &Class::Func, workerThread);      // Not OK. Compile Error.
     dConstClass.Bind(c, &Class::FuncConst, workerThread);    // OK
     auto rConst = dConstClass();
@@ -862,7 +862,7 @@ void DelegateAsyncWait_UT()
     DelegateFreeAsyncWaitTests();
     DelegateMemberAsyncWaitTests();
     DelegateMemberSpAsyncWaitTests();
-    DelegateMemberAsyncWaitSharedTests();
+    DelegateMemberAsyncWaitSpTests();
     DelegateFunctionAsyncWaitTests();
 
     workerThread.ExitThread();

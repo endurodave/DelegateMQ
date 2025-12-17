@@ -539,10 +539,10 @@ static void DelegateMemberSpAsyncTests()
     delete[] arr;
 }
 
-static void DelegateMemberAsyncSharedTests()
+static void DelegateMemberAsyncSpTests()
 {
     // Define the delegate type explicitly
-    using Del = DelegateMemberAsyncShared<TestClass1, void(int)>;
+    using Del = DelegateMemberAsyncSp<TestClass1, void(int)>;
 
     // 1. Basic Setup
     auto testClass1 = std::make_shared<TestClass1>();
@@ -591,7 +591,7 @@ static void DelegateMemberAsyncSharedTests()
     // Unlike Sync or AsyncWait, standard Async returns the default value immediately.
     // It does NOT wait for the function to execute.
     {
-        using DelRet = DelegateMemberAsyncShared<TestClass1, int(int)>;
+        using DelRet = DelegateMemberAsyncSp<TestClass1, int(int)>;
         DelRet delRet(testClass1, &TestClass1::MemberFuncIntWithReturn1, workerThread);
 
         // Even though the function returns TEST_INT (e.g. 12345), 
@@ -604,7 +604,7 @@ static void DelegateMemberAsyncSharedTests()
     // 7. THE CRITICAL TEST: Object Expiration (Zombie Object)
     // ==========================================================
     {
-        using DelZombie = DelegateMemberAsyncShared<TestClass1, void(int)>;
+        using DelZombie = DelegateMemberAsyncSp<TestClass1, void(int)>;
         DelZombie zombieDel;
 
         {
@@ -633,7 +633,7 @@ static void DelegateMemberAsyncSharedTests()
 
     // 8. Const Correctness
     auto c = std::make_shared<const Class>();
-    DelegateMemberAsyncShared<const Class, std::uint16_t(void)> dConstClass;
+    DelegateMemberAsyncSp<const Class, std::uint16_t(void)> dConstClass;
     // dConstClass.Bind(c, &Class::Func, workerThread);      // Not OK. Compile Error.
     dConstClass.Bind(c, &Class::FuncConst, workerThread);    // OK
     auto rConst = dConstClass(); // Returns 0 (default), doesn't wait
@@ -643,7 +643,7 @@ static void DelegateMemberAsyncSharedTests()
     // Async delegates return default constructed values. 
     // std::unique_ptr default constructor is nullptr.
     auto c2 = std::make_shared<Class>();
-    DelegateMemberAsyncShared<Class, std::unique_ptr<int>(int)> delUnique;
+    DelegateMemberAsyncSp<Class, std::unique_ptr<int>(int)> delUnique;
     delUnique.Bind(c2, &Class::FuncUnique, workerThread);
     std::unique_ptr<int> up = delUnique(12);
     ASSERT_TRUE(up == nullptr);
@@ -780,7 +780,7 @@ void DelegateAsync_UT()
     DelegateFreeAsyncTests();
     DelegateMemberAsyncTests();
     DelegateMemberSpAsyncTests();
-    DelegateMemberAsyncSharedTests();
+    DelegateMemberAsyncSpTests();
     DelegateFunctionAsyncTests();
 
     workerThread.ExitThread();

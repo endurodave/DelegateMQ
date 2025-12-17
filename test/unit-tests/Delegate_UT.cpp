@@ -374,7 +374,7 @@ static void DelegateMemberTests()
     delete[] arr;
 }
 
-static void DelegateMemberSpTests()
+static void DelegateMemberSharedTests()
 {
     using Del = DelegateMember<TestClass1, void(int)>;
 
@@ -423,7 +423,7 @@ static void DelegateMemberSpTests()
     ASSERT_TRUE(delegate6 == nullptr);
 
     std::shared_ptr<Base> base = std::make_shared<Derive>();
-    DelegateMemberShared<Base, int(void)> delegate7;
+    DelegateMemberSp<Base, int(void)> delegate7;
     delegate7 = MakeDelegate(base, &Base::Func);
     ASSERT_TRUE(delegate7() == TEST_INT);
 
@@ -495,10 +495,10 @@ static void DelegateMemberSpTests()
     delete[] arr;
 }
 
-static void DelegateMemberSharedTests()
+static void DelegateMemberSpTests()
 {
-    // 1. Basic Setup using DelegateMemberShared
-    using Del = DelegateMemberShared<TestClass1, void(int)>;
+    // 1. Basic Setup using DelegateMemberSp
+    using Del = DelegateMemberSp<TestClass1, void(int)>;
 
     // Create a shared pointer
     auto testClass1 = std::make_shared<TestClass1>();
@@ -540,7 +540,7 @@ static void DelegateMemberSharedTests()
 
     // 6. Const Correctness
     auto c = std::make_shared<const Class>();
-    DelegateMemberShared<const Class, std::uint16_t(void)> dConstClass;
+    DelegateMemberSp<const Class, std::uint16_t(void)> dConstClass;
     // dConstClass.Bind(c, &Class::Func);      // Not OK. Should fail compile (const object, non-const func).
     dConstClass.Bind(c, &Class::FuncConst);    // OK
     auto rConst = dConstClass();
@@ -551,7 +551,7 @@ static void DelegateMemberSharedTests()
     // ==========================================================
     {
         // Define a delegate that returns an int
-        DelegateMemberShared<TestClass1, int(int)> d_expired;
+        DelegateMemberSp<TestClass1, int(int)> d_expired;
 
         {
             // Create a temporary object
@@ -578,7 +578,7 @@ static void DelegateMemberSharedTests()
 
     // 8. Test void return on expired object
     {
-        DelegateMemberShared<TestClass1, void(int)> d_void_expired;
+        DelegateMemberSp<TestClass1, void(int)> d_void_expired;
         {
             auto tempObj = std::make_shared<TestClass1>();
             d_void_expired = MakeDelegate(tempObj, &TestClass1::MemberFuncInt1);
@@ -590,16 +590,16 @@ static void DelegateMemberSharedTests()
 
     // 9. Inheritance
     std::shared_ptr<Base> base = std::make_shared<Derive>();
-    DelegateMemberShared<Base, int(void)> delegate7;
+    DelegateMemberSp<Base, int(void)> delegate7;
     delegate7 = MakeDelegate(base, &Base::Func);
     ASSERT_TRUE(delegate7() == TEST_INT);
 
     // 10. Unique Ptr Return type
-    // Note: DelegateMemberShared usually requires default constructible return types
+    // Note: DelegateMemberSp usually requires default constructible return types
     // because it must return *something* if the object is dead. 
     // std::unique_ptr is default constructible (nullptr), so this works.
     auto c2 = std::make_shared<Class>();
-    DelegateMemberShared<Class, std::unique_ptr<int>(int)> delUnique;
+    DelegateMemberSp<Class, std::unique_ptr<int>(int)> delUnique;
     delUnique.Bind(c2, &Class::FuncUnique);
     std::unique_ptr<int> up = delUnique(12);
     ASSERT_TRUE(up != nullptr);
@@ -783,7 +783,7 @@ void Delegate_UT()
 {
     DelegateFreeTests();
     DelegateMemberTests();
-    DelegateMemberSpTests();        // Tests raw DelegateMember with shared_ptr passed in
-    DelegateMemberSharedTests();    // Tests the actual WeakPtr delegate
+    DelegateMemberSharedTests();    // Tests raw DelegateMember with shared_ptr passed in
+    DelegateMemberSpTests();        // Tests the actual WeakPtr delegate
     DelegateFunctionTests();
 }

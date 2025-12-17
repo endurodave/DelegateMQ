@@ -82,7 +82,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [mqtt-rapidjson](#mqtt-rapidjson)
     - [nng-bitsery](#nng-bitsery)
     - [win32-pipe-serializer](#win32-pipe-serializer)
-    - [win32-upd-serializer](#win32-upd-serializer)
+    - [win32-udp-serializer](#win32-udp-serializer)
     - [zeromq-cereal](#zeromq-cereal)
     - [zeromq-bitsery](#zeromq-bitsery)
     - [zeromq-serializer](#zeromq-serializer)
@@ -177,7 +177,7 @@ Follow the setup instructions below to build and run any sample project.
    `./vcpkg install boost:x64-linux-dynamic`
 3. Transport libraries
 - Install [ZeroMQ](https://zeromq.org/) using vcpkg.<br>
-   `./vcvpkg install zeromq`
+   `./vcpkg install zeromq`
 - Clone and build [NNG](https://github.com/nanomsg/nng) (nanomsg-next-gen) `stable` branch.
 - Clone and build [Paho C MQTT](https://github.com/eclipse-paho/paho.mqtt.c)
 4. Serialization libraries
@@ -397,13 +397,14 @@ Create a function conforming to the delegate signature. Insert a callable functi
 ```cpp
 class AlarmSub
 {
-    void AlarmSub()
+public:
+    AlarmSub()
     {
         // Register to receive callbacks on workerThread1
         AlarmCb += MakeDelegate(this, &AlarmSub::HandleAlarmCb, workerThread1);
     }
 
-    void ~AlarmSub()
+    ~AlarmSub()
     {
         // Unregister from callbacks
         AlarmCb -= MakeDelegate(this, &AlarmSub::HandleAlarmCb, workerThread1);
@@ -473,9 +474,9 @@ DelegateBase
             DelegateMemberAsync<>
             DelegateMemberAsyncWait<>
             DelegateMemberRemote<>
-        DelegateMemberShared<>
-            DelegateMemberAsyncShared<>
-            DelegateMemberAsyncWaitShared<>
+        DelegateMemberSp<>
+            DelegateMemberAsyncSp<>
+            DelegateMemberAsyncWaitSp<>
         DelegateFunction<>
             DelegateFunctionAsync<>
             DelegateFunctionAsyncWait<>
@@ -515,7 +516,7 @@ MulticastDelegate<>
 
 `MulticastDelegate<>` is a delegate container accepting multiple delegates.
 
-`MultcastDelegateSafe<>` is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.
+`MulticastDelegateSafe<>` is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.
 
 ## Synchronous Delegates
 
@@ -1025,9 +1026,13 @@ The `DelegateMQ` library external dependencies are based upon on the intended us
 
 ## Fixed-Block Memory Allocator
 
-The DelegateMQ library optionally uses a fixed-block memory allocator when `DMQ_ALLOCATOR` is defined. See `DelegateOpt.h` for more details. The allocator design is available in the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
+The `DelegateMQ` library includes an optional fixed-block memory allocator designed to improve performance and reduce heap fragmentation in mission-critical systems. This feature is enabled by defining `DMQ_ALLOCATOR`. See `DelegateOpt.h` for configuration details. The underlying allocator implementation is based on the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
 
-`std::function` used within class `DelegateFunction` may use the heap under certain conditions. Implement a custom `xfunction` similar to the `xlist` concept within `xlist.h` using the `xallocator` fixed-block allocator if deemed necessary.
+When `DMQ_ALLOCATOR` is defined, the `XALLOCATOR` macro is used to override `new` and `delete` operators for internal library objects. However, enabling this macro does not guarantee zero usage of the global heap.
+
+Even if total isolation from the global heap isn't achieved, employing `xallocator` with DelegateMQ can be helpful to reduce heap fragmentation and guarantees deterministic, constant-time O(1) memory operations for the system's most repetitive tasks.
+
+The  [Valgrind Memory Tests](#valgrind-memory-tests) shows global heap vs. fixed-block allocator. Notice the fixed-block allocator reduces reliance on the heap and overall uses less total heap memory (less heap fragmentation). 
 
 ## Function Argument Copy
 
@@ -1082,7 +1087,7 @@ public:
     void Func2(int i) { }
 };
 
-void main() {
+int main() {
     Test t1, t2;
 
     // Create std::function objects for different instances
@@ -1149,9 +1154,9 @@ DelegateBase
             DelegateMemberAsync<>
             DelegateMemberAsyncWait<>
             DelegateMemberRemote<>
-        DelegateMemberShared<>
-            DelegateMemberAsyncShared<>
-            DelegateMemberAsyncWaitShared<>
+        DelegateMemberSp<>
+            DelegateMemberAsyncSp<>
+            DelegateMemberAsyncWaitSp<>
         DelegateFunction<>
             DelegateFunctionAsync<>
             DelegateFunctionAsyncWait<>
@@ -1832,7 +1837,7 @@ m_timer.Expired = MakeDelegate(&myClass, &MyClass::MyCallback, myThread);
 m_timer.Start(std::chrono::milliseconds(1000));
 ```
 
-See example `SafeTimer.cpp` to prevent a latent callback on a dead object and [Object Lifetime and Async Delegates](#object-lifetime-and-async-delegates) for an explaination.
+See example `SafeTimer.cpp` to prevent a latent callback on a dead object and [Object Lifetime and Async Delegates](#object-lifetime-and-async-delegates) for an explanation.
 
 ## `std::async` Thread Targeting Example
 
@@ -2093,7 +2098,7 @@ Remote delegate example with Windows pipe and `serialize`.
 | `ISerializer` | `serialize` class.
 | `IDispatcher` | Windows data pipe for dispatcher transport.
 
-### win32-upd-serializer
+### win32-udp-serializer
 
 Remote delegate example with Windows UDP socket and `serialize`. 
 

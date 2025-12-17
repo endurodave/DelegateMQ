@@ -895,47 +895,47 @@ private:
 };
 
 template <class C, class R>
-struct DelegateMemberAsyncWaitShared; // Not defined
+struct DelegateMemberAsyncWaitSp; // Not defined
 
-/// @brief `DelegateMemberAsyncWaitShared<>` class asynchronously block invokes a class member target function
+/// @brief `DelegateMemberAsyncWaitSp<>` class asynchronously block invokes a class member target function
 /// using a weak/shared pointer semantics.
 /// @tparam TClass The class type that contains the member function.
 /// @tparam RetType The return type of the bound delegate function.
 /// @tparam Args The argument types of the bound delegate function.
 template <class TClass, class RetType, class... Args>
-class DelegateMemberAsyncWaitShared<TClass, RetType(Args...)> : public DelegateMemberShared<TClass, RetType(Args...)>, public IThreadInvoker {
+class DelegateMemberAsyncWaitSp<TClass, RetType(Args...)> : public DelegateMemberSp<TClass, RetType(Args...)>, public IThreadInvoker {
 public:
     using SharedPtr = std::shared_ptr<TClass>;
     using MemberFunc = RetType(TClass::*)(Args...);
     using ConstMemberFunc = RetType(TClass::*)(Args...) const;
-    using ClassType = DelegateMemberAsyncWaitShared<TClass, RetType(Args...)>;
-    using BaseType = DelegateMemberShared<TClass, RetType(Args...)>;
+    using ClassType = DelegateMemberAsyncWaitSp<TClass, RetType(Args...)>;
+    using BaseType = DelegateMemberSp<TClass, RetType(Args...)>;
 
     /// @brief Constructor for non-const member function
-    DelegateMemberAsyncWaitShared(SharedPtr object, MemberFunc func, IThread& thread, Duration timeout = WAIT_INFINITE) :
+    DelegateMemberAsyncWaitSp(SharedPtr object, MemberFunc func, IThread& thread, Duration timeout = WAIT_INFINITE) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
         Bind(object, func, thread, timeout);
     }
 
     /// @brief Constructor for const member function
-    DelegateMemberAsyncWaitShared(SharedPtr object, ConstMemberFunc func, IThread& thread, Duration timeout = WAIT_INFINITE) :
+    DelegateMemberAsyncWaitSp(SharedPtr object, ConstMemberFunc func, IThread& thread, Duration timeout = WAIT_INFINITE) :
         BaseType(object, func), m_thread(&thread), m_timeout(timeout) {
         Bind(object, func, thread, timeout);
     }
 
     /// @brief Copy constructor
-    DelegateMemberAsyncWaitShared(const ClassType& rhs) :
+    DelegateMemberAsyncWaitSp(const ClassType& rhs) :
         BaseType(rhs) {
         Assign(rhs);
     }
 
     /// @brief Move constructor
-    DelegateMemberAsyncWaitShared(ClassType&& rhs) noexcept :
+    DelegateMemberAsyncWaitSp(ClassType&& rhs) noexcept :
         BaseType(std::move(rhs)), m_thread(rhs.m_thread), m_priority(rhs.m_priority), m_timeout(rhs.m_timeout), m_success(rhs.m_success), m_retVal(rhs.m_retVal) {
         rhs.Clear();
     }
 
-    DelegateMemberAsyncWaitShared() = default;
+    DelegateMemberAsyncWaitSp() = default;
 
     /// @brief Bind a non-const member function
     void Bind(SharedPtr object, MemberFunc func, IThread& thread, Duration timeout = WAIT_INFINITE) {
@@ -1637,7 +1637,7 @@ auto MakeDelegate(const TClass* object, RetType(TClass::* func)(Args... args) co
 /// @return A `DelegateMemberAsyncWait` shared pointer bound to the specified non-const member function, thread, and timeout.
 template <class TClass, class RetVal, class... Args>
 auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args... args), IThread& thread, Duration timeout) {
-    return DelegateMemberAsyncWaitShared<TClass, RetVal(Args...)>(object, func, thread, timeout);
+    return DelegateMemberAsyncWaitSp<TClass, RetVal(Args...)>(object, func, thread, timeout);
 }
 
 /// @brief Creates an asynchronous delegate that binds to a const member function using a shared pointer, with a wait and timeout.
@@ -1651,7 +1651,7 @@ auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args...
 /// @return A `DelegateMemberAsyncWait` shared pointer bound to the specified const member function, thread, and timeout.
 template <class TClass, class RetVal, class... Args>
 auto MakeDelegate(std::shared_ptr<TClass> object, RetVal(TClass::* func)(Args... args) const, IThread& thread, Duration timeout) {
-    return DelegateMemberAsyncWaitShared<TClass, RetVal(Args...)>(object, func, thread, timeout);
+    return DelegateMemberAsyncWaitSp<TClass, RetVal(Args...)>(object, func, thread, timeout);
 }
 
 /// @brief Creates an asynchronous delegate that binds to a `std::function` with a wait and timeout.
