@@ -14,9 +14,6 @@ using namespace std;
 
 namespace Example
 {
-    // The thread where all callbacks will be invoked
-    static Thread callback_thread("CallbackThread");
-
     // -------------------------------------------------------------------------
     // Publisher: Simulates a sensor that produces data asynchronously
     // -------------------------------------------------------------------------
@@ -31,8 +28,6 @@ namespace Example
         void ProduceData(int value)
         {
             // Invoke all registered delegates. 
-            // The invocation happens on the subscriber's target thread (if specified),
-            // or on the current thread if the subscriber didn't specify a thread.
             OnData(value, "Sensor1");
         }
     };
@@ -46,38 +41,35 @@ namespace Example
         DataLogger() = default;
 
         // 1. Init: Register for callbacks using shared_from_this()
-        void Init(Sensor& sensor)
+        // FIX: Pass workerThread by reference instead of using global static
+        void Init(Sensor& sensor, Thread& workerThread)
         {
-            // We use shared_from_this() so the delegate holds a weak_ptr.
-            // This prevents crashes if DataLogger is destroyed before the callback runs.
             sensor.OnData += MakeDelegate(
                 shared_from_this(),
                 &DataLogger::HandleData,
-                callback_thread // Force callback to run on our worker thread
+                workerThread
             );
         }
 
         // 2. Term: Must allow manual unregistration before destruction
-        void Term(Sensor& sensor)
+        void Term(Sensor& sensor, Thread& workerThread)
         {
             sensor.OnData -= MakeDelegate(
                 shared_from_this(),
                 &DataLogger::HandleData,
-                callback_thread
+                workerThread
             );
         }
 
         ~DataLogger()
         {
             // WARNING: Cannot call shared_from_this() here!
-            // Term() must be called by the user before this object dies.
             cout << "DataLogger destroyed" << endl;
         }
 
     private:
         void HandleData(int value, const std::string& source)
         {
-            // This runs on 'callback_thread'
             cout << "[DataLogger] Received " << value << " from " << source
                 << " on thread " << Thread::GetCurrentThreadId() << endl;
         }
@@ -91,26 +83,23 @@ namespace Example
     public:
         DataAnalyzer() = default;
 
-        void Init(Sensor& sensor)
+        // FIX: Pass workerThread by reference
+        void Init(Sensor& sensor, Thread& workerThread)
         {
             // Create the delegate ONCE and store it as a member.
-            // We still use shared_from_this() for safety.
             m_delegate = MakeDelegate(
                 shared_from_this(),
                 &DataAnalyzer::Analyze,
-                callback_thread
+                workerThread
             );
 
             // Register using the member
             sensor.OnData += m_delegate;
         }
 
-        // Destructor handles unregistration automatically!
         ~DataAnalyzer()
         {
-            // We can safely access m_delegate here. 
-            // Even though 'this' is partially destroyed, the delegate member 
-            // is still valid enough to identify itself for removal.
+            // Destructor handles unregistration automatically via m_delegate
             cout << "DataAnalyzer destroyed (Delegate auto-removed)" << endl;
         }
 
@@ -134,34 +123,32 @@ namespace Example
     // -------------------------------------------------------------------------
     // Main Example Execution
     // -------------------------------------------------------------------------
-    // Fixed Name: Matches linker expectation (Singular 'Callback')
     void AsyncCallbackExample()
     {
+        Thread callback_thread("CallbackThread");
         callback_thread.CreateThread();
 
         Sensor sensor;
 
         // 1. Setup Subscriber 1 (Manual)
         auto logger = std::make_shared<DataLogger>();
-        logger->Init(sensor);
+        logger->Init(sensor, callback_thread);
 
         // 2. Setup Subscriber 2 (RAII)
         auto analyzer = std::make_shared<DataAnalyzer>();
-        analyzer->Init(sensor);
+        analyzer->Init(sensor, callback_thread);
 
         // 3. Setup Subscriber 3 (Lambda)
-        // Fixed: Explicitly typed std::function to allow MakeDelegate deduction
         std::function<void(int, const std::string&)> lambdaFunc =
             [](int val, const std::string& src) {
             cout << "[Lambda] Got " << val << " on thread " << Thread::GetCurrentThreadId() << endl;
             };
 
-        // Create async delegate from std::function
+        // Create async delegate from std::function using local thread
         auto lambdaDelegate = MakeDelegate(lambdaFunc, callback_thread);
         sensor.OnData += lambdaDelegate;
 
         // 4. Produce Data
-        // These calls return immediately; callbacks run on callback_thread
         sensor.ProduceData(10);
         sensor.ProduceData(20);
 
@@ -171,13 +158,12 @@ namespace Example
         // 5. Cleanup
 
         // Manual cleanup for Logger
-        logger->Term(sensor);
-        logger.reset(); // Destroy logger
+        logger->Term(sensor, callback_thread);
+        logger.reset();
 
         // Automatic cleanup for Analyzer
-        // We just verify it works by destroying the object
-        analyzer->Stop(sensor); // Optional explicit stop
-        analyzer.reset();       // Destructor would also handle it if we tracked the sensor
+        analyzer->Stop(sensor);
+        analyzer.reset();
 
         sensor.OnData -= lambdaDelegate;
 
