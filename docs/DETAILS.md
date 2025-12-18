@@ -42,7 +42,9 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [The Risk: Raw Pointers](#the-risk-raw-pointers)
     - [The Solution: Shared Pointers](#the-solution-shared-pointers)
   - [Register and Unregister](#register-and-unregister)
-    - [The Init/Term Pattern](#the-initterm-pattern)
+    - [Init/Term Pattern](#initterm-pattern)
+    - [RAII Pattern](#raii-pattern)
+    - [Object Lifetime Usage Guide](#object-lifetime-usage-guide)
   - [Library Dependencies](#library-dependencies)
   - [Fixed-Block Memory Allocator](#fixed-block-memory-allocator)
   - [Function Argument Copy](#function-argument-copy)
@@ -244,7 +246,7 @@ Numerous predefined platforms are already supported such as Windows, Linux, and 
 3.  **Implement `ISerializer` and `ITransport`**: Required to use **Remote** delegates across processes/processors.
     * *Optional:* Implement `ITransportMonitor` if your application layer requires command acknowledgments (ACKs).
     * See [Sample Projects](#sample-projects) for numerous remote delegate examples.
-4.  **Check System Clock**: Ensure `std::chrono::steady_clock` is supported on your target hardware, as it is required for timers and transport timeouts.
+4.  **Check System Clock**: Ensure `std::chrono::steady_clock` is supported on your target hardware, as it is required for timers and transport timeouts. Otherwise, change `dmw::Clock` in `DelegateOpt.h` to a new clock type.
 5.  **Call `Timer::ProcessTimers()`**: Periodically call `ProcessTimers()` (e.g., from a main loop or hardware timer ISR) to support timers and thread watchdogs.
 6.  **Configure Build Options**: Set CMake DMQ library build options within `CMakeLists.txt`.
     * Example: `DMQ_ASSERTS` for debug assertions.
@@ -954,9 +956,9 @@ safeObj.reset();
 
 When using `std::shared_ptr` and `std::enable_shared_from_this`, you must follow a specific pattern to manually register and unregister delegates.
 
-Critical Rule: You cannot call `shared_from_this()` inside a destructor. Doing so causes a std::bad_weak_ptr crash because the ownership of the object has already expired. Therefore, if you require manual unregistration (to stop receiving events immediately), you must use an explicit Init/Term pattern.
+Critical Rule: You cannot call `shared_from_this()` inside a destructor. Doing so causes a `std::bad_weak_ptr` crash because the ownership of the object has already expired. Therefore, if you require manual unregistration (to stop receiving events immediately), you must use an explicit Init/Term or RAII pattern.
 
-### The Init/Term Pattern
+### Init/Term Pattern
 
 `Init()`: Called after the object is fully constructed and owned by a `shared_ptr`. Registers the delegate.
 
@@ -1013,6 +1015,65 @@ void RunClient()
     client.reset(); 
 }
 ```
+
+### RAII Pattern 
+
+Alternative solution does not require calling `Term()`. 
+
+```cpp
+class Subscriber : public std::enable_shared_from_this<Subscriber>
+{
+public:
+    Subscriber() : m_thread("SubscriberThread") {
+        m_thread.CreateThread();
+    }
+
+    // 1. Init: Call this immediately after std::make_shared<Subscriber>
+    void Init() {
+        // Create the delegate once and STORE it.
+        // We pass a shared_ptr, but the delegate internally converts and 
+        // stores it as a weak_ptr to prevent circular reference cycles.
+        m_delegate = dmq::MakeDelegate(
+            shared_from_this(),
+            &Subscriber::HandleMsgCb,
+            m_thread
+        );
+
+        // Register using the member variable
+        Publisher::Instance().MsgCb += m_delegate;
+    }
+
+    ~Subscriber() {
+        // 2. Unregister using the stored member.
+        // This works safely even in the destructor because the stored delegate
+        // preserves the identity required for removal.
+        Publisher::Instance().MsgCb -= m_delegate;
+    }
+
+private:
+    void HandleMsgCb(const std::string& msg) { 
+        std::cout << msg << std::endl; 
+    }
+
+    Thread m_thread;
+
+    // Store the delegate to allow safe unregistration in the destructor.
+    // 'Sp' suffix indicates this delegate is specialized for smart pointers.
+    dmq::DelegateMemberAsyncSp<Subscriber, void(const std::string&)> m_delegate;
+};
+```
+
+### Object Lifetime Usage Guide
+
+This table outlines when it is safe to use raw pointers (`this`) during delegate registration versus when you must use `std::shared_ptr` (`shared_from_this()`) to prevent crashes.
+
+| Delegate Type | Behavior | Safe to use `this`? | Explanation |
+| --- | --- | --- | --- |
+| Synchronous | Function is called immediately on the current thread.| YES | The caller waits for the callback to complete. It is impossible for the object to be destroyed while the callback is running. Must unregister in destructor. |
+| Async (Non-Blocking) | "Fire and Forget." Message posted to target thread queue. Caller continues immediately. | NO | Unsafe. Even if you unregister in the destructor, a message may already be pending in the queue. If the object dies before the queue is processed, the target thread will access freed memory. Use `shared_from_this()`. |
+| Async Blocking (`WAIT_INFINITE`) | Caller thread blocks until the target thread executes the function. | YES | Because the caller is blocked, the object (owned by the caller) cannot go out of scope or be destroyed until the callback finishes. |
+| Async Blocking (Timeout) | Caller thread blocks until success OR timeout expires. | NO | Unsafe. If the timeout expires, the caller proceeds and may destroy the object. However, the message is still in the queue. When the target thread eventually processes it, it will crash. Use `shared_from_this()`. |
+| Async (Singleton / Global) | Object lifetime exceeds the thread lifetime (e.g., Singleton, Static, or Global). | YES | Safe. Since the object is guaranteed to exist for the entire duration of the application (or until after the worker thread is destroyed), the pointer will never be invalid. |
 
 ## Library Dependencies
 
@@ -1738,64 +1799,89 @@ SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type syste
 // Async send an actuator command and block the caller waiting until the remote 
 // client successfully receives the message or timeout. The execution order sequence 
 // numbers shown below.
-bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg)
+template <class TClass, class RetType, class... Args>
+bool RemoteInvoke(RemoteEndpoint<TClass, RetType(Args...)>& endpointDel, Args&&... args) 
 {
     // If caller is not executing on m_thread
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
     {
         // *** Caller's thread executes this control branch ***
 
-        std::atomic<bool> success(false);
-        std::mutex mtx;
-        std::condition_variable cv;
+        struct SyncState {
+            std::atomic<bool> success{ false };
+            bool complete = false;
+            std::mutex mtx;
+            std::condition_variable cv;
 
-        // 7. Callback lambda handler for transport monitor when remote receives message (success or failure).
+            // Use fix-block memory allocator if DMQ_ALLOCATOR set
+            XALLOCATOR
+        };
+
+        auto state = std::make_shared<SyncState>();
+        dmq::DelegateRemoteId remoteId = endpointDel.GetRemoteId();
+
+        // 8. Callback lambda handler for transport monitor when remote receives message (success or failure).
         //    Callback context is m_thread.
-        SendStatusCallback statusCb = [&success, &cv](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
-            if (id == ids::ACTUATOR_MSG_ID) {
-                // Client received ActuatorMsg?
-                if (status == TransportMonitor::Status::SUCCESS)
-                    success.store(true);
-                cv.notify_one();
+        SendStatusCallback statusCb = [state, remoteId](dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) {
+            if (id == remoteId) {
+                {
+                    std::lock_guard<std::mutex> lock(state->mtx);
+                    state->complete = true;
+                    if (status == TransportMonitor::Status::SUCCESS)
+                        state->success.store(true);   // Client received message
+                }
+                state->cv.notify_one();
             }
         };
 
         // 1. Register for send status callback (success or failure)
         m_transportMonitor.SendStatusCb += dmq::MakeDelegate(statusCb);
 
-        // 2. Async reinvoke SendActuatorMsgWait() on m_thread context and wait for send to complete
-        auto del = MakeDelegate(this, &NetworkMgr::SendActuatorMsgWait, m_thread, SEND_TIMEOUT);
-        auto retVal = del.AsyncInvoke(msg);
+        // 3. Lambda that binds and forwards arguments to RemoteInvoke with specified endpoint
+        std::function<RetType(Args...)> func = [this, &endpointDel](Args&&... args) {
+            return this->RemoteInvoke<TClass, RetType, Args...>(
+                endpointDel, std::forward<Args>(args)...);
+            };
 
-        // 5. Check that the remote delegate send succeeded
+        // 2. Async reinvoke func on m_thread context and wait for send to complete
+        auto del = dmq::MakeDelegate(func, m_thread, SEND_TIMEOUT);
+        auto retVal = del.AsyncInvoke(std::forward<Args>(args)...);
+
+        // 6. Check that the remote delegate send succeeded
         if (retVal.has_value() &&      // If async function call succeeded AND
             retVal.value() == true)    // async function call returned true
         {
-            // 6. Wait for statusCb callback to be invoked. Callback invoked when the 
-            //    receiver ack's the message or timeout.
-            std::unique_lock<std::mutex> lock(mtx);
-            if (cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout) 
+            // 7. Wait for statusCb callback to be invoked. Callback invoked when the 
+            //    receiver ack's the message or transport monitor timeout.
+            std::unique_lock<std::mutex> lock(state->mtx);
+            while (!state->complete)
             {
-                // Timeout waiting for remote delegate message ack
-                std::cout << "Timeout SendActuatorMsgWait()" << std::endl;
+                if (state->cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout)
+                {
+                    // Timeout waiting for remote delegate message ack
+                    std::cout << "Timeout RemoteInvoke()" << std::endl;
+
+                    // Set complete to true to exit wait loop
+                    state->complete = true; 
+                }
             }
         }
 
-        // 8. Unregister from status callback
+        // 9. Unregister from status callback
         m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
 
-        // 9. Return the blocking async function invoke status to caller
-        return success.load();
+        // 10. Return the blocking async function invoke status to caller
+        return state->success.load();
     }
     else
     {
         // *** NetworkMgr::m_thread executes this control branch ***
 
-        // 3. Send actuator command to remote on m_thread
-        m_actuatorMsgDel(msg);        
+        // 4. Invoke endpoint delegate to send argument data to remote
+        endpointDel(std::forward<Args>(args)...);
 
-        // 4. Check if send succeeded
-        if (m_actuatorMsgDel.GetError() == DelegateError::SUCCESS)
+        // 5. Check if send succeeded
+        if (endpointDel.GetError() == dmq::DelegateError::SUCCESS)
         {
             return true;
         }

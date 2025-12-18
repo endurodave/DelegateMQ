@@ -14,7 +14,7 @@ DelegateMQ is a C++ header-only library for invoking any callable (e.g., functio
 - Asynchronously
 - Remotely across processes or processors
 
-It unifies function calls across threads or systems via a simple delegate interface. DelegateMQ is thread-safe, unit-tested, and easy to port to any platform.
+It unifies function calls across threads or systems via a simple delegate interface. A powerful, lightweight messaging library for thread-safe asynchronous callbacks, non-blocking APIs, and passing data between threads. DelegateMQ is thread-safe, unit-tested, and easy to port to any platform.
 
 # Key Concepts
 
@@ -111,12 +111,15 @@ public:
 
 private:
     // Handle publisher callback on m_thread
-    void HandleMsgCb(const std::string& msg) { std::cout << msg << std::endl; }
+    void HandleMsgCb(const std::string& msg) 
+    {
+         std::cout << msg << std::endl; 
+    }
     Thread m_thread;
 };
 ```
 
-Multiple callables targets stored and invoked asynchronously.
+Multiple callables targets stored and broadcast invoked asynchronously.
 
 ```cpp
 // Create an async delegate targeting lambda on thread1

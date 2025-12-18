@@ -50,20 +50,21 @@ namespace Example
     }
 
     // Communication class with a fully asynchronous public API
-    class Communication
+    // Inherit from enable_shared_from_this to allow safe async delegate creation
+    class Communication : public std::enable_shared_from_this<Communication>
     {
     public:
         // All public functions async invoke the function call onto comm_thread
 
         // Async API calls the private implementation
         size_t SendData(const std::string& data) {
-            return AsyncInvoke(this, &Communication::SendDataPrivate, comm_thread, WAIT_INFINITE, data);
+            return AsyncInvoke(shared_from_this(), &Communication::SendDataPrivate, comm_thread, WAIT_INFINITE, data);
         }
 
         // Alternate async API implementation style all within the public function
         size_t SendDataV2(const std::string& data) {
             if (comm_thread.GetThreadId() != Thread::GetCurrentThreadId())
-                return MakeDelegate(this, &Communication::SendDataV2, comm_thread, WAIT_INFINITE)(data);
+                return MakeDelegate(shared_from_this(), &Communication::SendDataV2, comm_thread, WAIT_INFINITE)(data);
 
             std::this_thread::sleep_for(std::chrono::seconds(2));  // Simulate sending
             cout << data << endl;
@@ -73,7 +74,9 @@ namespace Example
         // Alternate async API using a lambda
         size_t SendDataV3(const std::string& data)
         {
-            auto sendDataLambda = [this](const std::string& data) -> bool {
+            // Capture 'self' (shared_ptr) instead of raw 'this' for robustness
+            auto self = shared_from_this();
+            auto sendDataLambda = [self](const std::string& data) -> bool {
                 std::this_thread::sleep_for(std::chrono::seconds(2));  // Simulate sending
                 cout << data << endl;
                 return data.size();  // Return the 'bytes_sent' sent result
@@ -83,11 +86,11 @@ namespace Example
         }
 
         void SetMode(bool mode) {
-            AsyncInvoke(this, &Communication::SetModePrivate, comm_thread, WAIT_INFINITE, mode);
+            AsyncInvoke(shared_from_this(), &Communication::SetModePrivate, comm_thread, WAIT_INFINITE, mode);
         }
 
         bool GetMode() {
-            return AsyncInvoke(this, &Communication::GetModePrivate, comm_thread, WAIT_INFINITE);
+            return AsyncInvoke(shared_from_this(), &Communication::GetModePrivate, comm_thread, WAIT_INFINITE);
         }
 
     private:
@@ -109,14 +112,15 @@ namespace Example
     {
         comm_thread.CreateThread();
 
-        Communication comm;
+        // Must use std::make_shared to support shared_from_this()
+        auto comm = std::make_shared<Communication>();
 
         // Test async invoke of member functions
-        comm.SetMode(true);
-        bool mode = comm.GetMode();
-        comm.SendData("SendData message");
-        comm.SendDataV2("SendDataV2 message");
-        comm.SendDataV3("SendDataV3 message");
+        comm->SetMode(true);
+        bool mode = comm->GetMode();
+        comm->SendData("SendData message");
+        comm->SendDataV2("SendDataV2 message");
+        comm->SendDataV3("SendDataV3 message");
 
         // Test async invoke of free functions
         set_mode(true);

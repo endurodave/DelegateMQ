@@ -9,6 +9,7 @@
 
 #include "DelegateMQ.h"
 #include "SafeTimer.h"
+#include "AsyncCallback.h"
 #include "ProducerConsumer.h"
 #include "CountdownLatch.h"
 #include "ActiveObject.h"
@@ -172,31 +173,46 @@ private:
     std::string m_msg;
 };
 
-class Subscriber
+class Subscriber : public std::enable_shared_from_this<Subscriber>
 {
 public:
-    Subscriber() : m_thread("SubscriberThread")
-    {
+    Subscriber() : m_thread("SubscriberThread") {
         m_thread.CreateThread();
-
-        // Register for publisher async callback on m_thread context
-        Publisher::Instance().MsgCb += dmq::MakeDelegate(this, &Subscriber::HandleMsgCb, m_thread);
     }
 
-    ~Subscriber()
-    {
-        Publisher::Instance().MsgCb -= dmq::MakeDelegate(this, &Subscriber::HandleMsgCb, m_thread);
+    void Init() {
+        // 1. Create the delegate once and STORE it.
+        // We pass a shared_ptr, but the delegate internally converts and 
+        // stores it as a weak_ptr to prevent circular reference cycles.
+        m_delegate = dmq::MakeDelegate(
+            shared_from_this(),
+            &Subscriber::HandleMsgCb,
+            m_thread
+        );
+
+        // 2. Register using the member
+        Publisher::Instance().MsgCb += m_delegate;
+    }
+
+    ~Subscriber() {
+        // 3. Unregister using the stored member.
+        // Even though we are destructing, the underlying weak_ptr control block 
+        // identity is still valid, allowing the container to find and remove us.
+        Publisher::Instance().MsgCb -= m_delegate;
     }
 
 private:
-    // Handle publisher callback on m_thread
     void HandleMsgCb(const std::string& msg)
     {
         // This runs on m_thread
         std::cout << "Writing data on thread: " << Thread::GetCurrentThreadId() << std::endl;
         std::cout << msg << std::endl;
     }
+
     Thread m_thread;
+
+    // 'Sp' suffix indicates this delegate is specialized for smart pointers
+    dmq::DelegateMemberAsyncSp<Subscriber, void(const std::string&)> m_delegate;
 };
 
 //------------------------------------------------------------------------------
@@ -210,6 +226,7 @@ void RunAsyncCallbackExamples()
     // to access a dead object (Use-After-Free), resulting in a crash.
     // See DETAILS.md section Object Lifetime and Async Delegates.
     auto subscriber = std::make_shared<Subscriber>();
+    subscriber->Init();
 
     // Subscriber::HandleMsgCallback invoked when Publisher::SetMsg is called
     Publisher::Instance().SetMsg("Hello World!");
@@ -222,7 +239,7 @@ public:
 };
 
 // Store data using asynchronous public API. Class is thread-safe.
-class DataStore
+class DataStore : public std::enable_shared_from_this<DataStore>
 {
 public:
     DataStore() : m_thread("DataStoreThread")
@@ -238,7 +255,7 @@ public:
         if (m_thread.GetThreadId() != Thread::GetCurrentThreadId())
         {
             // Reinvoke StoreAsync(data) on m_thread context
-            return dmq::MakeDelegate(this, &DataStore::StoreAsync, m_thread)(data);
+            return dmq::MakeDelegate(shared_from_this(), &DataStore::StoreAsync, m_thread)(data);
         }
         std::cout << "Writing data on thread: " << Thread::GetCurrentThreadId() << std::endl;
         m_data = data;  // Data stored on m_thread context
@@ -248,10 +265,13 @@ public:
     // return value)
     bool StoreAsync2(const Data& data)
     {
-        auto storeLambda = [this](const Data& data) -> bool {
+        // Capture 'self' (shared_ptr) instead of raw 'this'
+        auto self = shared_from_this();
+
+        auto storeLambda = [self](const Data& data) -> bool {
             // This runs on m_thread
             std::cout << "Writing data on thread: " << Thread::GetCurrentThreadId() << std::endl;
-            m_data = data;
+            self->m_data = data;
             return true;
             };
 
@@ -295,6 +315,9 @@ void RunAllExamples()
 
     // Run safe timer example
     SafeTimerExample();
+
+    // Run asynchronous callbacks using delegates example
+    AsyncCallbackExample();
 
     // Run asynchronous API using delegates example 
     AsyncAPIExample();

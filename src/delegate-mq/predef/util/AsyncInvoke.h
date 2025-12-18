@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <utility>
 #include <any>
+#include <memory> 
 
 /// @file
 /// @brief Helper functions to simplify invoking a free or member function
@@ -54,7 +55,7 @@ auto AsyncInvoke(Func func, Thread& thread, const dmq::Duration& timeout, Args&&
     }
 }
 
-/// Helper function to simplify asynchronous invoke of a member function.
+/// Helper function to simplify asynchronous invoke of a member function using a raw pointer.
 /// @param[in] tclass - the class instance (pointer)
 /// @param[in] func - the member function pointer
 /// @param[in] thread - the thread to invoke func on
@@ -69,6 +70,41 @@ auto AsyncInvoke(TClass* tclass, Func func, Thread& thread, const dmq::Duration&
     if (thread.GetThreadId() != Thread::GetCurrentThreadId())
     {
         // Create delegate. MakeDelegate handles member pointers correctly.
+        auto delegate = dmq::MakeDelegate(tclass, func, thread, timeout);
+
+        auto retVal = delegate.AsyncInvoke(std::forward<Args>(args)...);
+
+        if constexpr (!std::is_void_v<RetType>)
+        {
+            if (retVal.has_value()) {
+                return std::any_cast<RetType>(retVal.value());
+            }
+            else {
+                return RetType{};
+            }
+        }
+    }
+    else
+    {
+        return std::invoke(func, tclass, std::forward<Args>(args)...);
+    }
+}
+
+/// Helper function to simplify asynchronous invoke of a member function using a shared pointer.
+/// @param[in] tclass - the class instance (shared_ptr)
+/// @param[in] func - the member function pointer
+/// @param[in] thread - the thread to invoke func on
+/// @param[in] timeout - the time to wait for invoke to complete
+/// @param[in] args - the function argument(s) passed to func
+template <class TClass, class Func, class... Args>
+auto AsyncInvoke(std::shared_ptr<TClass> tclass, Func func, Thread& thread, const dmq::Duration& timeout, Args&&... args)
+{
+    // Deduce return type using std::invoke (robust for member pointers)
+    using RetType = decltype(std::invoke(func, tclass, std::forward<Args>(args)...));
+
+    if (thread.GetThreadId() != Thread::GetCurrentThreadId())
+    {
+        // Create delegate. MakeDelegate handles shared_ptr correctly (creates DelegateMemberSp).
         auto delegate = dmq::MakeDelegate(tclass, func, thread, timeout);
 
         auto retVal = delegate.AsyncInvoke(std::forward<Args>(args)...);
