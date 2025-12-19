@@ -64,6 +64,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Receive `DelegateMsg`](#receive-delegatemsg)
   - [`ISerializer`](#iserializer)
   - [`IDispatcher`](#idispatcher)
+- [Python Interoperability](#python-interoperability)
 - [Examples](#examples)
   - [Callback Example](#callback-example)
   - [Register Callback Example](#register-callback-example)
@@ -956,7 +957,7 @@ safeObj.reset();
 
 When using `std::shared_ptr` and `std::enable_shared_from_this`, you must follow a specific pattern to manually register and unregister delegates.
 
-Critical Rule: You cannot call `shared_from_this()` inside a destructor. Doing so causes a `std::bad_weak_ptr` crash because the ownership of the object has already expired. Therefore, if you require manual unregistration (to stop receiving events immediately), you must use an explicit Init/Term or RAII pattern.
+Critical Rule: You cannot call `shared_from_this()` inside a destructor. Doing so causes a `std::bad_weak_ptr` crash because the ownership of the object has already expired. Therefore, if you require manual unregistration (to stop receiving events immediately), you must use an explicit `Init`/`Term` or RAII pattern.
 
 ### Init/Term Pattern
 
@@ -1552,6 +1553,12 @@ public:
 };
 ```
 
+# Python Interoperability
+
+While DelegateMQ is a C++ library, Python applications can easily communicate with C++ remote delegates using ZeroMQ transport and MessagePack serialization. This allows complex data structures to be exchanged between languages, opening up flexible new system topology possibilities.
+
+See the `README.md` in [system-architecture-python](../example/sample-projects/system-architecture-python/) for more.
+
 # Examples
 
 ## Callback Example
@@ -2102,6 +2109,7 @@ Two System Architecture build projects exist:
 
 * [system-architecture](../example/sample-projects/system-architecture/) - builds on Windows and Linux. Requires MessagePack and ZeroMQ external libraries. See [Examples Setup](#examples-setup).
 * [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - builds on Windows or Linux. No external libraries required.
+* [system-architecture-python](../example/sample-projects/system-architecture-python/) - Python client communicates with C++ server using MessagePack and ZeroMQ external libraries.
 
 Follow the steps below to execute the projects.
 
