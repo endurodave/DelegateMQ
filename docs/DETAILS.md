@@ -65,6 +65,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [`ISerializer`](#iserializer)
   - [`IDispatcher`](#idispatcher)
 - [Python Interoperability](#python-interoperability)
+  - [Other Topologies](#other-topologies)
 - [Examples](#examples)
   - [Callback Example](#callback-example)
   - [Register Callback Example](#register-callback-example)
@@ -1558,6 +1559,27 @@ public:
 While DelegateMQ is a C++ library, Python applications can easily communicate with C++ remote delegates using ZeroMQ transport and MessagePack serialization. This allows complex data structures to be exchanged between languages, opening up flexible new system topology possibilities.
 
 See the `README.md` in [system-architecture-python](../example/sample-projects/system-architecture-python/) for more.
+
+## Other Topologies
+
+DelegateMQ remote delegates messages contain a simple 6-byte header followed by the serialized message data. 
+
+```cpp
+uint16_t m_marker = MARKER;          // Static marker value
+uint16_t m_id = 0;                   // DelegateRemoteId (id)
+uint16_t m_seqNum = 0;               // Sequence number
+```
+
+Since MessagePack and ZeroMQ are supported by numerous languages, this architecture can be extended to include:
+
+- C#
+- Go
+- Python
+- Java
+- JavaScript / Node.js
+- Ruby
+- Rust
+- ...and many others.
 
 # Examples
 
