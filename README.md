@@ -31,7 +31,7 @@ Invoke `MsgOut()` using delegates.
 
 size_t MsgOut(const std::string& msg)
 {
-    std::cout << msg << std::endl;
+    std::cout << "[" << std::this_thread::get_id() << "] " << msg << std::endl;
     return msg.size();
 }
 
@@ -89,8 +89,8 @@ public:
 
     void SetMsg(const std::string& msg) 
     {
-        m_msg = msg;    // Store message
-        MsgCb(m_msg);   // Invoke all registered callbacks
+        m_msg = msg;    // 2. Store message
+        MsgCb(m_msg);   // 3. Invoke all registered callbacks
     }
 
 private:
@@ -105,14 +105,14 @@ public:
     {
         m_thread.CreateThread();
 
-        // Register for publisher async callback on m_thread context
+        // 1. Register for publisher async callback on m_thread context
         Publisher::Instance().MsgCb += dmq::MakeDelegate(this, &Subscriber::HandleMsgCb, m_thread);
     }
 
 private:
-    // Handle publisher callback on m_thread
     void HandleMsgCb(const std::string& msg) 
     {
+         // 4. Handle publisher callback on m_thread
          std::cout << msg << std::endl; 
     }
     Thread m_thread;
@@ -153,17 +153,18 @@ public:
         m_thread.CreateThread();
     }
 
-    // Store data asynchronously on m_thread context (non-blocking)
+    // 1. Store data asynchronously on m_thread context (non-blocking)
     void StoreAsync(const Data& data)
     {
-        // If the caller thread is not the internal thread, reinvoke this function 
-        // asynchronously on the internal thread to ensure thread-safety
+        // 2. If the caller thread is not the internal thread, reinvoke this function 
+        //    asynchronously on the internal thread to ensure thread-safety
         if (m_thread.GetThreadId() != Thread::GetCurrentThreadId()) 
         {
-            // Reinvoke StoreAsync(data) on m_thread context
+            // 3. Reinvoke StoreAsync(data) on m_thread context
             return dmq::MakeDelegate(this, &DataStore::StoreAsync, m_thread)(data);
         }
-        m_data = data;  // Data stored on m_thread context
+        // 4. Data stored on m_thread context
+        m_data = data;  
     }
 
 private:
@@ -178,11 +179,11 @@ In C++, a delegate function object encapsulates a callable entity, such as a fun
 
 Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.
 
-## Sync Delegates
+## Synchronous Delegates
 
 Synchronous delegates invoke the target function anonymously within the current execution context. No external library dependencies are required.
 
-## Async Delegates
+## Asynchronous Delegates
 
 Asynchronous delegates support both non-blocking and blocking invocation modes, including optional timeouts. The library enables anonymous invocation of any callable target, regardless of the number or type of arguments, or the presence of a return value. All argument types are supported — including by value, pointers, pointer-to-pointer, and references. Smart pointer delegates prevents async invocation on destroyed target objects.
 
@@ -198,6 +199,23 @@ Remote delegates enable function invocation across processes or processors using
 * **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), UDP, data pipe, memory buffer
  
 **Cross-Language**: A Python application using ZeroMQ and MessagePack communicates with a DelegateMQ C++ application, demonstrating how remote delegates easily bridge high-level scripts and low-level native code.
+
+## Delegate Invocation Semantics
+
+Target callable invocation and argument handling based on the delegate type.
+
+| Feature | Synchronous | Asynchronous (Non-Blocking) | Asynchronous (Blocking) | Remote (Network) |
+| --- | --- | --- | --- | --- |
+| Overview | Invokes bound callable directly on caller's thread. | Target thread invokes bound callable; caller continues immediately. | Target thread invokes bound callable; caller blocks until complete or timeout. | Remote system invokes bound callable; caller continues immediately. |
+| Dispatch Mechanism | Direct Call. | Message Queue. | Message Queue. | Network Transport. |
+| Synchronization | Caller is blocked by synchronous execution. | None. Fire-and-forget. | Semaphore + Mutex. Caller blocks on semaphore; mutex protects return value. | None. Fire-and-forget (library level). Blocking depends on transport implementation. | 
+| Execution Thread | Caller Thread. | Target Thread. | Target Thread. | Remote Process. |
+| Blocking Behavior¹ | Yes. | No. | Yes. | No. |
+| Arguments (In) | Stack Access. Passed directly via registers/stack. | Deep Heap Copy. Arguments cloned to heap. | Stack Reference. References point to caller's stack (safe because caller blocks). | Serialization. Arguments marshaled to a stream and sent via external transport.|
+| Arguments (Out) | Supported. | Not Supported.	| Supported. Target writes directly to caller's stack reference variables. | Not supported. |
+| Return Value | Yes. Immediate. | No. Ignored. | Yes. Returned after target callable completes. | No. Not supported. |
+
+¹ Yes means caller blocks until the bound target callable completes.
 
 ## Delegate Semantics and Use Cases
 

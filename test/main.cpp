@@ -53,12 +53,6 @@ Timer& GetTimer()
     return instance;
 }
 
-size_t MsgOut(const std::string& msg)
-{
-    std::cout << msg << std::endl;
-    return msg.size();
-}
-
 //------------------------------------------------------------------------------
 // main
 //------------------------------------------------------------------------------
@@ -101,6 +95,12 @@ int main(void)
 
     cout << "Success!" << endl;
 	return 0;
+}
+
+size_t MsgOut(const std::string& msg)
+{
+    std::cout << "[" << std::this_thread::get_id() << "] " << msg << std::endl;
+    return msg.size();
 }
 
 //------------------------------------------------------------------------------

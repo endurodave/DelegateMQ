@@ -24,6 +24,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Publisher](#publisher)
     - [Subscriber](#subscriber)
   - [Asynchronous API Example](#asynchronous-api-example)
+  - [Delegate Invocation Semantics](#delegate-invocation-semantics)
 - [Background](#background)
 - [Usage](#usage)
   - [Delegates](#delegates)
@@ -447,6 +448,23 @@ void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
     SystemModeChangedDelegate(callbackData);
 }
 ```
+
+## Delegate Invocation Semantics
+
+Target callable invocation and argument handling based on the delegate type.
+
+| Feature | Synchronous | Asynchronous (Non-Blocking) | Asynchronous (Blocking) | Remote (Network) |
+| --- | --- | --- | --- | --- |
+| Overview | Invokes bound callable directly on caller's thread. | Target thread invokes bound callable; caller continues immediately. | Target thread invokes bound callable; caller blocks until complete or timeout. | Remote system invokes bound callable; caller continues immediately. |
+| Dispatch Mechanism | Direct Call. | Message Queue. | Message Queue. | Network Transport. |
+| Synchronization | Caller is blocked by synchronous execution. | None. Fire-and-forget. | Semaphore + Mutex. Caller blocks on semaphore; mutex protects return value. | None. Fire-and-forget (library level). Blocking depends on transport implementation. | 
+| Execution Thread | Caller Thread. | Target Thread. | Target Thread. | Remote Process. |
+| Blocking Behavior¹ | Yes. | No. | Yes. | No. |
+| Arguments (In) | Stack Access. Passed directly via registers/stack. | Deep Heap Copy. Arguments cloned to heap. | Stack Reference. References point to caller's stack (safe because caller blocks). | Serialization. Arguments marshaled to a stream and sent via external transport.|
+| Arguments (Out) | Supported. | Not Supported.	| Supported. Target writes directly to caller's stack reference variables. | Not supported. |
+| Return Value | Yes. Immediate. | No. Ignored. | Yes. Returned after target callable completes. | No. Not supported. |
+
+¹ Yes means caller blocks until the bound target callable completes.
 
 # Background
 
@@ -2127,13 +2145,13 @@ The System Architecture example demonstrates a complex client-server DelegateMQ 
 2. **Blocking** - message is send and blocks waiting for the remote to acknowledge or timeout.
 3. **Future** - message is send without waiting and a `std::future` is used to capture the return value later.
 
-Two System Architecture build projects exist:
+Three System Architecture build projects exist:
 
 * [system-architecture](../example/sample-projects/system-architecture/) - builds on Windows and Linux. Requires MessagePack and ZeroMQ external libraries. See [Examples Setup](#examples-setup).
 * [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - builds on Windows or Linux. No external libraries required.
 * [system-architecture-python](../example/sample-projects/system-architecture-python/) - Python client communicates with C++ server using MessagePack and ZeroMQ external libraries.
 
-Follow the steps below to execute the projects.
+Follow the steps below to execute the first two projects. See `README.txt` within [system-architecture-python](../example/sample-projects/system-architecture-python/) for the Python example.
 
 1. Setup ZeroMQ and MessagePack external library dependencies, if necessary ([Examples Setup](#examples-setup))
 2. Execute CMake command in `client` and `server` directories.  
