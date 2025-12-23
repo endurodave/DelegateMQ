@@ -15,7 +15,8 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 - [Introduction](#introduction)
 - [Build](#build)
   - [Example Projects](#example-projects)
-  - [Examples Setup](#examples-setup)
+    - [Examples Setup](#examples-setup)
+    - [Examples Build](#examples-build)
   - [Build Integration](#build-integration)
 - [Porting Guide](#porting-guide)
 - [Quick Start](#quick-start)
@@ -154,9 +155,18 @@ Remote delegate example projects are located within the `example/sample-projects
 
 The [system-architecture](#system-architecture) project located within the `example/sample-projects/system-architecture-no-deps` directory is a client-server application with no external library dependencies. The app runs on Windows and Linux, showcasing various delegate-based design techniques, including remote communication, asynchronous callbacks/APIs, and more.
 
-## Examples Setup
+### Examples Setup
 
-Some remote delegate example projects depend on external libraries. For sample project testing, these libraries—along with **DelegateMQ**—are typically organized within a single parent directory. Clone desired supporting library into the directory locations shown below. *Not all external libraries are required*, as it depended on the example executed.
+Most remote delegate example projects depend on external libraries. Scripts are used to automate setting up a sandbox test environment for remote delegate testing. 
+
+1. Create a new workspace directory named `DelegateMQWorkspace`.
+2. Clone the DelegateMQ repo inside the workspace directory.  
+   `git clone https://github.com/endurodave/DelegateMQ.git`
+3. Run `01_fetch_repos.py`. Fetches all dependent libraries from GitHub.
+4. Run `02_build_libs.py`. Builds dependent libraries.
+5. Run `03_generate_samples.py`. Creates project build files using CMake.
+
+All dependend libraries—along with **DelegateMQ**—are now organized within a single parent directory. 
 
 ```text
 DelegateMQWorkspace/
@@ -171,32 +181,17 @@ DelegateMQWorkspace/
 ├── spdlog/
 └── zeromq/
 ```
-Alternatively, you can modify `src/delegate-mq/External.cmake` to specify custom paths for the external libraries.
 
-Follow the setup instructions below to build and run any sample project. 
+### Examples Build
 
-1. Install [vcpkg](https://github.com/microsoft/vcpkg).
-2. Install [Boost](https://www.boost.org/) using vcpkg. DelegateMQ does not use Boost, but some external libraries below require.<br>
-   `./vcpkg install boost`<br>
-   Linux, may need:<br>
-   `./vcpkg install boost:x64-linux-dynamic`
-3. Transport libraries
-- Install [ZeroMQ](https://zeromq.org/) using vcpkg.<br>
-   `./vcpkg install zeromq`
-- Clone and build [NNG](https://github.com/nanomsg/nng) (nanomsg-next-gen) `stable` branch.
-- Clone and build [Paho C MQTT](https://github.com/eclipse-paho/paho.mqtt.c)
-4. Serialization libraries
-- Clone [MessagePack C++](https://github.com/msgpack/msgpack-c/tree/cpp_master) `cpp_master` branch.
-- Clone [Cereal](https://github.com/USCiLab/cereal).
-- Clone [Bitsery](https://github.com/fraillt/bitsery).
-- Clone [RapidJSON](https://github.com/Tencent/rapidjson).
-5. Operating systems
-- Clone [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS).
-6. Logging
-- Clone [spdlog](https://github.com/gabime/spdlog).
-7. Edit `src/delegate-mq/External.cmake` file and update external library directory locations.
-8. Build any example subproject within the `example/sample-projects` directory.<br>
-   `cmake -B build .`
+Build and execute any remote delegate example within the `\DelegateMQ\example\sample-projects` directory. Each projects build files are located within a `build` subdirectory.
+
+`DelegateMQ\example\sample-projects\zeromq-msgpack-cpp\build`
+
+Client/server samples require running two applications.
+
+`\DelegateMQ\example\sample-projects\system-architecture\client\build`  
+`\DelegateMQ\example\sample-projects\system-architecture\server\build`
 
 See [Sample Projects](#sample-projects) for details regarding each sample project.
 

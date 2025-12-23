@@ -198,24 +198,7 @@ Remote delegates enable function invocation across processes or processors using
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [Cereal](https://github.com/USCiLab/cereal), [Bitsery](https://github.com/fraillt/bitsery), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
 * **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), UDP, data pipe, memory buffer
  
-**Cross-Language**: A Python application using ZeroMQ and MessagePack communicates with a DelegateMQ C++ application, demonstrating how remote delegates easily bridge high-level scripts and low-level native code.
-
-## Delegate Invocation Semantics
-
-Target callable invocation and argument handling based on the delegate type.
-
-| Feature | Synchronous | Asynchronous (Non-Blocking) | Asynchronous (Blocking) | Remote (Network) |
-| --- | --- | --- | --- | --- |
-| Overview | Invokes bound callable directly on caller's thread. | Target thread invokes bound callable; caller continues immediately. | Target thread invokes bound callable; caller blocks until complete or timeout. | Remote system invokes bound callable; caller continues immediately. |
-| Dispatch Mechanism | Direct Call. | Message Queue. | Message Queue. | Network Transport. |
-| Synchronization | Caller is blocked by synchronous execution. | None. Fire-and-forget. | Semaphore + Mutex. Caller blocks on semaphore; mutex protects return value. | None. Fire-and-forget (library level). Blocking depends on transport implementation. | 
-| Execution Thread | Caller Thread. | Target Thread. | Target Thread. | Remote Process. |
-| Blocking Behavior¹ | Yes. | No. | Yes. | No. |
-| Arguments (In) | Stack Access. Passed directly via registers/stack. | Deep Heap Copy. Arguments cloned to heap. | Stack Reference. References point to caller's stack (safe because caller blocks). | Serialization. Arguments marshaled to a stream and sent via external transport.|
-| Arguments (Out) | Supported. | Not Supported.	| Supported. Target writes directly to caller's stack reference variables. | Not supported. |
-| Return Value | Yes. Immediate. | No. Ignored. | Yes. Returned after target callable completes. | No. Not supported. |
-
-¹ Yes means caller blocks until the bound target callable completes.
+See [Delegate Invocation Semantics](#delegate-invocation-semantics) for information on target callable invocation and argument handling based on the delegate type.
 
 ## Delegate Semantics and Use Cases
 
