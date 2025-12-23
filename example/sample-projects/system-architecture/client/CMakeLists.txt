@@ -5,6 +5,9 @@ set(DELEGATE_APP "delegate_client_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 add_compile_definitions(CLIENT_APP)
 
+# Disable Boost dependency for msgpack
+add_compile_definitions(MSGPACK_NO_BOOST)
+
 # Set build options
 set(DMQ_ASSERTS "OFF")
 set(DMQ_ALLOCATOR "OFF")
@@ -48,7 +51,6 @@ target_link_libraries(${DELEGATE_APP} PRIVATE
     libzmq
 )
 
-copy_files(${ZeroMQ_LIBRARY} ${CMAKE_BINARY_DIR}/Debug)
 
 
 

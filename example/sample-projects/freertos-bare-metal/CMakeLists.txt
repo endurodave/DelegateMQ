@@ -47,7 +47,8 @@ include_directories(
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/include
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Common/include
-    ${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/Include
+    ${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/include
+    ${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/FreeRTOS/include
 )
 
 # Add an executable target

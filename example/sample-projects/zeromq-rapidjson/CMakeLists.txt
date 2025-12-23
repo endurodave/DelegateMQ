@@ -36,6 +36,5 @@ target_link_libraries(${DELEGATE_APP} PRIVATE
     libzmq
 )
 
-copy_files(${ZeroMQ_LIBRARY} ${CMAKE_BINARY_DIR}/Debug)
 
 

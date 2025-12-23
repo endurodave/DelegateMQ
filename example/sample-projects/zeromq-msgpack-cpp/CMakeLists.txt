@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.10)
 set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
+# Disable Boost dependency for msgpack
+add_compile_definitions(MSGPACK_NO_BOOST)
+
 # Set build options
 set(DMQ_ALLOCATOR "OFF")
 set(DMQ_UTIL "ON")
@@ -36,6 +39,5 @@ target_link_libraries(${DELEGATE_APP} PRIVATE
     libzmq
 )
 
-copy_files(${ZeroMQ_LIBRARY} ${CMAKE_BINARY_DIR}/Debug)
 
 
