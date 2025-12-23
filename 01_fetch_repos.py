@@ -7,8 +7,6 @@ Description:
     2. Initializes and updates Git submodules where necessary (e.g., FreeRTOS).
     3. Applies automated fixes to common build issues:
        - Renames 'zeromq/INSTALL' to 'INSTALL.txt' to prevent Windows file/folder conflicts.
-       - Patches sample project CMakeLists.txt files to remove 'copy_files' commands 
-         (required because we are building Static libraries, not DLLs).
 
 Dependencies Pinned:
     - ZeroMQ:    v4.3.5       (Stable C++ standard)
@@ -72,31 +70,6 @@ def fix_zeromq_conflict(workspace_dir):
         except Exception as e:
             print(f"[WARN] Could not rename zeromq/INSTALL: {e}")
 
-def patch_sample_cmakelists(workspace_dir):
-    """Removes 'copy_files' from sample projects since static builds don't use it."""
-    samples_dir = os.path.join(workspace_dir, "DelegateMQ", "example", "sample-projects")
-    print(f"[PATCH] Scanning {samples_dir} for CMakeLists.txt...")
-    
-    for root, _, files in os.walk(samples_dir):
-        if "CMakeLists.txt" in files:
-            path = os.path.join(root, "CMakeLists.txt")
-            with open(path, "r") as f:
-                lines = f.readlines()
-            
-            new_lines = []
-            changed = False
-            for line in lines:
-                if "copy_files(" in line and not line.strip().startswith("#"):
-                    new_lines.append(f"# {line}") # Comment it out
-                    changed = True
-                else:
-                    new_lines.append(line)
-            
-            if changed:
-                with open(path, "w") as f:
-                    f.writelines(new_lines)
-                print(f"   -> Patched: {path}")
-
 def run():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     workspace_dir = os.path.abspath(os.path.join(script_dir, ".."))
@@ -119,7 +92,6 @@ def run():
 
     # 2. Apply Fixes
     fix_zeromq_conflict(workspace_dir)
-    patch_sample_cmakelists(workspace_dir)
     print("\nWorkspace setup complete!")
 
 if __name__ == "__main__":

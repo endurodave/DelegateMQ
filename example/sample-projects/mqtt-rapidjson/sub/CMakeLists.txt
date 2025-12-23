@@ -47,9 +47,6 @@ target_link_libraries(${DELEGATE_APP} PRIVATE
     ${MQTT_LIB_C}
 )
 
-if(WIN32)
-    copy_files(${MQTT_BINARY_DIR}/paho-mqtt3a.dll ${CMAKE_BINARY_DIR}/Debug)
-    copy_files(${MQTT_BINARY_DIR}/paho-mqtt3c.dll ${CMAKE_BINARY_DIR}/Debug)
-endif()
+
 
 

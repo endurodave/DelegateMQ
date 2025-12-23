@@ -31,6 +31,7 @@ import shutil
 import subprocess
 
 # Define the libraries to compile
+# Define the libraries to compile
 libs = [
     {
         "name": "nng",
@@ -41,12 +42,25 @@ libs = [
         "name": "zeromq",
         "path": "zeromq",
         # Force static build, disable tests/docs to speed up
-        "flags": ["-DBUILD_SHARED=OFF", "-DZMQ_BUILD_TESTS=OFF", "-DWITH_DOCS=OFF", "-DWITH_PERF_TOOL=OFF"] 
+        # ADDED: -DCMAKE_POLICY_VERSION_MINIMUM=3.5 to fix build on modern CMake
+        "flags": [
+            "-DBUILD_SHARED=OFF", 
+            "-DZMQ_BUILD_TESTS=OFF", 
+            "-DWITH_DOCS=OFF", 
+            "-DWITH_PERF_TOOL=OFF",
+            "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" 
+        ] 
     },
     {
         "name": "mqtt",
         "path": "mqtt",
-        "flags": ["-DPAHO_BUILD_SHARED=TRUE", "-DPAHO_BUILD_STATIC=TRUE", "-DPAHO_BUILD_SAMPLES=FALSE"]
+        # ADDED: -DCMAKE_POLICY_VERSION_MINIMUM=3.5 to fix build on modern CMake
+        "flags": [
+            "-DPAHO_BUILD_SHARED=TRUE", 
+            "-DPAHO_BUILD_STATIC=TRUE", 
+            "-DPAHO_BUILD_SAMPLES=FALSE",
+            "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+        ]
     }
 ]
 
