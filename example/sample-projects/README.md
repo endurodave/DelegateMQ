@@ -15,4 +15,4 @@ All other projects require external 3rd party library support. See [Examples Set
 
 ## Build
 
-See [Sample Projects](../../docs/DETAILS.md#sample-projects) for details on building and running sample projects.
+See [Example Projects](../../docs/DETAILS.md#example-projects) for details on building and running remote delegate example projects.
