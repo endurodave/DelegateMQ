@@ -36,8 +36,8 @@ namespace Example
         }
 
         ~SafeTimer() {
-            // Even if Shutdown() wasn't called, the shared delegate prevents a crash
-            // if a stray timer event is still pending in workerThread.
+            // Even if Term() wasn't called, the shared delegate prevents a crash
+            // if a stray timer event is still pending in m_thread.
         }
 
     private:

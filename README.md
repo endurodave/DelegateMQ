@@ -1,5 +1,3 @@
-<img src="docs/DelegateMQ2.jpg" alt="DelegateMQ Layer Diagram" style="width:100%;"><br>
-
 ![License MIT](https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue)
 [![conan Ubuntu](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml)
 [![conan Clang](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml)
@@ -198,7 +196,7 @@ Remote delegates enable function invocation across processes or processors using
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [Cereal](https://github.com/USCiLab/cereal), [Bitsery](https://github.com/fraillt/bitsery), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
 * **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), UDP, data pipe, memory buffer
  
-See [Delegate Invocation Semantics](#delegate-invocation-semantics) for information on target callable invocation and argument handling based on the delegate type.
+See [Delegate Invocation Semantics](docs/DETAILS.md/#delegate-invocation-semantics) for information on target callable invocation and argument handling based on the delegate type.
 
 ## Delegate Semantics and Use Cases
 
@@ -240,7 +238,7 @@ To build and run DelegateMQ, follow these simple steps. The library uses <a href
    `cmake -B build .`
 3. Build and run the project within the `build` directory. 
 
-See [Example Projects](#example-projects) to build remote delegate project examples. See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
+See [Example Projects](docs/DETAILS.md/#example-projects) to build remote delegate project examples. See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
 
 # Documentation
 

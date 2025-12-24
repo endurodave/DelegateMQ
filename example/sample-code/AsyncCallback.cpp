@@ -41,7 +41,7 @@ namespace Example
         DataLogger() = default;
 
         // 1. Init: Register for callbacks using shared_from_this()
-        // FIX: Pass workerThread by reference instead of using global static
+        // Pass workerThread by reference instead of using global static
         void Init(Sensor& sensor, Thread& workerThread)
         {
             sensor.OnData += MakeDelegate(
@@ -83,7 +83,7 @@ namespace Example
     public:
         DataAnalyzer() = default;
 
-        // FIX: Pass workerThread by reference
+        // Pass workerThread by reference
         void Init(Sensor& sensor, Thread& workerThread)
         {
             // Create the delegate ONCE and store it as a member.

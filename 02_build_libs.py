@@ -31,7 +31,6 @@ import shutil
 import subprocess
 
 # Define the libraries to compile
-# Define the libraries to compile
 libs = [
     {
         "name": "nng",

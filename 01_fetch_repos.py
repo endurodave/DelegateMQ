@@ -54,7 +54,7 @@ repos = {
     "bitsery": ("https://github.com/fraillt/bitsery.git", "v5.2.3", False),
 
     # MsgPack: 'cpp_master' is required for the C++ headers structure
-    "msgpack-c": ("https://github.com/msgpack/msgpack-c.git", "cpp_master", False),
+    "msgpack-c": ("https://github.com/msgpack/msgpack-c.git", "cpp-7.0.0", False),
 
     # FreeRTOS: 202212.00 LTS
     "FreeRTOSv202212.00": ("https://github.com/FreeRTOS/FreeRTOS.git", "202212.00", True)

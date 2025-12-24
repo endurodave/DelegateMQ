@@ -160,7 +160,7 @@ The [system-architecture](#system-architecture) project located within the `exam
 Most remote delegate example projects depend on external libraries. Scripts are used to automate setting up a sandbox test environment for remote delegate testing. 
 
 1. Create a new workspace directory named `DelegateMQWorkspace`.
-2. Clone the DelegateMQ repo inside the workspace directory.  
+2. Clone the DelegateMQ repo to the `DelegateMQWorkspace\DelegateMQ` directory.  
    `git clone https://github.com/endurodave/DelegateMQ.git`
 3. Run `01_fetch_repos.py`. Fetches all dependent libraries from GitHub.
 4. Run `02_build_libs.py`. Builds dependent libraries.
