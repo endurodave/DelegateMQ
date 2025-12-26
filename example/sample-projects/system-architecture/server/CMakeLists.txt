@@ -8,7 +8,7 @@ add_compile_definitions(SERVER_APP)
 # Disable Boost dependency for msgpack
 add_compile_definitions(MSGPACK_NO_BOOST)
 
-# Set build options
+# Set build options (see Predef.cmake)
 set(DMQ_ASSERTS "OFF")
 set(DMQ_ALLOCATOR "OFF")
 set(DMQ_LOG "OFF")
@@ -20,6 +20,7 @@ include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
 
 if (MSVC)
     add_compile_options("/utf-8")   # Required by spdlog
+    add_compile_definitions(_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
 endif()
 
 # Collect all .cpp and *.h source files in the src directory

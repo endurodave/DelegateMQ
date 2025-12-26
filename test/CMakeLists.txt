@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.10)
 set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
-# @TODO: Set build options (see Predef.cmake)
+# @TODO: Set build options (see Predef.cmake). 
+# Rerun cmake configuration and clean/rebuild if you change these settings
 set(DMQ_ASSERTS "OFF")                        # ON for assert faults
 set(DMQ_ALLOCATOR "OFF")                      # ON for fixed-block allocator
 set(DMQ_LOG "OFF")                            # ON for spglog output
@@ -18,6 +19,7 @@ include("${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.cmake")
 
 if (MSVC)
     add_compile_options("/utf-8")   # Required by spdlog
+    add_compile_definitions(_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
 endif()
 
 # Collect all .cpp and *.h source files 

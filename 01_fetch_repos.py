@@ -53,7 +53,7 @@ repos = {
     # Bitsery: v5.2.3 is a stable modern C++ release.
     "bitsery": ("https://github.com/fraillt/bitsery.git", "v5.2.3", False),
 
-    # MsgPack: 'cpp_master' is required for the C++ headers structure
+    # MsgPack: 'cpp-7.0.0' is required for the C++ headers structure
     "msgpack-c": ("https://github.com/msgpack/msgpack-c.git", "cpp-7.0.0", False),
 
     # FreeRTOS: 202212.00 LTS
