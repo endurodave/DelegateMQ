@@ -77,6 +77,7 @@ static void DelegateFreeAsyncTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
@@ -308,6 +309,7 @@ static void DelegateMemberAsyncTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
@@ -464,6 +466,7 @@ static void DelegateMemberSpAsyncTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
@@ -693,6 +696,7 @@ static void DelegateFunctionAsyncTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);

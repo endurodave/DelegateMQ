@@ -58,6 +58,7 @@ static void DelegateFreeTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(!delegate5.Empty());
@@ -165,6 +166,7 @@ static void DelegateFreeTests()
     auto outgoingArg2 = MakeDelegate(&OutgoingPtrPtrArg);
     outgoingArg2(&psparam);
     ASSERT_TRUE(psparam->val == TEST_INT);
+    delete psparam;
 
     // Test outgoing ref argument
     sparam.val = TEST_INT;
@@ -235,6 +237,7 @@ static void DelegateMemberTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(!delegate5.Empty());
@@ -261,6 +264,7 @@ static void DelegateMemberTests()
     DelegateMember<Base, int(void)> delegate7;
     delegate7 = MakeDelegate(base, &Base::Func);
     ASSERT_TRUE(delegate7() == TEST_INT);
+    delete base;
 
     DelegateMember<Class, std::uint16_t(void)> d;
     ASSERT_TRUE(!d);
@@ -400,6 +404,7 @@ static void DelegateMemberSharedTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(!delegate5.Empty());
@@ -635,6 +640,7 @@ static void DelegateFunctionTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(!delegate5.Empty());

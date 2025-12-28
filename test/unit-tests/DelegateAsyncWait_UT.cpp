@@ -59,6 +59,7 @@ static void DelegateFreeAsyncWaitTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
@@ -169,6 +170,7 @@ static void DelegateFreeAsyncWaitTests()
     auto outgoingArg2 = MakeDelegate(&OutgoingPtrPtrArg, workerThread, WAIT_INFINITE);
     outgoingArg2(&psparam);
     ASSERT_TRUE(psparam->val == TEST_INT);
+    delete psparam;
 
     // Test outgoing ref argument
     sparam.val = TEST_INT;
@@ -253,6 +255,7 @@ static void DelegateMemberAsyncWaitTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
@@ -437,6 +440,7 @@ static void DelegateMemberSpAsyncWaitTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
@@ -702,6 +706,7 @@ static void DelegateFunctionAsyncWaitTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(delegate5.GetPriority() == Priority::HIGH);
@@ -851,6 +856,7 @@ static void DelegateFunctionAsyncWaitTests()
         ASSERT_TRUE(!del4.Empty());
         ASSERT_TRUE(del4() == 42);
         ASSERT_TRUE(!del5.Empty());
+        ASSERT_TRUE(del5() == 42);
         ASSERT_TRUE(del5() == 42);
     }
 }

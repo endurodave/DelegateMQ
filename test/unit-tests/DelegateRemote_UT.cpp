@@ -214,6 +214,7 @@ static void DelegateFreeRemoteTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(!delegate5.Empty());
@@ -516,6 +517,7 @@ static void DelegateMemberRemoteTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(!delegate5.Empty());
@@ -760,6 +762,7 @@ static void DelegateMemberSpRemoteTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(!delegate5.Empty());
@@ -967,6 +970,7 @@ static void DelegateFunctionRemoteTests()
 
     auto* delegate4 = delegate1.Clone();
     ASSERT_TRUE(*delegate4 == delegate1);
+    delete delegate4;
 
     auto delegate5 = std::move(delegate1);
     ASSERT_TRUE(!delegate5.Empty());
