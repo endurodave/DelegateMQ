@@ -1,7 +1,7 @@
 # Specify the minimum CMake version required
 cmake_minimum_required(VERSION 3.10)
 
-set(DELEGATE_APP "delegate_pub_app")
+set(DELEGATE_APP "delegate_pub_app") 
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
 # Set build options
@@ -32,13 +32,30 @@ include_directories(
 # Add an executable target
 add_executable(${DELEGATE_APP} ${SOURCES} ${DMQ_LIB_SOURCES})
 
-# Find the libraries in the specified directory
-find_library(MQTT_LIB_A paho-mqtt3a HINTS ${MQTT_LIBRARY_DIR})
-find_library(MQTT_LIB_C paho-mqtt3c HINTS ${MQTT_LIBRARY_DIR})
+# -------------------------------------------------------------------------
+# Find Libraries (UPDATED)
+# -------------------------------------------------------------------------
+# Note: MQTT_LIBRARY_DIR is set in External.cmake
+# We add PATH_SUFFIXES to look in Debug/Release subfolders
+# We add NAMES to look for 'paho-mqtt3cd' (debug) and 'paho-mqtt3c' (release)
+
+find_library(MQTT_LIB_A 
+    NAMES paho-mqtt3a paho-mqtt3ad
+    HINTS ${MQTT_LIBRARY_DIR}
+    PATH_SUFFIXES Debug Release
+)
+
+find_library(MQTT_LIB_C 
+    NAMES paho-mqtt3c paho-mqtt3cd
+    HINTS ${MQTT_LIBRARY_DIR}
+    PATH_SUFFIXES Debug Release
+)
 
 # Check if libraries were found
 if(NOT MQTT_LIB_A OR NOT MQTT_LIB_C)
-    message(FATAL_ERROR "Could not find MQTT libraries in ${MQTT_LIBRARY_DIR}")
+    message(FATAL_ERROR "Could not find MQTT libraries in ${MQTT_LIBRARY_DIR}. \
+    Checked subdirectories: Debug, Release. \
+    Checked names: paho-mqtt3c, paho-mqtt3cd")
 endif()
 
 # Link the libraries
@@ -47,6 +64,21 @@ target_link_libraries(${DELEGATE_APP} PRIVATE
     ${MQTT_LIB_C}
 )
 
+# =========================================================
+# Copy DLLs post-build (WINDOWS ONLY)
+# =========================================================
+if(WIN32)
+    add_custom_command(TARGET ${DELEGATE_APP} POST_BUILD
+        # 1. Copy and RENAME the C library
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${MQTT_BINARY_DIR}/$<CONFIG>/paho-mqtt3c$<$<CONFIG:Debug>:d>.dll"
+        "$<TARGET_FILE_DIR:${DELEGATE_APP}>/paho-mqtt3c.dll" 
+        
+        # 2. Copy and RENAME the Async library
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${MQTT_BINARY_DIR}/$<CONFIG>/paho-mqtt3a$<$<CONFIG:Debug>:d>.dll"
+        "$<TARGET_FILE_DIR:${DELEGATE_APP}>/paho-mqtt3a.dll"
 
-
-
+        COMMENT "Copying and renaming Paho MQTT DLLs to output directory"
+    )
+endif()

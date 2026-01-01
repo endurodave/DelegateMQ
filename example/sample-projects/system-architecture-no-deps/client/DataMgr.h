@@ -9,13 +9,14 @@
 #include "DataMsg.h"
 #include "NetworkMgr.h"
 #include <mutex>
+#include <memory> // Required for shared_ptr
 
 // DataMgr collects data from local and remote data sources. 
 class DataMgr
 {
 public:
     // Register with delegate to receive callbacks when data is received
-    static dmq::MulticastDelegateSafe<void(DataMsg&)> DataMsgCb;
+    static std::shared_ptr<dmq::SignalSafe<void(DataMsg&)>> DataMsgCb;
 
     static DataMgr& Instance()
     {
@@ -23,14 +24,14 @@ public:
         return instance;
     }
 
-    void SetDataMsg(DataMsg& data) 
-    { 
-        LocalDataMsgUpdate(data); 
+    void SetDataMsg(DataMsg& data)
+    {
+        LocalDataMsgUpdate(data);
     }
 
-    DataMsg GetDataMsg() 
-    { 
-        return GetCombindedDataMsg(); 
+    DataMsg GetDataMsg()
+    {
+        return GetCombindedDataMsg();
     }
 
 private:
@@ -40,12 +41,13 @@ private:
         m_thread.CreateThread();
 
         // Register to receive remote data updates
-        NetworkMgr::DataMsgCb += MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread);
+        // Use Connect() and store handle in m_networkDataConn
+        m_networkDataConn = NetworkMgr::DataMsgCb->Connect(MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread));
     }
 
     ~DataMgr()
     {
-        NetworkMgr::DataMsgCb -= MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread);
+        // No manual unregister needed. ScopedConnection handles it.
         m_thread.ExitThread();
     }
 
@@ -71,9 +73,10 @@ private:
             m_localDataMsg = dataMsg;
         }
 
-        // Nofity all subscribers new data arrived
+        // Notify all subscribers new data arrived
+        // Invoke signal via dereference
         auto msg = GetCombindedDataMsg();
-        DataMsgCb(msg);
+        if (DataMsgCb) (*DataMsgCb)(msg);
     }
 
     void RemoteDataMsgUpdate(DataMsg& dataMsg)
@@ -83,14 +86,18 @@ private:
             m_remoteDataMsg = dataMsg;
         }
 
-        // Nofity all subscribers new data arrived
+        // Notify all subscribers new data arrived
+        // Invoke signal via dereference
         auto msg = GetCombindedDataMsg();
-        DataMsgCb(msg);
+        if (DataMsgCb) (*DataMsgCb)(msg);
     }
 
     Thread m_thread;
     Timer m_timer;
     std::mutex m_mutex;
+
+    // RAII Connection
+    dmq::ScopedConnection m_networkDataConn;
 
     DataMsg m_localDataMsg;
     DataMsg m_remoteDataMsg;

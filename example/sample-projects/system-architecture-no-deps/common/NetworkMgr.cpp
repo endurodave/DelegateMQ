@@ -10,13 +10,6 @@ using namespace std;
 const std::chrono::milliseconds NetworkMgr::SEND_TIMEOUT(100);
 const std::chrono::milliseconds NetworkMgr::RECV_TIMEOUT(2000);
 
-MulticastDelegateSafe<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> NetworkMgr::ErrorCb;
-MulticastDelegateSafe<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)> NetworkMgr::SendStatusCb;
-MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)> NetworkMgr::AlarmMsgCb;
-MulticastDelegateSafe<void(CommandMsg&)> NetworkMgr::CommandMsgCb;
-MulticastDelegateSafe<void(DataMsg&)> NetworkMgr::DataMsgCb;
-MulticastDelegateSafe<void(ActuatorMsg&)> NetworkMgr::ActuatorMsgCb;
-
 NetworkMgr::NetworkMgr() :
     m_thread("NetworkMgr"),
     m_transportMonitor(RECV_TIMEOUT),
@@ -25,7 +18,7 @@ NetworkMgr::NetworkMgr() :
     m_dataMsgDel(ids::DATA_MSG_ID, &m_dispatcher),
     m_actuatorMsgDel(ids::ACTUATOR_MSG_ID, &m_dispatcher)
 {
-    // Create the threads with a 5s watchdog timeout
+    // Create the thread with a 5s watchdog timeout
     m_thread.CreateThread(std::chrono::milliseconds(5000));
 }
 
@@ -45,16 +38,17 @@ int NetworkMgr::Create()
 
     // Bind the remote delegate interface to a delegate container. Each 
     // incoming remote message will invoke all registered callbacks.
-    m_alarmMsgDel.Bind(&AlarmMsgCb, &AlarmDel::operator(), ids::ALARM_MSG_ID);
+    // Use .get() to bind to shared_ptr signals
+    m_alarmMsgDel.Bind(AlarmMsgCb.get(), &SignalSafe<void(AlarmMsg&, AlarmNote&)>::operator(), ids::ALARM_MSG_ID);
     m_alarmMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::ErrorHandler);
 
-    m_dataMsgDel.Bind(&DataMsgCb, &DataDel::operator(), ids::DATA_MSG_ID);
+    m_dataMsgDel.Bind(DataMsgCb.get(), &SignalSafe<void(DataMsg&)>::operator(), ids::DATA_MSG_ID);
     m_dataMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::ErrorHandler);
 
-    m_commandMsgDel.Bind(&CommandMsgCb, &CommandDel::operator(), ids::COMMAND_MSG_ID);
+    m_commandMsgDel.Bind(CommandMsgCb.get(), &SignalSafe<void(CommandMsg&)>::operator(), ids::COMMAND_MSG_ID);
     m_commandMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::ErrorHandler);
 
-    m_actuatorMsgDel.Bind(&ActuatorMsgCb, &ActuatorDel::operator(), ids::ACTUATOR_MSG_ID);
+    m_actuatorMsgDel.Bind(ActuatorMsgCb.get(), &SignalSafe<void(ActuatorMsg&)>::operator(), ids::ACTUATOR_MSG_ID);
     m_actuatorMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::ErrorHandler);
 
     int err = 0;
@@ -100,7 +94,8 @@ void NetworkMgr::Start()
     m_recvThread = new std::thread(&NetworkMgr::RecvThread, this);
 
     // Start a timer to process message timeouts
-    m_timeoutTimer.Expired = MakeDelegate(this, &NetworkMgr::Timeout, m_thread);
+    // Use Connect()
+    m_timeoutTimerConn = m_timeoutTimer.Expired->Connect(MakeDelegate(this, &NetworkMgr::Timeout, m_thread));
     m_timeoutTimer.Start(std::chrono::milliseconds(100));
 }
 
@@ -122,7 +117,8 @@ void NetworkMgr::Stop()
     }
 
     m_timeoutTimer.Stop();
-    m_timeoutTimer.Expired = nullptr;
+    // Disconnect
+    m_timeoutTimerConn.Disconnect();
 
     //m_sendTransport.Destroy();
     //m_recvTransport.Destroy();
@@ -246,13 +242,12 @@ void NetworkMgr::Timeout()
 
 void NetworkMgr::ErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux)
 {
-    ErrorCb(id, error, aux);
+    // Invoke signal via dereference
+    if (ErrorCb) (*ErrorCb)(id, error, aux);
 }
 
 void NetworkMgr::SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
 {
-    SendStatusCb(id, seqNum, status);
+    // Invoke signal via dereference
+    if (SendStatusCb) (*SendStatusCb)(id, seqNum, status);
 }
-
-
-

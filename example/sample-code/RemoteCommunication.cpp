@@ -154,7 +154,7 @@ namespace Example
             m_thread.CreateThread();
 
             // Start a timer to send data
-            m_sendTimer.Expired = MakeDelegate(this, &Sender::Send, m_thread);
+            m_sendTimerConn = m_sendTimer.Expired->Connect(MakeDelegate(this, &Sender::Send, m_thread));
             m_sendTimer.Start(std::chrono::milliseconds(100));
         }
 
@@ -180,6 +180,7 @@ namespace Example
     private:
         Thread m_thread;
         Timer m_sendTimer;
+        dmq::ScopedConnection m_sendTimerConn;
 
         xostringstream m_args;
         Dispatcher m_dispatcher;
@@ -205,7 +206,7 @@ namespace Example
             m_thread.CreateThread();
 
             // Start a timer to poll data
-            m_recvTimer.Expired = MakeDelegate(this, &Receiver::Poll, m_thread);
+            m_recvTimerConn = m_recvTimer.Expired->Connect(MakeDelegate(this, &Receiver::Poll, m_thread));
             m_recvTimer.Start(std::chrono::milliseconds(50));
         }
         ~Receiver()
@@ -241,6 +242,7 @@ namespace Example
     private:
         Thread m_thread;
         Timer m_recvTimer;
+        dmq::ScopedConnection m_recvTimerConn;
 
         xostringstream m_args;
         Serializer<void(Data&)> m_serializer;

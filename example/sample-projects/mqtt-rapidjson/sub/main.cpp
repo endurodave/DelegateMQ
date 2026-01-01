@@ -2,7 +2,7 @@
 /// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
-/// @brief MQTT and RapidJSON with remote delegates examples. 
+/// @brief MQTT and RapidJSON with remote delegates examples.
 
 #include "receiver.h"
 

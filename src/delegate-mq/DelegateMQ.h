@@ -57,6 +57,7 @@
 #include "delegate/DelegateOpt.h"
 #include "delegate/MulticastDelegateSafe.h"
 #include "delegate/UnicastDelegateSafe.h"
+#include "delegate/SignalSafe.h"
 #include "delegate/DelegateAsync.h"
 #include "delegate/DelegateAsyncWait.h"
 #include "delegate/DelegateRemote.h"

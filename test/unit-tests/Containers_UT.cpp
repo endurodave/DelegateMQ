@@ -444,6 +444,89 @@ static void MulticastDelegateSafeReentrantTests()
     }
 }
 
+static void SignalTests()
+{
+    // Test 1: Manual Disconnect
+    {
+        // Must use make_shared because Signal uses shared_from_this() internally
+        auto sig = std::make_shared<Signal<void(int*)>>();
+        int callCount = 0;
+
+        // Connect returns r-value, moved into 'conn'
+        Connection conn = sig->Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; }));
+
+        ASSERT_TRUE(conn.IsConnected());
+
+        // Fire (dereference shared_ptr)
+        (*sig)(&callCount);
+        ASSERT_TRUE(callCount == 1);
+
+        // Disconnect
+        conn.Disconnect();
+        ASSERT_TRUE(!conn.IsConnected());
+
+        // Fire again
+        (*sig)(&callCount);
+        ASSERT_TRUE(callCount == 1);
+    }
+
+    // Test 2: RAII Scoped Disconnect
+    {
+        auto sig = std::make_shared<Signal<void(int*)>>();
+        int callCount = 0;
+        {
+            // Connect directly into ScopedConnection (Move)
+            ScopedConnection scopedConn(sig->Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; })));
+
+            ASSERT_TRUE(scopedConn.IsConnected());
+            (*sig)(&callCount);
+            ASSERT_TRUE(callCount == 1);
+
+        } // Destructor runs
+
+        ASSERT_TRUE(sig->Size() == 0);
+        (*sig)(&callCount);
+        ASSERT_TRUE(callCount == 1);
+    }
+
+    // Test 3: Move Semantics
+    {
+        auto sig = std::make_shared<Signal<void(int*)>>();
+        Connection conn1 = sig->Connect(MakeDelegate(+[](int*) {}));
+
+        ASSERT_TRUE(conn1.IsConnected());
+
+        // Explicit move
+        Connection conn2 = std::move(conn1);
+
+        ASSERT_TRUE(conn2.IsConnected());
+        ASSERT_TRUE(!conn1.IsConnected()); // conn1 is now empty
+        ASSERT_TRUE(sig->Size() == 1);
+
+        conn2.Disconnect();
+        ASSERT_TRUE(sig->Size() == 0);
+    }
+}
+
+static void SignalSafeTests()
+{
+    // Test 5: Thread Safe Signal
+    {
+        // Must use make_shared
+        auto sig = dmq::MakeSignal<void(int*)>();
+        int callCount = 0;
+
+        {
+            ScopedConnection conn = sig->Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; }));
+            ASSERT_TRUE(sig->Size() == 1);
+            (*sig)(&callCount);
+            ASSERT_TRUE(callCount == 1);
+        } // Disconnect
+
+        ASSERT_TRUE(sig->Size() == 0);
+    }
+}
+
 void Containers_UT()
 {
     UnicastDelegateTests();
@@ -453,4 +536,7 @@ void Containers_UT()
 
     MulticastReentrantTests();
     MulticastDelegateSafeReentrantTests();
+
+    SignalTests();
+    SignalSafeTests();
 }

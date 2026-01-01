@@ -41,10 +41,11 @@ public:
                 }
                 cv.notify_one();
             }
-        };
+            };
 
         // Register for callback 
-        NetworkMgr::ErrorCb += MakeDelegate(errorCb);
+        // Use Connect with a local ScopedConnection (auto-disconnects when out of scope)
+        dmq::ScopedConnection tempErrorConn = NetworkMgr::ErrorCb->Connect(MakeDelegate(errorCb));
 
         CommandMsg command;
         command.action = CommandMsg::Action::START;
@@ -65,15 +66,18 @@ public:
         while (!sendCommandMsgComplete)
             cv.wait(lock);
 
-        // Send complete; unregister from callback
-        NetworkMgr::ErrorCb -= MakeDelegate(errorCb);
+        // Send complete; explicit disconnect not strictly needed (tempErrorConn handles it),
+        // but allowed.
+        tempErrorConn.Disconnect();
 
         // Start local data collection
-        m_pollTimer.Expired = MakeDelegate(this, &ClientApp::PollData, m_thread);
+        // Use Connect() and store handle
+        m_pollTimerConn = m_pollTimer.Expired->Connect(MakeDelegate(this, &ClientApp::PollData, m_thread));
         m_pollTimer.Start(std::chrono::milliseconds(500));
 
         // Start actuator updates
-        m_actuatorTimer.Expired = MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread);
+        // Use Connect() and store handle
+        m_actuatorTimerConn = m_actuatorTimer.Expired->Connect(MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
         m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
 
         // Wait here for the SendActuatorMsgFuture() return value
@@ -90,9 +94,10 @@ public:
         NetworkMgr::Instance().SendCommandMsg(command);
 
         m_pollTimer.Stop();
-        m_pollTimer.Expired = nullptr;
+        m_pollTimerConn.Disconnect();
+
         m_actuatorTimer.Stop();
-        m_actuatorTimer.Expired = nullptr;
+        m_actuatorTimerConn.Disconnect();
     }
 
 private:
@@ -105,14 +110,14 @@ private:
     {
         m_thread.CreateThread();
 
-        NetworkMgr::ErrorCb += MakeDelegate(this, &ClientApp::ErrorHandler, m_thread);
-        NetworkMgr::SendStatusCb += MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread);
+        // Use Connect() for NetworkMgr callbacks
+        m_errorCbConn = NetworkMgr::ErrorCb->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
+        m_statusCbConn = NetworkMgr::SendStatusCb->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
     }
 
-    ~ClientApp() 
+    ~ClientApp()
     {
-        NetworkMgr::ErrorCb -= MakeDelegate(this, &ClientApp::ErrorHandler, m_thread);
-        NetworkMgr::SendStatusCb -= MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread);
+        // No manual unregistration needed. ScopedConnections handle it automatically.
         m_thread.ExitThread();
     }
 
@@ -178,6 +183,11 @@ private:
 
     Timer m_pollTimer;
     Timer m_actuatorTimer;
+
+    dmq::ScopedConnection m_pollTimerConn;
+    dmq::ScopedConnection m_actuatorTimerConn;
+    dmq::ScopedConnection m_errorCbConn;
+    dmq::ScopedConnection m_statusCbConn;
 
     Actuator m_actuator3;
     Actuator m_actuator4;

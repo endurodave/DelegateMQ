@@ -158,12 +158,13 @@ public:
         m_thread.CreateThread();
 
         // Start a timer to send data
-        m_sendTimer.Expired = MakeDelegate(this, &Sender::Send, m_thread);
+        (*m_sendTimer.Expired) += MakeDelegate(this, &Sender::Send, m_thread);
         m_sendTimer.Start(std::chrono::milliseconds(50));
     }
 
     ~Sender()
     {
+        (*m_sendTimer.Expired) -= MakeDelegate(this, &Sender::Send, m_thread);
         m_sendTimer.Stop();
         m_thread.ExitThread();
     }
@@ -209,11 +210,12 @@ public:
         m_thread.CreateThread();
 
         // Start a timer to poll data
-        m_recvTimer.Expired = MakeDelegate(this, &Receiver::Poll, m_thread);
+        (*m_recvTimer.Expired) += MakeDelegate(this, &Receiver::Poll, m_thread);
         m_recvTimer.Start(std::chrono::milliseconds(50));
     }
     ~Receiver()
     {
+        (*m_recvTimer.Expired) -= MakeDelegate(this, &Receiver::Poll, m_thread);
         m_thread.ExitThread();
         m_recvDelegate = nullptr;
     }

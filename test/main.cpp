@@ -10,6 +10,7 @@
 #include "DelegateMQ.h"
 #include "SafeTimer.h"
 #include "AsyncCallback.h"
+#include "SignalSlot.h"
 #include "ProducerConsumer.h"
 #include "CountdownLatch.h"
 #include "ActiveObject.h"
@@ -27,7 +28,7 @@
 
 extern void RunDelegateUnitTests();
 void RunSimpleExamples();
-void RunAsyncCallbackExamples();
+void RunPubSubExamples();
 void RunAsyncAPIExamples();
 void RunAllExamples();
 void RunMiscExamples();
@@ -66,17 +67,18 @@ int main(void)
 
     // Create a timer that expires every 250mS and calls 
     // TimerExpiredCb on workerThread1 upon expiration
-    GetTimer().Expired = MakeDelegate(&TimerExpiredCb, workerThread1);
+    // Dereference shared_ptr and use +=
+    (*GetTimer().Expired) += MakeDelegate(&TimerExpiredCb, workerThread1);
     GetTimer().Start(std::chrono::milliseconds(250));
 
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);
 
     // Run all test code
-    for (int i = 0; i < 3; i++) 
+    for (int i = 0; i < 3; i++)
     {
         RunSimpleExamples();
-        RunAsyncCallbackExamples();
+        RunPubSubExamples();
         RunAsyncAPIExamples();
         RunAllExamples();
         RunMiscExamples();
@@ -86,15 +88,15 @@ int main(void)
     // Ensure the timer thread completes before main exits
     processTimerExit.store(true);
     if (timerThread.joinable())
-        timerThread.join();  
+        timerThread.join();
 
     GetTimer().Stop();
-    GetTimer().Expired.Clear();
+    GetTimer().Expired->Clear();
 
     workerThread1.ExitThread();
 
     cout << "Success!" << endl;
-	return 0;
+    return 0;
 }
 
 size_t MsgOut(const std::string& msg)
@@ -150,11 +152,15 @@ void RunSimpleExamples()
     remote("Invoke MsgOut remote!");
 }
 
+// Use SignalSafe for the RAII pattern
 class Publisher
 {
 public:
-    // Thread-safe container to store registered callbacks
-    dmq::MulticastDelegateSafe<void(const std::string& msg)> MsgCb;
+    // Cleaner type definition
+    using SignalType = dmq::SignalSafe<void(const std::string&)>;
+
+    // Initialize using make_shared
+    std::shared_ptr<SignalType> MsgSig = std::make_shared<SignalType>();
 
     static Publisher& Instance()
     {
@@ -164,8 +170,8 @@ public:
 
     void SetMsg(const std::string& msg)
     {
-        m_msg = msg;    // Store message
-        MsgCb(m_msg);   // Invoke all registered callbacks
+        m_msg = msg;
+        (*MsgSig)(m_msg); // Invoke
     }
 
 private:
@@ -181,25 +187,18 @@ public:
     }
 
     void Init() {
-        // 1. Create the delegate once and STORE it.
-        // We pass a shared_ptr, but the delegate internally converts and 
-        // stores it as a weak_ptr to prevent circular reference cycles.
-        m_delegate = dmq::MakeDelegate(
-            shared_from_this(),
-            &Subscriber::HandleMsgCb,
-            m_thread
+        // We use shared_from_this() to ensure the callback keeps 'this' alive safely.
+        // The returned connection is stored in m_connection.
+        m_connection = Publisher::Instance().MsgSig->Connect(
+            dmq::MakeDelegate(
+                shared_from_this(),
+                &Subscriber::HandleMsgCb,
+                m_thread
+            )
         );
-
-        // 2. Register using the member
-        Publisher::Instance().MsgCb += m_delegate;
     }
 
-    ~Subscriber() {
-        // 3. Unregister using the stored member.
-        // Even though we are destructing, the underlying weak_ptr control block 
-        // identity is still valid, allowing the container to find and remove us.
-        Publisher::Instance().MsgCb -= m_delegate;
-    }
+    ~Subscriber() = default;
 
 private:
     void HandleMsgCb(const std::string& msg)
@@ -211,25 +210,28 @@ private:
 
     Thread m_thread;
 
-    // 'Sp' suffix indicates this delegate is specialized for smart pointers
-    dmq::DelegateMemberAsyncSp<Subscriber, void(const std::string&)> m_delegate;
+    // Store a ScopedConnection instead of the specific Delegate type.
+    // This manages the lifetime of the registration.
+    dmq::ScopedConnection m_connection;
 };
 
 //------------------------------------------------------------------------------
 // Run pub/sub example
 //------------------------------------------------------------------------------
-void RunAsyncCallbackExamples()
+void RunPubSubExamples()
 {
     // We use shared_ptr to ensure the object remains alive for the duration of the
-    // asynchronous call. If we allocated Subscriber on the stack, it would be destroyed 
-    // immediately when this function returns. The worker thread would then attempt 
-    // to access a dead object (Use-After-Free), resulting in a crash.
-    // See DETAILS.md section Object Lifetime and Async Delegates.
+    // asynchronous call.
     auto subscriber = std::make_shared<Subscriber>();
     subscriber->Init();
 
     // Subscriber::HandleMsgCallback invoked when Publisher::SetMsg is called
     Publisher::Instance().SetMsg("Hello World!");
+
+    // When 'subscriber' goes out of scope here:
+    // 1. ~Subscriber() runs.
+    // 2. m_connection destructor runs.
+    // 3. It automatically disconnects from Publisher::MsgSig.
 }
 
 class Data
@@ -319,6 +321,9 @@ void RunAllExamples()
     // Run asynchronous callbacks using delegates example
     AsyncCallbackExample();
 
+    // Run signal-slot example
+    RunSignalSlotExamples();
+
     // Run asynchronous API using delegates example 
     AsyncAPIExample();
 
@@ -371,7 +376,7 @@ void RunMiscExamples()
 
     TestStruct testStruct;
     testStruct.x = 123;
-    TestStruct* pTestStruct = &testStruct;    
+    TestStruct* pTestStruct = &testStruct;
 
     // Create a delegate bound to a free function then invoke
     auto delegateFree = MakeDelegate(&FreeFuncInt);
@@ -686,6 +691,29 @@ void RunMiscExamples()
     previousMode = SysDataNoLock::GetInstance().SetSystemModeAsyncWaitAPI(SystemMode::NORMAL);
 
     client->Term();
+
+    // RAII Connection Management Example (Signal/ScopedConnection)
+    // See SignalSlot.cpp for more examples. 
+    {
+        // Must use make_shared for Signal to support Connection/shared_from_this
+        auto mySignal = dmq::MakeSignal<void(int)>();
+
+        {
+            // Create a scoped connection handle
+            dmq::ScopedConnection conn;
+
+            // Connect a lambda
+            conn = mySignal->Connect(MakeDelegate(+[](int v) {
+                cout << "ScopedConnection received: " << v << endl;
+                }));
+
+            // Signal is connected
+            cout << "Signal firing (Observer is alive):" << endl;
+            (*mySignal)(100);
+        } // conn goes out of scope here -> Automatically disconnects!
+
+        // Signal is disconnected
+        cout << "Signal firing (Observer is dead):" << endl;
+        (*mySignal)(200); // No output expected
+    }
 }
-
-

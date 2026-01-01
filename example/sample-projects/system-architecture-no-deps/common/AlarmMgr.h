@@ -5,6 +5,7 @@
 #include "NetworkMgr.h"
 #include "AlarmMsg.h"
 #include <string>
+#include <iostream> 
 
 // AlarmMgr handles client and server alarms. 
 class AlarmMgr
@@ -37,18 +38,21 @@ private:
     {
         m_thread.CreateThread();
 
-        NetworkMgr::ErrorCb += MakeDelegate(this, &AlarmMgr::ErrorHandler, m_thread);
+        // Use Connect() and store handle
+        m_errorConn = NetworkMgr::ErrorCb->Connect(MakeDelegate(this, &AlarmMgr::ErrorHandler, m_thread));
 
+        // Create delegate, set priority, then connect
         auto alarmDel = MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
         alarmDel.SetPriority(dmq::Priority::HIGH);  // Alarm messages high priority
-        NetworkMgr::AlarmMsgCb += alarmDel;
+
+        // Use Connect() and store handle
+        m_alarmConn = NetworkMgr::AlarmMsgCb->Connect(alarmDel);
     }
 
     ~AlarmMgr()
     {
-        NetworkMgr::ErrorCb -= MakeDelegate(this, &AlarmMgr::ErrorHandler, m_thread);
-        NetworkMgr::AlarmMsgCb -= MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
-
+        // No manual unsubscription needed. 
+        // ScopedConnections (m_errorConn, m_alarmConn) handle it automatically.
         m_thread.ExitThread();
     }
 
@@ -76,6 +80,10 @@ private:
     }
 
     Thread m_thread;
+
+    // RAII Connections
+    dmq::ScopedConnection m_errorConn;
+    dmq::ScopedConnection m_alarmConn;
 };
 
 #endif

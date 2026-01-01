@@ -24,6 +24,11 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Publish/Subscribe Example](#publishsubscribe-example)
     - [Publisher](#publisher)
     - [Subscriber](#subscriber)
+  - [Signal Slot Example](#signal-slot-example)
+    - [Signal](#signal)
+    - [Slot (Subscriber)](#slot-subscriber)
+    - [Lambda Slots](#lambda-slots)
+    - [`SignalSafe` vs. `MulticastDelegateSafe`](#signalsafe-vs-multicastdelegatesafe)
   - [Asynchronous API Example](#asynchronous-api-example)
   - [Delegate Invocation Semantics](#delegate-invocation-semantics)
 - [Background](#background)
@@ -38,8 +43,6 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Remote Delegates](#remote-delegates)
   - [Error Handling](#error-handling)
   - [Debug Logging](#debug-logging)
-  - [Usage Summary](#usage-summary)
-- [Design Details](#design-details)
   - [Object Lifetime and Async Delegates](#object-lifetime-and-async-delegates)
     - [The Risk: Raw Pointers](#the-risk-raw-pointers)
     - [The Solution: Shared Pointers](#the-solution-shared-pointers)
@@ -47,6 +50,8 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Init/Term Pattern](#initterm-pattern)
     - [RAII Pattern](#raii-pattern)
     - [Object Lifetime Usage Guide](#object-lifetime-usage-guide)
+  - [Usage Summary](#usage-summary)
+- [Design Details](#design-details)
   - [Library Dependencies](#library-dependencies)
   - [Fixed-Block Memory Allocator](#fixed-block-memory-allocator)
   - [Function Argument Copy](#function-argument-copy)
@@ -77,6 +82,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Blocking Reinvoke](#blocking-reinvoke)
     - [Blocking Remote Send](#blocking-remote-send)
   - [Timer Example](#timer-example)
+    - [Safe Timer (RAII)](#safe-timer-raii)
   - [`std::async` Thread Targeting Example](#stdasync-thread-targeting-example)
   - [Remote Delegate Example](#remote-delegate-example)
   - [More Examples](#more-examples)
@@ -97,6 +103,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 - [Tests](#tests)
   - [Unit Tests](#unit-tests)
   - [Valgrind Memory Tests](#valgrind-memory-tests)
+    - [Results Summary](#results-summary)
     - [Heap Memory Test Results](#heap-memory-test-results)
     - [Fixed-Block Memory Allocator Test Results](#fixed-block-memory-allocator-test-results)
 - [Library Comparison](#library-comparison)
@@ -416,6 +423,118 @@ public:
     }
 }
 ```
+
+## Signal Slot Example
+
+The Signal-Slot pattern simplifies the Publish/Subscribe model by introducing automatic connection management (RAII). This prevents dangling pointer crashes by automatically disconnecting the subscriber when it goes out of scope.
+
+**Unique Feature: Mixed Sync & Async Slots**
+Unlike many other C++ signal/slot libraries which are strictly synchronous, DelegateMQ allows a single Signal to drive both **synchronous** and **asynchronous** slots simultaneously. The *subscriber* determines the execution mode (sync, async, or remote) at the moment of connection. The publisher remains completely decoupled, simply emitting the event while DelegateMQ handles the threading logic for each observer.
+
+### Signal
+
+Define a `Signal` (or `SignalSafe` for thread-safe usage).
+
+> **Note:** Signals **must** be instantiated using `dmq::MakeSignal` (or `std::make_shared`) because the `Connect()` method internally uses `shared_from_this()` to manage the signal's lifetime safely.
+
+```cpp
+class Publisher
+{
+public:
+    // Define a thread-safe Signal that accepts void(string)
+    // Use the dmq::SignalPtr alias for cleaner syntax
+    dmq::SignalPtr<void(const std::string&)> MsgSig 
+        = dmq::MakeSignal<void(const std::string&)>();
+
+    void Publish(const std::string& msg)
+    {
+        // Emit signal to all connected slots
+        // Note: Dereference (*) the shared_ptr to invoke
+        (*MsgSig)(msg);
+    }
+};
+```
+### Slot (Subscriber)
+
+The subscriber connects to the signal using `Connect()`. This returns a `dmq::ScopedConnection` handle. When this handle is destroyed (e.g., when the `Subscriber` class is destroyed), the connection is automatically removed.
+
+```cpp
+class Subscriber
+{
+public:
+    Subscriber(Publisher& pub) : m_thread("SubscriberThread") 
+    {
+        m_thread.CreateThread();
+
+        // Connect to the publisher's signal.
+        // We use 'MakeDelegate' to bind the member function to our thread.
+        // We store the result in 'm_connection'.
+        m_connection = pub.MsgSig->Connect(
+            MakeDelegate(this, &Subscriber::HandleMsg, m_thread)
+        );
+    }
+
+    // DESTRUCTOR: No manual unregistration needed!
+    // m_connection destructor automatically disconnects from the Publisher.
+    ~Subscriber() = default;
+
+private:
+    void HandleMsg(const std::string& msg)
+    {
+        std::cout << "Received: " << msg << std::endl;
+    }
+
+    Thread m_thread;
+    
+    // The "Magic" Link: Holds the connection alive.
+    // If this object dies, the link is broken automatically.
+    dmq::ScopedConnection m_connection; 
+};
+```
+
+### Lambda Slots
+
+You can also connect lambdas directly to signals.
+
+**Stateless Lambdas**: Use the unary `+` operator to convert the lambda to a function pointer for easy deduction.
+
+```cpp
+auto mySignal = dmq::MakeSignal<void(int)>();
+dmq::ScopedConnection conn;
+
+// Use '+' for simple lambdas
+conn = mySignal->Connect(MakeDelegate(+[](int val) {
+    std::cout << "Lambda received: " << val << std::endl;
+}));
+```
+
+**Stateful Lambdas (Captures)**: Wrap capturing lambdas in `std::function`.
+
+```cpp
+int x = 42;
+conn = mySignal->Connect(MakeDelegate(std::function<void(int)>([x](int val) {
+    std::cout << "Captured x + val: " << (x + val) << std::endl;
+})));
+```
+
+### `SignalSafe` vs. `MulticastDelegateSafe`
+
+`SignalSafe` is essentially a wrapper around the `MulticastDelegateSafe` delegate container that adds automatic connection management (RAII). Think of `SignalSafe` as a "Smart Multicast Delegate."
+
+**The Core Difference: Lifetime Safety**
+
+`MulticastDelegateSafe`: You must manually unsubscribe (`-=`). If a subscriber object is destroyed but forgets to unsubscribe, the delegate container holds a dangling pointer. Next time it invokes, the program crashes.
+
+`SignalSafe`: Returns a Connection handle when you subscribe (`Connect()`). If that handle goes out of scope (or the subscriber is destroyed), it automatically unsubscribes.
+
+| Feature | MulticastDelegateSafe | SignalSafe |
+| --- | --- | --- |
+| Subscription | `+= MakeDelegate(...)` | `->Connect(MakeDelegate(...))` | 
+| Unsubscription | **Manual**: `-= MakeDelegate(...)` | **Automatic**: via `ScopedConnection` destructor |
+| Safety Risk | **High**: Risk of dangling pointers if `-=` is forgotten. | **Low**: Connection is severed automatically when subscriber dies. | 
+| Storage Requirement | Can be on Stack or Heap. | Must be on Heap (`std::shared_ptr`) to track connections. |
+
+
 ## Asynchronous API Example
 
 `SetSystemModeAsyncAPI()` is an asynchronous function call that re-invokes on `workerThread2` if necessary. 
@@ -526,7 +645,9 @@ A delegate container stores one or more delegates. A delegate container is calla
 UnicastDelegate<>
     UnicastDelegateSafe<>
 MulticastDelegate<>
+    Signal<>
     MulticastDelegateSafe<>
+        SignalSafe<>
 ``` 
 
 `UnicastDelegate<>` is a delegate container accepting a single delegate. 
@@ -534,6 +655,8 @@ MulticastDelegate<>
 `MulticastDelegate<>` is a delegate container accepting multiple delegates.
 
 `MulticastDelegateSafe<>` is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.
+
+`Signal<>` and `SignalSafe<>` extend the multicast containers to support RAII connection management. Unlike the standard delegates, `Connect()` returns a `Connection` handle. This handle can be managed by a `ScopedConnection` to automatically unsubscribe the delegate when the handle goes out of scope, preventing callbacks to destroyed objects. `SignalSafe<>` must be instantiated via `std::make_shared` to ensure thread-safe disconnection.
 
 ## Synchronous Delegates
 
@@ -854,82 +977,6 @@ Log output can be directed to multiple sinks, such as files, consoles, or custom
    thread=UdpTransport
    target=class dmq::DelegateMemberAsyncWait<class UdpTransport,int __cdecl(enum UdpTransport::Type,char const * __ptr64,unsigned short)>
 ```
-## Usage Summary
-
-Synchronous delegates are created using one argument for free functions and two for instance member functions.
-
-```cpp
-auto freeDelegate = MakeDelegate(&MyFreeFunc);
-auto memberDelegate = MakeDelegate(&myClass, &MyClass::MyMemberFunc);
-```
-
-Adding the thread argument creates a non-blocking asynchronous delegate.
-
-```cpp
-auto freeDelegate = MakeDelegate(&MyFreeFunc, myThread);
-auto memberDelegate = MakeDelegate(&myClass, &MyClass::MyMemberFunc, myThread);
-```
-
-A `std::shared_ptr` can replace a raw instance pointer on synchronous and non-blocking asynchronous member delegates.
-
-```cpp
-std::shared_ptr<MyClass> myClass(new MyClass());
-auto memberDelegate = MakeDelegate(myClass, &MyClass::MyMemberFunc, myThread);
-```
-
-Adding a `timeout` argument creates a blocking asynchronous delegate.
-
-```cpp
-auto freeDelegate = MakeDelegate(&MyFreeFunc, myThread, WAIT_INFINITE);
-auto memberDelegate = MakeDelegate(&myClass, &MyClass::MyMemberFunc, myThread, std::chrono::milliseconds(5000));
-```
-
-Add to a multicast containers using `operator+=` and `operator-=`. 
-
-```cpp
-MulticastDelegate<void(int)> multicastContainer;
-multicastContainer += MakeDelegate(&MyFreeFunc);
-multicastContainer -= MakeDelegate(&MyFreeFunc);
-```
-
-Use the thread-safe multicast delegate container when using asynchronous delegates to allow multiple threads to safely add/remove from the container.
-
-```cpp
-MulticastDelegateSafe<void(int)> multicastContainer;
-multicastContainer += MakeDelegate(&MyFreeFunc, myThread);
-multicastContainer -= MakeDelegate(&MyFreeFunc, myThread);
-```
-
-Add to a unicast container using `operator=`.
-
-```cpp
-UnicastDelegate<void(int)> unicastContainer;
-unicastContainer = MakeDelegate(&MyFreeFunc);
-unicastContainer = 0;
-```
-
-All delegates and delegate containers are invoked using `operator()`.
-
-```cpp
-myDelegate(123)
-```
-
-Use `IsSuccess()` on blocking delegates before using the return value or outgoing arguments.
-
-```cpp
-if (myDelegate) 
-{
-     int outInt = 0;
-     int retVal = myDelegate(&outInt);
-     if (myDelegate.IsSuccess()) 
-     {
-          cout << outInt << retVal;
-     }
-}
-```
-
-# Design Details
-
 ## Object Lifetime and Async Delegates
 
 ### The Risk: Raw Pointers
@@ -971,7 +1018,7 @@ safeObj.reset();
 
 When using `std::shared_ptr` and `std::enable_shared_from_this`, you must follow a specific pattern to manually register and unregister delegates.
 
-Critical Rule: You cannot call `shared_from_this()` inside a destructor. Doing so causes a `std::bad_weak_ptr` crash because the ownership of the object has already expired. Therefore, if you require manual unregistration (to stop receiving events immediately), you must use an explicit `Init`/`Term` or RAII pattern.
+Critical Rule: You cannot call `shared_from_this()` inside a destructor. Doing so causes a `std::bad_weak_ptr` crash because the ownership of the object has already expired. Therefore, if you require manual unregistration (to stop receiving events immediately), you must use an explicit `Init`/`Term` or RAII pattern. Alternatively, use `dmq::SignalSafe` (with `dmq::ScopedConnection`) for automatic RAII connection management.
 
 ### Init/Term Pattern
 
@@ -1089,6 +1136,82 @@ This table outlines when it is safe to use raw pointers (`this`) during delegate
 | Async Blocking (`WAIT_INFINITE`) | Caller thread blocks until the target thread executes the function. | YES | Because the caller is blocked, the object (owned by the caller) cannot go out of scope or be destroyed until the callback finishes. |
 | Async Blocking (Timeout) | Caller thread blocks until success OR timeout expires. | NO | Unsafe. If the timeout expires, the caller proceeds and may destroy the object. However, the message is still in the queue. When the target thread eventually processes it, it will crash. Use `shared_from_this()`. |
 | Async (Singleton / Global) | Object lifetime exceeds the thread lifetime (e.g., Singleton, Static, or Global). | YES | Safe. Since the object is guaranteed to exist for the entire duration of the application (or until after the worker thread is destroyed), the pointer will never be invalid. |
+
+## Usage Summary
+
+Synchronous delegates are created using one argument for free functions and two for instance member functions.
+
+```cpp
+auto freeDelegate = MakeDelegate(&MyFreeFunc);
+auto memberDelegate = MakeDelegate(&myClass, &MyClass::MyMemberFunc);
+```
+
+Adding the thread argument creates a non-blocking asynchronous delegate.
+
+```cpp
+auto freeDelegate = MakeDelegate(&MyFreeFunc, myThread);
+auto memberDelegate = MakeDelegate(&myClass, &MyClass::MyMemberFunc, myThread);
+```
+
+A `std::shared_ptr` can replace a raw instance pointer on synchronous and non-blocking asynchronous member delegates.
+
+```cpp
+std::shared_ptr<MyClass> myClass(new MyClass());
+auto memberDelegate = MakeDelegate(myClass, &MyClass::MyMemberFunc, myThread);
+```
+
+Adding a `timeout` argument creates a blocking asynchronous delegate.
+
+```cpp
+auto freeDelegate = MakeDelegate(&MyFreeFunc, myThread, WAIT_INFINITE);
+auto memberDelegate = MakeDelegate(&myClass, &MyClass::MyMemberFunc, myThread, std::chrono::milliseconds(5000));
+```
+
+Add to a multicast containers using `operator+=` and `operator-=`. 
+
+```cpp
+MulticastDelegate<void(int)> multicastContainer;
+multicastContainer += MakeDelegate(&MyFreeFunc);
+multicastContainer -= MakeDelegate(&MyFreeFunc);
+```
+
+Use the thread-safe multicast delegate container when using asynchronous delegates to allow multiple threads to safely add/remove from the container.
+
+```cpp
+MulticastDelegateSafe<void(int)> multicastContainer;
+multicastContainer += MakeDelegate(&MyFreeFunc, myThread);
+multicastContainer -= MakeDelegate(&MyFreeFunc, myThread);
+```
+
+Add to a unicast container using `operator=`.
+
+```cpp
+UnicastDelegate<void(int)> unicastContainer;
+unicastContainer = MakeDelegate(&MyFreeFunc);
+unicastContainer = 0;
+```
+
+All delegates and delegate containers are invoked using `operator()`.
+
+```cpp
+myDelegate(123)
+```
+
+Use `IsSuccess()` on blocking delegates before using the return value or outgoing arguments.
+
+```cpp
+if (myDelegate) 
+{
+     int outInt = 0;
+     int retVal = myDelegate(&outInt);
+     if (myDelegate.IsSuccess()) 
+     {
+          cout << outInt << retVal;
+     }
+}
+```
+
+# Design Details
 
 ## Library Dependencies
 
@@ -1241,8 +1364,10 @@ DelegateBase
 // Delegate Containers
 UnicastDelegate<>
     UnicastDelegateSafe<>
+        Signal<>
 MulticastDelegate<>
     MulticastDelegateSafe<>
+        SignalSafe<>
 ```
 
 Some degree of code duplication exists within the delegate inheritance hierarchy. This arises because the `Free`, `Member`, and `Function` classes support different target function types, making code sharing via inheritance difficult. Alternative solutions to share code either compromised type safety, caused non-intuitive user syntax, or significantly increased implementation complexity and code readability. Extensive unit tests ensure a reliable implementation.
@@ -1945,7 +2070,7 @@ class Timer
 {
 public:
     /// Client's register with Expired to get timer callbacks
-    UnicastDelegate<void(void)> Expired;
+    std::shared_ptr<dmq::SignalSafe<void(void)>> Expired;
 
     /// Starts a timer for callbacks on the specified timeout interval.
     /// @param[in] timeout - the timeout in milliseconds.
@@ -1958,11 +2083,19 @@ public:
 };
 ```
 
-Users create an instance of the timer and register for the expiration. In this case, `MyClass::MyCallback()` is called in 1000ms.
+### Safe Timer (RAII)
+The library provides a thread-safe `Timer` that uses `Signal` and `ScopedConnection` to prevent callbacks on destroyed objects.
 
 ```cpp
-m_timer.Expired = MakeDelegate(&myClass, &MyClass::MyCallback, myThread);
-m_timer.Start(std::chrono::milliseconds(1000));
+// 1. Store a ScopedConnection
+dmq::ScopedConnection m_conn;
+
+void Init() {
+    // 2. Connect using the RAII pattern
+    // If 'this' is destroyed, m_conn destructor automatically disconnects the timer.
+    m_conn = m_timer.Expired->Connect(MakeDelegate(this, &MyClass::OnTimer, m_thread));
+    m_timer.Start(std::chrono::milliseconds(250));
+}
 ```
 
 See example `SafeTimer.cpp` to prevent a latent callback on a dead object and [Object Lifetime and Async Delegates](#object-lifetime-and-async-delegates) for an explanation.
@@ -2293,40 +2426,96 @@ The current master branch build passes all unit tests and Valgrind memory tests.
 
 ## Unit Tests
 
-Build and execute runs all the unit tests contained within the `tests\UnitTests` directory.
+Build and execute runs all the unit tests contained within the `tests\unit-tests` directory.
 
 ## Valgrind Memory Tests
 
-[Valgrind](https://valgrind.org/) dynamic storage allocation tests were performed using the heap and fixed-block allocator builds. Valgrind is a programming tool for detecting memory leaks, memory errors, and profiling performance in applications, primarily for Linux-based systems. All tests run on Linux.
+[Valgrind](https://valgrind.org/) dynamic storage allocation tests were performed using the global heap and fixed-block allocator builds. Valgrind is a programming tool for detecting memory leaks, memory errors, and profiling performance in applications, primarily for Linux-based systems. All tests run on Linux.
+
+### Results Summary
+
+**The Code is Memory-Safe (No Leaks)**: Both runs show `ERROR SUMMARY: 0 errors` and `definitely lost: 0 bytes`.
+
+**Reduction in System Overhead**: 50% Reduction in alloc calls and 78% Reduction in memory churn. Most uncaptured fixed-block allocatations from unit tests using the global heap, not DelegateMQ library itself. 
+
+| Metric | Heap Enabled (Standard `new`) | Fixed Block Allocator | Improvement |
+| :--- | :--- | :--- | :--- |
+| **Allocations** | 114,487,427 | 57,130,929 | **~50% Reduction** |
+| **Frees** | 114,487,425 | 57,130,927 | **~50% Reduction** |
+| **Total Bytes** | 5,858,329,010 (~5.8 GB) | 1,303,924,718 (~1.3 GB) | **~78% Reduction** |
+
+Note on "Still Reachable": The 64 bytes in 2 blocks reported in both runs are benign. The stack trace confirms these are **Static Singletons** (`Timer::GetTimers` and `Timer::GetLock`). Since these exist for the lifetime of the program and are reclaimed by the OS at exit, they are not leaks.
 
 ### Heap Memory Test Results
 
 The DelegateMQ library Valgrind test results using the heap.
 
 ```
-==1779805== HEAP SUMMARY:
-==1779805==     in use at exit: 0 bytes in 0 blocks
-==1779805==   total heap usage: 923,465 allocs, 923,465 frees, 50,733,258 bytes allocated
-==1779805== 
-==1779805== All heap blocks were freed -- no leaks are possible
-==1779805== 
-==1779805== For lists of detected and suppressed errors, rerun with: -s
-==1779805== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==140605== HEAP SUMMARY:
+==140605==     in use at exit: 64 bytes in 2 blocks
+==140605==   total heap usage: 114,487,427 allocs, 114,487,425 frees, 5,858,329,010 bytes allocated
+==140605== 
+==140605== 24 bytes in 1 blocks are still reachable in loss record 1 of 2
+==140605==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==140605==    by 0x59D59B: Timer::GetTimers() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x59CC27: Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x590298: Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x4FAC44: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605== 
+==140605== 40 bytes in 1 blocks are still reachable in loss record 2 of 2
+==140605==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==140605==    by 0x59D69D: Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x59C7E3: Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x593F5B: std::__detail::_MakeUniq<Timer>::__single_object std::make_unique<Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x59014C: Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x4FAC44: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605== 
+==140605== LEAK SUMMARY:
+==140605==    definitely lost: 0 bytes in 0 blocks
+==140605==    indirectly lost: 0 bytes in 0 blocks
+==140605==      possibly lost: 0 bytes in 0 blocks
+==140605==    still reachable: 64 bytes in 2 blocks
+==140605==         suppressed: 0 bytes in 0 blocks
+==140605== 
+==140605== For lists of detected and suppressed errors, rerun with: -s
+==140605== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
 
 ### Fixed-Block Memory Allocator Test Results
 
-Test results with the fixed-block allocator. Notice the fixed-block runtime uses 22MB verses 50MB for the heap build. Heap storage *recycling* mode was used by the fixed-block allocator. See [stl_allocator](https://github.com/endurodave/stl_allocator) and [xallocator](https://github.com/endurodave/xallocator) for information about the memory allocators.
+Test results with the fixed-block allocator. See [stl_allocator](https://github.com/endurodave/stl_allocator) and [xallocator](https://github.com/endurodave/xallocator) for information about the memory allocators.
 
 ```
-==1780037== HEAP SUMMARY:
-==1780037==     in use at exit: 0 bytes in 0 blocks
-==1780037==   total heap usage: 644,606 allocs, 644,606 frees, 22,091,451 bytes allocated
-==1780037== 
-==1780037== All heap blocks were freed -- no leaks are possible
-==1780037== 
-==1780037== For lists of detected and suppressed errors, rerun with: -s
-==1780037== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==144812== 
+==144812== HEAP SUMMARY:
+==144812==     in use at exit: 64 bytes in 2 blocks
+==144812==   total heap usage: 57,130,929 allocs, 57,130,927 frees, 1,303,924,718 bytes allocated
+==144812== 
+==144812== 24 bytes in 1 blocks are still reachable in loss record 1 of 2
+==144812==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==144812==    by 0x5B2535: Timer::GetTimers[abi:cxx11]() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5B1B77: Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5A3FD4: Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x50DEC4: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812== 
+==144812== 40 bytes in 1 blocks are still reachable in loss record 2 of 2
+==144812==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==144812==    by 0x5B267A: Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5B1733: Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5A7D61: std::__detail::_MakeUniq<Timer>::__single_object std::make_unique<Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5A3E88: Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x50DEC4: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812== 
+==144812== LEAK SUMMARY:
+==144812==    definitely lost: 0 bytes in 0 blocks
+==144812==    indirectly lost: 0 bytes in 0 blocks
+==144812==      possibly lost: 0 bytes in 0 blocks
+==144812==    still reachable: 64 bytes in 2 blocks
+==144812==         suppressed: 0 bytes in 0 blocks
+==144812== 
+==144812== For lists of detected and suppressed errors, rerun with: -s
+==144812== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
 ```
 
 # Library Comparison

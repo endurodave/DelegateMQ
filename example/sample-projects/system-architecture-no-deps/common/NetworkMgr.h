@@ -14,6 +14,7 @@
 #include "RemoteEndpoint.h"
 #include <map>
 #include <future>
+#include <memory> // Required for std::shared_ptr
 
 /// @brief NetworkMgr sends and receives data using a DelegateMQ transport implemented
 /// with Windows UDP sockets and msg_serialize. Class is thread safe. All public APIs are 
@@ -23,7 +24,7 @@
 /// asynchronous (blocking and non-blocking). Register with ErrorCb or SendStatusCb to 
 /// handle success or errors.
 /// 
-/// Each socket instance in the Windows UDP transport layer must only be accessed by a single
+/// Each socket instance in the ZeroMQ transport layer must only be accessed by a single
 /// thread of control. Therefore, when invoking a remote delegate it must be performed on 
 /// the internal NetworkMgr thread.
 /// 
@@ -34,32 +35,42 @@
 /// 3. Future APIs return immediately and a std::future is used to capture the return 
 ///    value later.
 /// 
-/// Windows UDP socket is used for transport. Two sockets are created: one for sending and one for
+/// ZeroMQ is used for transport. Two sockets are created: one for sending and one for
 /// receiving. 
 class NetworkMgr
 {
 public:
-    // Remote delegate type definitions
+    // Function Signatures
     using AlarmFunc = void(AlarmMsg&, AlarmNote&);
-    using AlarmDel = dmq::MulticastDelegateSafe<AlarmFunc>;
     using CommandFunc = void(CommandMsg&);
-    using CommandDel = dmq::MulticastDelegateSafe<CommandFunc>;
     using DataFunc = void(DataMsg&);
-    using DataDel = dmq::MulticastDelegateSafe<DataFunc>;
     using ActuatorFunc = void(ActuatorMsg&);
+
+    // Public Signal Types (For Clients like ClientApp)
+    // Clients Connect() to these safely using RAII.
+    using AlarmSignal = dmq::SignalSafe<AlarmFunc>;
+    using CommandSignal = dmq::SignalSafe<CommandFunc>;
+    using DataSignal = dmq::SignalSafe<DataFunc>;
+    using ActuatorSignal = dmq::SignalSafe<ActuatorFunc>;
+
+    using ErrorSignal = dmq::SignalSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>;
+    using SendStatusSignal = dmq::SignalSafe<void(uint16_t, dmq::DelegateRemoteId, TransportMonitor::Status)>;
+
+    // Internal Delegate Types (For RemoteEndpoint Engine)
+    // The internal engine uses raw MulticastDelegates for performance.
+    using AlarmDel = dmq::MulticastDelegateSafe<AlarmFunc>;
+    using CommandDel = dmq::MulticastDelegateSafe<CommandFunc>;
+    using DataDel = dmq::MulticastDelegateSafe<DataFunc>;
     using ActuatorDel = dmq::MulticastDelegateSafe<ActuatorFunc>;
 
-    // Error delegate is invoked on success or failure of message send
-    static dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCb;
+    // Public Signal Instances (Inline Initialized)
+    static inline std::shared_ptr<ErrorSignal>      ErrorCb = std::make_shared<ErrorSignal>();
+    static inline std::shared_ptr<SendStatusSignal> SendStatusCb = std::make_shared<SendStatusSignal>();
 
-    // Send status delegate invoked when the receiver acknowleges the sent message
-    static dmq::MulticastDelegateSafe<void(uint16_t, dmq::DelegateRemoteId, TransportMonitor::Status)> SendStatusCb;
-
-    // Incoming message callback delegates
-    static AlarmDel AlarmMsgCb;
-    static CommandDel CommandMsgCb;
-    static DataDel DataMsgCb;
-    static ActuatorDel ActuatorMsgCb;
+    static inline std::shared_ptr<AlarmSignal>    AlarmMsgCb = std::make_shared<AlarmSignal>();
+    static inline std::shared_ptr<CommandSignal>  CommandMsgCb = std::make_shared<CommandSignal>();
+    static inline std::shared_ptr<DataSignal>     DataMsgCb = std::make_shared<DataSignal>();
+    static inline std::shared_ptr<ActuatorSignal> ActuatorMsgCb = std::make_shared<ActuatorSignal>();
 
     static NetworkMgr& Instance()
     {
@@ -131,6 +142,9 @@ private:
     // Timer for processing message timeouts
     Timer m_timeoutTimer;
 
+    // RAII Connection for timer
+    dmq::ScopedConnection m_timeoutTimerConn;
+
     // Delegate dispatcher 
     Dispatcher m_dispatcher;
 
@@ -197,7 +211,7 @@ private:
                     }
                     state->cv.notify_one();
                 }
-                };
+            };
 
             // 1. Register for send status callback (success or failure)
             m_transportMonitor.SendStatusCb += dmq::MakeDelegate(statusCb);

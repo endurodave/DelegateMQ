@@ -23,6 +23,7 @@ Timer::Timer()
 {
     const std::lock_guard<std::recursive_mutex> lock(GetLock());
     m_enabled = false;
+    Expired = dmq::MakeSignal<void(void)>();
 }
 
 //------------------------------------------------------------------------------
@@ -59,7 +60,7 @@ void Timer::Start(dmq::Duration timeout, bool once)
 
     m_timeout = timeout;
     m_once = once;
-    m_expireTime = GetNow();
+    m_expireTime = GetNow() + m_timeout;
     m_enabled = true;
 
     // If 'this' is the 'next' item in the ProcessTimers loop, removing it 
@@ -129,7 +130,9 @@ void Timer::CheckExpired()
     }
 
     // Call the client's expired callback function
-    Expired();
+    if (Expired) {
+        (*Expired)();
+    }
 }
 
 //------------------------------------------------------------------------------

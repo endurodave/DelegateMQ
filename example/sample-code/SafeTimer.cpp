@@ -1,5 +1,5 @@
-/// @brief Implement the safe timer test to prevent a latent callback 
-/// on a dead object. 
+/// @brief Implement the safe timer test using RAII ScopedConnections.
+/// This prevents latent callbacks on dead objects without manual Stop() calls.
 /// 
 /// See Object Lifetime and Async Delegates in DETAILS.md for more information.
 
@@ -16,28 +16,34 @@ namespace Example
     class SafeTimer : public std::enable_shared_from_this<SafeTimer>
     {
     public:
-        SafeTimer() : m_thread("SafeTimer Thread") { }
+        SafeTimer() : m_thread("SafeTimer Thread") {}
 
         void Init() {
             m_thread.CreateThread();
 
-            // Bind the callback with a shared reference. This ensures the object remains
-            // valid/alive when the timer fires, preventing a crash on a dangling pointer.
-            m_timer.Expired = MakeDelegate(shared_from_this(), &SafeTimer::OnTimer, m_thread);
+            // Bind the callback using Connect().
+            // We use shared_from_this() to ensure the object stays alive if the callback is queued.
+            // We store the connection in m_timerConn so it automatically disconnects on destruction.
+            m_timerConn = m_timer.Expired->Connect(
+                MakeDelegate(shared_from_this(), &SafeTimer::OnTimer, m_thread)
+            );
+
             m_timer.Start(std::chrono::milliseconds(100));
         }
 
         // Unregister in Term to be clean
         void Term() {
             m_timer.Stop();
-            m_timer.Expired.Clear();
+
+            // Manual disconnect (optional, since destructor handles it, but good for deterministic cleanup)
+            m_timerConn.Disconnect();
 
             m_thread.ExitThread();
         }
 
         ~SafeTimer() {
-            // Even if Term() wasn't called, the shared delegate prevents a crash
-            // if a stray timer event is still pending in m_thread.
+            // m_timerConn destructor runs here.
+            // It guarantees the timer signal is disconnected immediately.
         }
 
     private:
@@ -47,6 +53,10 @@ namespace Example
 
         Timer m_timer;
         Thread m_thread;
+
+        // RAII Connection Handle
+        // When this object dies, the subscription to the timer is automatically removed.
+        dmq::ScopedConnection m_timerConn;
     };
 
     void SafeTimerExample() {
@@ -56,5 +66,7 @@ namespace Example
         this_thread::sleep_for(chrono::milliseconds(500));
 
         safeTimer->Term();
+
+        // When safeTimer goes out of scope here, everything cleans up automatically.
     }
 }

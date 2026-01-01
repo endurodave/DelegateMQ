@@ -604,8 +604,8 @@ static void DelegateMemberAsyncSpTests()
     }
 
     // ==========================================================
-    // 7. THE CRITICAL TEST: Object Expiration (Zombie Object)
-    // ==========================================================
+        // 7. THE CRITICAL TEST: Object Expiration (Zombie Object)
+        // ==========================================================
     {
         using DelZombie = DelegateMemberAsyncSp<TestClass1, void(int)>;
         DelZombie zombieDel;
@@ -617,20 +617,24 @@ static void DelegateMemberAsyncSpTests()
             // Bind delegate to temporary object
             zombieDel.Bind(tempObj, &TestClass1::MemberFuncInt1, workerThread);
 
-            // Invoke while alive - should work (printed to console if logging enabled)
-            zombieDel(1);
+            // Invoke while alive - MUST PASS TEST_INT
+            zombieDel(TEST_INT);
+
+            // Give the worker thread a tiny moment to process "zombieDel(TEST_INT)" 
+            // while 'tempObj' is definitely still alive.
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
         // 'tempObj' is destroyed here. Ref count drops to 0.
         // 'zombieDel' now holds a weak_ptr to a dead object.
 
         // Invoke after death:
-        // 1. The delegate queues the message to the worker thread.
-        // 2. The function returns immediately.
-        // 3. The worker thread picks it up, tries to lock weak_ptr, fails, and ignores it.
+        // 1. The delegate queues the message.
+        // 2. The worker thread tries to lock weak_ptr, fails (nullptr), and ignores it.
         // RESULT: NO CRASH.
-        zombieDel(2);
+        // (The value here doesn't matter because it won't execute, but let's be consistent)
+        zombieDel(TEST_INT);
 
-        // Sleep to ensure worker thread processed the "dead" call without crashing the app
+        // Sleep to ensure worker thread processed the "dead" call without crashing
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 

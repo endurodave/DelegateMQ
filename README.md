@@ -8,16 +8,25 @@
 
 DelegateMQ is a C++ header-only library for invoking any callable (e.g., function, method, lambda):
 
-- Synchronously
-- Asynchronously
-- Remotely across processes or processors
+* Synchronously
+* Asynchronously (Blocking and non-blocking)
+* Remotely (Across processes or processors)
 
-It unifies function calls across threads or systems via a simple delegate interface. A powerful, lightweight messaging library for thread-safe asynchronous callbacks, non-blocking APIs, and passing data between threads. DelegateMQ is thread-safe, unit-tested, and easy to port to any platform.
+It serves as a powerful messaging fabric for C++ applications, providing thread-safe asynchronous callbacks, a robust Signal & Slot mechanism, and seamless inter-thread data transfer. The library is fully unit-tested and designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).
+
+**Key Use Cases**
+* **Callbacks**: Synchronous and asynchronous execution.
+* **Signals & Slots**: Decoupled event handling supporting mixed synchronous and asynchronous observers.
+* **Async APIs**: Thread-safe non-blocking function calls.
+* **Data Distribution**: Passing data reliably between threads.
+* **Remote Communication**: Inter-Process (IPC) and Inter-Processor messaging.
+* **Event-Driven Architecture**: Building responsive, non-blocking systems.
 
 # Key Concepts
 
 - `MakeDelegate` – Creates a delegate instance bound to a callable (lambda, function, or method).
 - `MulticastDelegateSafe` – A thread-safe container of delegates, allowing broadcast-style invocation.
+- `SignalSafe` - A thread-safe Signal implementation that returns a connection handle upon subscription (Signal/Slot pattern).
 - `Thread` – A cross-platform thread class capable of asynchronous delegate invocation.
 
 # Examples
@@ -70,51 +79,67 @@ int main(void)
 }
 ```
 
-`Subscriber` registers with `Publisher` to receive asynchronous callbacks.
+`Subscriber` connects to `Publisher` signal to receive asynchronous callbacks. Connection is automatically managed via RAII.
 
 ```cpp
+#include "DelegateMQ.h"
+#include <iostream>
+
 class Publisher
 {
 public:
-    // Thread-safe container to store registered callbacks
-    dmq::MulticastDelegateSafe<void(const std::string& msg)> MsgCb;
+    // 1. Define a thread-safe Signal
+    //    Use dmq::MakeSignal helper for clean syntax.
+    std::shared_ptr<dmq::SignalSafe<void(const std::string&)>> MsgSig 
+        = dmq::MakeSignal<void(const std::string&)>();
 
-    static Publisher& Instance() 
+    void Publish(const std::string& msg) 
     {
-        static Publisher instance;
-        return instance;
+        // 3. Emit signal to all connected slots (dereference the shared_ptr)
+        (*MsgSig)(msg); 
     }
-
-    void SetMsg(const std::string& msg) 
-    {
-        m_msg = msg;    // 2. Store message
-        MsgCb(m_msg);   // 3. Invoke all registered callbacks
-    }
-
-private:
-    Publisher() = default;
-    std::string m_msg;
 };
 
 class Subscriber
 {
 public:
-    Subscriber() : m_thread("SubscriberThread") 
+    Subscriber(Publisher& pub) : m_thread("SubscriberThread") 
     {
         m_thread.CreateThread();
 
-        // 1. Register for publisher async callback on m_thread context
-        Publisher::Instance().MsgCb += dmq::MakeDelegate(this, &Subscriber::HandleMsgCb, m_thread);
+        // 2. Connect to the publisher's signal
+        m_connection = pub.MsgSig->Connect(
+            dmq::MakeDelegate(this, &Subscriber::HandleMsg, m_thread)
+        );
     }
 
+    // 5. Destructor automatically disconnects m_connection via RAII
+    ~Subscriber() = default;
+
 private:
-    void HandleMsgCb(const std::string& msg) 
+    void HandleMsg(const std::string& msg) 
     {
-         // 4. Handle publisher callback on m_thread
-         std::cout << msg << std::endl; 
+        // 4. Handle publisher signal on m_thread
+        std::cout << "Writing data on thread: " << Thread::GetCurrentThreadId() << std::endl;
+        std::cout << msg << std::endl;
     }
+
     Thread m_thread;
+    dmq::ScopedConnection m_connection; // Automatically disconnects when Subscriber is destroyed
 };
+
+int main()
+{
+    Publisher pub;
+
+    {
+        Subscriber sub(pub);
+        pub.Publish("Hello World!"); 
+    } // sub goes out of scope here -> m_connection disconnects automatically
+
+    pub.Publish("No one is listening..."); // Safe, no slots connected
+    return 0;
+}
 ```
 
 Multiple callables targets stored and broadcast invoked asynchronously.
@@ -173,7 +198,7 @@ private:
 
 # Overview
 
-In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, callbacks, asynchronous APIs, or when you need to pass functions as arguments.
+In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, signal-slots, callbacks, asynchronous APIs, or when you need to pass functions as arguments.
 
 Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.
 
@@ -196,9 +221,7 @@ Remote delegates enable function invocation across processes or processors using
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [Cereal](https://github.com/USCiLab/cereal), [Bitsery](https://github.com/fraillt/bitsery), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
 * **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), UDP, data pipe, memory buffer
  
-See [Delegate Invocation Semantics](docs/DETAILS.md/#delegate-invocation-semantics) for information on target callable invocation and argument handling based on the delegate type.
-
-## Delegate Semantics and Use Cases
+## Delegate Semantics
 
 It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to `nullptr`. Const correctness is maintained; stored const objects can only be called by const member functions.
 
@@ -208,18 +231,9 @@ It is always safe to call the delegate. In its null state, a call will not perfo
  * Compared to same type delegates and `nullptr`.
  * Reassigned.
  * Called.
+
+See [Delegate Invocation Semantics](docs/DETAILS.md/#delegate-invocation-semantics) for information on target callable invocation and argument handling based on the delegate type.
  
-Typical use cases are:
-
-* Synchronous and Asynchronous Callbacks
-* Event-Driven Programming
-* Inter-Process and Inter-Processor Communication 
-* Inter-Thread Publish/Subscribe (Observer) Pattern
-* Thread-Safe Asynchronous API
-* Asynchronous Method Invocation (AMI) 
-* Design Patterns (Active Object)
-* `std::async` Thread Targeting
-
 # Modular Architecture
 
 DelegateMQ uses an external thread, transport, and serializer, all of which are based on simple, well-defined interfaces.
@@ -265,6 +279,7 @@ DelegateMQ at a glance.
 | Complexity | Lightweight and extensible through external library interfaces and full source code |
 | Threads | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
 | Watchdog | Configurable timeout to detect and handle unresponsive threads. |
+| Signal and Slots | Standard Signal-Slot pattern implementation (`Signal` / `SignalSafe`). Supports `Connect()`, connection handles, and RAII-based automatic disconnection (`ScopedConnection`). |
 | Multicast | Broadcast invoke anonymous callable targets onto multiple threads |
 | Message Priority | Asynchronous delegates support prioritization to ensure timely execution of critical messages |
 | Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |

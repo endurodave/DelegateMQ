@@ -88,8 +88,12 @@ int main()
     DataMgr::Instance();
     ClientApp::Instance();
 
-    // Register to receive local and remote data updates on receiveThread
-    DataMgr::DataMsgCb += MakeDelegate(&DataMsgRecv, receiveThread);
+    // 1. Declare a variable to hold the connection. 
+    // It MUST remain in scope for as long as you want to receive messages.
+    dmq::ScopedConnection dataConn;
+
+    // 2. Connect using the arrow operator and store the result
+    dataConn = DataMgr::DataMsgCb->Connect(MakeDelegate(&DataMsgRecv, receiveThread));
 
     // Start all data collection
     bool success = ClientApp::Instance().Start();
