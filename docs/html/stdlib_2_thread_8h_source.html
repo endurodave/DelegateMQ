@@ -177,12 +177,14 @@ $(function(){initNavTree('stdlib_2_thread_8h_source.html',''); initResizable(tru
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="comment">// Watchdog related members</span></div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    std::atomic&lt;dmq::TimePoint&gt; m_lastAliveTime;</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    std::unique_ptr&lt;Timer&gt; m_watchdogTimer;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::unique_ptr&lt;Timer&gt; m_threadTimer;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    std::atomic&lt;dmq::Duration&gt; m_watchdogTimeout;</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>};</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="preprocessor">#endif </span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> m_watchdogTimerConn;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    std::unique_ptr&lt;Timer&gt; m_threadTimer;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> m_threadTimerConn;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::atomic&lt;dmq::Duration&gt; m_watchdogTimeout;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>};</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="preprocessor">#endif </span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
 <div class="ttc" id="a_i_thread_8h_html"><div class="ttname"><a href="_i_thread_8h.html">IThread.h</a></div></div>
 <div class="ttc" id="a_timer_8h_html"><div class="ttname"><a href="_timer_8h.html">Timer.h</a></div></div>
 <div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdoc">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).</div><div class="ttdef"><b>Definition</b> freertos/Thread.h:24</div></div>
@@ -196,6 +198,7 @@ $(function(){initNavTree('stdlib_2_thread_8h_source.html',''); initResizable(tru
 <div class="ttc" id="aclass_thread_html_a964e7f80fe043c7a7c3c047f30335a16"><div class="ttname"><a href="class_thread.html#a964e7f80fe043c7a7c3c047f30335a16">Thread::GetQueueSize</a></div><div class="ttdeci">size_t GetQueueSize()</div><div class="ttdoc">Get size of thread message queue.</div><div class="ttdef"><b>Definition</b> stdlib/Thread.cpp:97</div></div>
 <div class="ttc" id="aclass_thread_html_aabf05b92a7bc081a464b8adcb916f321"><div class="ttname"><a href="class_thread.html#aabf05b92a7bc081a464b8adcb916f321">Thread::ExitThread</a></div><div class="ttdeci">void ExitThread()</div><div class="ttdoc">Called once at program exit to shut down the worker thread.</div><div class="ttdef"><b>Definition</b> stdlib/Thread.cpp:122</div></div>
 <div class="ttc" id="aclassdmq_1_1_i_thread_html"><div class="ttname"><a href="classdmq_1_1_i_thread.html">dmq::IThread</a></div><div class="ttdoc">A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...</div><div class="ttdef"><b>Definition</b> IThread.h:17</div></div>
+<div class="ttc" id="aclassdmq_1_1_scoped_connection_html"><div class="ttname"><a href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a></div><div class="ttdoc">RAII wrapper for Connection. Automatically disconnects when it goes out of scope.</div><div class="ttdef"><b>Definition</b> SignalSafe.h:90</div></div>
 <div class="ttc" id="astdlib_2_thread_msg_8h_html"><div class="ttname"><a href="stdlib_2_thread_msg_8h.html">ThreadMsg.h</a></div></div>
 <div class="ttc" id="astruct_thread_msg_comparator_html"><div class="ttname"><a href="struct_thread_msg_comparator.html">ThreadMsgComparator</a></div><div class="ttdef"><b>Definition</b> stdlib/Thread.h:19</div></div>
 <div class="ttc" id="astruct_thread_msg_comparator_html_a763c200db1e1ab6ca1d2aebeb26ef6fc"><div class="ttname"><a href="struct_thread_msg_comparator.html#a763c200db1e1ab6ca1d2aebeb26ef6fc">ThreadMsgComparator::operator()</a></div><div class="ttdeci">bool operator()(const std::shared_ptr&lt; ThreadMsg &gt; &amp;a, const std::shared_ptr&lt; ThreadMsg &gt; &amp;b) const</div><div class="ttdef"><b>Definition</b> stdlib/Thread.h:20</div></div>

@@ -2,7 +2,7 @@ var searchData=
 [
   ['wait_0',['Wait',['../classdmq_1_1_semaphore.html#a28a35743252985803aea68d1b54b25f0',1,'dmq::Semaphore']]],
   ['wait_5finfinite_1',['WAIT_INFINITE',['../namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca',1,'dmq']]],
-  ['weakptr_2',['WeakPtr',['../classdmq_1_1_delegate_member_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9a4560da01d5c7813bd094b8a395f049',1,'dmq::DelegateMemberShared&lt; TClass, RetType(Args...)&gt;']]],
+  ['weakptr_2',['WeakPtr',['../classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ae25f88d679c18ebd3d3b4e5db62eda20',1,'dmq::DelegateMemberSp&lt; TClass, RetType(Args...)&gt;']]],
   ['win32pipetransport_3',['Win32PipeTransport',['../class_win32_pipe_transport.html',1,'']]],
   ['win32pipetransport_2eh_4',['Win32PipeTransport.h',['../_win32_pipe_transport_8h.html',1,'']]],
   ['win32udptransport_2eh_5',['Win32UdpTransport.h',['../_win32_udp_transport_8h.html',1,'']]],

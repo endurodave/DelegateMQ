@@ -14,6 +14,7 @@ var dir_8012f2d8eb312e5c99ad2c521c362312 =
     [ "MulticastDelegate.h", "_multicast_delegate_8h.html", "_multicast_delegate_8h" ],
     [ "MulticastDelegateSafe.h", "_multicast_delegate_safe_8h.html", "_multicast_delegate_safe_8h" ],
     [ "Semaphore.h", "_semaphore_8h.html", "_semaphore_8h" ],
+    [ "SignalSafe.h", "_signal_safe_8h.html", "_signal_safe_8h" ],
     [ "src_dup.py", "src__dup_8py.html", "src__dup_8py" ],
     [ "UnicastDelegate.h", "_unicast_delegate_8h.html", "_unicast_delegate_8h" ],
     [ "UnicastDelegateSafe.h", "_unicast_delegate_safe_8h.html", "_unicast_delegate_safe_8h" ]

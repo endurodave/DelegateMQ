@@ -99,23 +99,30 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
   <div class="headertitle"><div class="title">DelegateMQ </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="docs/DelegateMQ2.jpg" alt="DelegateMQ Layer Diagram" style="width:100%;" class="inline"/><br  />
-</p>
-<p><img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Clang" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a> <a href="https://app.codecov.io/gh/endurodave/DelegateMQ"><img src="https://codecov.io/gh/endurodave/DelegateMQ/branch/master/graph/badge.svg" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
+<div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Clang" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a> <a href="https://app.codecov.io/gh/endurodave/DelegateMQ"><img src="https://codecov.io/gh/endurodave/DelegateMQ/branch/master/graph/badge.svg" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
 <h1><a class="anchor" id="autotoc_md0"></a>
 Delegates in C++</h1>
 <p>DelegateMQ is a C++ header-only library for invoking any callable (e.g., function, method, lambda):</p>
 <ul>
 <li>Synchronously</li>
-<li>Asynchronously</li>
-<li>Remotely across processes or processors</li>
+<li>Asynchronously (Blocking and non-blocking)</li>
+<li>Remotely (Across processes or processors)</li>
 </ul>
-<p>It unifies function calls across threads or systems via a simple delegate interface. DelegateMQ is thread-safe, unit-tested, and easy to port to any platform.</p>
+<p>It serves as a powerful messaging fabric for C++ applications, providing thread-safe asynchronous callbacks, a robust Signal &amp; Slot mechanism, and seamless inter-thread data transfer. The library is fully unit-tested and designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).</p>
+<p><b>Key Use Cases</b></p><ul>
+<li><b>Callbacks</b>: Synchronous and asynchronous execution.</li>
+<li><b>Signals &amp; Slots</b>: Decoupled event handling supporting mixed synchronous and asynchronous observers.</li>
+<li><b>Async APIs</b>: Thread-safe non-blocking function calls.</li>
+<li><b>Data Distribution</b>: Passing data reliably between threads.</li>
+<li><b>Remote Communication</b>: Inter-Process (IPC) and Inter-Processor messaging.</li>
+<li><b>Event-Driven Architecture</b>: Building responsive, non-blocking systems.</li>
+</ul>
 <h1><a class="anchor" id="autotoc_md1"></a>
 Key Concepts</h1>
 <ul>
 <li><code>MakeDelegate</code> – Creates a delegate instance bound to a callable (lambda, function, or method).</li>
 <li><code>MulticastDelegateSafe</code> – A thread-safe container of delegates, allowing broadcast-style invocation.</li>
+<li><code>SignalSafe</code> - A thread-safe Signal implementation that returns a connection handle upon subscription (Signal/Slot pattern).</li>
 <li><code><a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a></code> – A cross-platform thread class capable of asynchronous delegate invocation.</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md2"></a>
@@ -125,7 +132,7 @@ Examples</h1>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">size_t</span> MsgOut(<span class="keyword">const</span> std::string&amp; msg)</div>
 <div class="line">{</div>
-<div class="line">    std::cout &lt;&lt; msg &lt;&lt; std::endl;</div>
+<div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;[&quot;</span> &lt;&lt; std::this_thread::get_id() &lt;&lt; <span class="stringliteral">&quot;] &quot;</span> &lt;&lt; msg &lt;&lt; std::endl;</div>
 <div class="line">    <span class="keywordflow">return</span> msg.size();</div>
 <div class="line">}</div>
 <div class="line"> </div>
@@ -172,48 +179,70 @@ Examples</h1>
 <div class="ttc" id="anamespacedmq_html_a65e308cc5f3e37d2f7f89c72b9744ae2"><div class="ttname"><a href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:818</div></div>
 <div class="ttc" id="astruct_serializer_html"><div class="ttname"><a href="struct_serializer.html">Serializer</a></div><div class="ttdef"><b>Definition</b> bitsery/Serializer.h:24</div></div>
 <div class="ttc" id="astructdmq_1_1_delegate_free_remote_html"><div class="ttname"><a href="structdmq_1_1_delegate_free_remote.html">dmq::DelegateFreeRemote</a></div><div class="ttdef"><b>Definition</b> DelegateRemote.h:132</div></div>
-</div><!-- fragment --><p><code>Subscriber</code> registers with <code>Publisher</code> to receive asynchronous callbacks.</p>
-<div class="fragment"><div class="line"><span class="keyword">class </span>Publisher</div>
+</div><!-- fragment --><p><code>Subscriber</code> connects to <code>Publisher</code> signal to receive asynchronous callbacks. Connection is automatically managed via RAII.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="_delegate_m_q_8h.html">DelegateMQ.h</a>&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">class </span>Publisher</div>
 <div class="line">{</div>
 <div class="line"><span class="keyword">public</span>:</div>
-<div class="line">    <span class="comment">// Thread-safe container to store registered callbacks</span></div>
-<div class="line">    <a class="code hl_struct" href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a>&lt;void(<span class="keyword">const</span> std::string&amp; msg)&gt; MsgCb;</div>
+<div class="line">    <span class="comment">// 1. Define a thread-safe Signal</span></div>
+<div class="line">    <span class="comment">//    Use dmq::MakeSignal helper for clean syntax.</span></div>
+<div class="line">    std::shared_ptr&lt;<a class="code hl_class" href="classdmq_1_1_signal_safe.html">dmq::SignalSafe</a>&lt;void(<span class="keyword">const</span> std::string&amp;)&gt;&gt; MsgSig </div>
+<div class="line">        = <a class="code hl_function" href="namespacedmq.html#ae43a0114148f1ea5c12b98ea09471054">dmq::MakeSignal&lt;void(const std::string&amp;)&gt;</a>();</div>
 <div class="line"> </div>
-<div class="line">    <span class="keyword">static</span> Publisher&amp; Instance() </div>
+<div class="line">    <span class="keywordtype">void</span> Publish(<span class="keyword">const</span> std::string&amp; msg) </div>
 <div class="line">    {</div>
-<div class="line">        <span class="keyword">static</span> Publisher instance;</div>
-<div class="line">        <span class="keywordflow">return</span> instance;</div>
+<div class="line">        <span class="comment">// 3. Emit signal to all connected slots (dereference the shared_ptr)</span></div>
+<div class="line">        (*MsgSig)(msg); </div>
 <div class="line">    }</div>
-<div class="line"> </div>
-<div class="line">    <span class="keywordtype">void</span> SetMsg(<span class="keyword">const</span> std::string&amp; msg) </div>
-<div class="line">    {</div>
-<div class="line">        m_msg = msg;    <span class="comment">// Store message</span></div>
-<div class="line">        MsgCb(m_msg);   <span class="comment">// Invoke all registered callbacks</span></div>
-<div class="line">    }</div>
-<div class="line"> </div>
-<div class="line"><span class="keyword">private</span>:</div>
-<div class="line">    Publisher() = <span class="keywordflow">default</span>;</div>
-<div class="line">    std::string m_msg;</div>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">class </span>Subscriber</div>
 <div class="line">{</div>
 <div class="line"><span class="keyword">public</span>:</div>
-<div class="line">    Subscriber() : m_thread(<span class="stringliteral">&quot;SubscriberThread&quot;</span>) </div>
+<div class="line">    Subscriber(Publisher&amp; pub) : m_thread(<span class="stringliteral">&quot;SubscriberThread&quot;</span>) </div>
 <div class="line">    {</div>
 <div class="line">        m_thread.CreateThread();</div>
 <div class="line"> </div>
-<div class="line">        <span class="comment">// Register for publisher async callback on m_thread context</span></div>
-<div class="line">        Publisher::Instance().MsgCb += <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;Subscriber::HandleMsgCb, m_thread);</div>
+<div class="line">        <span class="comment">// 2. Connect to the publisher&#39;s signal</span></div>
+<div class="line">        m_connection = pub.MsgSig-&gt;Connect(</div>
+<div class="line">            <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;Subscriber::HandleMsg, m_thread)</div>
+<div class="line">        );</div>
 <div class="line">    }</div>
 <div class="line"> </div>
+<div class="line">    <span class="comment">// 5. Destructor automatically disconnects m_connection via RAII</span></div>
+<div class="line">    ~Subscriber() = <span class="keywordflow">default</span>;</div>
+<div class="line"> </div>
 <div class="line"><span class="keyword">private</span>:</div>
-<div class="line">    <span class="comment">// Handle publisher callback on m_thread</span></div>
-<div class="line">    <span class="keywordtype">void</span> HandleMsgCb(<span class="keyword">const</span> std::string&amp; msg) { std::cout &lt;&lt; msg &lt;&lt; std::endl; }</div>
+<div class="line">    <span class="keywordtype">void</span> HandleMsg(<span class="keyword">const</span> std::string&amp; msg) </div>
+<div class="line">    {</div>
+<div class="line">        <span class="comment">// 4. Handle publisher signal on m_thread</span></div>
+<div class="line">        std::cout &lt;&lt; <span class="stringliteral">&quot;Writing data on thread: &quot;</span> &lt;&lt; <a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>() &lt;&lt; std::endl;</div>
+<div class="line">        std::cout &lt;&lt; msg &lt;&lt; std::endl;</div>
+<div class="line">    }</div>
+<div class="line"> </div>
 <div class="line">    <a class="code hl_class" href="class_thread.html">Thread</a> m_thread;</div>
+<div class="line">    <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> m_connection; <span class="comment">// Automatically disconnects when Subscriber is destroyed</span></div>
 <div class="line">};</div>
-<div class="ttc" id="astructdmq_1_1_multicast_delegate_safe_html"><div class="ttname"><a href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a></div><div class="ttdef"><b>Definition</b> MulticastDelegateSafe.h:14</div></div>
-</div><!-- fragment --><p>Multiple callables targets stored and invoked asynchronously.</p>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">int</span> main()</div>
+<div class="line">{</div>
+<div class="line">    Publisher pub;</div>
+<div class="line"> </div>
+<div class="line">    {</div>
+<div class="line">        Subscriber sub(pub);</div>
+<div class="line">        pub.Publish(<span class="stringliteral">&quot;Hello World!&quot;</span>); </div>
+<div class="line">    } <span class="comment">// sub goes out of scope here -&gt; m_connection disconnects automatically</span></div>
+<div class="line"> </div>
+<div class="line">    pub.Publish(<span class="stringliteral">&quot;No one is listening...&quot;</span>); <span class="comment">// Safe, no slots connected</span></div>
+<div class="line">    <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
+<div class="ttc" id="aclass_thread_html_aafe48fc7ef98b9e6adcf7b188a30e35a"><div class="ttname"><a href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a></div><div class="ttdeci">static TaskHandle_t GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div><div class="ttdef"><b>Definition</b> freertos/Thread.cpp:62</div></div>
+<div class="ttc" id="aclassdmq_1_1_scoped_connection_html"><div class="ttname"><a href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a></div><div class="ttdoc">RAII wrapper for Connection. Automatically disconnects when it goes out of scope.</div><div class="ttdef"><b>Definition</b> SignalSafe.h:90</div></div>
+<div class="ttc" id="aclassdmq_1_1_signal_safe_html"><div class="ttname"><a href="classdmq_1_1_signal_safe.html">dmq::SignalSafe</a></div><div class="ttdef"><b>Definition</b> SignalSafe.h:168</div></div>
+<div class="ttc" id="anamespacedmq_html_ae43a0114148f1ea5c12b98ea09471054"><div class="ttname"><a href="namespacedmq.html#ae43a0114148f1ea5c12b98ea09471054">dmq::MakeSignal</a></div><div class="ttdeci">SignalPtr&lt; Signature &gt; MakeSignal()</div><div class="ttdef"><b>Definition</b> SignalSafe.h:222</div></div>
+</div><!-- fragment --><p>Multiple callables targets stored and broadcast invoked asynchronously.</p>
 <div class="fragment"><div class="line"><span class="comment">// Create an async delegate targeting lambda on thread1</span></div>
 <div class="line"><span class="keyword">auto</span> lambda = [](<span class="keywordtype">int</span> i) { std::cout &lt;&lt; i; };</div>
 <div class="line"><span class="keyword">auto</span> lambdaDelegate = <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(std::function(lambda), thread1);</div>
@@ -231,6 +260,7 @@ Examples</h1>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Invoke all callable targets asynchronously </span></div>
 <div class="line">delegates(123);</div>
+<div class="ttc" id="astructdmq_1_1_multicast_delegate_safe_html"><div class="ttname"><a href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a></div><div class="ttdef"><b>Definition</b> MulticastDelegateSafe.h:14</div></div>
 </div><!-- fragment --><p>Asynchronous public API reinvokes <code>StoreAsync()</code> call onto the internal <code>m_thread</code> context.</p>
 <div class="fragment"><div class="line"><span class="comment">// Store data using asynchronous public API. Class is thread-safe.</span></div>
 <div class="line"><span class="keyword">class </span>DataStore</div>
@@ -241,33 +271,33 @@ Examples</h1>
 <div class="line">        m_thread.CreateThread();</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <span class="comment">// Store data asynchronously on m_thread context (non-blocking)</span></div>
+<div class="line">    <span class="comment">// 1. Store data asynchronously on m_thread context (non-blocking)</span></div>
 <div class="line">    <span class="keywordtype">void</span> StoreAsync(<span class="keyword">const</span> Data&amp; data)</div>
 <div class="line">    {</div>
-<div class="line">        <span class="comment">// If the caller thread is not the internal thread, reinvoke this function </span></div>
-<div class="line">        <span class="comment">// asynchronously on the internal thread to ensure thread-safety</span></div>
+<div class="line">        <span class="comment">// 2. If the caller thread is not the internal thread, reinvoke this function </span></div>
+<div class="line">        <span class="comment">//    asynchronously on the internal thread to ensure thread-safety</span></div>
 <div class="line">        <span class="keywordflow">if</span> (m_thread.GetThreadId() != <a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>()) </div>
 <div class="line">        {</div>
-<div class="line">            <span class="comment">// Reinvoke StoreAsync(data) on m_thread context</span></div>
+<div class="line">            <span class="comment">// 3. Reinvoke StoreAsync(data) on m_thread context</span></div>
 <div class="line">            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;DataStore::StoreAsync, m_thread)(data);</div>
 <div class="line">        }</div>
-<div class="line">        m_data = data;  <span class="comment">// Data stored on m_thread context</span></div>
+<div class="line">        <span class="comment">// 4. Data stored on m_thread context</span></div>
+<div class="line">        m_data = data;  </div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line"><span class="keyword">private</span>:</div>
 <div class="line">    Data m_data;        <span class="comment">// Data storage</span></div>
 <div class="line">    <a class="code hl_class" href="class_thread.html">Thread</a> m_thread;    <span class="comment">// Internal thread</span></div>
 <div class="line">};</div>
-<div class="ttc" id="aclass_thread_html_aafe48fc7ef98b9e6adcf7b188a30e35a"><div class="ttname"><a href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a></div><div class="ttdeci">static TaskHandle_t GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div><div class="ttdef"><b>Definition</b> freertos/Thread.cpp:62</div></div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md3"></a>
 Overview</h1>
-<p>In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, callbacks, asynchronous APIs, or when you need to pass functions as arguments.</p>
+<p>In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, signal-slots, callbacks, asynchronous APIs, or when you need to pass functions as arguments.</p>
 <p>Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.</p>
 <h2><a class="anchor" id="autotoc_md4"></a>
-Sync Delegates</h2>
+Synchronous Delegates</h2>
 <p>Synchronous delegates invoke the target function anonymously within the current execution context. No external library dependencies are required.</p>
 <h2><a class="anchor" id="autotoc_md5"></a>
-Async Delegates</h2>
+Asynchronous Delegates</h2>
 <p>Asynchronous delegates support both non-blocking and blocking invocation modes, including optional timeouts. The library enables anonymous invocation of any callable target, regardless of the number or type of arguments, or the presence of a return value. All argument types are supported — including by value, pointers, pointer-to-pointer, and references. Smart pointer delegates prevents async invocation on destroyed target objects.</p>
 <p>The delegate library abstracts the complexities of invoking functions across thread boundaries. Concrete examples are provided below, with straightforward paths to porting across platforms.</p>
 <ul>
@@ -281,7 +311,7 @@ Remote Delegates</h2>
 <li><b>Transport:</b> <a href="https://zeromq.org/">ZeroMQ</a>, <a href="https://github.com/nanomsg/nng">NNG</a>, <a href="https://github.com/eclipse-paho/paho.mqtt.c">MQTT</a>, UDP, data pipe, memory buffer</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md7"></a>
-Delegate Semantics and Use Cases</h2>
+Delegate Semantics</h2>
 <p>It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to <code>nullptr</code>. Const correctness is maintained; stored const objects can only be called by const member functions.</p>
 <p>A delegate instance can be:</p>
 <ul>
@@ -290,17 +320,7 @@ Delegate Semantics and Use Cases</h2>
 <li>Reassigned.</li>
 <li>Called.</li>
 </ul>
-<p>Typical use cases are:</p>
-<ul>
-<li>Synchronous and Asynchronous Callbacks</li>
-<li>Event-Driven Programming</li>
-<li>Inter-Process and Inter-Processor Communication</li>
-<li>Inter-Thread Publish/Subscribe (Observer) Pattern</li>
-<li>Thread-Safe Asynchronous API</li>
-<li>Asynchronous Method Invocation (AMI)</li>
-<li>Design Patterns (Active Object)</li>
-<li><code>std::async</code> <a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> Targeting</li>
-</ul>
+<p>See <a href="docs/DETAILS.md/#delegate-invocation-semantics">Delegate Invocation Semantics</a> for information on target callable invocation and argument handling based on the delegate type.</p>
 <h1><a class="anchor" id="autotoc_md8"></a>
 Modular Architecture</h1>
 <p>DelegateMQ uses an external thread, transport, and serializer, all of which are based on simple, well-defined interfaces.</p>
@@ -316,7 +336,7 @@ Getting Started</h1>
  <code>cmake -B build .</code></li>
 <li>Build and run the project within the <code>build</code> directory.</li>
 </ol>
-<p>See <a href="docs/DETAILS.md#sample-projects">Sample Projects</a> to build other project examples. See <a href="docs/DETAILS.md#porting-guide">Porting Guide</a> for details on porting to a new platform.</p>
+<p>See <a href="docs/DETAILS.md/#example-projects">Example Projects</a> to build remote delegate project examples. See <a href="docs/DETAILS.md#porting-guide">Porting Guide</a> for details on porting to a new platform.</p>
 <h1><a class="anchor" id="autotoc_md10"></a>
 Documentation</h1>
 <ul>
@@ -349,28 +369,30 @@ Features</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Watchdog   </td><td class="markdownTableBodyNone">Configurable timeout to detect and handle unresponsive threads.    </td></tr>
 <tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Signal and Slots   </td><td class="markdownTableBodyNone">Standard Signal-Slot pattern implementation (<code>Signal</code> / <code>SignalSafe</code>). Supports <code>Connect()</code>, connection handles, and RAII-based automatic disconnection (<code>ScopedConnection</code>).    </td></tr>
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Multicast   </td><td class="markdownTableBodyNone">Broadcast invoke anonymous callable targets onto multiple threads    </td></tr>
-<tr class="markdownTableRowOdd">
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Message Priority   </td><td class="markdownTableBodyNone">Asynchronous delegates support prioritization to ensure timely execution of critical messages    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Serialization   </td><td class="markdownTableBodyNone">External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (<code>ISerializer</code>)    </td></tr>
-<tr class="markdownTableRowOdd">
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Transport   </td><td class="markdownTableBodyNone">External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (<code><a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a></code>)    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Timeouts and Retries   </td><td class="markdownTableBodyNone">Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution (<code><a class="el" href="class_i_transport_monitor.html" title="DelegateMQ transport monitor interface.">ITransportMonitor</a></code>)    </td></tr>
-<tr class="markdownTableRowOdd">
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Message Buffering   </td><td class="markdownTableBodyNone">Remote delegate message buffering provided by a communication library (e.g. ZeroMQ) or custom solution within transport    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Dynamic Memory   </td><td class="markdownTableBodyNone">Heap or DelegateMQ fixed-block allocator    </td></tr>
-<tr class="markdownTableRowOdd">
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Debug Logging   </td><td class="markdownTableBodyNone">Debug logging using spdlog C++ logging library    </td></tr>
-<tr class="markdownTableRowEven">
+<tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">Error Handling   </td><td class="markdownTableBodyNone">Configurable for return error code, assert or exception    </td></tr>
-<tr class="markdownTableRowOdd">
-<td class="markdownTableBodyNone">Embedded Friendly   </td><td class="markdownTableBodyNone">Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "super loop").    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">Operation System   </td><td class="markdownTableBodyNone">Any. Custom <code>IThread</code> implementation may be required.    </td></tr>
+<td class="markdownTableBodyNone">Embedded Friendly   </td><td class="markdownTableBodyNone">Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "super loop").    </td></tr>
 <tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Operation System   </td><td class="markdownTableBodyNone">Any. Custom <code>IThread</code> implementation may be required.    </td></tr>
+<tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">Language   </td><td class="markdownTableBodyNone">C++17 or higher   </td></tr>
 </table>
 <h1><a class="anchor" id="autotoc_md13"></a>

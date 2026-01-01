@@ -29,10 +29,10 @@ var NAVTREE =
     [ "Key Concepts", "index.html#autotoc_md1", null ],
     [ "Examples", "index.html#autotoc_md2", null ],
     [ "Overview", "index.html#autotoc_md3", [
-      [ "Sync Delegates", "index.html#autotoc_md4", null ],
-      [ "Async Delegates", "index.html#autotoc_md5", null ],
+      [ "Synchronous Delegates", "index.html#autotoc_md4", null ],
+      [ "Asynchronous Delegates", "index.html#autotoc_md5", null ],
       [ "Remote Delegates", "index.html#autotoc_md6", null ],
-      [ "Delegate Semantics and Use Cases", "index.html#autotoc_md7", null ]
+      [ "Delegate Semantics", "index.html#autotoc_md7", null ]
     ] ],
     [ "Modular Architecture", "index.html#autotoc_md8", null ],
     [ "Getting Started", "index.html#autotoc_md9", null ],
@@ -79,13 +79,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"class_udp_transport.html",
-"classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a90035bd4c1a8abd61f687495cd4078c2",
-"classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#add03e3b80bd75c432956e76ac58083d2",
-"classdmq_1_1_delegate_member_async_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#aa24a72d7868953351469df90f2015201",
-"classdmq_1_1_delegate_member_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a0c3555cfd30f68311ab7e54654de410b",
-"classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a8e4003946b98df4d10ba9300dfb161be",
-"namespacedmq.html#a62ea8a73887af62d409322557b4e757da9474f3b03888eaf0576eabf7a0f5e1fb"
+"class_transport_monitor.html#ac4dd814fb686a053c4505829c8c21b40",
+"classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a0941ac14007d9355c87d0db7cdb7ec52",
+"classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a5009490a38291a2fc1e458e58376c197",
+"classdmq_1_1_delegate_member_async_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a4cb2fa6ae48a788e91db5dce8ff51435",
+"classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ab2ca3ed68915d333ca0689964fcd1d28",
+"classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4.html#a9bd13aeb0fcadf6ae21e6cf3ac7b0deb",
+"functions_func_d.html",
+"structserialize__traits_1_1is__unsupported__container_3_01std_1_1unordered__multimap_3_01_key_00571da480b2217d8490b18a0bcc496eb2.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

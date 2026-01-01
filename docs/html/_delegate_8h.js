@@ -4,7 +4,7 @@ var _delegate_8h =
     [ "dmq::Delegate< RetType(Args...)>", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],
     [ "dmq::DelegateFree< RetType(Args...)>", "classdmq_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4" ],
     [ "dmq::DelegateMember< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
-    [ "dmq::DelegateMemberShared< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_shared_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
+    [ "dmq::DelegateMemberSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
     [ "dmq::DelegateFunction< RetType(Args...)>", "classdmq_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4" ],
     [ "MakeDelegate", "_delegate_8h.html#a2f7f6fd04ef1aaa3b6eb87bba95859f8", null ],
     [ "MakeDelegate", "_delegate_8h.html#a65e308cc5f3e37d2f7f89c72b9744ae2", null ],
