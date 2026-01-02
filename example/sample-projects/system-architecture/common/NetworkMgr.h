@@ -211,10 +211,13 @@ private:
                     }
                     state->cv.notify_one();
                 }
-            };
+                };
+
+            // Create the delegate instance once so we can add AND remove it correctly
+            auto statusDelegate = dmq::MakeDelegate(statusCb);
 
             // 1. Register for send status callback (success or failure)
-            m_transportMonitor.SendStatusCb += dmq::MakeDelegate(statusCb);
+            m_transportMonitor.SendStatusCb += statusDelegate;
 
             // 3. Lambda that binds and forwards arguments to RemoteInvoke with specified endpoint
             std::function<RetType(Args...)> func = [this, &endpointDel](Args&&... args) {
@@ -246,8 +249,8 @@ private:
                 }
             }
 
-            // 9. Unregister from status callback
-            m_transportMonitor.SendStatusCb -= dmq::MakeDelegate(statusCb);
+            // 9. Unregister from status callback using the SAME delegate instance
+            m_transportMonitor.SendStatusCb -= statusDelegate;
 
             // 10. Return the blocking async function invoke status to caller
             return state->success.load();
