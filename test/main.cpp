@@ -59,6 +59,15 @@ Timer& GetTimer()
 //------------------------------------------------------------------------------
 int main(void)
 {
+// Uncomment to run the DelegateMQ stress tests
+//#define MAIN_STRESS
+
+#ifdef MAIN_STRESS
+    extern int main_stress();
+    main_stress();
+    return 0;
+#endif
+
     StartLogger();
 
     // Create a worker thread with a 5s watchdog timeout
