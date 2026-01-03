@@ -59,12 +59,12 @@ Timer& GetTimer()
 //------------------------------------------------------------------------------
 int main(void)
 {
-// Uncomment to run the DelegateMQ stress tests
-//#define MAIN_STRESS
+// Uncomment to run the DelegateMQ stress test
+//#define STRESS_TEST
 
-#ifdef MAIN_STRESS
-    extern int main_stress();
-    main_stress();
+#ifdef STRESS_TEST
+    extern int stress_test();
+    stress_test();
     return 0;
 #endif
 
