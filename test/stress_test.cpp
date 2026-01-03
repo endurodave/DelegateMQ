@@ -55,7 +55,7 @@ using namespace dmq;
 // --- Configuration ---
 const int NUM_PUBLISHERS = 4;
 const int NUM_SUBSCRIBERS = 4; // Must be even for fair sync/async split
-const int TEST_DURATION_SECONDS = 10;
+const int TEST_DURATION_SECONDS = 30;
 const int BURST_SIZE = 1000;
 
 // --- Global Integrity Counters ---
