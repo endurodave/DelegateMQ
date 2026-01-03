@@ -1,5 +1,5 @@
 # Specify the minimum CMake version required
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
@@ -50,15 +50,25 @@ include_directories(
     test/unit-tests
 )
 
+# Add subdirectories for unit tests and sample code
+# NOTE: Added before target creation so libraries are defined for linking
+add_subdirectory(unit-tests)
+add_subdirectory(${CMAKE_SOURCE_DIR}/example/sample-code ${CMAKE_BINARY_DIR}/sample-code)
+
 # Add an executable target
 add_executable(${DELEGATE_APP} ${SOURCES} ${DMQ_LIB_SOURCES})
+
+# -----------------------------------------------------------------------------
+# PRECOMPILED HEADERS (PCH)
+# This single command works for both MSVC (Windows) and GCC/Clang (Linux).
+# It compiles DelegateMQ.h once and auto-includes it into every source file
+# in the target, significantly speeding up compilation.
+# -----------------------------------------------------------------------------
+target_precompile_headers(${DELEGATE_APP} PRIVATE 
+    "${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.h"
+)
 
 target_link_libraries(${DELEGATE_APP} PRIVATE 
     unit_tests_lib
     sample_code_lib
 )
-
-# Add subdirectories for unit tests and sample code
-add_subdirectory(unit-tests)
-add_subdirectory(${CMAKE_SOURCE_DIR}/example/sample-code ${CMAKE_BINARY_DIR}/sample-code)
-

@@ -14,3 +14,7 @@ target_include_directories(unit_tests_lib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 if (MSVC)
     target_compile_options(unit_tests_lib PRIVATE /bigobj)
 endif()
+
+target_precompile_headers(unit_tests_lib PRIVATE 
+    "${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.h"
+)
