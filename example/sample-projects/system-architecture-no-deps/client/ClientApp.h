@@ -6,8 +6,6 @@
 #include "Sensor.h"
 #include "DataMsg.h"
 
-typedef std::function<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCallback;
-
 // ClientApp reads data locally and sends to DataMgr for storage. 
 class ClientApp
 {
@@ -18,72 +16,37 @@ public:
         return instance;
     }
 
-    /// Start data collection locally (polling with a timer) and remotely (sending a 
-    /// start message to ServerApp). Two types of async message sending illustrated. 
-    /// @return `true` if all async commands sent successfully to ServerApp succeed. 
-    /// `false` if the any send fails.
+    /// Start data collection locally and remotely.
+    /// @return `true` if all async commands sent successfully. 
     bool Start()
     {
-        bool sendCommandMsgSuccess = false;
-        bool sendCommandMsgComplete = false;
-        std::mutex mtx;
-        std::condition_variable cv;
-
-        // Callback to capture NetworkMgr::SendCommandMsg() success or error.
-        ErrorCallback errorCb = [&sendCommandMsgSuccess, &sendCommandMsgComplete, &cv, &mtx](dmq::DelegateRemoteId id, dmq::DelegateError err, dmq::DelegateErrorAux aux) {
-            // SendCommandMsg() ID?
-            if (id == ids::COMMAND_MSG_ID) {
-                {
-                    std::lock_guard<std::mutex> lock(mtx);
-                    sendCommandMsgComplete = true;
-                    if (err == dmq::DelegateError::SUCCESS)  // Send success? 
-                        sendCommandMsgSuccess = true;
-                }
-                cv.notify_one();
-            }
-            };
-
-        // Register for callback 
-        // Use Connect with a local ScopedConnection (auto-disconnects when out of scope)
-        dmq::ScopedConnection tempErrorConn = NetworkMgr::ErrorCb->Connect(MakeDelegate(errorCb));
-
+        // Send START command
         CommandMsg command;
         command.action = CommandMsg::Action::START;
         command.pollTime = 250;
 
-        // Async send start remote data collection message (non-blocking). Send success/failure
-        // captured by errorCb callback lambda. 
-        NetworkMgr::Instance().SendCommandMsg(command);
+        // Use the blocking "Wait" function. 
+        bool sendCommandMsgSuccess = NetworkMgr::Instance().SendCommandMsgWait(command);
 
-        // Async send actuator message (non-blocking). Send success/failure captured
-        // using std::future. 
+        // Send Actuator command (using Future approach for demo)
         ActuatorMsg msg;
         msg.actuatorId = 1;
+
+        // This launches an async task that calls SendActuatorMsgWait internally
         std::future<bool> futureRetVal = NetworkMgr::Instance().SendActuatorMsgFuture(msg);
 
-        // Wait for async send command callback to be triggered
-        std::unique_lock<std::mutex> lock(mtx);
-        while (!sendCommandMsgComplete)
-            cv.wait(lock);
-
-        // Send complete; explicit disconnect not strictly needed (tempErrorConn handles it),
-        // but allowed.
-        tempErrorConn.Disconnect();
-
         // Start local data collection
-        // Use Connect() and store handle
         m_pollTimerConn = m_pollTimer.Expired->Connect(MakeDelegate(this, &ClientApp::PollData, m_thread));
         m_pollTimer.Start(std::chrono::milliseconds(500));
 
         // Start actuator updates
-        // Use Connect() and store handle
         m_actuatorTimerConn = m_actuatorTimer.Expired->Connect(MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
         m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
 
-        // Wait here for the SendActuatorMsgFuture() return value
+        // Wait for the future to complete
         bool sendActuatorMsgSuccess = futureRetVal.get();
 
-        // Return true if both async messages succeed
+        // Return true if both succeeded
         return (sendCommandMsgSuccess && sendActuatorMsgSuccess);
     }
 
@@ -91,7 +54,7 @@ public:
     {
         CommandMsg command;
         command.action = CommandMsg::Action::STOP;
-        NetworkMgr::Instance().SendCommandMsg(command);
+        NetworkMgr::Instance().SendCommandMsg(command); // Fire and forget is fine here
 
         m_pollTimer.Stop();
         m_pollTimerConn.Disconnect();
@@ -110,14 +73,12 @@ private:
     {
         m_thread.CreateThread();
 
-        // Use Connect() for NetworkMgr callbacks
         m_errorCbConn = NetworkMgr::ErrorCb->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
         m_statusCbConn = NetworkMgr::SendStatusCb->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
     }
 
     ~ClientApp()
     {
-        // No manual unregistration needed. ScopedConnections handle it automatically.
         m_thread.ExitThread();
     }
 
@@ -134,16 +95,10 @@ private:
         DataMgr::Instance().SetDataMsg(dataMsg);
     }
 
-    // Update the local and remote actuator positions. Blocking call that only 
-    // returns if all actuators updates succeed or a failure occurs.
     void ActuatorUpdate()
     {
         static int cnt = 0;
-        bool position;
-        if (++cnt % 2)
-            position = false;   // actuators off
-        else
-            position = true;    // actuators on
+        float position = (++cnt % 2) ? 0.0f : 1.0f;
 
         // Set local acuator positions
         m_actuator3.SetPosition(position);
@@ -151,19 +106,15 @@ private:
 
         // Set remote actuator positions
         ActuatorMsg msg;
-        msg.actuatorId = 1;
         msg.actuatorPosition = position;
 
-        // SendActuatorMsg calls block until remote receives and processes the message
-        bool success1 = NetworkMgr::Instance().SendActuatorMsgWait(msg);
+        msg.actuatorId = 1;
+        NetworkMgr::Instance().SendActuatorMsgWait(msg);
+
         msg.actuatorId = 2;
-        bool success2 = NetworkMgr::Instance().SendActuatorMsgWait(msg);
+        NetworkMgr::Instance().SendActuatorMsgWait(msg);
 
-        if (!success1 || !success2)
-            std::cout << "Remote actuator failed!" << std::endl;
-
-        // Explicitly start timer for next time. Prevent excessive timer messages in the thread 
-        // queue if "Wait" calls above block a long time due to communications down.
+        // Explicitly start timer for next time
         m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
     }
 
