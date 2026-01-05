@@ -27,26 +27,27 @@ namespace Example {
         std::cout << "--- Basic Signal Example ---\n";
 
         // 1. Create the Signal
-        auto mySignal = dmq::MakeSignal<void(std::string)>();
+        //    Naming: "OnMessage" clearly indicates an event source.
+        auto OnMessage = dmq::MakeSignal<void(std::string)>();
 
         // 2. Create a connection handle
         ScopedConnection conn;
 
         {
             // 3. Connect a lambda
-            conn = mySignal->Connect(MakeDelegate(+[](std::string msg) {
+            conn = OnMessage->Connect(MakeDelegate(+[](std::string msg) {
                 std::cout << "Lambda received: " << msg << std::endl;
                 }));
 
             // Fire the signal
-            (*mySignal)("Hello from Signal!");
+            (*OnMessage)("Hello from Signal!");
         }
         // 'conn' is still valid here
-        (*mySignal)("Second message");
+        (*OnMessage)("Second message");
 
         // Manually disconnect
         conn.Disconnect();
-        (*mySignal)("This will not be heard");
+        (*OnMessage)("This will not be heard");
     }
 
     // ----------------------------------------------------------------------------
@@ -58,18 +59,19 @@ namespace Example {
     public:
         // Method 1: Use the dmq::SignalPtr alias (Cleanest)
         // Reduces "std::shared_ptr<SignalSafe<...>>" to just "dmq::SignalPtr<...>"
-        dmq::SignalPtr<void(const std::string&)> BreakingNews
+        // Naming: "OnBreakingNews"
+        dmq::SignalPtr<void(const std::string&)> OnBreakingNews
             = dmq::MakeSignal<void(const std::string&)>();
 
         // Method 2: Use a signature alias (Best for complex signatures)
         // using NewsSig = void(const std::string&);
-        // dmq::SignalPtr<NewsSig> BreakingNews = dmq::MakeSignal<NewsSig>();
+        // dmq::SignalPtr<NewsSig> OnBreakingNews = dmq::MakeSignal<NewsSig>();
 
         void Broadcast(const std::string& news)
         {
             std::cout << "[Publisher] Broadcasting: " << news << std::endl;
             // Dereference to invoke
-            (*BreakingNews)(news);
+            (*OnBreakingNews)(news);
         }
     };
 
@@ -83,8 +85,8 @@ namespace Example {
             m_thread.CreateThread();
 
             // Connect to the publisher.
-            // We use 'MakeDelegate' to bind the member function to our thread.
-            m_connection = pub.BreakingNews->Connect(
+            // Reads naturally: "Connect to pub.OnBreakingNews"
+            m_connection = pub.OnBreakingNews->Connect(
                 MakeDelegate(this, &NewsSubscriber::OnNews, m_thread)
             );
         }

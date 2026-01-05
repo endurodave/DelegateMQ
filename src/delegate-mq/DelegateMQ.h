@@ -114,6 +114,10 @@
     #error "Transport implementation not found."
 #endif
 
+#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+    #include "predef/util/NetworkEngine.h"
+#endif
+
 #include "predef/util/Fault.h"
 #include "predef/util/Timer.h"
 #include "predef/util/TransportMonitor.h"

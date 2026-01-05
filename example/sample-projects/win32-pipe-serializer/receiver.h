@@ -43,13 +43,13 @@ public:
     void Start()
     {
         // Start a timer to poll data
-        (*m_recvTimer.Expired) += MakeDelegate(this, &Receiver::Poll, m_thread);
+        (*m_recvTimer.OnExpired) += MakeDelegate(this, &Receiver::Poll, m_thread);
         m_recvTimer.Start(std::chrono::milliseconds(50));
     }
 
     void Stop()
     {
-        (*m_recvTimer.Expired) -= MakeDelegate(this, &Receiver::Poll, m_thread);
+        (*m_recvTimer.OnExpired) -= MakeDelegate(this, &Receiver::Poll, m_thread);
         m_recvTimer.Stop();
         m_thread.ExitThread();
         m_recvTimer.Stop();

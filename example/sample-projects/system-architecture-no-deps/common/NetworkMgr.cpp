@@ -14,16 +14,16 @@ NetworkMgr::NetworkMgr()
 int NetworkMgr::Create()
 {
     // Bind signals
-    m_alarmMsgDel.Bind(AlarmMsgCb.get(), &SignalSafe<void(AlarmMsg&, AlarmNote&)>::operator(), ids::ALARM_MSG_ID);
-    m_dataMsgDel.Bind(DataMsgCb.get(), &SignalSafe<void(DataMsg&)>::operator(), ids::DATA_MSG_ID);
-    m_commandMsgDel.Bind(CommandMsgCb.get(), &SignalSafe<void(CommandMsg&)>::operator(), ids::COMMAND_MSG_ID);
-    m_actuatorMsgDel.Bind(ActuatorMsgCb.get(), &SignalSafe<void(ActuatorMsg&)>::operator(), ids::ACTUATOR_MSG_ID);
+    m_alarmMsgDel.Bind(OnAlarm.get(), &SignalSafe<void(AlarmMsg&, AlarmNote&)>::operator(), ids::ALARM_MSG_ID);
+    m_dataMsgDel.Bind(OnData.get(), &SignalSafe<void(DataMsg&)>::operator(), ids::DATA_MSG_ID);
+    m_commandMsgDel.Bind(OnCommand.get(), &SignalSafe<void(CommandMsg&)>::operator(), ids::COMMAND_MSG_ID);
+    m_actuatorMsgDel.Bind(OnActuator.get(), &SignalSafe<void(ActuatorMsg&)>::operator(), ids::ACTUATOR_MSG_ID);
 
     // Register for error callbacks
-    m_alarmMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::OnError);
-    m_dataMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::OnError);
-    m_commandMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::OnError);
-    m_actuatorMsgDel.ErrorCb += MakeDelegate(this, &NetworkMgr::OnError);
+    m_alarmMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
+    m_dataMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
+    m_commandMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
+    m_actuatorMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
 
     // Register endpoints with the Base Engine (So Incoming() can find them)
     RegisterEndpoint(ids::ALARM_MSG_ID, &m_alarmMsgDel);
@@ -43,11 +43,11 @@ int NetworkMgr::Create()
 
 // Override hooks to fire signals
 void NetworkMgr::OnError(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux) {
-    if (ErrorCb) (*ErrorCb)(id, error, aux);
+    if (OnNetworkError) (*OnNetworkError)(id, error, aux);
 }
 
 void NetworkMgr::OnStatus(DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
-    if (SendStatusCb) (*SendStatusCb)(id, seq, status);
+    if (OnSendStatus) (*OnSendStatus)(id, seq, status);
 }
 
 void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note) {

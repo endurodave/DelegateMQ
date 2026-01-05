@@ -12,7 +12,7 @@ DelegateMQ is a C++ header-only library for invoking any callable (e.g., functio
 * Asynchronously (Blocking and non-blocking)
 * Remotely (Across processes or processors)
 
-It serves as a powerful messaging fabric for C++ applications, providing thread-safe asynchronous callbacks, a robust Signal & Slot mechanism, and seamless inter-thread data transfer. The library is fully unit-tested and designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).
+It serves as a powerful messaging fabric for C++ applications, providing thread-safe asynchronous callbacks, a robust Signal & Slot mechanism, and seamless inter-thread data transfer. The library is fully unit-tested and verified with long-term stress testing to ensure data integrity in high-contention multithreaded environments, and is designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).
 
 **Key Use Cases**
 * **Callbacks**: Synchronous and asynchronous execution.
@@ -88,15 +88,14 @@ int main(void)
 class Publisher
 {
 public:
-    // 1. Define a thread-safe Signal
-    //    Use dmq::MakeSignal helper for clean syntax.
-    std::shared_ptr<dmq::SignalSafe<void(const std::string&)>> MsgSig 
-        = dmq::MakeSignal<void(const std::string&)>();
+    // 1. Define a thread-safe OnMessage signal
+    using MessageSignal = dmq::SignalSafe<void(const std::string&)>;
+    std::shared_ptr<MessageSignal> OnMessage = std::make_shared<MessageSignal>();
 
     void Publish(const std::string& msg) 
     {
         // 3. Emit signal to all connected slots (dereference the shared_ptr)
-        (*MsgSig)(msg); 
+        (*OnMessage)(msg); 
     }
 };
 
@@ -108,7 +107,7 @@ public:
         m_thread.CreateThread();
 
         // 2. Connect to the publisher's signal
-        m_connection = pub.MsgSig->Connect(
+        m_connection = pub.OnMessage->Connect(
             dmq::MakeDelegate(this, &Subscriber::HandleMsg, m_thread)
         );
     }
@@ -184,7 +183,8 @@ public:
         if (m_thread.GetThreadId() != Thread::GetCurrentThreadId()) 
         {
             // 3. Reinvoke StoreAsync(data) on m_thread context
-            return dmq::MakeDelegate(this, &DataStore::StoreAsync, m_thread)(data);
+            dmq::MakeDelegate(this, &DataStore::StoreAsync, m_thread)(data);
+            return;
         }
         // 4. Data stored on m_thread context
         m_data = data;  
@@ -208,15 +208,32 @@ Synchronous delegates invoke the target function anonymously within the current 
 
 ## Asynchronous Delegates
 
-Asynchronous delegates support both non-blocking and blocking invocation modes, including optional timeouts. The library enables anonymous invocation of any callable target, regardless of the number or type of arguments, or the presence of a return value. All argument types are supported — including by value, pointers, pointer-to-pointer, and references. Smart pointer delegates prevents async invocation on destroyed target objects.
+Asynchronous delegates simplify multithreaded programming by allowing you to invoke functions across thread boundaries safely and effortlessly. This enables the Active Object pattern, where method execution is decoupled from method invocation. The library automatically marshals all arguments—whether passed by value, pointer, or reference—ensuring thread safety without manual locking or complex queue management.
 
-The delegate library abstracts the complexities of invoking functions across thread boundaries. Concrete examples are provided below, with straightforward paths to porting across platforms.
+**Key Features:**
+
+* **Thread Marshalling:** Seamlessly transfers execution and arguments from a caller thread to a target thread.
+* **Smart Pointer Safety:** Prevents callbacks on destroyed objects using weak pointers, ensuring fail-safe async execution.
+* **Invocation Modes:** 
+  * **Non-Blocking:** Fire-and-forget execution.
+  * **Blocking:** Wait for the target thread to complete execution (with optional timeouts).
+  * **Asynchronous:** Use standard `std::future` to retrieve results later.
+
+**Supported Platforms:**
 
 * **Operating System:** Windows, Linux, [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS)
 
 ## Remote Delegates
 
-Remote delegates enable function invocation across processes or processors using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callables with any function signature. The design allows easy integration with new transport or serialization libraries. Concrete examples using supported libraries are provided below. 
+Remote delegates extend the library to enable Remote Procedure Calls (RPC) across process or network boundaries. This allows you to invoke a function on a remote machine as easily as calling a local function. The system automatically handles argument marshaling, serialization, and thread dispatching.
+
+**Key Features:**
+
+* **No IDL Required:** Works with standard C++ types and structs.
+* **Invocation Modes:** Supports Blocking (synchronous wait), Non-blocking (fire-and-forget), and Futures (asynchronous return values).
+* **Transport Agnostic:** The logical application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers.
+
+**Supported Integrations:**
 
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [Cereal](https://github.com/USCiLab/cereal), [Bitsery](https://github.com/fraillt/bitsery), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
 * **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), UDP, data pipe, memory buffer

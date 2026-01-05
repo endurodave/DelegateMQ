@@ -6,8 +6,11 @@
 #ifndef NETWORK_ENGINE_H
 #define NETWORK_ENGINE_H
 
-#include "DelegateMQ.h"
-#include "RemoteEndpoint.h"
+// Only define NetworkEngine if a compatible transport is selected
+#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+
+#include "predef/util/RemoteEndpoint.h"
+#include "predef/util/TransportMonitor.h"
 #include <map>
 #include <mutex>
 #include <atomic>
@@ -15,6 +18,20 @@
 #include <iostream>
 #include <functional> 
 
+// SWITCH: Include the correct transport header based on CMake definitions
+#if defined(DMQ_TRANSPORT_ZEROMQ)
+#include "predef/transport/zeromq/ZeroMqTransport.h"
+#elif defined(DMQ_TRANSPORT_WIN32_UDP)
+#include "predef/transport/win32-udp/Win32UdpTransport.h"
+#elif defined(DMQ_TRANSPORT_LINUX_UDP)
+#include "predef/transport/linux-udp/LinuxUdpTransport.h"
+#endif
+
+/// @brief Base class for handling network transport, threading, and synchronization.
+/// 
+/// @details NetworkEngine encapsulates the "plumbing" of the distributed system, 
+/// separating transport mechanics from application business logic. It provides a 
+/// unified interface regardless of the underlying transport protocol selected at build time.
 class NetworkEngine
 {
 public:
@@ -24,15 +41,66 @@ public:
     NetworkEngine(const NetworkEngine&) = delete;
     NetworkEngine& operator=(const NetworkEngine&) = delete;
 
+    // SWITCH: Initialize signature differs between transports
+#if defined(DMQ_TRANSPORT_ZEROMQ)
+    // ZeroMQ uses connection strings (e.g., "tcp://*:5555")
+    int Initialize(const std::string& sendAddr, const std::string& recvAddr, bool isServer);
+#elif defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+    // UDP requires explicit IP and Port for sending and receiving
     int Initialize(const std::string& sendIp, int sendPort, const std::string& recvIp, int recvPort);
+#endif
+
+    /// @brief Starts the network engine and its receiving thread.
+    /// 
+    /// @details This method initializes the internal `RecvThread` to begin polling the 
+    /// transport layer for incoming messages. It also starts the `Timeout` timer used 
+    /// by the `TransportMonitor` to track unacknowledged messages. 
+    /// 
+    /// @note This method is thread-safe and will automatically marshal the call to the 
+    /// internal Network Thread if called from a different context.
     void Start();
+
+    /// @brief Stops the network engine and releases resources.
+    /// 
+    /// @details This method gracefully shuts down the `RecvThread`, stops the timeout 
+    /// timer, and closes the underlying transport sockets (send/receive). It ensures 
+    /// that all internal threads are joined before returning to prevent resource leaks.
+    /// 
+    /// @note This call blocks until the shutdown sequence is complete.
     void Stop();
 
+    /// @brief Registers a remote endpoint with the network engine.
+    /// 
+    /// @details This function maps a unique `DelegateRemoteId` to a specific `RemoteEndpoint` 
+    /// instance (via the `IRemoteInvoker` interface). When the `NetworkEngine` receives 
+    /// data from the transport layer, it uses the message ID to look up the registered 
+    /// endpoint in this map and invokes it to deserialize and handle the payload.
+    /// 
+    /// @param[in] id The unique identifier for the remote message type.
+    /// @param[in] endpoint Pointer to the endpoint instance responsible for handling this ID.
     void RegisterEndpoint(dmq::DelegateRemoteId id, dmq::IRemoteInvoker* endpoint);
 
-    /// Generic helper function for invoking any remote delegate. The call blocks 
-    /// until the remote acknowledges the message or a timeout occurs.
-    /// Execution flow follows the numbered comments 1 -> 12.
+    /// @brief Generic helper function to synchronously invoke a remote delegate.
+    /// 
+    /// @details This function blocks the calling thread until one of two conditions is met:
+    /// 1. The remote endpoint acknowledges receipt of the message (ACK).
+    /// 2. The operation times out (as defined by `RECV_TIMEOUT`).
+    ///
+    /// **Thread Synchronization Logic:**
+    /// * **If called from the Network Thread:** The send operation executes immediately 
+    ///     and returns the result of the transport send call. No blocking wait occurs 
+    ///     because we are already on the thread responsible for I/O.
+    /// * **If called from any other thread:** The call is marshaled to the Network Thread.
+    ///     The calling thread blocks on a condition variable. When the Network Thread 
+    ///     receives an ACK (or timeout), it signals the condition variable to wake up 
+    ///     the caller.
+    ///
+    /// @tparam TClass The class type of the remote endpoint (usually inferred).
+    /// @tparam RetType The return type of the function signature (usually void).
+    /// @tparam Args The argument types of the function signature.
+    /// @param[in] endpoint The specific `RemoteEndpoint` instance to invoke.
+    /// @param[in] args The arguments to forward to the remote function.
+    /// @return `true` if the remote acknowledged the message; `false` on timeout or transport failure.
     template <class TClass, class RetType, class... Args>
     bool RemoteInvokeWait(RemoteEndpoint<TClass, RetType(Args...)>& endpoint, Args&&... args)
     {
@@ -51,7 +119,6 @@ public:
             dmq::DelegateRemoteId remoteId = endpoint.GetRemoteId();
 
             // 3. [Caller Thread] Define the callback that wakes us up later.
-            //    (This will eventually execute on the Network Thread)
             std::function<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)> statusCbFunc =
                 [state, remoteId](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
                 if (id == remoteId) {
@@ -127,8 +194,17 @@ private:
     Timer m_timeoutTimer;
     dmq::ScopedConnection m_timeoutTimerConn;
 
+    // SWITCH: Transport Members
+#if defined(DMQ_TRANSPORT_ZEROMQ)
+    ZeroMqTransport m_sendTransport;
+    ZeroMqTransport m_recvTransport;
+#elif defined(DMQ_TRANSPORT_WIN32_UDP)
     UdpTransport m_sendTransport;
     UdpTransport m_recvTransport;
+#elif defined(DMQ_TRANSPORT_LINUX_UDP)
+    UdpTransport m_sendTransport;
+    UdpTransport m_recvTransport;
+#endif
 
     std::map<dmq::DelegateRemoteId, dmq::IRemoteInvoker*> m_receiveIdMap;
 
@@ -136,4 +212,5 @@ private:
     static const std::chrono::milliseconds RECV_TIMEOUT;
 };
 
+#endif // Defined Transport Check
 #endif // NETWORK_ENGINE_H

@@ -77,7 +77,7 @@ int main(void)
     // Create a timer that expires every 250mS and calls 
     // TimerExpiredCb on workerThread1 upon expiration
     // Dereference shared_ptr and use +=
-    (*GetTimer().Expired) += MakeDelegate(&TimerExpiredCb, workerThread1);
+    (*GetTimer().OnExpired) += MakeDelegate(&TimerExpiredCb, workerThread1);
     GetTimer().Start(std::chrono::milliseconds(250));
 
     // Start the thread that will run ProcessTimers
@@ -100,7 +100,7 @@ int main(void)
         timerThread.join();
 
     GetTimer().Stop();
-    GetTimer().Expired->Clear();
+    GetTimer().OnExpired->Clear();
 
     workerThread1.ExitThread();
 
@@ -705,24 +705,24 @@ void RunMiscExamples()
     // See SignalSlot.cpp for more examples. 
     {
         // Must use make_shared for Signal to support Connection/shared_from_this
-        auto mySignal = dmq::MakeSignal<void(int)>();
+        auto OnSignal = dmq::MakeSignal<void(int)>();
 
         {
             // Create a scoped connection handle
             dmq::ScopedConnection conn;
 
-            // Connect a lambda
-            conn = mySignal->Connect(MakeDelegate(+[](int v) {
+            // Connect a lambda to the "OnSignal" event
+            conn = OnSignal->Connect(MakeDelegate(+[](int v) {
                 cout << "ScopedConnection received: " << v << endl;
                 }));
 
             // Signal is connected
             cout << "Signal firing (Observer is alive):" << endl;
-            (*mySignal)(100);
+            (*OnSignal)(100);
         } // conn goes out of scope here -> Automatically disconnects!
 
         // Signal is disconnected
         cout << "Signal firing (Observer is dead):" << endl;
-        (*mySignal)(200); // No output expected
+        (*OnSignal)(200); // No output expected
     }
 }

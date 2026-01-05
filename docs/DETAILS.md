@@ -1966,8 +1966,8 @@ Creating a timer callback service is trivial. A `UnicastDelegate<void(void)>` us
 class Timer
 {
 public:
-    /// Client's register with Expired to get timer callbacks
-    std::shared_ptr<dmq::SignalSafe<void(void)>> Expired;
+    /// Client's register with OnExpired to get timer callbacks
+    std::shared_ptr<dmq::SignalSafe<void(void)>> OnExpired;
 
     /// Starts a timer for callbacks on the specified timeout interval.
     /// @param[in] timeout - the timeout in milliseconds.
@@ -1990,7 +1990,7 @@ dmq::ScopedConnection m_conn;
 void Init() {
     // 2. Connect using the RAII pattern
     // If 'this' is destroyed, m_conn destructor automatically disconnects the timer.
-    m_conn = m_timer.Expired->Connect(MakeDelegate(this, &MyClass::OnTimer, m_thread));
+    m_conn = m_timer.OnExpired->Connect(MakeDelegate(this, &MyClass::OnTimer, m_thread));
     m_timer.Start(std::chrono::milliseconds(250));
 }
 ```

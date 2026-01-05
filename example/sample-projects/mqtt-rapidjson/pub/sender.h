@@ -45,8 +45,8 @@ public:
             return MakeDelegate(this, &Sender::Start, m_thread)();
 
         // Start a timer to send data
-        (*m_sendTimer.Expired) += MakeDelegate(this, &Sender::Send, m_thread);
-        //(*m_sendTimer.Expired) += MakeDelegate(this, &Sender::SendV2, m_thread);
+        (*m_sendTimer.OnExpired) += MakeDelegate(this, &Sender::Send, m_thread);
+        //(*m_sendTimer.OnExpired) += MakeDelegate(this, &Sender::SendV2, m_thread);
         m_sendTimer.Start(std::chrono::milliseconds(500));
     }
 

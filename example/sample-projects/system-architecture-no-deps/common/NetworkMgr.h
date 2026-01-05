@@ -6,7 +6,7 @@
 #ifndef NETWORK_MGR_H
 #define NETWORK_MGR_H
 
-#include "NetworkEngine.h" 
+#include "DelegateMQ.h" 
 #include "RemoteIds.h"
 #include "AlarmMsg.h"
 #include "DataMsg.h"
@@ -47,12 +47,13 @@ public:
     using ErrorSignal = dmq::SignalSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>;
     using SendStatusSignal = dmq::SignalSafe<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>;
 
-    static inline std::shared_ptr<ErrorSignal>      ErrorCb = std::make_shared<ErrorSignal>();
-    static inline std::shared_ptr<SendStatusSignal> SendStatusCb = std::make_shared<SendStatusSignal>();
-    static inline std::shared_ptr<AlarmSignal>      AlarmMsgCb = std::make_shared<AlarmSignal>();
-    static inline std::shared_ptr<CommandSignal>    CommandMsgCb = std::make_shared<CommandSignal>();
-    static inline std::shared_ptr<DataSignal>       DataMsgCb = std::make_shared<DataSignal>();
-    static inline std::shared_ptr<ActuatorSignal>   ActuatorMsgCb = std::make_shared<ActuatorSignal>();
+    static inline std::shared_ptr<ErrorSignal>      OnNetworkError = std::make_shared<ErrorSignal>();
+    static inline std::shared_ptr<SendStatusSignal> OnSendStatus = std::make_shared<SendStatusSignal>();
+
+    static inline std::shared_ptr<AlarmSignal>      OnAlarm = std::make_shared<AlarmSignal>();
+    static inline std::shared_ptr<CommandSignal>    OnCommand = std::make_shared<CommandSignal>();
+    static inline std::shared_ptr<DataSignal>       OnData = std::make_shared<DataSignal>();
+    static inline std::shared_ptr<ActuatorSignal>   OnActuator = std::make_shared<ActuatorSignal>();
 
     static NetworkMgr& Instance() { static NetworkMgr instance; return instance; }
 

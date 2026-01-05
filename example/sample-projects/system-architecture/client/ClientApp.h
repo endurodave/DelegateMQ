@@ -36,11 +36,11 @@ public:
         std::future<bool> futureRetVal = NetworkMgr::Instance().SendActuatorMsgFuture(msg);
 
         // Start local data collection
-        m_pollTimerConn = m_pollTimer.Expired->Connect(MakeDelegate(this, &ClientApp::PollData, m_thread));
+        m_pollTimerConn = m_pollTimer.OnExpired->Connect(MakeDelegate(this, &ClientApp::PollData, m_thread));
         m_pollTimer.Start(std::chrono::milliseconds(500));
 
         // Start actuator updates
-        m_actuatorTimerConn = m_actuatorTimer.Expired->Connect(MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
+        m_actuatorTimerConn = m_actuatorTimer.OnExpired->Connect(MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
         m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
 
         // Wait for the future to complete
@@ -73,8 +73,8 @@ private:
     {
         m_thread.CreateThread();
 
-        m_errorCbConn = NetworkMgr::ErrorCb->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
-        m_statusCbConn = NetworkMgr::SendStatusCb->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
+        m_errorCbConn = NetworkMgr::OnNetworkError->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
+        m_statusCbConn = NetworkMgr::OnSendStatus->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
     }
 
     ~ClientApp()

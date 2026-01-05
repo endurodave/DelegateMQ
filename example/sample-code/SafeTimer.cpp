@@ -24,7 +24,7 @@ namespace Example
             // Bind the callback using Connect().
             // We use shared_from_this() to ensure the object stays alive if the callback is queued.
             // We store the connection in m_timerConn so it automatically disconnects on destruction.
-            m_timerConn = m_timer.Expired->Connect(
+            m_timerConn = m_timer.OnExpired->Connect(
                 MakeDelegate(shared_from_this(), &SafeTimer::OnTimer, m_thread)
             );
 

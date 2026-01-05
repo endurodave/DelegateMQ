@@ -42,7 +42,7 @@ private:
 
         // Register to receive remote data updates
         // Use Connect() and store handle in m_networkDataConn
-        m_networkDataConn = NetworkMgr::DataMsgCb->Connect(MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread));
+        m_networkDataConn = NetworkMgr::OnData->Connect(MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread));
     }
 
     ~DataMgr()

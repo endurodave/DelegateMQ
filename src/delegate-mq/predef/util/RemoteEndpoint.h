@@ -6,8 +6,12 @@
 template <class C, class R>
 struct RemoteEndpoint; // Not defined
 
-// Class to handle send/receive remote delegate messages. Class sets all RemoteDelegate
-// base class interfaces such as stream and serializer.
+/// @brief A helper class to handle the sending and receiving of remote delegate messages.
+/// 
+/// @details This class inherits from DelegateMemberRemote and encapsulates the necessary 
+/// plumbing (Stream, Serializer, Dispatcher) required for remote communication. By 
+/// internalizing these components, it simplifies the creation and registration of 
+/// remote endpoints in the NetworkManager.
 template <class TClass, class RetType, class... Args>
 class RemoteEndpoint<TClass, RetType(Args...)> : public dmq::DelegateMemberRemote<TClass, RetType(Args...)>
 {
@@ -16,8 +20,8 @@ public:
     using Func = RetType(Args...);
     using BaseType = dmq::DelegateMemberRemote<TClass, RetType(Args...)>;
 
-    // Error handler callback
-    dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCb;
+    // Clients connect to this signal to handle transport or serialization errors.
+    dmq::SignalSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> OnError;
 
     // A remote delegate endpoint constructor
     RemoteEndpoint(dmq::DelegateRemoteId id, Dispatcher* dispatcher) :
@@ -32,11 +36,11 @@ public:
     }
 
 private:
-    // Callback to catch remote delegate errors
+    // Callback to catch remote delegate errors (invoked by BaseType logic)
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
-        // Callback registered clients with error
-        ErrorCb(id, error, aux);
+        // Emit the signal to registered clients
+        OnError(id, error, aux);
     }
 
     // Serialize function argument data into a stream
@@ -47,4 +51,3 @@ private:
 };
 
 #endif
-
