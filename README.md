@@ -4,6 +4,10 @@
 [![conan Windows](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml)
 [![Codecov](https://codecov.io/gh/endurodave/DelegateMQ/branch/master/graph/badge.svg)](https://app.codecov.io/gh/endurodave/DelegateMQ)
 
+<div align="center">
+  <img src="docs/delegatemq-banner.jpg" alt="DelegateMQ Banner" width="100%">
+</div>
+
 # Delegates in C++
 
 DelegateMQ is a C++ header-only library for invoking any callable (e.g., function, method, lambda):

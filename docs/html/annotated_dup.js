@@ -106,6 +106,8 @@ var annotated_dup =
     [ "ITransportMonitor", "class_i_transport_monitor.html", "class_i_transport_monitor" ],
     [ "MqttTransport", "class_mqtt_transport.html", "class_mqtt_transport" ],
     [ "NngTransport", "class_nng_transport.html", "class_nng_transport" ],
+    [ "RemoteEndpoint", "struct_remote_endpoint.html", null ],
+    [ "RemoteEndpoint< TClass, RetType(Args...)>", "class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
     [ "serialize", "classserialize.html", "classserialize" ],
     [ "Serializer", "struct_serializer.html", null ],
     [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4" ],

@@ -100,7 +100,7 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__r_e_a_d_m_e"></a> <img src="https://img.shields.io/github/license/BehaviorTree/BehaviorTree.CPP?color=blue" alt="License MIT" class="inline"/> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_ubuntu.yml/badge.svg" alt="conan Ubuntu" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_clang.yml/badge.svg" alt="conan Clang" style="pointer-events: none;" class="inline"/></a> <a href="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml"><img src="https://github.com/endurodave/DelegateMQ/actions/workflows/cmake_windows.yml/badge.svg" alt="conan Windows" style="pointer-events: none;" class="inline"/></a> <a href="https://app.codecov.io/gh/endurodave/DelegateMQ"><img src="https://codecov.io/gh/endurodave/DelegateMQ/branch/master/graph/badge.svg" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
-<h1><a class="anchor" id="autotoc_md0"></a>
+<div align="center"> <img src="docs/delegatemq-banner.jpg" alt="DelegateMQ Banner" width="100%" class="inline"/> </div><h1><a class="anchor" id="autotoc_md0"></a>
 Delegates in C++</h1>
 <p>DelegateMQ is a C++ header-only library for invoking any callable (e.g., function, method, lambda):</p>
 <ul>
@@ -108,7 +108,7 @@ Delegates in C++</h1>
 <li>Asynchronously (Blocking and non-blocking)</li>
 <li>Remotely (Across processes or processors)</li>
 </ul>
-<p>It serves as a powerful messaging fabric for C++ applications, providing thread-safe asynchronous callbacks, a robust Signal &amp; Slot mechanism, and seamless inter-thread data transfer. The library is fully unit-tested and designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).</p>
+<p>It serves as a powerful messaging fabric for C++ applications, providing thread-safe asynchronous callbacks, a robust Signal &amp; Slot mechanism, and seamless inter-thread data transfer. The library is fully unit-tested and verified with long-term stress testing to ensure data integrity in high-contention multithreaded environments, and is designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).</p>
 <p><b>Key Use Cases</b></p><ul>
 <li><b>Callbacks</b>: Synchronous and asynchronous execution.</li>
 <li><b>Signals &amp; Slots</b>: Decoupled event handling supporting mixed synchronous and asynchronous observers.</li>
@@ -186,15 +186,14 @@ Examples</h1>
 <div class="line"><span class="keyword">class </span>Publisher</div>
 <div class="line">{</div>
 <div class="line"><span class="keyword">public</span>:</div>
-<div class="line">    <span class="comment">// 1. Define a thread-safe Signal</span></div>
-<div class="line">    <span class="comment">//    Use dmq::MakeSignal helper for clean syntax.</span></div>
-<div class="line">    std::shared_ptr&lt;<a class="code hl_class" href="classdmq_1_1_signal_safe.html">dmq::SignalSafe</a>&lt;void(<span class="keyword">const</span> std::string&amp;)&gt;&gt; MsgSig </div>
-<div class="line">        = <a class="code hl_function" href="namespacedmq.html#ae43a0114148f1ea5c12b98ea09471054">dmq::MakeSignal&lt;void(const std::string&amp;)&gt;</a>();</div>
+<div class="line">    <span class="comment">// 1. Define a thread-safe OnMessage signal</span></div>
+<div class="line">    <span class="keyword">using </span>MessageSignal = <a class="code hl_class" href="classdmq_1_1_signal_safe.html">dmq::SignalSafe</a>&lt;void(<span class="keyword">const</span> std::string&amp;)&gt;;</div>
+<div class="line">    std::shared_ptr&lt;MessageSignal&gt; OnMessage = std::make_shared&lt;MessageSignal&gt;();</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordtype">void</span> Publish(<span class="keyword">const</span> std::string&amp; msg) </div>
 <div class="line">    {</div>
 <div class="line">        <span class="comment">// 3. Emit signal to all connected slots (dereference the shared_ptr)</span></div>
-<div class="line">        (*MsgSig)(msg); </div>
+<div class="line">        (*OnMessage)(msg); </div>
 <div class="line">    }</div>
 <div class="line">};</div>
 <div class="line"> </div>
@@ -206,7 +205,7 @@ Examples</h1>
 <div class="line">        m_thread.CreateThread();</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// 2. Connect to the publisher&#39;s signal</span></div>
-<div class="line">        m_connection = pub.MsgSig-&gt;Connect(</div>
+<div class="line">        m_connection = pub.OnMessage-&gt;Connect(</div>
 <div class="line">            <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;Subscriber::HandleMsg, m_thread)</div>
 <div class="line">        );</div>
 <div class="line">    }</div>
@@ -241,7 +240,6 @@ Examples</h1>
 <div class="ttc" id="aclass_thread_html_aafe48fc7ef98b9e6adcf7b188a30e35a"><div class="ttname"><a href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a></div><div class="ttdeci">static TaskHandle_t GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div><div class="ttdef"><b>Definition</b> freertos/Thread.cpp:62</div></div>
 <div class="ttc" id="aclassdmq_1_1_scoped_connection_html"><div class="ttname"><a href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a></div><div class="ttdoc">RAII wrapper for Connection. Automatically disconnects when it goes out of scope.</div><div class="ttdef"><b>Definition</b> SignalSafe.h:90</div></div>
 <div class="ttc" id="aclassdmq_1_1_signal_safe_html"><div class="ttname"><a href="classdmq_1_1_signal_safe.html">dmq::SignalSafe</a></div><div class="ttdef"><b>Definition</b> SignalSafe.h:168</div></div>
-<div class="ttc" id="anamespacedmq_html_ae43a0114148f1ea5c12b98ea09471054"><div class="ttname"><a href="namespacedmq.html#ae43a0114148f1ea5c12b98ea09471054">dmq::MakeSignal</a></div><div class="ttdeci">SignalPtr&lt; Signature &gt; MakeSignal()</div><div class="ttdef"><b>Definition</b> SignalSafe.h:222</div></div>
 </div><!-- fragment --><p>Multiple callables targets stored and broadcast invoked asynchronously.</p>
 <div class="fragment"><div class="line"><span class="comment">// Create an async delegate targeting lambda on thread1</span></div>
 <div class="line"><span class="keyword">auto</span> lambda = [](<span class="keywordtype">int</span> i) { std::cout &lt;&lt; i; };</div>
@@ -279,7 +277,8 @@ Examples</h1>
 <div class="line">        <span class="keywordflow">if</span> (m_thread.GetThreadId() != <a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>()) </div>
 <div class="line">        {</div>
 <div class="line">            <span class="comment">// 3. Reinvoke StoreAsync(data) on m_thread context</span></div>
-<div class="line">            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;DataStore::StoreAsync, m_thread)(data);</div>
+<div class="line">            <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;DataStore::StoreAsync, m_thread)(data);</div>
+<div class="line">            <span class="keywordflow">return</span>;</div>
 <div class="line">        }</div>
 <div class="line">        <span class="comment">// 4. Data stored on m_thread context</span></div>
 <div class="line">        m_data = data;  </div>
@@ -298,14 +297,32 @@ Synchronous Delegates</h2>
 <p>Synchronous delegates invoke the target function anonymously within the current execution context. No external library dependencies are required.</p>
 <h2><a class="anchor" id="autotoc_md5"></a>
 Asynchronous Delegates</h2>
-<p>Asynchronous delegates support both non-blocking and blocking invocation modes, including optional timeouts. The library enables anonymous invocation of any callable target, regardless of the number or type of arguments, or the presence of a return value. All argument types are supported — including by value, pointers, pointer-to-pointer, and references. Smart pointer delegates prevents async invocation on destroyed target objects.</p>
-<p>The delegate library abstracts the complexities of invoking functions across thread boundaries. Concrete examples are provided below, with straightforward paths to porting across platforms.</p>
+<p>Asynchronous delegates simplify multithreaded programming by allowing you to invoke functions across thread boundaries safely and effortlessly. This enables the Active Object pattern, where method execution is decoupled from method invocation. The library automatically marshals all arguments—whether passed by value, pointer, or reference—ensuring thread safety without manual locking or complex queue management.</p>
+<p><b>Key Features:</b></p>
+<ul>
+<li><b><a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> Marshalling:</b> Seamlessly transfers execution and arguments from a caller thread to a target thread.</li>
+<li><b>Smart Pointer Safety:</b> Prevents callbacks on destroyed objects using weak pointers, ensuring fail-safe async execution.</li>
+<li><b>Invocation Modes:</b><ul>
+<li><b>Non-Blocking:</b> Fire-and-forget execution.</li>
+<li><b>Blocking:</b> Wait for the target thread to complete execution (with optional timeouts).</li>
+<li><b>Asynchronous:</b> Use standard <code>std::future</code> to retrieve results later.</li>
+</ul>
+</li>
+</ul>
+<p><b>Supported Platforms:</b></p>
 <ul>
 <li><b>Operating System:</b> Windows, Linux, <a href="https://github.com/FreeRTOS/FreeRTOS">FreeRTOS</a></li>
 </ul>
 <h2><a class="anchor" id="autotoc_md6"></a>
 Remote Delegates</h2>
-<p>Remote delegates enable function invocation across processes or processors using customizable serialization and transport mechanisms. All argument data is marshaled to support remote callables with any function signature. The design allows easy integration with new transport or serialization libraries. Concrete examples using supported libraries are provided below.</p>
+<p>Remote delegates extend the library to enable Remote Procedure Calls (RPC) across process or network boundaries. This allows you to invoke a function on a remote machine as easily as calling a local function. The system automatically handles argument marshaling, serialization, and thread dispatching.</p>
+<p><b>Key Features:</b></p>
+<ul>
+<li><b>No IDL Required:</b> Works with standard C++ types and structs.</li>
+<li><b>Invocation Modes:</b> Supports Blocking (synchronous wait), Non-blocking (fire-and-forget), and Futures (asynchronous return values).</li>
+<li><b>Transport Agnostic:</b> The logical application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers.</li>
+</ul>
+<p><b>Supported Integrations:</b></p>
 <ul>
 <li><b>Serialization:</b> <a href="https://msgpack.org/index.html">MessagePack</a>, <a href="https://github.com/Tencent/rapidjson">RapidJSON</a>, <a href="https://github.com/USCiLab/cereal">Cereal</a>, <a href="https://github.com/fraillt/bitsery">Bitsery</a>, <a href="https://github.com/endurodave/MessageSerialize">MessageSerialize</a></li>
 <li><b>Transport:</b> <a href="https://zeromq.org/">ZeroMQ</a>, <a href="https://github.com/nanomsg/nng">NNG</a>, <a href="https://github.com/eclipse-paho/paho.mqtt.c">MQTT</a>, UDP, data pipe, memory buffer</li>

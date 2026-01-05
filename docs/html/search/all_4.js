@@ -14,6 +14,5 @@ var searchData=
   ['err_5fstream_5fnot_5fgood_11',['ERR_STREAM_NOT_GOOD',['../namespacedmq.html#a62ea8a73887af62d409322557b4e757da78d23b7ddceca52b8912f668760e1766',1,'dmq']]],
   ['errorhandler_12',['ErrorHandler',['../classserialize.html#ac6c4014cb8480145899c1da3d837d26a',1,'serialize']]],
   ['examples_13',['Examples',['../index.html#autotoc_md2',1,'']]],
-  ['exitthread_14',['ExitThread',['../class_thread.html#aabf05b92a7bc081a464b8adcb916f321',1,'Thread']]],
-  ['expired_15',['Expired',['../class_timer.html#af9a45591e2dbce72201c166322f828da',1,'Timer']]]
+  ['exitthread_14',['ExitThread',['../class_thread.html#aabf05b92a7bc081a464b8adcb916f321',1,'Thread']]]
 ];

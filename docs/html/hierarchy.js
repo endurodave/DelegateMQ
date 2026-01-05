@@ -23,7 +23,9 @@ var hierarchy =
         [ "dmq::DelegateMember< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", [
           [ "dmq::DelegateMemberAsync< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
           [ "dmq::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
-          [ "dmq::DelegateMemberRemote< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
+          [ "dmq::DelegateMemberRemote< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", [
+            [ "RemoteEndpoint< TClass, RetType(Args...)>", "class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
+          ] ]
         ] ],
         [ "dmq::DelegateMemberSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", [
           [ "dmq::DelegateMemberAsyncSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
@@ -134,12 +136,15 @@ var hierarchy =
     [ "dmq::RemoteArg< Arg >", "classdmq_1_1_remote_arg.html", null ],
     [ "dmq::RemoteArg< Arg & >", "classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html", null ],
     [ "dmq::RemoteArg< Arg * >", "classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html", null ],
+    [ "RemoteEndpoint< C, R >", "struct_remote_endpoint.html", null ],
     [ "dmq::ScopedConnection", "classdmq_1_1_scoped_connection.html", null ],
     [ "dmq::Semaphore", "classdmq_1_1_semaphore.html", null ],
     [ "serialize", "classserialize.html", null ],
     [ "Serializer< R >", "struct_serializer.html", null ],
+    [ "Serializer< Func >", "struct_serializer.html", null ],
     [ "dmq::Signal< R >", "classdmq_1_1_signal.html", null ],
     [ "dmq::SignalSafe< R >", "classdmq_1_1_signal_safe.html", null ],
+    [ "dmq::SignalSafe< void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>", "classdmq_1_1_signal_safe.html", null ],
     [ "stl_allocator< void >", "classstl__allocator_3_01void_01_4.html", null ],
     [ "ThreadMsg", "class_thread_msg.html", null ],
     [ "ThreadMsgComparator", "struct_thread_msg_comparator.html", null ],
