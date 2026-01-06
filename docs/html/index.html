@@ -108,7 +108,7 @@ Delegates in C++</h1>
 <li>Asynchronously (Blocking and non-blocking)</li>
 <li>Remotely (Across processes or processors)</li>
 </ul>
-<p>It serves as a powerful messaging fabric for C++ applications, providing thread-safe asynchronous callbacks, a robust Signal &amp; Slot mechanism, and seamless inter-thread data transfer. The library is fully unit-tested and verified with long-term stress testing to ensure data integrity in high-contention multithreaded environments, and is designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).</p>
+<p>It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal &amp; Slot mechanism, and inter-thread data transfer. The library is unit-tested and is designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).</p>
 <p><b>Key Use Cases</b></p><ul>
 <li><b>Callbacks</b>: Synchronous and asynchronous execution.</li>
 <li><b>Signals &amp; Slots</b>: Decoupled event handling supporting mixed synchronous and asynchronous observers.</li>
@@ -300,7 +300,7 @@ Asynchronous Delegates</h2>
 <p>Asynchronous delegates simplify multithreaded programming by allowing you to invoke functions across thread boundaries safely and effortlessly. This enables the Active Object pattern, where method execution is decoupled from method invocation. The library automatically marshals all arguments—whether passed by value, pointer, or reference—ensuring thread safety without manual locking or complex queue management.</p>
 <p><b>Key Features:</b></p>
 <ul>
-<li><b><a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> Marshalling:</b> Seamlessly transfers execution and arguments from a caller thread to a target thread.</li>
+<li><b><a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> Marshalling:</b> Transfers execution and arguments from a caller thread to a target thread.</li>
 <li><b>Smart Pointer Safety:</b> Prevents callbacks on destroyed objects using weak pointers, ensuring fail-safe async execution.</li>
 <li><b>Invocation Modes:</b><ul>
 <li><b>Non-Blocking:</b> Fire-and-forget execution.</li>
@@ -320,7 +320,7 @@ Remote Delegates</h2>
 <ul>
 <li><b>No IDL Required:</b> Works with standard C++ types and structs.</li>
 <li><b>Invocation Modes:</b> Supports Blocking (synchronous wait), Non-blocking (fire-and-forget), and Futures (asynchronous return values).</li>
-<li><b>Transport Agnostic:</b> The logical application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers.</li>
+<li><b>Transport Agnostic:</b> The application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers.</li>
 </ul>
 <p><b>Supported Integrations:</b></p>
 <ul>

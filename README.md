@@ -16,7 +16,7 @@ DelegateMQ is a C++ header-only library for invoking any callable (e.g., functio
 * Asynchronously (Blocking and non-blocking)
 * Remotely (Across processes or processors)
 
-It serves as a powerful messaging fabric for C++ applications, providing thread-safe asynchronous callbacks, a robust Signal & Slot mechanism, and seamless inter-thread data transfer. The library is fully unit-tested and verified with long-term stress testing to ensure data integrity in high-contention multithreaded environments, and is designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).
+It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, and inter-thread data transfer. The library is unit-tested and is designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).
 
 **Key Use Cases**
 * **Callbacks**: Synchronous and asynchronous execution.
@@ -216,7 +216,7 @@ Asynchronous delegates simplify multithreaded programming by allowing you to inv
 
 **Key Features:**
 
-* **Thread Marshalling:** Seamlessly transfers execution and arguments from a caller thread to a target thread.
+* **Thread Marshalling:** Transfers execution and arguments from a caller thread to a target thread.
 * **Smart Pointer Safety:** Prevents callbacks on destroyed objects using weak pointers, ensuring fail-safe async execution.
 * **Invocation Modes:** 
   * **Non-Blocking:** Fire-and-forget execution.
@@ -235,7 +235,7 @@ Remote delegates extend the library to enable Remote Procedure Calls (RPC) acros
 
 * **No IDL Required:** Works with standard C++ types and structs.
 * **Invocation Modes:** Supports Blocking (synchronous wait), Non-blocking (fire-and-forget), and Futures (asynchronous return values).
-* **Transport Agnostic:** The logical application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers.
+* **Transport Agnostic:** The application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers.
 
 **Supported Integrations:**
 
