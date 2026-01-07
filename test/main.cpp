@@ -59,12 +59,19 @@ Timer& GetTimer()
 //------------------------------------------------------------------------------
 int main(void)
 {
-// Uncomment to run the DelegateMQ stress test
+// Uncomment one to run the DelegateMQ stress tests. **Release** builds run faster!
 //#define STRESS_TEST
+//#define STRESS_TEST_REMOTE
 
 #ifdef STRESS_TEST
     extern int stress_test();
     stress_test();
+    return 0;
+#endif
+
+#ifdef STRESS_TEST_REMOTE
+    extern int stress_test_remote();
+    stress_test_remote();
     return 0;
 #endif
 
@@ -165,63 +172,43 @@ void RunSimpleExamples()
 class Publisher
 {
 public:
-    // Cleaner type definition
-    using SignalType = dmq::SignalSafe<void(const std::string&)>;
+    // 1. Define a thread-safe OnMessage signal
+    using MessageSignal = dmq::SignalSafe<void(const std::string&)>;
+    std::shared_ptr<MessageSignal> OnMessage = std::make_shared<MessageSignal>();
 
-    // Initialize using make_shared
-    std::shared_ptr<SignalType> MsgSig = std::make_shared<SignalType>();
-
-    static Publisher& Instance()
+    void Publish(const std::string& msg)
     {
-        static Publisher instance;
-        return instance;
+        // 3. Emit signal to all connected slots (dereference the shared_ptr)
+        (*OnMessage)(msg);
     }
-
-    void SetMsg(const std::string& msg)
-    {
-        m_msg = msg;
-        (*MsgSig)(m_msg); // Invoke
-    }
-
-private:
-    Publisher() = default;
-    std::string m_msg;
 };
 
-class Subscriber : public std::enable_shared_from_this<Subscriber>
+class Subscriber
 {
 public:
-    Subscriber() : m_thread("SubscriberThread") {
+    Subscriber(Publisher& pub) : m_thread("SubscriberThread")
+    {
         m_thread.CreateThread();
-    }
 
-    void Init() {
-        // We use shared_from_this() to ensure the callback keeps 'this' alive safely.
-        // The returned connection is stored in m_connection.
-        m_connection = Publisher::Instance().MsgSig->Connect(
-            dmq::MakeDelegate(
-                shared_from_this(),
-                &Subscriber::HandleMsgCb,
-                m_thread
-            )
+        // 2. Connect to the publisher's signal
+        m_connection = pub.OnMessage->Connect(
+            dmq::MakeDelegate(this, &Subscriber::HandleMsg, m_thread)
         );
     }
 
+    // 5. Destructor automatically disconnects m_connection via RAII
     ~Subscriber() = default;
 
 private:
-    void HandleMsgCb(const std::string& msg)
+    void HandleMsg(const std::string& msg)
     {
-        // This runs on m_thread
+        // 4. Handle publisher signal on m_thread
         std::cout << "Writing data on thread: " << Thread::GetCurrentThreadId() << std::endl;
         std::cout << msg << std::endl;
     }
 
     Thread m_thread;
-
-    // Store a ScopedConnection instead of the specific Delegate type.
-    // This manages the lifetime of the registration.
-    dmq::ScopedConnection m_connection;
+    dmq::ScopedConnection m_connection; // Automatically disconnects when Subscriber is destroyed
 };
 
 //------------------------------------------------------------------------------
@@ -229,18 +216,14 @@ private:
 //------------------------------------------------------------------------------
 void RunPubSubExamples()
 {
-    // We use shared_ptr to ensure the object remains alive for the duration of the
-    // asynchronous call.
-    auto subscriber = std::make_shared<Subscriber>();
-    subscriber->Init();
+    Publisher pub;
 
-    // Subscriber::HandleMsgCallback invoked when Publisher::SetMsg is called
-    Publisher::Instance().SetMsg("Hello World!");
+    {
+        Subscriber sub(pub);
+        pub.Publish("Hello World!");
+    } // sub goes out of scope here -> m_connection disconnects automatically
 
-    // When 'subscriber' goes out of scope here:
-    // 1. ~Subscriber() runs.
-    // 2. m_connection destructor runs.
-    // 3. It automatically disconnects from Publisher::MsgSig.
+    pub.Publish("No one is listening..."); // Safe, no slots connected
 }
 
 class Data

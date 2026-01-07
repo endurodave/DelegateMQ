@@ -25,23 +25,14 @@ struct ThreadMsgComparator {
 /// @brief Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).
 /// @details The Thread class creates a worker thread capable of dispatching and 
 /// invoking asynchronous delegates.
-///
-/// // Create thread with a watchdog timeout
-/// thread->CreateThread(std::chrono::milliseconds(2000));
-///
-/// // Or create without a watchdog
-/// thread->CreateThread();
-///
-/// WatchdogCheck() is invoked by a Timer instance. In a real-time operating system (RTOS),
-/// Timer::ProcessTimers() is typically called from the highest-priority task in the system.
-/// This ensures that any user thread becoming unresponsive can still be detected,
-/// since WatchdogCheck() runs at a higher priority. For mission-critical systems,
-/// a hardware watchdog should also be used as a fail-safe.
 class Thread : public dmq::IThread
 {
 public:
     /// Constructor
-    Thread(const std::string& threadName);
+    /// @param threadName The name of the thread for debugging.
+    /// @param maxQueueSize The maximum number of messages allowed in the queue. 
+    ///                     0 means unlimited (no back pressure).
+    Thread(const std::string& threadName, size_t maxQueueSize = 0);
 
     /// Destructor
     ~Thread();
@@ -99,7 +90,14 @@ private:
         ThreadMsgComparator> m_queue;
     std::mutex m_mutex;
     std::condition_variable m_cv;
+
+    // Condition variable to wake up blocked producers when space is available
+    std::condition_variable m_cvNotFull;
+
     const std::string THREAD_NAME;
+
+    // Max queue size for back pressure (0 = unlimited)
+    const size_t MAX_QUEUE_SIZE;
 
     // Promise and future to synchronize thread start
     std::promise<void> m_threadStartPromise;
@@ -116,5 +114,4 @@ private:
     std::atomic<dmq::Duration> m_watchdogTimeout;
 };
 
-#endif 
-
+#endif

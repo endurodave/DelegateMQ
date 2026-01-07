@@ -15,7 +15,11 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName) : m_thread(nullptr), m_exit(false), THREAD_NAME(threadName)
+Thread::Thread(const std::string& threadName, size_t maxQueueSize)
+    : m_thread(nullptr)
+    , m_exit(false)
+    , THREAD_NAME(threadName)
+    , MAX_QUEUE_SIZE(maxQueueSize)
 {
 }
 
@@ -54,14 +58,12 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
             // Create watchdog timer
             m_watchdogTimeout = watchdogTimeout.value();
 
-            // Timer to ensure the Thread instance runs periodically. ThreadCheck invoked
-            // on this thread instance.
+            // Timer to ensure the Thread instance runs periodically.
             m_threadTimer = std::make_unique<Timer>();
             m_threadTimerConn = m_threadTimer->OnExpired->Connect(MakeDelegate(this, &Thread::ThreadCheck, *this));
             m_threadTimer->Start(m_watchdogTimeout.load() / 4);
 
-            // Timer to check that this Thread instance runs. WatchdogCheck invoked 
-            // on Timer::ProcessTimers() thread.
+            // Timer to check that this Thread instance runs. 
             m_watchdogTimer = std::make_unique<Timer>();
             m_watchdogTimerConn = m_watchdogTimer->OnExpired->Connect(MakeDelegate(this, &Thread::WatchdogCheck));
             m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
@@ -124,13 +126,13 @@ void Thread::ExitThread()
     if (!m_thread)
         return;
 
-    if (m_watchdogTimer) 
+    if (m_watchdogTimer)
     {
         m_watchdogTimer->Stop();
         m_watchdogTimerConn.Disconnect();
     }
 
-    if (m_threadTimer) 
+    if (m_threadTimer)
     {
         m_threadTimer->Stop();
         m_threadTimerConn.Disconnect();
@@ -139,14 +141,22 @@ void Thread::ExitThread()
     // Create a new ThreadMsg
     std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_EXIT_THREAD, 0));
 
-    // Put exit thread message into the queue
     {
         lock_guard<mutex> lock(m_mutex);
-        m_queue.push(threadMsg);
-        m_cv.notify_one();
-    }
 
-    m_exit.store(true);
+        // Set exit flag INSIDE lock before notifying.
+        // This ensures that when a blocked producer wakes up, it sees m_exit == true immediately.
+        m_exit.store(true);
+
+        // Explicitly allow Exit message to bypass the MAX_QUEUE_SIZE limit.
+        // We do not wait on m_cvNotFull here to prevent deadlock during shutdown.
+        m_queue.push(threadMsg);
+
+        // Wake up consumers
+        m_cv.notify_one();
+        // Wake up blocked producers (DispatchDelegate)
+        m_cvNotFull.notify_all();
+    }
 
     // Prevent deadlock if ExitThread is called from within the thread itself
     if (m_thread->joinable())
@@ -167,6 +177,9 @@ void Thread::ExitThread()
         m_thread = nullptr;
         while (!m_queue.empty())
             m_queue.pop();
+
+        // Final cleanup notification
+        m_cvNotFull.notify_all();
     }
 
     LOG_INFO("Thread::ExitThread {}", THREAD_NAME);
@@ -177,21 +190,36 @@ void Thread::ExitThread()
 //----------------------------------------------------------------------------
 void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
+    // Early check, though we re-check inside lock for safety
     if (m_exit.load())
         return;
+
     if (m_thread == nullptr)
         throw std::invalid_argument("Thread pointer is null");
 
     // If using XALLOCATOR explicit operator new required. See xallocator.h.
     std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_DISPATCH_DELEGATE, msg));
 
-    // Add dispatch delegate msg to queue and notify worker thread
     std::unique_lock<std::mutex> lk(m_mutex);
+
+    // [BACK PRESSURE LOGIC]
+    if (MAX_QUEUE_SIZE > 0)
+    {
+        // Wait while queue is full, BUT stop waiting if m_exit is true.
+        m_cvNotFull.wait(lk, [this]() {
+            return m_queue.size() < MAX_QUEUE_SIZE || m_exit.load();
+            });
+    }
+
+    // If we woke up because of exit (or exit happened while waiting), abort
+    if (m_exit.load())
+        return;
+
     m_queue.push(threadMsg);
     m_cv.notify_one();
 
-    LOG_INFO("Thread::DispatchDelegate\n   thread={}\n   target={}", 
-        THREAD_NAME, 
+    LOG_INFO("Thread::DispatchDelegate\n   thread={}\n   target={}",
+        THREAD_NAME,
         typeid(*threadMsg->GetData()->GetInvoker()).name());
 }
 
@@ -220,9 +248,6 @@ void Thread::WatchdogCheck()
 //----------------------------------------------------------------------------
 void Thread::ThreadCheck()
 {
-    // Invoked by m_threadTimer on this thread context. Execution proves the 
-    // thread is responsive. Actual m_lastAliveTime update occurs in the 
-    // main Process() loop.
 }
 
 //----------------------------------------------------------------------------
@@ -241,26 +266,41 @@ void Thread::Process()
 
         std::shared_ptr<ThreadMsg> msg;
         {
-            // Wait for a message to be added to the queue
             std::unique_lock<std::mutex> lk(m_mutex);
-            while (m_queue.empty())
-                m_cv.wait(lk);
 
+            // Wait for message to be added to the queue.
+            // Check m_exit in predicate to avoid hanging if shutdown happens 
+            // but queue push failed (unlikely) or logic diverges.
+            m_cv.wait(lk, [this]() {
+                return !m_queue.empty() || m_exit.load();
+                });
+
+            // If empty and exit is true, we should exit.
+            // However, we usually process the remaining MSG_EXIT_THREAD from the queue.
+            // This check handles the edge case where the queue is empty but exit is set.
             if (m_queue.empty())
+            {
+                if (m_exit.load()) return;
                 continue;
+            }
 
             // Get highest priority message within queue
             msg = m_queue.top();
             m_queue.pop();
+
+            // Unblock producers now that space is available
+            if (MAX_QUEUE_SIZE > 0)
+            {
+                m_cvNotFull.notify_one();
+            }
         }
 
         switch (msg->GetId())
         {
             case MSG_DISPATCH_DELEGATE:
             {
-                // @TODO: Update error handling below if necessary.
-                
-                // Get pointer to DelegateMsg data from queue msg data
+                // @TODO: Update error handling below if necessary 
+
                 auto delegateMsg = msg->GetData();
                 ASSERT_TRUE(delegateMsg);
 

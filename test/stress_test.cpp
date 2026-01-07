@@ -17,7 +17,7 @@
 ///   overload 'operator new' and 'operator delete'.
 ///
 /// @section Allocator Comparison (Windows Release Mode)
-/// Results from testing on a modern PC (Windows 10/11) with Visual Studio 2022:
+/// Results from testing on a modern PC (Windows 10/11) with Visual Studio 2026:
 ///
 /// | Metric                 | Standard Heap (LFH)    | Fixed Block (XALLOCATOR) |
 /// | :--------------------- | :--------------------- | :----------------------- |
@@ -57,6 +57,7 @@ const int NUM_PUBLISHERS = 4;
 const int NUM_SUBSCRIBERS = 4; // Must be even for fair sync/async split
 const int TEST_DURATION_SECONDS = 30;
 const int BURST_SIZE = 1000;
+const int MAX_QUEUE_SIZE = 100; // Constant for thread max queue "Back Pressure"
 
 // --- Global Integrity Counters ---
 // We track exactly how many messages *should* be received based on fire count.
@@ -75,7 +76,7 @@ struct Payload
 {
     XALLOCATOR
 
-        int id;
+    int id;
     int publisherId;
     char buffer[64];
 
@@ -90,7 +91,7 @@ class StressPublisher
 public:
     XALLOCATOR
 
-        using StressSig = void(const Payload&);
+    using StressSig = void(const Payload&);
 
     // Thread-safe Signal
     std::shared_ptr<SignalSafe<StressSig>> Signal = MakeSignal<StressSig>();
@@ -138,8 +139,8 @@ class StressSubscriber
 public:
     XALLOCATOR
 
-        StressSubscriber(int id)
-        : m_id(id), m_thread("SubThread_" + std::to_string(id))
+    StressSubscriber(int id)
+        : m_id(id), m_thread("SubThread_" + std::to_string(id), MAX_QUEUE_SIZE)
     {
         m_thread.CreateThread();
     }
