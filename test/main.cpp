@@ -147,7 +147,6 @@ void RunSimpleExamples()
     auto asyncWait = dmq::MakeDelegate(&MsgOut, workerThread1, dmq::WAIT_INFINITE);
     size_t size = asyncWait("Invoke MsgOut async wait (blocking)!");
 
-    // Create remote delegate support objects
     auto asyncWait1s = dmq::MakeDelegate(&MsgOut, workerThread1, std::chrono::seconds(1));
     auto retVal = asyncWait1s.AsyncInvoke("Invoke MsgOut async wait (blocking max 1s)!");
     if (retVal.has_value())     // Async invoke completed within 1 second?
