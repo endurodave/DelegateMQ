@@ -176,6 +176,9 @@ public:
     using MessageSignal = dmq::SignalSafe<void(const std::string&)>;
     std::shared_ptr<MessageSignal> OnMessage = std::make_shared<MessageSignal>();
 
+    // Alternate syntax
+    // SignalPtr<void(const std::string&)> OnMessage = MakeSignal<void(const std::string&)>();
+
     void Publish(const std::string& msg)
     {
         // 3. Emit signal to all connected slots (dereference the shared_ptr)

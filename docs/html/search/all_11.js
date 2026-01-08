@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['thread_0',['Thread',['../class_thread.html',1,'Thread'],['../class_thread.html#a192e02ca6e9efd7b7da940157fb9438a',1,'Thread::Thread(const std::string &amp;threadName)'],['../class_thread.html#a192e02ca6e9efd7b7da940157fb9438a',1,'Thread::Thread(const std::string &amp;threadName)']]],
+  ['thread_0',['Thread',['../class_thread.html',1,'Thread'],['../class_thread.html#a192e02ca6e9efd7b7da940157fb9438a',1,'Thread::Thread(const std::string &amp;threadName)'],['../class_thread.html#a80b20bca04b2b742c93b1523a4fccb1d',1,'Thread::Thread(const std::string &amp;threadName, size_t maxQueueSize=0)']]],
   ['threadmsg_1',['ThreadMsg',['../class_thread_msg.html',1,'ThreadMsg'],['../class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb',1,'ThreadMsg::ThreadMsg(int id, std::shared_ptr&lt; dmq::DelegateMsg &gt; data)'],['../class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb',1,'ThreadMsg::ThreadMsg(int id, std::shared_ptr&lt; dmq::DelegateMsg &gt; data)']]],
   ['threadmsgcomparator_2',['ThreadMsgComparator',['../struct_thread_msg_comparator.html',1,'']]],
   ['timeout_3',['TIMEOUT',['../class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ea070a0fb40f6c308ab544b227660aadff',1,'TransportMonitor']]],

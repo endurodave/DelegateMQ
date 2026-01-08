@@ -2,7 +2,7 @@ var class_thread =
 [
     [ "Thread", "class_thread.html#a192e02ca6e9efd7b7da940157fb9438a", null ],
     [ "~Thread", "class_thread.html#a37d9edd3a1a776cbc27dedff949c9726", null ],
-    [ "Thread", "class_thread.html#a192e02ca6e9efd7b7da940157fb9438a", null ],
+    [ "Thread", "class_thread.html#a80b20bca04b2b742c93b1523a4fccb1d", null ],
     [ "~Thread", "class_thread.html#a37d9edd3a1a776cbc27dedff949c9726", null ],
     [ "CreateThread", "class_thread.html#a7ac27cb95d8af8be6dd6f8e7c24e24ee", null ],
     [ "CreateThread", "class_thread.html#ae39a39fcabf49e086bf484ad6c140e79", null ],

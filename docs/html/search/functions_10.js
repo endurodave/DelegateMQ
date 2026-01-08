@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['thread_0',['Thread',['../class_thread.html#a192e02ca6e9efd7b7da940157fb9438a',1,'Thread::Thread(const std::string &amp;threadName)'],['../class_thread.html#a192e02ca6e9efd7b7da940157fb9438a',1,'Thread::Thread(const std::string &amp;threadName)']]],
+  ['thread_0',['Thread',['../class_thread.html#a192e02ca6e9efd7b7da940157fb9438a',1,'Thread::Thread(const std::string &amp;threadName)'],['../class_thread.html#a80b20bca04b2b742c93b1523a4fccb1d',1,'Thread::Thread(const std::string &amp;threadName, size_t maxQueueSize=0)']]],
   ['threadmsg_1',['ThreadMsg',['../class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb',1,'ThreadMsg::ThreadMsg(int id, std::shared_ptr&lt; dmq::DelegateMsg &gt; data)'],['../class_thread_msg.html#a752a7235f4ea1ec437186a935f85f1cb',1,'ThreadMsg::ThreadMsg(int id, std::shared_ptr&lt; dmq::DelegateMsg &gt; data)']]],
   ['timer_2',['Timer',['../class_timer.html#af866f8d58d5ed1da7a0c61df4975be3e',1,'Timer']]],
   ['transportmonitor_3',['TransportMonitor',['../class_transport_monitor.html#a4a16d0eaff72cafb2258a24537e9d510',1,'TransportMonitor']]],

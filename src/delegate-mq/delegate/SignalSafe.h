@@ -220,7 +220,9 @@ namespace dmq {
     // Helper to create it easily
     template<typename Signature>
     SignalPtr<Signature> MakeSignal() {
-        return std::make_shared<SignalSafe<Signature>>();
+        // If DMQ_ALLOCATOR is defined, DelegateBase::operator new is used.
+        // We must use 'new' explicitly. std::make_shared would use the system heap.
+        return std::shared_ptr<SignalSafe<Signature>>(new SignalSafe<Signature>());
     }
 
 } // namespace dmq

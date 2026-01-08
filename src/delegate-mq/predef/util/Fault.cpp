@@ -14,6 +14,8 @@ using namespace std;
 //----------------------------------------------------------------------------
 void FaultHandler(const char* file, unsigned short line)
 {
+    // @TODO: Update fault handling if necessary. 
+    
     // 1. PRINT FIRST (Flush to ensure it appears in CI logs)
     cout << "FaultHandler called. Application terminated." << endl;
     cout << "File: " << file << " Line: " << line << endl;
