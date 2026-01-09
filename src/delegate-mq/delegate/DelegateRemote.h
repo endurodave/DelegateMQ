@@ -47,8 +47,10 @@
 /// `python src_dup.py DelegateRemote.h`  
 
 #include "Delegate.h"
+#include "UnicastDelegate.h"
 #include "ISerializer.h"
 #include "IDispatcher.h"
+#include "IInvoker.h"
 #include <tuple>
 #include <iostream>
 #include <stdexcept>

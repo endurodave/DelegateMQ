@@ -55,36 +55,6 @@
 
 namespace dmq {
 
-namespace trait
-{
-    // Helper trait to check if a type is a reference to a std::shared_ptr
-    template <typename T>
-    struct is_shared_ptr_reference : std::false_type {};
-
-    template <typename T>
-    struct is_shared_ptr_reference<std::shared_ptr<T>&> : std::true_type {};
-
-    template <typename T>
-    struct is_shared_ptr_reference<std::shared_ptr<T>*> : std::true_type {};
-
-    template <typename T>
-    struct is_shared_ptr_reference<const std::shared_ptr<T>&> : std::true_type {};
-
-    template <typename T>
-    struct is_shared_ptr_reference<const std::shared_ptr<T>* > : std::true_type {};
-
-    // Helper trait to check if a type is a double pointer (e.g., int**)
-    template <typename T>
-    struct is_double_pointer {
-        // Remove 'const', 'volatile', and references first
-        using RawT = std::remove_cv_t<std::remove_reference_t<T>>;
-
-        static constexpr bool value =
-            std::is_pointer_v<RawT> &&
-            std::is_pointer_v<std::remove_pointer_t<RawT>>;
-    };
-}
-
 /// @brief Stores all function arguments suitable for non-blocking asynchronous calls.
 /// Argument data is stored in the heap.
 /// @tparam Args The argument types of the bound delegate function.

@@ -16,6 +16,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 - [Build](#build)
   - [Example Projects](#example-projects)
     - [Examples Setup](#examples-setup)
+    - [Embedded Example Setup](#embedded-example-setup)
     - [Examples Build](#examples-build)
   - [Build Integration](#build-integration)
 - [Porting Guide](#porting-guide)
@@ -88,6 +89,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [External Dependencies](#external-dependencies)
     - [system-architecture](#system-architecture)
     - [bare-metal](#bare-metal)
+    - [bare-metal-arm](#bare-metal-arm)
     - [freertos-bare-metal](#freertos-bare-metal)
     - [mqtt-rapidjson](#mqtt-rapidjson)
     - [nng-bitsery](#nng-bitsery)
@@ -187,6 +189,10 @@ DelegateMQWorkspace/
 └── zeromq/
 ```
 
+### Embedded Example Setup
+
+See `bare-metal-arm\README.md` for an minimal ARM embedded build without OS support.
+
 ### Examples Build
 
 Build and execute any remote delegate example within the `\DelegateMQ\example\sample-projects` directory. Each projects build files are located within a `build` subdirectory.
@@ -242,7 +248,7 @@ Include `DelegateMQ.h` to use the delegate library features. Build and execute t
 
 # Porting Guide
 
-Numerous predefined platforms are already supported such as Windows, Linux, and FreeRTOS. Ready-made plugins for threading and communication interfaces exist, or you can create new ones. The library also supports different configurable items such as error handling and heap allocation options.
+Numerous predefined platforms are already supported such as Windows, Linux, FreeRTOS, and ARM "bare-metal". Ready-made plugins for threading and communication interfaces exist, or you can create new ones. The library also supports different configurable items such as error handling and heap allocation options.
 
 1.  **Search codebase for `@TODO`**: Find specific decision locations tagged in the source files.
 2.  **Implement `IThread`**: Required to use **Asynchronous** delegates. 
@@ -2117,6 +2123,16 @@ Remote delegate example with no external libraries.
 | `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
 | `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
+
+### bare-metal-arm
+
+Delegate example built with ARM compiler with no external libraries and no `std::thread` nor `std::mutex`. See `README.md` in `bare-metal-arm` directory.
+
+| Interface | Implementation |
+| --- | --- |
+| `IThread` | None.
+| `ISerializer` | None.  
+| `IDispatcher` | None. 
 
 ### freertos-bare-metal
 

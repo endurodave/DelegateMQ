@@ -54,13 +54,21 @@
 ///
 /// See README.md, DETAILS.md, EXAMPLES.md, and source code Doxygen comments for more information.
 
-#include "delegate/DelegateOpt.h"
-#include "delegate/MulticastDelegateSafe.h"
-#include "delegate/UnicastDelegateSafe.h"
-#include "delegate/SignalSafe.h"
-#include "delegate/DelegateAsync.h"
-#include "delegate/DelegateAsyncWait.h"
+// Core non-thread-safe delegates (works on Bare Metal)
+#include "delegate/Delegate.h"
 #include "delegate/DelegateRemote.h"
+#include "delegate/MulticastDelegate.h"
+#include "delegate/UnicastDelegate.h"
+#include "delegate/Signal.h"
+
+// Only include "Safe" variants if a threading model is defined
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_FREERTOS)
+    #include "delegate/DelegateAsync.h"
+    #include "delegate/DelegateAsyncWait.h"
+    #include "delegate/MulticastDelegateSafe.h"
+    #include "delegate/UnicastDelegateSafe.h"
+    #include "delegate/SignalSafe.h"
+#endif
 
 #if defined(DMQ_THREAD_STDLIB)
     #include "predef/os/stdlib/Thread.h"
@@ -69,7 +77,7 @@
     #include "predef/os/freertos/Thread.h"
     #include "predef/os/freertos/ThreadMsg.h"
 #elif defined(DMQ_THREAD_NONE)
-    // Create a custom application-specific thread
+    // Bare metal: User must implement their own polling/interrupt logic
 #else
     #error "Thread implementation not found."
 #endif
@@ -119,8 +127,12 @@
 #endif
 
 #include "predef/util/Fault.h"
-#include "predef/util/Timer.h"
-#include "predef/util/TransportMonitor.h"
-#include "predef/util/AsyncInvoke.h"
+
+// Only include Timer and AsyncInvoke if threads exist
+#if !defined(DMQ_THREAD_NONE)
+    #include "predef/util/Timer.h"
+    #include "predef/util/AsyncInvoke.h"
+    #include "predef/util/TransportMonitor.h"
+#endif
 
 #endif

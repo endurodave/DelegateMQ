@@ -76,10 +76,20 @@ if (DMQ_ALLOCATOR STREQUAL "ON")
 endif()
 
 if (DMQ_UTIL STREQUAL "ON")
-    file(GLOB UTIL_SOURCES 
-        "${DMQ_ROOT_DIR}/predef/util/*.c*" 
-        "${DMQ_ROOT_DIR}/predef/util/*.h" 
-    )
+    if (DMQ_THREAD STREQUAL "DMQ_THREAD_NONE")
+        # Bare metal: Only include utilities that DON'T need mutexes
+        file(GLOB UTIL_SOURCES 
+            "${DMQ_ROOT_DIR}/predef/util/Fault.c*" 
+            "${DMQ_ROOT_DIR}/predef/util/Fault.h"
+            # Explicitly exclude Timer.cpp and AsyncInvoke.cpp
+        )
+    else()
+        # OS/RTOS present: Include everything
+        file(GLOB UTIL_SOURCES 
+            "${DMQ_ROOT_DIR}/predef/util/*.c*" 
+            "${DMQ_ROOT_DIR}/predef/util/*.h" 
+        )
+    endif()
 endif()
 
 if (DMQ_ASSERTS STREQUAL "ON")
