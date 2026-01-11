@@ -6,7 +6,6 @@
 
 #include "IInvoker.h"
 #include "DelegateOpt.h"
-#include "Semaphore.h"
 #include "make_tuple_heap.h"
 #include <tuple>
 #include <list>

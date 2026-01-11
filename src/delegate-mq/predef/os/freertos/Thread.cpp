@@ -1,25 +1,27 @@
 #include "Thread.h"
 #include "ThreadMsg.h"
-#include "predef/util/Fault.h"
+#include <cstdio>
 
-using namespace std;
+// Use configASSERT for embedded checking
+#ifndef ASSERT_TRUE
+#define ASSERT_TRUE(x) configASSERT(x)
+#endif
+
 using namespace dmq;
 
-#define MSG_DISPATCH_DELEGATE	1
-#define MSG_EXIT_THREAD			2
-
 //----------------------------------------------------------------------------
-// Thread
+// Thread Constructor
 //----------------------------------------------------------------------------
 Thread::Thread(const std::string& threadName) : THREAD_NAME(threadName)
 {
 }
 
 //----------------------------------------------------------------------------
-// ~Thread
+// Thread Destructor
 //----------------------------------------------------------------------------
 Thread::~Thread()
 {
+    ExitThread();
 }
 
 //----------------------------------------------------------------------------
@@ -27,22 +29,42 @@ Thread::~Thread()
 //----------------------------------------------------------------------------
 bool Thread::CreateThread()
 {
-	if (!m_thread)
-	{
-		// Create a worker thread
-		BaseType_t xReturn = xTaskCreate(
-			(TaskFunction_t)&Thread::Process,
-			THREAD_NAME.c_str(),
-			2046,
-			this,
-			configMAX_PRIORITIES - 1,// | portPRIVILEGE_BIT,
-			&m_thread);
-		ASSERT_TRUE(xReturn == pdPASS);
+    if (!m_thread)
+    {
+        // 1. Create the Queue first
+        // Holds pointers to ThreadMsg objects (heap allocated)
+        m_queue = xQueueCreate(20, sizeof(ThreadMsg*));
+        ASSERT_TRUE(m_queue != nullptr);
 
-		m_queue = xQueueCreate(30, sizeof(ThreadMsg*));
-		ASSERT_TRUE(m_queue != nullptr);
-	}
-	return true;
+        // 2. Create the Task
+        BaseType_t xReturn = xTaskCreate(
+            (TaskFunction_t)&Thread::Process,
+            THREAD_NAME.c_str(),
+            configMINIMAL_STACK_SIZE * 4, // Ensure enough stack for delegates
+            this,
+            configMAX_PRIORITIES - 2, // Normal priority
+            &m_thread);
+
+        ASSERT_TRUE(xReturn == pdPASS);
+    }
+    return true;
+}
+
+//----------------------------------------------------------------------------
+// ExitThread
+//----------------------------------------------------------------------------
+void Thread::ExitThread()
+{
+    if (m_queue) {
+        // Send exit message
+        ThreadMsg* msg = new ThreadMsg(MSG_EXIT_THREAD);
+        if (xQueueSend(m_queue, &msg, 100) != pdPASS) {
+            delete msg; // Failed to send, clean up
+        }
+        // Note: We don't join/wait here because FreeRTOS tasks 
+        // delete themselves asynchronously.
+        m_thread = nullptr; // Detach
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -50,10 +72,7 @@ bool Thread::CreateThread()
 //----------------------------------------------------------------------------
 TaskHandle_t Thread::GetThreadId()
 {
-	if (m_thread == nullptr)
-		throw std::invalid_argument("Thread pointer is null");
-
-	return m_thread;
+    return m_thread;
 }
 
 //----------------------------------------------------------------------------
@@ -61,7 +80,7 @@ TaskHandle_t Thread::GetThreadId()
 //----------------------------------------------------------------------------
 TaskHandle_t Thread::GetCurrentThreadId()
 {
-	return xTaskGetCurrentTaskHandle();
+    return xTaskGetCurrentTaskHandle();
 }
 
 //----------------------------------------------------------------------------
@@ -69,62 +88,73 @@ TaskHandle_t Thread::GetCurrentThreadId()
 //----------------------------------------------------------------------------
 void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
-	if (m_queue == nullptr)
-		throw std::invalid_argument("Queue pointer is null");
+    ASSERT_TRUE(m_queue != nullptr);
 
-	// Create a new ThreadMsg
-	ThreadMsg* threadMsg = new ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
-	if (xQueueSend(m_queue, &threadMsg, portMAX_DELAY) != pdPASS)
-	{
-		// Handle the case when the message was not successfully added to the queue
-		delete threadMsg;  // Ensure we don't leak memory if the send fails
-		throw std::runtime_error("Failed to send message to queue");
-	}
+    // 1. Allocate message container on heap
+    ThreadMsg* threadMsg = new ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
+
+    // 2. Send pointer to queue
+    // Use a finite block time (e.g., 10ms) so we don't lock up the system if full
+    if (xQueueSend(m_queue, &threadMsg, pdMS_TO_TICKS(10)) != pdPASS)
+    {
+        // 3. Handle failure: Delete to prevent memory leak
+        delete threadMsg;
+        printf("Error: Thread '%s' queue full! Delegate dropped.\n", THREAD_NAME.c_str());
+    }
 }
 
 //----------------------------------------------------------------------------
-// Process
+// Process (Static Entry Point)
 //----------------------------------------------------------------------------
 void Thread::Process(void* instance)
 {
-	Thread* thread = (Thread*)(instance);
-	ASSERT_TRUE(thread != nullptr);
+    Thread* thread = static_cast<Thread*>(instance);
+    ASSERT_TRUE(thread != nullptr);
+    thread->Run();
 
-	ThreadMsg* msg = nullptr;
-	while (1)
-	{
-		if (xQueueReceive(thread->m_queue, &msg, portMAX_DELAY) == pdPASS)
-		{
-			switch (msg->GetId())
-			{
-				case MSG_DISPATCH_DELEGATE:
-				{
-					// @TODO: Update error handling below if necessary.
-					
-					// Get pointer to DelegateMsg data from queue msg data
-					auto delegateMsg = msg->GetData();
-					ASSERT_TRUE(delegateMsg);
-
-					auto invoker = delegateMsg->GetInvoker();
-					ASSERT_TRUE(invoker);
-
-					// Invoke the delegate destination target function
-					bool success = invoker->Invoke(delegateMsg);
-					ASSERT_TRUE(success);
-
-					delete msg;
-					break;
-				}
-
-				case MSG_EXIT_THREAD:
-				{
-					return;
-				}
-
-				default:
-					throw std::invalid_argument("Invalid message ID");
-			}
-		}
-	}
+    // Self-delete when Run() returns (ExitThread called)
+    vTaskDelete(NULL);
 }
 
+//----------------------------------------------------------------------------
+// Run (Member Function Loop)
+//----------------------------------------------------------------------------
+void Thread::Run()
+{
+    ThreadMsg* msg = nullptr;
+    while (true)
+    {
+        // Block forever waiting for a message
+        if (xQueueReceive(m_queue, &msg, portMAX_DELAY) == pdPASS)
+        {
+            if (!msg) continue;
+
+            switch (msg->GetId())
+            {
+            case MSG_DISPATCH_DELEGATE:
+            {
+                auto delegateMsg = msg->GetData();
+                if (delegateMsg) {
+                    auto invoker = delegateMsg->GetInvoker();
+                    if (invoker) {
+                        invoker->Invoke(delegateMsg);
+                    }
+                }
+                break;
+            }
+
+            case MSG_EXIT_THREAD:
+            {
+                delete msg;
+                return; // Breaks loop, Process() calls vTaskDelete
+            }
+
+            default:
+                break;
+            }
+
+            // Important: Delete the message container we 'new'ed in DispatchDelegate
+            delete msg;
+        }
+    }
+}

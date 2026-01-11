@@ -5,57 +5,52 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
-
-#include <thread>
-#include <queue>
-#include <mutex>
-#include <atomic>
-#include <condition_variable>
-#include <future>
-
-/// @TODO: Implement a priority queue for the thread messages like 
-/// std::priority_queue<ThreadMsg*, std::vector<ThreadMsg*>, ThreadMsgComparator>
-/// as implemented in stdlib\Thread.h if necessary.
-/// @TODO: Optionally implement a watchdog mechanism as shown in stdlib\Thread.h.
+#include <string>
+#include <memory>
 
 class ThreadMsg;
 
 class Thread : public dmq::IThread
 {
 public:
-	/// Constructor
-	Thread(const std::string& threadName);
+    /// Constructor
+    Thread(const std::string& threadName);
 
-	/// Destructor
-	~Thread();
+    /// Destructor
+    ~Thread();
 
-	/// Called once to create the worker thread
-	/// @return TRUE if thread is created. FALSE otherise. 
-	bool CreateThread();
+    /// Called once to create the worker thread
+    /// @return TRUE if thread is created. FALSE otherwise. 
+    bool CreateThread();
 
-	/// Get the ID of this thread instance
-	TaskHandle_t GetThreadId();
+    /// Terminate the thread gracefully
+    void ExitThread();
 
-	/// Get the ID of the currently executing thread
-	static TaskHandle_t GetCurrentThreadId();
+    /// Get the ID of this thread instance
+    TaskHandle_t GetThreadId();
 
-	/// Get thread name
-	std::string GetThreadName() { return THREAD_NAME; }
+    /// Get the ID of the currently executing thread
+    static TaskHandle_t GetCurrentThreadId();
 
-	virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg);
+    /// Get thread name
+    std::string GetThreadName() { return THREAD_NAME; }
+
+    // IThread Interface Implementation
+    virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg) override;
 
 private:
-	Thread(const Thread&) = delete;
-	Thread& operator=(const Thread&) = delete;
+    Thread(const Thread&) = delete;
+    Thread& operator=(const Thread&) = delete;
 
-	/// Entry point for the thread
-	static void Process(void*);
+    /// Entry point for the thread
+    static void Process(void* instance);
 
-	TaskHandle_t m_thread = nullptr;
-	QueueHandle_t m_queue = nullptr;
+    // Run loop called by Process
+    void Run();
 
-	const std::string THREAD_NAME;
+    TaskHandle_t m_thread = nullptr;
+    QueueHandle_t m_queue = nullptr;
+    const std::string THREAD_NAME;
 };
 
-#endif 
-
+#endif

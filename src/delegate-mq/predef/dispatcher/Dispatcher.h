@@ -11,7 +11,6 @@
 #include "predef/transport/DmqHeader.h"
 #include "predef/transport/ITransport.h"
 #include <sstream>
-#include <mutex>
 
 /// @brief Dispatcher sends data to the transport for transmission to the endpoint.
 class Dispatcher : public dmq::IDispatcher

@@ -1,284 +1,188 @@
 /// @file main.cpp
 /// @see https://github.com/endurodave/DelegateMQ
-/// David Lafreniere, 2025.
-/// 
-/// Test DelegateMQ with FreeRTOS. Test was created to run on Windows using 
-/// FreeRTOS Windows Port For Visual Studio.
-/// 
-/// Must build using 32-bit: 
-/// cmake -A Win32 -B build .
+/// David Lafreniere, 2026.
 
-#include "DelegateMQ.h"
-#include <iostream>
-#include <sstream>
+#include "DelegateMQ.h" 
+#include <cstdio>
+#include <functional>
+#include <memory>
+#include <vector>
+
 #include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
 #include "timers.h"
 
 using namespace dmq;
 using namespace std;
 
-#define mainTIMER_FREQUENCY_MS			pdMS_TO_TICKS( 50UL )
-static TimerHandle_t xTimer = nullptr;
+// --------------------------------------------------------------------------
+// FREERTOS CONFIGURATION & HELPERS
+// --------------------------------------------------------------------------
+#define mainTIMER_FREQUENCY_MS pdMS_TO_TICKS(10UL)
+static TimerHandle_t xSystemTimer = nullptr;
 
-static void TimerCallback(TimerHandle_t xTimerHandle)
-{
-    // Process delegate-based timers
+static void TimerCallback(TimerHandle_t xTimerHandle) {
+    // 
     Timer::ProcessTimers();
 }
 
-// The "transport" is simply a shared std::stringstream
-class Transport
-{
-public:
-    static void Send(std::stringstream& os) {
-        std::lock_guard<std::mutex> lk(m_mutex);
-        m_ss << os.str();
-    }
-    static std::stringstream& Receive() {
-        std::lock_guard<std::mutex> lk(m_mutex);
-        return m_ss;
-    }
-private:
-    // Simulate send/recv data using a stream
-    static std::stringstream m_ss;
-    static std::mutex m_mutex;
-};
+// --------------------------------------------------------------------------
+// CALLBACK FUNCTIONS
+// --------------------------------------------------------------------------
+void FreeFunction(int val) {
+    printf("  [Callback] FreeFunction: %d (Task: %s)\n", val, pcTaskGetName(NULL));
+}
 
-std::stringstream Transport::m_ss(ios::in | ios::out | ios::binary);
-std::mutex Transport::m_mutex;
-
-// Dispatcher sends data to the transport for transmission to the receiver
-class Dispatcher : public IDispatcher
-{
+class TestHandler {
 public:
-    // Send argument data to the transport
-    virtual int Dispatch(std::ostream& os, DelegateRemoteId id) {
-        std::stringstream ss(ios::in | ios::out | ios::binary);
-        ss << os.rdbuf();
-        Transport::Send(ss);
-        return 0;
+    void MemberFunc(int val) {
+        printf("  [Callback] MemberFunc: %d (Task: %s, Instance: %p)\n", val, pcTaskGetName(NULL), this);
+    }
+
+    void OnTimerExpired() {
+        printf("  [Callback] Timer Expired! (Task: %s)\n", pcTaskGetName(NULL));
     }
 };
 
-// make_serialized serializes each remote function argument
-template<typename... Ts>
-void make_serialized(std::ostream& os) { }
+// --------------------------------------------------------------------------
+// TEST LOGIC (Moved to helper function)
+// --------------------------------------------------------------------------
+void ExecuteAllTests() {
+    // 1. Critical: Disable buffering
+    setvbuf(stdout, NULL, _IONBF, 0);
+    vTaskDelay(pdMS_TO_TICKS(100));
 
-template<typename Arg1, typename... Args>
-void make_serialized(std::ostream& os, Arg1& arg1, Args... args) {
-    os << arg1;
-    make_serialized(os, args...);
-}
+    printf("\n=========================================\n");
+    printf("   FREERTOS DELEGATE SYSTEM ONLINE       \n");
+    printf("=========================================\n");
 
-template<typename Arg1, typename... Args>
-void make_serialized(std::ostream& os, Arg1* arg1, Args... args) {
-    os << *arg1;
-    make_serialized(os, args...);
-}
+    // --- TEST 1: Unicast Delegate ---
+    printf("\n[Test 1] Unicast Delegate (Free Function):\n");
+    UnicastDelegate<void(int)> unicast;
+    unicast = MakeDelegate(FreeFunction);
+    unicast(100);
 
-template<typename Arg1, typename... Args>
-void make_serialized(std::ostream& os, Arg1** arg1, Args... args) {
-    static_assert(!std::is_pointer_v<Arg1>, "Pointer-to-pointer argument not supported");
-}
+    // --- TEST 2: Lambda Support ---
+    printf("\n[Test 2] Unicast Delegate (Lambda):\n");
+    int capture_value = 42;
+    unicast = MakeDelegate(std::function<void(int)>([capture_value](int val) {
+        printf("  [Callback] Lambda called! Capture: %d, Arg: %d\n", capture_value, val);
+        }));
+    unicast(200);
 
-// make_unserialized serializes each remote function argument
-template<typename... Ts>
-void make_unserialized(std::istream& is) { }
+    // --- TEST 3: Multicast Delegate ---
+    printf("\n[Test 3] Multicast Delegate (Broadcast):\n");
+    MulticastDelegate<void(int)> multicast;
+    TestHandler handler;
 
-template<typename Arg1, typename... Args>
-void make_unserialized(std::istream& is, Arg1& arg1, Args... args) {
-    is >> arg1;
-    make_unserialized(is, args...);
-}
+    multicast += MakeDelegate(FreeFunction);
+    multicast += MakeDelegate(&handler, &TestHandler::MemberFunc);
 
-template<typename Arg1, typename... Args>
-void make_unserialized(std::istream& is, Arg1* arg1, Args... args) {
-    is >> *arg1;
-    make_unserialized(is, args...);
-}
+    multicast += MakeDelegate(std::function<void(int)>([](int val) {
+        printf("  [Callback] Multicast Lambda called! Val: %d\n", val);
+        }));
 
-template<typename Arg1, typename... Args>
-void make_unserialized(std::istream& is, Arg1** arg1, Args... args) {
-    static_assert(!std::is_pointer_v<Arg1>, "Pointer-to-pointer argument not supported");
-}
+    printf("Firing all 3 targets...\n");
+    multicast(300);
 
-template <class R>
-struct Serializer; // Not defined
+    // --- TEST 4: Removal ---
+    printf("\n[Test 4] Removing a Delegate:\n");
+    multicast -= MakeDelegate(FreeFunction);
+    printf("Firing remaining targets (Expected: 2)...\n");
+    multicast(400);
 
-// Serialize all target function argument data
-template<class RetType, class... Args>
-class Serializer<RetType(Args...)> : public ISerializer<RetType(Args...)>
-{
-public:
-    virtual std::ostream& Write(std::ostream& os, Args... args) override {
-        make_serialized(os, args...);
-        return os;
-    }
+    // --- TEST 5: Signals & Connections (RAII) ---
+    printf("\n[Test 5] Signals & Scoped Connections:\n");
+    auto signal = std::make_shared<Signal<void(int)>>();
 
-    virtual std::istream& Read(std::istream& is, Args&... args) override {
-        make_unserialized(is, args...);
-        return is;
-    }
-};
-
-class Data
-{
-public:
-    int x;
-    int y;
-    std::string msg;
-
-    XALLOCATOR
-};
-
-// Simple serialization of Data. Use any serialization scheme as necessary. 
-std::ostream& operator<<(std::ostream& os, const Data& data) {
-    os << data.x << endl;
-    os << data.y << endl;
-    os << data.msg << endl;
-    return os;
-}
-
-// Simple unserialization of Data. Use any unserialization scheme as necessary. 
-std::istream& operator>>(std::istream& is, Data& data) {
-    is >> data.x;
-    is >> data.y;
-    is >> data.msg;
-    return is;
-}
-
-// Sender is an active object with a thread. The thread sends data to the 
-// remote every time the timer expires. 
-class Sender
-{
-public:
-    Sender(DelegateRemoteId id) :
-        m_thread("Sender"),
-        m_sendDelegate(id),
-        m_args(ios::in | ios::out | ios::binary)
     {
-        // Set the delegate interfaces
-        m_sendDelegate.SetStream(&m_args);
-        m_sendDelegate.SetSerializer(&m_serializer);
-        m_sendDelegate.SetDispatcher(&m_dispatcher);
+        printf("  -> Creating ScopedConnection inside block...\n");
+        ScopedConnection conn = signal->Connect(MakeDelegate(FreeFunction));
 
-        m_thread.CreateThread();
+        printf("  -> Firing Signal (Expect Callback):\n");
+        (*signal)(500);
 
-        // Start a timer to send data
-        (*m_sendTimer.OnExpired) += MakeDelegate(this, &Sender::Send, m_thread);
-        m_sendTimer.Start(std::chrono::milliseconds(50));
+        printf("  -> Exiting block (ScopedConnection will destruct)...\n");
+    }
+    printf("  -> Firing Signal outside block (Expect NO Callback):\n");
+    (*signal)(600);
+
+    // --- TEST 6: Thread-Safe Delegates ---
+    printf("\n[Test 6] Thread-Safe Multicast (Mutex Protected):\n");
+    MulticastDelegateSafe<void(int)> safeMulticast;
+    safeMulticast += MakeDelegate(FreeFunction);
+
+    printf("Firing Thread-Safe Delegate...\n");
+    safeMulticast(700);
+
+    // --- TEST 7: Async Delegates (Cross-Thread) ---
+    printf("\n[Test 7] Async Delegate (Cross-Thread Dispatch):\n");
+
+    // Create a worker thread (Active Object)
+    // NOTE: C++ Destructor ~Thread() MUST run to close the queue properly!
+    Thread workerThread("WorkerThread");
+    if (workerThread.CreateThread()) {
+
+        auto asyncDelegate = MakeDelegate(FreeFunction, workerThread);
+
+        printf("  -> Dispatching to Worker Thread (Non-Blocking)...\n");
+        asyncDelegate(800);
+
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+    else {
+        printf("  [Error] Failed to create WorkerThread!\n");
     }
 
-    ~Sender()
-    {
-        (*m_sendTimer.OnExpired) -= MakeDelegate(this, &Sender::Send, m_thread);
-        m_sendTimer.Stop();
-    }
+    // --- TEST 8: Timers ---
+    printf("\n[Test 8] Timer Delegate (One-Shot):\n");
 
-    // Send data to the remote
-    void Send()
-    {
-        static int cnt = 0;
+    // NOTE: C++ Destructor ~Timer() MUST run to unregister from the global list!
+    Timer myTimer;
 
-        Data data;
-        data.x = cnt++;
-        data.y = cnt++;
-        data.msg = "Hello!";
+    (*myTimer.OnExpired) += MakeDelegate(&handler, &TestHandler::OnTimerExpired);
 
-        m_sendDelegate(data);
-    }
+    printf("  -> Starting Timer (200ms delay)...\n");
+    myTimer.Start(std::chrono::milliseconds(200));
 
-private:
-    Thread m_thread;
-    Timer m_sendTimer;
+    // Wait for timer
+    vTaskDelay(pdMS_TO_TICKS(300));
+    myTimer.Stop();
 
-    xostringstream m_args;
-    Dispatcher m_dispatcher;
-    Serializer<void(Data&)> m_serializer;
+    printf("\n=========================================\n");
+    printf("           ALL TESTS PASSED              \n");
+    printf("=========================================\n");
 
-    // Sender remote delegate
-    DelegateMemberRemote<Sender, void(Data&)> m_sendDelegate;
-};
+    // FUNCTION RETURN:
+    // This closing brace '}' forces ~Timer(), ~Thread(), etc. to execute.
+    // This safely unregisters the Timer before the task is deleted.
+}
 
-// Receiver receives data from the Sender 
-class Receiver
-{
-public:
-    Receiver(DelegateRemoteId id) :
-        m_thread("Receiver"),
-        m_args(ios::in | ios::out | ios::binary)
-    {
-        // Set the delegate interfaces
-        m_recvDelegate.SetStream(&m_args);
-        m_recvDelegate.SetSerializer(&m_serializer);
-        m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, id);
+// --------------------------------------------------------------------------
+// TEST RUNNER TASK
+// --------------------------------------------------------------------------
+void RunTestsTask(void* pvParameters) {
 
-        m_thread.CreateThread();
+    // Run all tests in a function to ensure stack unwinding happens
+    ExecuteAllTests();
 
-        // Start a timer to poll data
-        (*m_recvTimer.OnExpired) += MakeDelegate(this, &Receiver::Poll, m_thread);
-        m_recvTimer.Start(std::chrono::milliseconds(50));
-    }
-    ~Receiver()
-    {
-        (*m_recvTimer.OnExpired) -= MakeDelegate(this, &Receiver::Poll, m_thread);
-        m_recvDelegate = nullptr;
-    }
+    // Now it is safe to delete the task because 'myTimer' is destroyed.
+    vTaskDelete(NULL);
+}
 
-    // Poll called periodically on m_thread context
-    void Poll()
-    {
-        // Get incoming data
-        auto& arg_data = Transport::Receive();
-
-        // Incoming remote delegate data arrived?
-        if (!arg_data.str().empty())
-        {
-            // Invoke the receiver target function with the sender's argument data
-            m_recvDelegate.Invoke(arg_data);
-        }
-    }
-
-    // Receiver target function called when sender remote delegate is invoked
-    void DataUpdate(Data& data)
-    {
-        cout << "Receiver::DataUpdate: " << data.x;
-        cout << " " << data.y;
-        cout << " " << data.msg;
-        cout << endl;
-    }
-
-private:
-    Thread m_thread;
-    Timer m_recvTimer;
-
-    xostringstream m_args;
-    Serializer<void(Data&)> m_serializer;
-
-    // Receiver remote delegate
-    DelegateMemberRemote<Receiver, void(Data&)> m_recvDelegate;
-};
-
+// --------------------------------------------------------------------------
+// MAIN ENTRY POINT
+// --------------------------------------------------------------------------
 extern "C" void main_delegate(void)
 {
-    const TickType_t xTimerPeriod = mainTIMER_FREQUENCY_MS;
-    DelegateRemoteId id = 1;
+    xSystemTimer = xTimerCreate("SysTimer", mainTIMER_FREQUENCY_MS, pdTRUE, NULL, TimerCallback);
+    xTimerStart(xSystemTimer, 0);
 
-    Sender sender(id);
-    Receiver receiver(id);
+    xTaskCreate(RunTestsTask, "MainTask", 2048, NULL, 2, NULL);
 
-    /* Create the software timer, but don't start it yet. */
-    xTimer = xTimerCreate("Timer",				/* The text name assigned to the software timer - for debug only as it is not used by the kernel. */
-        xTimerPeriod,		/* The period of the software timer in ticks. */
-        pdTRUE,			    /* xAutoReload is set to pdTRUE, so this timer goes off periodically with a period of xTimerPeriod ticks. */
-        NULL,				/* The timer's ID is not used. */
-        TimerCallback);     /* The function executed when the timer expires. */
-
-    xTimerStart(xTimer, 0); /* The scheduler has not started so use a block time of 0. */
-
-    /* Start the tasks and timer running. */
+    printf("--- Starting FreeRTOS Scheduler ---\n");
     vTaskStartScheduler();
 
-    // This line should never run 
     while (1);
 }

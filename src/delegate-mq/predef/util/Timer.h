@@ -2,7 +2,6 @@
 #define _TIMER_H
 
 #include "../../delegate/SignalSafe.h"
-#include <mutex>
 #include <list>
 
 /// @brief A timer class provides periodic timer callbacks on the client's 
@@ -60,11 +59,11 @@ private:
     }
 
     /// Get lock using the "Immortal" Pattern
-    static std::recursive_mutex& GetLock()
+    static dmq::RecursiveMutex& GetLock()
     {
         // Allocate on heap and NEVER delete. Prevents lock from being destroyed 
         // before the last Timer destructor runs at app shutdown.
-        static std::recursive_mutex* lock = new std::recursive_mutex();
+        static dmq::RecursiveMutex* lock = new dmq::RecursiveMutex();
         return *lock;
     }
 

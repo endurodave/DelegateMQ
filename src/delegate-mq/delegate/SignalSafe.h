@@ -16,7 +16,6 @@
 #include "MulticastDelegateSafe.h"
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <cassert>
 
 namespace dmq {

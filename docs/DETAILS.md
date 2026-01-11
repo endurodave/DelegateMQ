@@ -255,7 +255,7 @@ Numerous predefined platforms are already supported such as Windows, Linux, Free
 3.  **Implement `ISerializer` and `ITransport`**: Required to use **Remote** delegates across processes/processors.
     * *Optional:* Implement `ITransportMonitor` if your application layer requires command acknowledgments (ACKs).
     * See [Sample Projects](#sample-projects) for numerous remote delegate examples.
-4.  **Check System Clock**: Ensure `std::chrono::steady_clock` is supported on your target hardware, as it is required for timers and transport timeouts. Otherwise, change `dmw::Clock` in `DelegateOpt.h` to a new clock type.
+4.  **Check System Clock**: Ensure `std::chrono::steady_clock` is supported on your target hardware, as it is required for timers and transport timeouts. Otherwise, change `dmq::Clock` in `DelegateOpt.h` to a new clock type.
 5.  **Call `Timer::ProcessTimers()`**: Periodically call `ProcessTimers()` (e.g., from a main loop or hardware timer ISR) to support timers and thread watchdogs.
 6.  **Configure Build Options**: Set CMake DMQ library build options within `CMakeLists.txt`.
     * Example: `DMQ_ASSERTS` for debug assertions.

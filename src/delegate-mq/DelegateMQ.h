@@ -54,20 +54,46 @@
 ///
 /// See README.md, DETAILS.md, EXAMPLES.md, and source code Doxygen comments for more information.
 
-// Core non-thread-safe delegates (works on Bare Metal)
+// -----------------------------------------------------------------------------
+// 1. Core Non-Thread-Safe Delegates
+// (Always available: Bare Metal, FreeRTOS, Windows, Linux)
+// -----------------------------------------------------------------------------
 #include "delegate/Delegate.h"
 #include "delegate/DelegateRemote.h"
 #include "delegate/MulticastDelegate.h"
 #include "delegate/UnicastDelegate.h"
 #include "delegate/Signal.h"
 
-// Only include "Safe" variants if a threading model is defined
-#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_FREERTOS)
-    #include "delegate/DelegateAsync.h"
-    #include "delegate/DelegateAsyncWait.h"
+// -----------------------------------------------------------------------------
+// 2. Thread-Safe Wrappers (Mutex Only)
+// -----------------------------------------------------------------------------
+// - FreeRTOS: Uses FreeRTOSRecursiveMutex
+// - Bare Metal: Uses NullMutex
+// - StdLib: Uses std::recursive_mutex
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_FREERTOS) || defined(DMQ_THREAD_NONE)
     #include "delegate/MulticastDelegateSafe.h"
     #include "delegate/UnicastDelegateSafe.h"
     #include "delegate/SignalSafe.h"
+#endif
+
+// -----------------------------------------------------------------------------
+// 3. Asynchronous "Fire and Forget" Delegates
+// -----------------------------------------------------------------------------
+// - FreeRTOS: OK (Requires you to implement IThread wrapper for Queues)
+// - Bare Metal: OK (Requires you to implement IThread wrapper for Event Loop)
+// - StdLib: OK
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_FREERTOS) || defined(DMQ_THREAD_NONE)
+    #include "delegate/DelegateAsync.h"
+#endif
+
+// -----------------------------------------------------------------------------
+// 4. Asynchronous "Blocking" Delegates (Wait for Result)
+// -----------------------------------------------------------------------------
+// - FreeRTOS: NO (Requires Semaphore/Condition Variable)
+// - Bare Metal: NO (Cannot block/sleep)
+// - StdLib: OK
+#if defined(DMQ_THREAD_STDLIB)
+    #include "delegate/DelegateAsyncWait.h"
 #endif
 
 #if defined(DMQ_THREAD_STDLIB)

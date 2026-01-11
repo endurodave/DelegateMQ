@@ -5,13 +5,59 @@
 /// @brief Delegate library options header file.
 
 #include <chrono>
+#include <mutex>
+
+#if defined(DMQ_THREAD_FREERTOS)
+    #include "predef/util/FreeRTOSClock.h"
+    #include "predef/util/FreeRTOSMutex.h"
+#elif defined(DMQ_THREAD_NONE)
+    #include "predef/util/BareMetalClock.h"
+#endif
 
 namespace dmq
 {
     // @TODO: Change aliases to switch clock type globally if necessary
+
+    // --- CLOCK SELECTION ---
+#if defined(DMQ_THREAD_FREERTOS)
+    // Use the custom FreeRTOS wrapper
+    using Clock = dmq::FreeRTOSClock;
+
+#elif defined(DMQ_THREAD_NONE)
+    // Assuming implemented the 'g_ticks' variable
+    using Clock = dmq::BareMetalClock;
+
+#else
+    // Windows / Linux / macOS (Standard)
     using Clock = std::chrono::steady_clock;
-    using Duration = std::chrono::duration<int64_t, std::milli>;
-    using TimePoint = std::chrono::time_point<Clock, Duration>;
+#endif
+
+    // --- GENERIC TYPES ---
+    // Automatically adapt to the underlying Clock's traits
+    using Duration = typename Clock::duration;
+    using TimePoint = typename Clock::time_point;
+
+    // --- MUTEX / LOCK SELECTION ---
+#if defined(DMQ_THREAD_FREERTOS)
+    // Use the custom FreeRTOS wrapper
+    using Mutex = dmq::FreeRTOSMutex;
+    using RecursiveMutex = dmq::FreeRTOSRecursiveMutex;
+
+#elif defined(DMQ_THREAD_NONE)
+    // Bare metal has no threads, so no locking is required.
+    // We define a dummy "No-Op" mutex.
+    struct NullMutex {
+        void lock() {}
+        void unlock() {}
+    };
+    using Mutex = NullMutex;
+    using RecursiveMutex = NullMutex;
+
+#else
+    // Windows / Linux / macOS
+    using Mutex = std::mutex;
+    using RecursiveMutex = std::recursive_mutex;
+#endif
 }
 
 // @TODO: Select the desired software fault handling (see Predef.cmake).

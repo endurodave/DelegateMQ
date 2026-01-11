@@ -228,7 +228,7 @@ Asynchronous delegates simplify multithreaded programming by allowing you to inv
 
 **Supported Platforms:**
 
-* **Operating System:** Windows, Linux, [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS)
+* **Operating System:** Windows, Linux, [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS), bare-metal
 
 ## Remote Delegates
 
@@ -269,7 +269,7 @@ The library's flexible CMake build options allow for the inclusion of only the n
 
 # Getting Started
 
-To build and run DelegateMQ, follow these simple steps. The library uses <a href="https://www.cmake.org">CMake</a> to generate build files and supports Visual Studio, GCC, and Clang toolchains.
+To build and run DelegateMQ, follow these simple steps. The library uses <a href="https://www.cmake.org">CMake</a> to generate build files and supports Visual Studio, GCC, Clang, and ARM toolchains.
 
 1. Clone the repository.
 2. From the repository root, run the following CMake command:   

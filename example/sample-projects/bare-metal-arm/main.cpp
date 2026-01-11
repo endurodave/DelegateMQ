@@ -13,6 +13,15 @@
 using namespace dmq;
 using namespace std;
 
+// Global millisecond counter
+volatile uint64_t g_ticks = 0;  
+
+// @TODO: Cortex-M SysTick Handler (Called every 1ms)
+// This drives the 'BareMetalClock' used by DelegateMQ for timeouts.
+extern "C" void SysTick_Handler(void) {
+    g_ticks = g_ticks + 1;
+}
+
 // --------------------------------------------------------------------------
 // CALLBACK FUNCTIONS
 // --------------------------------------------------------------------------
