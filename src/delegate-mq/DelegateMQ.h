@@ -79,7 +79,7 @@
 // -----------------------------------------------------------------------------
 // 3. Asynchronous "Fire and Forget" Delegates
 // -----------------------------------------------------------------------------
-// - FreeRTOS: OK (Requires you to implement IThread wrapper for Queues)
+// - FreeRTOS: OK 
 // - Bare Metal: OK (Requires you to implement IThread wrapper for Event Loop)
 // - StdLib: OK
 #if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_FREERTOS) || defined(DMQ_THREAD_NONE)
