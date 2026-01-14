@@ -22,9 +22,7 @@ static const std::chrono::milliseconds TEST_TIMEOUT(5000);
 
 static void Wait()
 {
-    // Wait for tests to complete. Test complete when thread queues empty.
-    while (workerThread1.GetQueueSize() != 0 &&
-        workerThread2.GetQueueSize() != 0)
+    while (workerThread1.GetQueueSize() != 0 || workerThread2.GetQueueSize() != 0)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
