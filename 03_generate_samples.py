@@ -10,7 +10,7 @@ Description:
 Key Features:
     1. Smart Discovery: Recursively scans for 'CMakeLists.txt'.
     2. Exclusion Logic: Automatically skips shared library folders ('common', 'include', 'src')
-       that are not standalone applications.
+       and specific platforms like 'bare-metal-arm'.
     3. Clean Generation: Removes old 'build' directories to ensure a fresh configuration.
     4. Project Generation: Runs 'cmake -B build' to create .sln files ready for IDE usage.
     5. Special Handling:
@@ -40,13 +40,16 @@ def build_samples():
         # 1. CLEANUP: Avoid recursing into build/install folders
         if "build" in dirnames: dirnames.remove("build")
         if "install" in dirnames: dirnames.remove("install")
+        
+        # SKIP: Explicitly skip bare-metal-arm directory to prevent processing
+        if "bare-metal-arm" in dirnames: dirnames.remove("bare-metal-arm")
 
         if "CMakeLists.txt" in files:
             project_name = os.path.basename(dirpath)
             
-            # --- FIX: SKIP COMMON/SHARED FOLDERS ---
-            if project_name in ["common", "include", "src"]:
-                # These are sub-libraries, not standalone apps
+            # --- SKIP COMMON/SHARED FOLDERS ---
+            if project_name in ["common", "include", "src", "bare-metal-arm"]:
+                # These are sub-libraries or skipped platforms, not standalone apps
                 continue
 
             # 2. CLEAN: Delete existing build folder
