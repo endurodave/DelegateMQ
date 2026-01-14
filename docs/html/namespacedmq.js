@@ -1,6 +1,7 @@
 var namespacedmq =
 [
     [ "trait", "namespacedmq_1_1trait.html", "namespacedmq_1_1trait" ],
+    [ "BareMetalClock", "structdmq_1_1_bare_metal_clock.html", "structdmq_1_1_bare_metal_clock" ],
     [ "Connection", "classdmq_1_1_connection.html", "classdmq_1_1_connection" ],
     [ "Delegate", "structdmq_1_1_delegate.html", null ],
     [ "Delegate< RetType(Args...)>", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],
@@ -38,6 +39,9 @@ var namespacedmq =
     [ "DelegateMemberSp", "structdmq_1_1_delegate_member_sp.html", null ],
     [ "DelegateMemberSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
     [ "DelegateMsg", "classdmq_1_1_delegate_msg.html", "classdmq_1_1_delegate_msg" ],
+    [ "FreeRTOSClock", "structdmq_1_1_free_r_t_o_s_clock.html", "structdmq_1_1_free_r_t_o_s_clock" ],
+    [ "FreeRTOSMutex", "classdmq_1_1_free_r_t_o_s_mutex.html", "classdmq_1_1_free_r_t_o_s_mutex" ],
+    [ "FreeRTOSRecursiveMutex", "classdmq_1_1_free_r_t_o_s_recursive_mutex.html", "classdmq_1_1_free_r_t_o_s_recursive_mutex" ],
     [ "heap_arg_deleter", "classdmq_1_1heap__arg__deleter.html", "classdmq_1_1heap__arg__deleter" ],
     [ "heap_arg_deleter< T * >", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4" ],
     [ "heap_arg_deleter< T ** >", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_5_01_4.html", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_5_01_4" ],
@@ -77,9 +81,11 @@ var namespacedmq =
     [ "Clock", "namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2", null ],
     [ "DelegateErrorAux", "namespacedmq.html#a4bcc300237d5cb854a800a19ccc0400a", null ],
     [ "DelegateRemoteId", "namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda", null ],
-    [ "Duration", "namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699", null ],
+    [ "Duration", "namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f", null ],
+    [ "Mutex", "namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07", null ],
+    [ "RecursiveMutex", "namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de", null ],
     [ "SignalPtr", "namespacedmq.html#a572501e16e89e99a9a4396fe750418d0", null ],
-    [ "TimePoint", "namespacedmq.html#ab08c81f02df1661e3b194580c0cd0a8f", null ],
+    [ "TimePoint", "namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef", null ],
     [ "DelegateError", "namespacedmq.html#a62ea8a73887af62d409322557b4e757d", [
       [ "SUCCESS", "namespacedmq.html#a62ea8a73887af62d409322557b4e757dad0749aaba8b833466dfcbb0428e4f89c", null ],
       [ "ERR_STREAM_NOT_GOOD", "namespacedmq.html#a62ea8a73887af62d409322557b4e757da78d23b7ddceca52b8912f668760e1766", null ],

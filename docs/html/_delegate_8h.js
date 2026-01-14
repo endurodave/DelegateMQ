@@ -1,5 +1,11 @@
 var _delegate_8h =
 [
+    [ "dmq::trait::is_shared_ptr_reference< T >", "structdmq_1_1trait_1_1is__shared__ptr__reference.html", null ],
+    [ "dmq::trait::is_shared_ptr_reference< std::shared_ptr< T > & >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
+    [ "dmq::trait::is_shared_ptr_reference< std::shared_ptr< T > * >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
+    [ "dmq::trait::is_shared_ptr_reference< const std::shared_ptr< T > & >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
+    [ "dmq::trait::is_shared_ptr_reference< const std::shared_ptr< T > * >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
+    [ "dmq::trait::is_double_pointer< T >", "structdmq_1_1trait_1_1is__double__pointer.html", "structdmq_1_1trait_1_1is__double__pointer" ],
     [ "dmq::DelegateBase", "classdmq_1_1_delegate_base.html", "classdmq_1_1_delegate_base" ],
     [ "dmq::Delegate< RetType(Args...)>", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],
     [ "dmq::DelegateFree< RetType(Args...)>", "classdmq_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4" ],

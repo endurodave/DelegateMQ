@@ -11,8 +11,13 @@ using namespace std;
 
 namespace Example
 {
-    // The SafeTimer class safely creates a timer and registers/unregisters
-    // while preventing any pending timer callbacks on a deleted object. 
+    /// @brief Demonstrates safe asynchronous callback handling using RAII and shared ownership.
+    /// 
+    /// @details
+    /// This class uses `std::enable_shared_from_this` to ensure the instance remains alive 
+    /// if a callback is currently executing or queued. It also utilizes `dmq::ScopedConnection` 
+    /// to automatically unsubscribe from the timer upon destruction, preventing "use-after-free" 
+    /// errors if the object is deleted while the timer is still active.
     class SafeTimer : public std::enable_shared_from_this<SafeTimer>
     {
     public:

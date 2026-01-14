@@ -105,28 +105,18 @@ $(function(){initNavTree('_signal_safe_8h.html',''); initResizable(true); });
 </div><!--header-->
 <div class="contents">
 
-<p>Delegate containers (<code>Signal</code>, <code>SignalSafe</code>) that support RAII connection management.  
+<p>Delegate container <code>SignalSafe</code> support RAII connection management.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="_multicast_delegate_8h_source.html">MulticastDelegate.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="_signal_8h_source.html">Signal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_multicast_delegate_safe_8h_source.html">MulticastDelegateSafe.h</a>&quot;</code><br />
 <code>#include &lt;functional&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;mutex&gt;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 </div>
 <p><a href="_signal_safe_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_connection.html">dmq::Connection</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a unique handle to a delegate connection. Move-only to prevent double-disconnection bugs.  <a href="classdmq_1_1_connection.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII wrapper for <a class="el" href="classdmq_1_1_connection.html" title="Represents a unique handle to a delegate connection. Move-only to prevent double-disconnection bugs.">Connection</a>. Automatically disconnects when it goes out of scope.  <a href="classdmq_1_1_scoped_connection.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4.html">dmq::Signal&lt; RetType(Args...)&gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A Multicast <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> that returns a '<a class="el" href="classdmq_1_1_connection.html" title="Represents a unique handle to a delegate connection. Move-only to prevent double-disconnection bugs.">Connection</a>' handle.  <a href="classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_signal_safe_3_01_ret_type_07_args_8_8_8_08_4.html">dmq::SignalSafe&lt; RetType(Args...)&gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A Thread-Safe Multicast <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> that returns a '<a class="el" href="classdmq_1_1_connection.html" title="Represents a unique handle to a delegate connection. Move-only to prevent double-disconnection bugs.">Connection</a>' handle.  <a href="classdmq_1_1_signal_safe_3_01_ret_type_07_args_8_8_8_08_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,8 +140,8 @@ Functions</h2></td></tr>
 <tr class="separator:ae43a0114148f1ea5c12b98ea09471054"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Delegate containers (<code>Signal</code>, <code>SignalSafe</code>) that support RAII connection management. </p>
-<p>This header defines <code>Signal</code> and <code>SignalSafe</code> classes, which extend the standard multicast delegates to return <code>Connection</code> handles upon subscription. These handles can be wrapped in <code>ScopedConnection</code> to automatically unsubscribe when the handle goes out of scope.</p>
+<div class="textblock"><p>Delegate container <code>SignalSafe</code> support RAII connection management. </p>
+<p>This header defines <code>SignalSafe</code> classes, which extend the standard multicast delegates to return <code>Connection</code> handles upon subscription. These handles can be wrapped in <code>ScopedConnection</code> to automatically unsubscribe when the handle goes out of scope.</p>
 <dl class="section note"><dt>Note</dt><dd>Signals <b>MUST</b> be instantiated via <code>std::make_shared</code> (or <code><a class="el" href="namespacedmq.html#ae43a0114148f1ea5c12b98ea09471054">dmq::MakeSignal</a></code>). Instantiating them on the stack will cause a runtime crash (std::bad_weak_ptr) when <code>Connect()</code> is called. </dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->

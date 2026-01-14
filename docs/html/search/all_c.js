@@ -6,5 +6,6 @@ var searchData=
   ['nngtransport_3',['NngTransport',['../class_nng_transport.html',1,'NngTransport'],['../class_nng_transport.html#a0c020810f1995d55cae5f614b52d6bea',1,'NngTransport::NngTransport()']]],
   ['nngtransport_2eh_4',['NngTransport.h',['../_nng_transport_8h.html',1,'']]],
   ['none_5',['NONE',['../classserialize.html#acfb1afef8776c22530f83bec54ea89b0ab50339a10e1de285ac99d4c3990b8693',1,'serialize']]],
-  ['normal_6',['NORMAL',['../namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051',1,'dmq']]]
+  ['normal_6',['NORMAL',['../namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051',1,'dmq']]],
+  ['now_7',['now',['../structdmq_1_1_bare_metal_clock.html#a092271fdfa7137dd4dbf9a95f1e71d20',1,'dmq::BareMetalClock::now()'],['../structdmq_1_1_free_r_t_o_s_clock.html#a23c351112ab5d42be323591130e7b78c',1,'dmq::FreeRTOSClock::now()']]]
 ];

@@ -65,7 +65,9 @@
 namespace dmq {
 
 #undef max  // Prevent compiler error on next line if max is defined
-constexpr auto WAIT_INFINITE = Duration::max();
+constexpr auto WAIT_INFINITE = std::chrono::duration_cast<std::chrono::milliseconds>(
+    std::chrono::steady_clock::duration::max()
+);
 
 /// @brief Stores all function arguments suitable for blocking asynchronous calls.
 /// Argument data is not stored in the heap.

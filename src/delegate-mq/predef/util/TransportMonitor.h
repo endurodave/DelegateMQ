@@ -7,11 +7,24 @@
 #include <cstdint>
 #include <chrono>
 
-/// @brief Monitors remote delegate send message timeouts. Class is thread safe.
-/// Call TransportMonitor::Process() periodically for timeout handling.
-/// Depending on the transport implementation, the message might still be delivered
-/// event if the monitor SendStatusCb callback is invoked. A timeout expiring just means 
-/// that an ack was not received within the time specified.
+/// @brief A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.
+/// 
+/// @details 
+/// The TransportMonitor implements the reliability layer for remote delegate invocations. 
+/// It tracks "in-flight" messages by their sequence number and timestamps them upon sending.
+///
+/// **Key Responsibilities:**
+/// * **Timeout Detection:** Identifies messages that have not been acknowledged within the 
+///   configured `TRANSPORT_TIMEOUT` duration.
+/// * **Status Reporting:** Invokes the `SendStatusCb` delegate with `Status::SUCCESS` (upon ACK) 
+///   or `Status::TIMEOUT` (upon expiration) to notify the application.
+/// * **Thread Safety:** Internal state is protected by a recursive mutex, allowing safe access 
+///   from multiple threads (e.g., sending thread vs. ACK receiving thread).
+///
+/// **Usage Note:**
+/// This class relies on a cooperative polling model. The `Process()` method must be called 
+/// periodically (typically by a background timer or the network thread loop) to scan for 
+/// and handle expired messages.
 class TransportMonitor : public ITransportMonitor
 {
 public:

@@ -120,7 +120,7 @@ $(function(){initNavTree('_semaphore_8h_source.html',''); initResizable(true); }
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classdmq_1_1_semaphore.html#ac3ebd49985c6c3b7ccde0a575a4c7b19">   21</a></span>    <a class="code hl_function" href="classdmq_1_1_semaphore.html#ac3ebd49985c6c3b7ccde0a575a4c7b19">~Semaphore</a>() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classdmq_1_1_semaphore.html#a28a35743252985803aea68d1b54b25f0">   26</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classdmq_1_1_semaphore.html#a28a35743252985803aea68d1b54b25f0">Wait</a>(<a class="code hl_typedef" href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">Duration</a> timeout)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classdmq_1_1_semaphore.html#a28a35743252985803aea68d1b54b25f0">   26</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classdmq_1_1_semaphore.html#a28a35743252985803aea68d1b54b25f0">Wait</a>(<a class="code hl_typedef" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> timeout)</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    {</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        std::unique_lock&lt;std::mutex&gt; lk(m_lock);</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> (timeout == Duration::max())</div>
@@ -179,7 +179,7 @@ $(function(){initNavTree('_semaphore_8h_source.html',''); initResizable(true); }
 <div class="ttc" id="aclassdmq_1_1_semaphore_html_aa73621d8ff3905dc69bc9bb8a4b6a2c3"><div class="ttname"><a href="classdmq_1_1_semaphore.html#aa73621d8ff3905dc69bc9bb8a4b6a2c3">dmq::Semaphore::Signal</a></div><div class="ttdeci">void Signal()</div><div class="ttdoc">Called to signal a semaphore.</div><div class="ttdef"><b>Definition</b> Semaphore.h:53</div></div>
 <div class="ttc" id="aclassdmq_1_1_semaphore_html_ac3ebd49985c6c3b7ccde0a575a4c7b19"><div class="ttname"><a href="classdmq_1_1_semaphore.html#ac3ebd49985c6c3b7ccde0a575a4c7b19">dmq::Semaphore::~Semaphore</a></div><div class="ttdeci">~Semaphore()=default</div></div>
 <div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
-<div class="ttc" id="anamespacedmq_html_a395643098c6cf6cef2c0c629b98ec699"><div class="ttname"><a href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">dmq::Duration</a></div><div class="ttdeci">std::chrono::duration&lt; int64_t, std::milli &gt; Duration</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:13</div></div>
+<div class="ttc" id="anamespacedmq_html_a9b8f2ad24a4b0df29243c60121e10b7f"><div class="ttname"><a href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a></div><div class="ttdeci">typename Clock::duration Duration</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:37</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

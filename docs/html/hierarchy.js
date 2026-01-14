@@ -6,6 +6,7 @@ var hierarchy =
     [ "std::allocator", null, [
       [ "stl_allocator< T >", "classstl__allocator.html", null ]
     ] ],
+    [ "dmq::BareMetalClock", "structdmq_1_1_bare_metal_clock.html", null ],
     [ "dmq::Connection", "classdmq_1_1_connection.html", null ],
     [ "dmq::Delegate< R >", "structdmq_1_1_delegate.html", null ],
     [ "dmq::DelegateBase", "classdmq_1_1_delegate_base.html", [
@@ -64,6 +65,9 @@ var hierarchy =
       [ "serialize_traits::is_shared_ptr< T >", "structserialize__traits_1_1is__shared__ptr.html", null ],
       [ "serialize_traits::is_unsupported_container< U >", "structserialize__traits_1_1is__unsupported__container.html", null ]
     ] ],
+    [ "dmq::FreeRTOSClock", "structdmq_1_1_free_r_t_o_s_clock.html", null ],
+    [ "dmq::FreeRTOSMutex", "classdmq_1_1_free_r_t_o_s_mutex.html", null ],
+    [ "dmq::FreeRTOSRecursiveMutex", "classdmq_1_1_free_r_t_o_s_recursive_mutex.html", null ],
     [ "dmq::heap_arg_deleter_base", "classdmq_1_1heap__arg__deleter__base.html", [
       [ "dmq::heap_arg_deleter< T >", "classdmq_1_1heap__arg__deleter.html", null ],
       [ "dmq::heap_arg_deleter< T * >", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html", null ],

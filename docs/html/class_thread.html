@@ -129,20 +129,24 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a37d9edd3a1a776cbc27dedff949c9726"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ac27cb95d8af8be6dd6f8e7c24e24ee" id="r_a7ac27cb95d8af8be6dd6f8e7c24e24ee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">CreateThread</a> ()</td></tr>
 <tr class="separator:a7ac27cb95d8af8be6dd6f8e7c24e24ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabf05b92a7bc081a464b8adcb916f321" id="r_aabf05b92a7bc081a464b8adcb916f321"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabf05b92a7bc081a464b8adcb916f321">ExitThread</a> ()</td></tr>
+<tr class="memdesc:aabf05b92a7bc081a464b8adcb916f321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminate the thread gracefully.  <br /></td></tr>
+<tr class="separator:aabf05b92a7bc081a464b8adcb916f321"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2294b75a90c36b4f14e32ae8d975a0fb" id="r_a2294b75a90c36b4f14e32ae8d975a0fb"><td class="memItemLeft" align="right" valign="top">TaskHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a> ()</td></tr>
 <tr class="memdesc:a2294b75a90c36b4f14e32ae8d975a0fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID of this thread instance.  <br /></td></tr>
 <tr class="separator:a2294b75a90c36b4f14e32ae8d975a0fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a093b95e8def5030fd8b0033ce14edc81" id="r_a093b95e8def5030fd8b0033ce14edc81"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a> ()</td></tr>
 <tr class="memdesc:a093b95e8def5030fd8b0033ce14edc81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get thread name.  <br /></td></tr>
 <tr class="separator:a093b95e8def5030fd8b0033ce14edc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2271b62a98277944bdf38c5c2304a078" id="r_a2271b62a98277944bdf38c5c2304a078"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2271b62a98277944bdf38c5c2304a078">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">dmq::DelegateMsg</a> &gt; msg)</td></tr>
-<tr class="separator:a2271b62a98277944bdf38c5c2304a078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50681ae734fd18e2acb2bfa89fef0a48" id="r_a50681ae734fd18e2acb2bfa89fef0a48"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50681ae734fd18e2acb2bfa89fef0a48">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">dmq::DelegateMsg</a> &gt; msg) override</td></tr>
+<tr class="memdesc:a50681ae734fd18e2acb2bfa89fef0a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueues a delegate message for execution on this thread.  <br /></td></tr>
+<tr class="separator:a50681ae734fd18e2acb2bfa89fef0a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80b20bca04b2b742c93b1523a4fccb1d" id="r_a80b20bca04b2b742c93b1523a4fccb1d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80b20bca04b2b742c93b1523a4fccb1d">Thread</a> (const std::string &amp;threadName, size_t maxQueueSize=0)</td></tr>
 <tr class="separator:a80b20bca04b2b742c93b1523a4fccb1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37d9edd3a1a776cbc27dedff949c9726" id="r_a37d9edd3a1a776cbc27dedff949c9726"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37d9edd3a1a776cbc27dedff949c9726">~Thread</a> ()</td></tr>
 <tr class="memdesc:a37d9edd3a1a776cbc27dedff949c9726"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="separator:a37d9edd3a1a776cbc27dedff949c9726"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae39a39fcabf49e086bf484ad6c140e79" id="r_ae39a39fcabf49e086bf484ad6c140e79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae39a39fcabf49e086bf484ad6c140e79">CreateThread</a> (std::optional&lt; <a class="el" href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">dmq::Duration</a> &gt; watchdogTimeout=std::nullopt)</td></tr>
+<tr class="memitem:ae39a39fcabf49e086bf484ad6c140e79" id="r_ae39a39fcabf49e086bf484ad6c140e79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae39a39fcabf49e086bf484ad6c140e79">CreateThread</a> (std::optional&lt; <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &gt; watchdogTimeout=std::nullopt)</td></tr>
 <tr class="separator:ae39a39fcabf49e086bf484ad6c140e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabf05b92a7bc081a464b8adcb916f321" id="r_aabf05b92a7bc081a464b8adcb916f321"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabf05b92a7bc081a464b8adcb916f321">ExitThread</a> ()</td></tr>
 <tr class="memdesc:aabf05b92a7bc081a464b8adcb916f321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once at program exit to shut down the worker thread.  <br /></td></tr>
@@ -276,7 +280,7 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Called once to create the worker thread </p><dl class="section return"><dt>Returns</dt><dd>TRUE if thread is created. FALSE otherise. <br  />
+<p>Called once to create the worker thread </p><dl class="section return"><dt>Returns</dt><dd>TRUE if thread is created. FALSE otherwise. <br  />
  </dd></dl>
 
 </div>
@@ -290,7 +294,7 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">bool Thread::CreateThread </td>
           <td>(</td>
-          <td class="paramtype">std::optional&lt; <a class="el" href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">dmq::Duration</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>watchdogTimeout</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::nullopt</span></td><td>)</td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>watchdogTimeout</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::nullopt</span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -306,42 +310,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a2271b62a98277944bdf38c5c2304a078" name="a2271b62a98277944bdf38c5c2304a078"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2271b62a98277944bdf38c5c2304a078">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void Thread::DispatchDelegate </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">dmq::DelegateMsg</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>msg</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Dispatch a <code>DelegateMsg</code> onto this thread. The implementer is responsible for getting the <code>DelegateMsg</code> into an OS message queue. Once <code>DelegateMsg</code> is on the destination thread of control, the <code>IInvoker::Invoke()</code> function must be called to execute the target function. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>A shared pointer to the message. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section post"><dt>Postcondition</dt><dd>The destination thread calls <code>IThreadInvoker::Invoke()</code> when <code>DelegateMsg</code> is received. </dd></dl>
-
-<p>Implements <a class="el" href="classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433">dmq::IThread</a>.</p>
-
-</div>
-</div>
 <a id="a51acca469997ceb64b6a1224bc6c424a" name="a51acca469997ceb64b6a1224bc6c424a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a51acca469997ceb64b6a1224bc6c424a">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a51acca469997ceb64b6a1224bc6c424a">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -373,8 +343,64 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a50681ae734fd18e2acb2bfa89fef0a48" name="a50681ae734fd18e2acb2bfa89fef0a48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50681ae734fd18e2acb2bfa89fef0a48">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Thread::DispatchDelegate </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">dmq::DelegateMsg</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>msg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enqueues a delegate message for execution on this thread. </p>
+<p>This function is called by the <em>source</em> thread (the caller). The implementation must thread-safely transfer ownership of the <code>msg</code> into the target thread's processing queue.</p>
+<p>Once the message is received by the target thread's main loop, that loop is responsible for calling <code>IInvoker::Invoke(msg)</code> to actually execute the function.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>A shared pointer to the delegate message. This pointer must remain valid until the target thread finishes execution. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433">dmq::IThread</a>.</p>
+
+</div>
+</div>
 <a id="aabf05b92a7bc081a464b8adcb916f321" name="aabf05b92a7bc081a464b8adcb916f321"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thread::ExitThread </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Terminate the thread gracefully. </p>
+
+</div>
+</div>
+<a id="aabf05b92a7bc081a464b8adcb916f321" name="aabf05b92a7bc081a464b8adcb916f321"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

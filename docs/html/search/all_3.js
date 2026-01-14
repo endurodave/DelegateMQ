@@ -58,7 +58,7 @@ var searchData=
   ['difference_5ftype_55',['difference_type',['../classstl__allocator.html#af4567d342b57d15872908c57dc9a7cea',1,'stl_allocator']]],
   ['disconnect_56',['Disconnect',['../classdmq_1_1_connection.html#ade170661aee04ee56b587d71441877be',1,'dmq::Connection::Disconnect()'],['../classdmq_1_1_scoped_connection.html#aae4d09457063b4d920648019353d3c52',1,'dmq::ScopedConnection::Disconnect()']]],
   ['dispatch_57',['Dispatch',['../classdmq_1_1_i_dispatcher.html#a4a9710cb642631f21be1072b5ff2d179',1,'dmq::IDispatcher::Dispatch()'],['../class_dispatcher.html#a4f9e2ae95d440cc624d2f8caa46fb4f4',1,'Dispatcher::Dispatch()']]],
-  ['dispatchdelegate_58',['DispatchDelegate',['../classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433',1,'dmq::IThread::DispatchDelegate()'],['../class_thread.html#a2271b62a98277944bdf38c5c2304a078',1,'Thread::DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg)'],['../class_thread.html#a51acca469997ceb64b6a1224bc6c424a',1,'Thread::DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg)']]],
+  ['dispatchdelegate_58',['DispatchDelegate',['../classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433',1,'dmq::IThread::DispatchDelegate()'],['../class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48',1,'Thread::DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg) override'],['../class_thread.html#a51acca469997ceb64b6a1224bc6c424a',1,'Thread::DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg)']]],
   ['dispatcher_59',['Dispatcher',['../class_dispatcher.html',1,'Dispatcher'],['../class_dispatcher.html#ab7dabf79371e1372d16d2c979c35d27d',1,'Dispatcher::Dispatcher()']]],
   ['dispatcher_2eh_60',['Dispatcher.h',['../_dispatcher_8h.html',1,'']]],
   ['dmq_61',['dmq',['../namespacedmq.html',1,'']]],
@@ -66,5 +66,6 @@ var searchData=
   ['dmqheader_63',['DmqHeader',['../class_dmq_header.html',1,'DmqHeader'],['../class_dmq_header.html#a5ea151fe4df7cf03129c01ff7d74534f',1,'DmqHeader::DmqHeader()=default'],['../class_dmq_header.html#a875a7ad5ee8ea6c1ceb6245add808fbc',1,'DmqHeader::DmqHeader(uint16_t id, uint16_t seqNum)']]],
   ['dmqheader_2eh_64',['DmqHeader.h',['../_dmq_header_8h.html',1,'']]],
   ['documentation_65',['Documentation',['../index.html#autotoc_md10',1,'']]],
-  ['duration_66',['Duration',['../namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699',1,'dmq']]]
+  ['duration_66',['Duration',['../namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f',1,'dmq']]],
+  ['duration_67',['duration',['../structdmq_1_1_bare_metal_clock.html#aeaa03581ab7d239bdc8fc57520f58dae',1,'dmq::BareMetalClock::duration'],['../structdmq_1_1_free_r_t_o_s_clock.html#aa8b3c31b06a36d8832501ff987129ae5',1,'dmq::FreeRTOSClock::duration']]]
 ];

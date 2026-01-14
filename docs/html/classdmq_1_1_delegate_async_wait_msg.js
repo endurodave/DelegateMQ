@@ -7,7 +7,7 @@ var classdmq_1_1_delegate_async_wait_msg =
     [ "~DelegateAsyncWaitMsg", "classdmq_1_1_delegate_async_wait_msg.html#ab46716f5f46c6abdfc65a4d87e2a14a2", null ],
     [ "GetArgs", "classdmq_1_1_delegate_async_wait_msg.html#ad73f27fd4f3ff250d232873b198362ab", null ],
     [ "GetInvokerWaiting", "classdmq_1_1_delegate_async_wait_msg.html#a02a94eddc594ef861dcbb16ba0fe7f1c", null ],
-    [ "GetLock", "classdmq_1_1_delegate_async_wait_msg.html#a25b9cab63dd1386ac2d46af3911f30dc", null ],
+    [ "GetLock", "classdmq_1_1_delegate_async_wait_msg.html#a182c8974eb3ff604ad8e8932c6e36fbe", null ],
     [ "GetSema", "classdmq_1_1_delegate_async_wait_msg.html#acc4627ea42c5e8f7e4d4af082a99c2d1", null ],
     [ "operator=", "classdmq_1_1_delegate_async_wait_msg.html#ac046bfa70c50d215be285c29e1cc6736", null ],
     [ "operator=", "classdmq_1_1_delegate_async_wait_msg.html#a21c6a3756fd9cbaf4f240d66bbd417ee", null ],

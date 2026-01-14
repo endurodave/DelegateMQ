@@ -108,6 +108,7 @@ $(function(){initNavTree('_delegate_opt_8h.html',''); initResizable(true); });
 <p>Delegate library options header file.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;chrono&gt;</code><br />
+<code>#include &lt;mutex&gt;</code><br />
 <code>#include &lt;new&gt;</code><br />
 <code>#include &lt;list&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
@@ -142,10 +143,14 @@ Macros</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:ac36289d69f1e57cb1792a4516718c4f2" id="r_ac36289d69f1e57cb1792a4516718c4f2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">dmq::Clock</a> = std::chrono::steady_clock</td></tr>
 <tr class="separator:ac36289d69f1e57cb1792a4516718c4f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a395643098c6cf6cef2c0c629b98ec699" id="r_a395643098c6cf6cef2c0c629b98ec699"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">dmq::Duration</a> = std::chrono::duration&lt;int64_t, std::milli&gt;</td></tr>
-<tr class="separator:a395643098c6cf6cef2c0c629b98ec699"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab08c81f02df1661e3b194580c0cd0a8f" id="r_ab08c81f02df1661e3b194580c0cd0a8f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#ab08c81f02df1661e3b194580c0cd0a8f">dmq::TimePoint</a> = std::chrono::time_point&lt;<a class="el" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a>, <a class="el" href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">Duration</a>&gt;</td></tr>
-<tr class="separator:ab08c81f02df1661e3b194580c0cd0a8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b8f2ad24a4b0df29243c60121e10b7f" id="r_a9b8f2ad24a4b0df29243c60121e10b7f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> = typename Clock::duration</td></tr>
+<tr class="separator:a9b8f2ad24a4b0df29243c60121e10b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ff86233aa2d05f03cada0b63ebf8aef" id="r_a8ff86233aa2d05f03cada0b63ebf8aef"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> = typename Clock::time_point</td></tr>
+<tr class="separator:a8ff86233aa2d05f03cada0b63ebf8aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6e832c3de0a9e8c5bae757052bd0f07" id="r_af6e832c3de0a9e8c5bae757052bd0f07"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">dmq::Mutex</a> = std::mutex</td></tr>
+<tr class="separator:af6e832c3de0a9e8c5bae757052bd0f07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e5da5445898b2f9bb6183dca9d0a0de" id="r_a9e5da5445898b2f9bb6183dca9d0a0de"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">dmq::RecursiveMutex</a> = std::recursive_mutex</td></tr>
+<tr class="separator:a9e5da5445898b2f9bb6183dca9d0a0de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54ea4f69408adaa1bb31d8d0de42c2bc" id="r_a54ea4f69408adaa1bb31d8d0de42c2bc"><td class="memItemLeft" align="right" valign="top">typedef std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></td></tr>
 <tr class="separator:a54ea4f69408adaa1bb31d8d0de42c2bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada87f2b80dc83f6d2f182655488948ae" id="r_ada87f2b80dc83f6d2f182655488948ae"><td class="memItemLeft" align="right" valign="top">typedef std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></td></tr>

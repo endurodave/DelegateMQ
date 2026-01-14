@@ -1,11 +1,31 @@
-// main.cpp
 // @see https://github.com/endurodave/DelegateMQ
 // David Lafreniere, 2025.
-//
-// See README.md for DelegateMQ library overview.
-// See DETAILS.md for design documentation and more project examples.
-// Search codebase for @TODO comments if porting to a new platform. Section 
-// "Porting Guide" within DETAILS.md offers complete porting guidance.
+
+/// @file main.cpp
+/// @brief Main entry point for the DelegateMQ examples and unit tests.
+///
+/// @details
+/// This file orchestrates the execution of a wide variety of usage examples and design 
+/// patterns implemented using the DelegateMQ library. It establishes the necessary 
+/// threading infrastructure (Worker Threads, Timer Loop) and invokes demonstration 
+/// functions for:
+///
+/// **Core Functionality:**
+/// * Synchronous vs. Asynchronous delegate invocation.
+/// * Remote function calls (IPC/RPC) via `RemoteCommunication`.
+/// * Thread-safe signaling using `SignalSafe`.
+/// * Asynchronous Futures and Lambdas.
+///
+/// **Design Patterns:**
+/// * Active Object & Async Method Invocation (AMI).
+/// * Publisher/Subscriber & Observer.
+/// * Command, Reactor, Proactor, and Producer-Consumer.
+///
+/// **Configuration:**
+/// * To run performance/load tests, uncomment `#define STRESS_TEST` or `#define STRESS_TEST_REMOTE`.
+///
+/// See README.md for Library Overview.
+/// See DETAILS.md for Porting Guides and Design Documentation.
 
 #include "DelegateMQ.h"
 #include "SafeTimer.h"

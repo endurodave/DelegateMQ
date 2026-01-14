@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['value_0',['value',['../structdmq_1_1trait_1_1is__double__pointer.html#a2ad4b08c6fed6690043b3f3ea92945fc',1,'dmq::trait::is_double_pointer']]]
+  ['sendstatuscb_0',['SendStatusCb',['../class_transport_monitor.html#acf8c23c39cbb7240f75043a27cf3aa65',1,'TransportMonitor']]]
 ];

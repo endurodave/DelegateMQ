@@ -1,9 +1,7 @@
 var searchData=
 [
-  ['mqtttransport_0',['MqttTransport',['../class_mqtt_transport.html',1,'']]],
-  ['multicastdelegate_1',['MulticastDelegate',['../structdmq_1_1_multicast_delegate.html',1,'dmq']]],
-  ['multicastdelegate_3c_20rettype_28args_2e_2e_2e_29_3e_2',['MulticastDelegate&lt; RetType(Args...)&gt;',['../classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
-  ['multicastdelegatesafe_3',['MulticastDelegateSafe',['../structdmq_1_1_multicast_delegate_safe.html',1,'dmq']]],
-  ['multicastdelegatesafe_3c_20rettype_28args_2e_2e_2e_29_3e_4',['MulticastDelegateSafe&lt; RetType(Args...)&gt;',['../classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
-  ['multicastdelegatesafe_3c_20void_28dmq_3a_3adelegateremoteid_20id_2c_20uint16_5ft_20seqnum_2c_20status_20status_29_3e_5',['MulticastDelegateSafe&lt; void(dmq::DelegateRemoteId id, uint16_t seqNum, Status status)&gt;',['../structdmq_1_1_multicast_delegate_safe.html',1,'dmq']]]
+  ['heap_5farg_5fdeleter_0',['heap_arg_deleter',['../classdmq_1_1heap__arg__deleter.html',1,'dmq']]],
+  ['heap_5farg_5fdeleter_3c_20t_20_2a_20_3e_1',['heap_arg_deleter&lt; T * &gt;',['../classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html',1,'dmq']]],
+  ['heap_5farg_5fdeleter_3c_20t_20_2a_2a_20_3e_2',['heap_arg_deleter&lt; T ** &gt;',['../classdmq_1_1heap__arg__deleter_3_01_t_01_5_5_01_4.html',1,'dmq']]],
+  ['heap_5farg_5fdeleter_5fbase_3',['heap_arg_deleter_base',['../classdmq_1_1heap__arg__deleter__base.html',1,'dmq']]]
 ];

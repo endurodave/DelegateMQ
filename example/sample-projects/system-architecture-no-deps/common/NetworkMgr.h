@@ -19,21 +19,25 @@
 /// 
 /// @details NetworkMgr inherits from NetworkEngine, which manages the internal thread 
 /// of control. All public APIs are asynchronous (blocking and non-blocking). Register 
-/// with ErrorCb or SendStatusCb to handle success or errors.
+/// with OnError or OnSendStatus to handle success or errors.
 /// 
 /// The underlying UDP transport layer managed by NetworkEngine is accessed only by a 
 /// single internal thread. Therefore, when invoking a remote delegate, the call is 
 /// automatically dispatched to the internal NetworkEngine thread.
 /// 
-/// Three types of remote APIs are implemented:
-/// 
-/// 1. Non-blocking APIs send the message without waiting for success or failure.
-/// 2. Blocking APIs wait for the remote to ack the message or timeout.
-/// 3. Future APIs return immediately and a std::future is used to capture the return 
-///    value later.
-/// 
-/// UDP is used for transport. Two sockets are created by the engine: one for sending 
-/// and one for receiving.
+/// **Key Responsibilities:**
+/// * **Asynchronous Communication:** Exposes a fully thread-safe, asynchronous public API for network operations, 
+///   utilizing an internal thread managed by `NetworkEngine` to handle all I/O.
+/// * **Transport Abstraction:** Implements specific UDP transport logic (using Windows or Linux sockets) while abstracting 
+///   these details from the application logic. Two sockets are created: one for sending and one for receiving.
+/// * **Message Dispatching:** Automatically marshals all outgoing remote delegate invocations to the internal 
+///   network thread, ensuring safe single-threaded access to the underlying UDP resources.
+/// * **Invocation Modes:** Support for three distinct remote invocation patterns:
+///     1. *Fire-and-Forget (Non-blocking):* Sends messages immediately without waiting for confirmation.
+///     2. *Synchronous Wait (Blocking):* Blocks the calling thread until an acknowledgment (ACK) is received or a timeout occurs.
+///     3. *Future-based:* Returns a `std::future` immediately, allowing retrieval of the result at a later time.
+/// * **Error & Status Reporting:** Provides registration points (`OnNetworkError`, `OnSendStatus`) for clients to subscribe 
+///   to transmission results and error notifications.
 class NetworkMgr : public NetworkEngine
 {
 public:

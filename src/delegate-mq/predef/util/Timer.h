@@ -4,10 +4,27 @@
 #include "../../delegate/SignalSafe.h"
 #include <list>
 
-/// @brief A timer class provides periodic timer callbacks on the client's 
-/// thread of control. Timer is thread safe.
-/// See example SafeTimer.cpp to prevent a latent callback on a dead object.
-class Timer 
+/// @brief A thread-safe timer class that provides periodic or one-shot callbacks.
+/// 
+/// @details
+/// The Timer class allows clients to register for callbacks (`OnExpired`) that are invoked 
+/// when a specified timeout interval elapses. 
+/// 
+/// **Key Features:**
+/// * **Thread Safe:** All public API methods (`Start`, `Stop`, etc.) are thread-safe and can be called 
+///   from any thread.
+/// * **Flexible Modes:** Supports both one-shot (`once = true`) and periodic (`once = false`) operation.
+/// * **Deterministic Execution:** Callbacks are invoked on the thread that calls `ProcessTimers()`. 
+///   This allows the user to control exactly which thread executes the timer logic (e.g., Main Thread, 
+///   GUI Thread, or a dedicated Worker Thread).
+/// 
+/// **Usage Note:**
+/// This class uses a cooperative polling model. The static method `Timer::ProcessTimers()` MUST be 
+/// called periodically (e.g., inside a main loop or a dedicated thread loop) to service active timers 
+/// and dispatch callbacks.
+/// 
+/// @see SafeTimer.cpp for examples on how to handle callbacks safely with object lifetimes.
+class Timer
 {
 public:
     /// Client's register with OnExpired to get timer callbacks

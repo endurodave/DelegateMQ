@@ -69,6 +69,7 @@ var NAVTREE =
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
+        [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
@@ -79,14 +80,14 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"class_timer.html#a6379e797f968aaee6ac3bb12dc6b81c5",
-"classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#acca49436572ec82078f497667955aaeb",
-"classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a3f9d3ef3272d90cdb28221a56e942e29",
-"classdmq_1_1_delegate_member_async_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a403e92f3e6161cb9d601335d67e4b906",
-"classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a87baad547a67d1670a03b9ff58bf8cab",
-"classdmq_1_1_signal.html",
-"functions_b.html",
-"structserialize__traits_1_1is__unsupported__container_3_01std_1_1multiset_3_01_u_01_4_01_4.html"
+"class_thread.html#aabf05b92a7bc081a464b8adcb916f321",
+"classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a9de4a1505cdb73b03cc6e6c0e60c38ea",
+"classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a0ec2b7b6634a22f95759812313e7f773",
+"classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ade76cd5d9ad990f2b85e3e2e4db72676",
+"classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a660e707c9dc7386bf0c81f9cc344e87e",
+"classdmq_1_1_remote_arg.html#a7dec6fc7b5007e3795f9e30eb06fcfc2",
+"classstl__allocator.html#ab6b0750c53bb3557b729cbfdc7668651",
+"structdmq_1_1_delegate_member_remote.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

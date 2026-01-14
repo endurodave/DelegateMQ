@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['connection_0',['Connection',['../classdmq_1_1_connection.html',1,'dmq']]]
+  ['baremetalclock_0',['BareMetalClock',['../structdmq_1_1_bare_metal_clock.html',1,'dmq']]]
 ];

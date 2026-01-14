@@ -124,12 +124,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a9e6ada351d8e8f32bdee5cb8ae70b5bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="separator:a9e6ada351d8e8f32bdee5cb8ae70b5bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79a35ad35dd7564be046e01bade22433" id="r_a79a35ad35dd7564be046e01bade22433"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79a35ad35dd7564be046e01bade22433">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">DelegateMsg</a> &gt; msg)=0</td></tr>
+<tr class="memdesc:a79a35ad35dd7564be046e01bade22433"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueues a delegate message for execution on this thread.  <br /></td></tr>
 <tr class="separator:a79a35ad35dd7564be046e01bade22433"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A base class for a delegate enabled execution thread. Implemented by application code if asynchronous delegates are used. </p>
 <p>@TODO Implement the <a class="el" href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...">IThread</a> interface if necessary. </p>
-<p>Each platform specific implementation must inherit from <code><a class="el" href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...">IThread</a></code> and provide an implementation for <code><a class="el" href="#a79a35ad35dd7564be046e01bade22433">DispatchDelegate()</a></code>. The <code><a class="el" href="#a79a35ad35dd7564be046e01bade22433">DispatchDelegate()</a></code> function is called by the source thread to initiate an asynchronous function call onto the destination thread of control. </p>
+<p>Each platform specific implementation must inherit from <code><a class="el" href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...">IThread</a></code> and provide an implementation for <code><a class="el" href="#a79a35ad35dd7564be046e01bade22433" title="Enqueues a delegate message for execution on this thread.">DispatchDelegate()</a></code>. The <code><a class="el" href="#a79a35ad35dd7564be046e01bade22433" title="Enqueues a delegate message for execution on this thread.">DispatchDelegate()</a></code> function is called by the source thread to initiate an asynchronous function call onto the destination thread of control. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9e6ada351d8e8f32bdee5cb8ae70b5bb" name="a9e6ada351d8e8f32bdee5cb8ae70b5bb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9e6ada351d8e8f32bdee5cb8ae70b5bb">&#9670;&#160;</a></span>~IThread()</h2>
@@ -181,15 +182,18 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Dispatch a <code><a class="el" href="classdmq_1_1_delegate_msg.html" title="Base class for all delegate inter-thread messages.">DelegateMsg</a></code> onto this thread. The implementer is responsible for getting the <code><a class="el" href="classdmq_1_1_delegate_msg.html" title="Base class for all delegate inter-thread messages.">DelegateMsg</a></code> into an OS message queue. Once <code><a class="el" href="classdmq_1_1_delegate_msg.html" title="Base class for all delegate inter-thread messages.">DelegateMsg</a></code> is on the destination thread of control, the <code>IInvoker::Invoke()</code> function must be called to execute the target function. </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Enqueues a delegate message for execution on this thread. </p>
+<p>This function is called by the <em>source</em> thread (the caller). The implementation must thread-safely transfer ownership of the <code>msg</code> into the target thread's processing queue.</p>
+<p>Once the message is received by the target thread's main loop, that loop is responsible for calling <code>IInvoker::Invoke(msg)</code> to actually execute the function.</p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>A shared pointer to the message. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>A shared pointer to the delegate message. This pointer must remain valid until the target thread finishes execution. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section post"><dt>Postcondition</dt><dd>The destination thread calls <code><a class="el" href="classdmq_1_1_i_thread_invoker.html#aa1e8a21be3615da8aafc538727ab5ddd">IThreadInvoker::Invoke()</a></code> when <code><a class="el" href="classdmq_1_1_delegate_msg.html" title="Base class for all delegate inter-thread messages.">DelegateMsg</a></code> is received. </dd></dl>
 
-<p>Implemented in <a class="el" href="class_thread.html#a2271b62a98277944bdf38c5c2304a078">Thread</a>, and <a class="el" href="class_thread.html#a51acca469997ceb64b6a1224bc6c424a">Thread</a>.</p>
+<p>Implemented in <a class="el" href="class_thread.html#a51acca469997ceb64b6a1224bc6c424a">Thread</a>, and <a class="el" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">Thread</a>.</p>
 
 </div>
 </div>

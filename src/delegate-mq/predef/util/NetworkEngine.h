@@ -32,6 +32,13 @@
 /// @details NetworkEngine encapsulates the "plumbing" of the distributed system, 
 /// separating transport mechanics from application business logic. It provides a 
 /// unified interface regardless of the underlying transport protocol selected at build time.
+/// 
+/// **Key Responsibilities:**
+/// * **Lifecycle Management:** Controls the startup and shutdown of transport sockets and receiver threads.
+/// * **Thread Synchronization:** Marshals all outgoing network calls to a dedicated network thread to ensure 
+///   thread safety and prevent blocking the caller's UI or logic threads.
+/// * **Message Routing:** Maps incoming data (by ID) to specific `RemoteEndpoint` instances via `RegisterEndpoint`.
+/// * **Reliability:** Integrates with `TransportMonitor` to handle Acknowledgments (ACKs) and retransmissions/timeouts.
 class NetworkEngine
 {
 public:

@@ -1,6 +1,11 @@
 #ifndef _ITHREAD_H
 #define _ITHREAD_H
 
+/// @file IThread.h
+/// @brief Interface for cross-thread delegate dispatching.
+/// @see https://github.com/endurodave/DelegateMQ
+/// David Lafreniere, 2025.
+
 #include "DelegateMsg.h"
 
 namespace dmq {
@@ -19,13 +24,17 @@ public:
 	/// Destructor
 	virtual ~IThread() = default;
 
-	/// Dispatch a `DelegateMsg` onto this thread. The implementer is responsible for
-	/// getting the `DelegateMsg` into an OS message queue. Once `DelegateMsg` is
-	/// on the destination thread of control, the `IInvoker::Invoke()` function
-	/// must be called to execute the target function.
-	/// @param[in] msg A shared pointer to the message.
-	/// @post The destination thread calls `IThreadInvoker::Invoke()` when `DelegateMsg`
-	/// is received.
+	/// @brief Enqueues a delegate message for execution on this thread.
+	/// 
+	/// @details 
+	/// This function is called by the *source* thread (the caller). The implementation must 
+	/// thread-safely transfer ownership of the `msg` into the target thread's processing queue.
+	/// 
+	/// Once the message is received by the target thread's main loop, that loop is responsible 
+	/// for calling `IInvoker::Invoke(msg)` to actually execute the function.
+	///
+	/// @param[in] msg A shared pointer to the delegate message. This pointer must remain valid 
+	/// until the target thread finishes execution.
 	virtual void DispatchDelegate(std::shared_ptr<DelegateMsg> msg) = 0;
 };
 

@@ -105,7 +105,7 @@ $(function(){initNavTree('class_transport_monitor.html',''); initResizable(true)
 </div><!--header-->
 <div class="contents">
 
-<p>Monitors remote delegate send message timeouts. Class is thread safe. Call <a class="el" href="#ac4dd814fb686a053c4505829c8c21b40" title="Call periodically to process message timeouts.">TransportMonitor::Process()</a> periodically for timeout handling. Depending on the transport implementation, the message might still be delivered event if the monitor SendStatusCb callback is invoked. A timeout expiring just means that an ack was not received within the time specified.  
+<p>A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_transport_monitor_8h_source.html">TransportMonitor.h</a>&gt;</code></p>
@@ -128,7 +128,7 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4a16d0eaff72cafb2258a24537e9d510" id="r_a4a16d0eaff72cafb2258a24537e9d510"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a16d0eaff72cafb2258a24537e9d510">TransportMonitor</a> (const <a class="el" href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">dmq::Duration</a> timeout)</td></tr>
+<tr class="memitem:a4a16d0eaff72cafb2258a24537e9d510" id="r_a4a16d0eaff72cafb2258a24537e9d510"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a16d0eaff72cafb2258a24537e9d510">TransportMonitor</a> (const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> timeout)</td></tr>
 <tr class="separator:a4a16d0eaff72cafb2258a24537e9d510"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ceea7674a94dc7fafbd9136f3af83b6" id="r_a7ceea7674a94dc7fafbd9136f3af83b6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ceea7674a94dc7fafbd9136f3af83b6">~TransportMonitor</a> ()</td></tr>
 <tr class="separator:a7ceea7674a94dc7fafbd9136f3af83b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,7 +147,14 @@ Public Attributes</h2></td></tr>
 <tr class="separator:acf8c23c39cbb7240f75043a27cf3aa65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Monitors remote delegate send message timeouts. Class is thread safe. Call <a class="el" href="#ac4dd814fb686a053c4505829c8c21b40" title="Call periodically to process message timeouts.">TransportMonitor::Process()</a> periodically for timeout handling. Depending on the transport implementation, the message might still be delivered event if the monitor SendStatusCb callback is invoked. A timeout expiring just means that an ack was not received within the time specified. </p>
+<div class="textblock"><p>A thread-safe monitor for tracking outgoing remote messages and detecting timeouts. </p>
+<p>The <a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a> implements the reliability layer for remote delegate invocations. It tracks "in-flight" messages by their sequence number and timestamps them upon sending.</p>
+<p><b>Key Responsibilities:</b></p><ul>
+<li><b>Timeout Detection:</b> Identifies messages that have not been acknowledged within the configured <code>TRANSPORT_TIMEOUT</code> duration.</li>
+<li><b>Status Reporting:</b> Invokes the <code>SendStatusCb</code> delegate with <code><a class="el" href="#ac815afe1a228c0cd92dc294278aea86ead0749aaba8b833466dfcbb0428e4f89c">Status::SUCCESS</a></code> (upon ACK) or <code><a class="el" href="#ac815afe1a228c0cd92dc294278aea86ea070a0fb40f6c308ab544b227660aadff">Status::TIMEOUT</a></code> (upon expiration) to notify the application.</li>
+<li><b><a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> Safety:</b> Internal state is protected by a recursive mutex, allowing safe access from multiple threads (e.g., sending thread vs. ACK receiving thread).</li>
+</ul>
+<p><b>Usage Note:</b> This class relies on a cooperative polling model. The <code><a class="el" href="#ac4dd814fb686a053c4505829c8c21b40" title="Call periodically to process message timeouts.">Process()</a></code> method must be called periodically (typically by a background timer or the network thread loop) to scan for and handle expired messages. </p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="ac815afe1a228c0cd92dc294278aea86e" name="ac815afe1a228c0cd92dc294278aea86e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac815afe1a228c0cd92dc294278aea86e">&#9670;&#160;</a></span>Status</h2>
@@ -188,7 +195,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">TransportMonitor::TransportMonitor </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacedmq.html#a395643098c6cf6cef2c0c629b98ec699">dmq::Duration</a></td>          <td class="paramname"><span class="paramname"><em>timeout</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a></td>          <td class="paramname"><span class="paramname"><em>timeout</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

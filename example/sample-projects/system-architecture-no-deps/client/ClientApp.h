@@ -73,8 +73,8 @@ private:
     {
         m_thread.CreateThread();
 
-        m_errorCbConn = NetworkMgr::OnNetworkError->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
-        m_statusCbConn = NetworkMgr::OnSendStatus->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
+        m_onNetworkErrorConn = NetworkMgr::OnNetworkError->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
+        m_onSendStatusConn = NetworkMgr::OnSendStatus->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
     }
 
     ~ClientApp()
@@ -137,8 +137,8 @@ private:
 
     dmq::ScopedConnection m_pollTimerConn;
     dmq::ScopedConnection m_actuatorTimerConn;
-    dmq::ScopedConnection m_errorCbConn;
-    dmq::ScopedConnection m_statusCbConn;
+    dmq::ScopedConnection m_onNetworkErrorConn;
+    dmq::ScopedConnection m_onSendStatusConn;
 
     Actuator m_actuator3;
     Actuator m_actuator4;

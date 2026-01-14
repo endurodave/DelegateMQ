@@ -103,7 +103,7 @@ $(function(){initNavTree('classdmq_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="structdmq_1_1_delegate.html">Delegate</a> serializer interface for serializing and deserializing remote delegate arguments. Implemented by application code if remote delegates are used.  
+<p>Interface definition for serializing remote function arguments.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_i_serializer_8h_source.html">ISerializer.h</a>&gt;</code></p>
@@ -124,16 +124,25 @@ Inheritance diagram for dmq::ISerializer&lt; RetType(Args...)&gt;:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a606b14272f36e9ff38e579e2974ebdcf" id="r_a606b14272f36e9ff38e579e2974ebdcf"><td class="memItemLeft" align="right" valign="top">virtual std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a606b14272f36e9ff38e579e2974ebdcf">Write</a> (std::ostream &amp;os, Args... args)=0</td></tr>
+<tr class="memdesc:a606b14272f36e9ff38e579e2974ebdcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes function arguments into the output stream.  <br /></td></tr>
 <tr class="separator:a606b14272f36e9ff38e579e2974ebdcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbd1437d5f2cae0e0101dfd4e60c7fe2" id="r_adbd1437d5f2cae0e0101dfd4e60c7fe2"><td class="memItemLeft" align="right" valign="top">virtual std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adbd1437d5f2cae0e0101dfd4e60c7fe2">Read</a> (std::istream &amp;is, Args &amp;... args)=0</td></tr>
+<tr class="memdesc:adbd1437d5f2cae0e0101dfd4e60c7fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserializes data from the input stream into function arguments.  <br /></td></tr>
 <tr class="separator:adbd1437d5f2cae0e0101dfd4e60c7fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;class RetType, class... Args&gt;<br />
-class dmq::ISerializer&lt; RetType(Args...)&gt;</div><p><a class="el" href="structdmq_1_1_delegate.html">Delegate</a> serializer interface for serializing and deserializing remote delegate arguments. Implemented by application code if remote delegates are used. </p>
+class dmq::ISerializer&lt; RetType(Args...)&gt;</div><p>Interface definition for serializing remote function arguments. </p>
 <p>@TODO Implement the <a class="el" href="structdmq_1_1_i_serializer.html">ISerializer</a> interface if necessary. </p>
-<p>All argument data is serialized into a stream. <code>write()</code> is called by the sender when the delegate is invoked. <code>read()</code> is called by the receiver upon reception of the remote message data bytes. <br  />
- </p>
+<p>When using Remote Delegates, the library needs a way to turn arbitrary C++ function arguments into a byte stream (for network transport) and back again.</p>
+<p>Users must implement this interface for the specific function signatures they intend to call remotely, OR use one of the pre-defined serializers provided in <code>predef/serialize</code> (e.g., MessagePack, JSON, Cereal).</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">RetType</td><td>The return type of the function signature. </td></tr>
+    <tr><td class="paramname">Args</td><td>The variadic argument types of the function signature. </td></tr>
+  </table>
+  </dd>
+</dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="adbd1437d5f2cae0e0101dfd4e60c7fe2" name="adbd1437d5f2cae0e0101dfd4e60c7fe2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adbd1437d5f2cae0e0101dfd4e60c7fe2">&#9670;&#160;</a></span>Read()</h2>
@@ -163,14 +172,17 @@ template&lt;class RetType , class... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Inheriting class implements the read function to unserialize data from transport. </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Deserializes data from the input stream into function arguments. </p>
+<p>Called by the receiving endpoint before invoking the target function. The implementation must read data from <code>is</code> and populate the references in <code>args</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">is</td><td>The input stream </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">args</td><td>The target function arguments </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">is</td><td>The input stream (buffer) containing received data. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">args</td><td>References to the arguments where the data should be stored. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The input stream </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the input stream. </dd></dl>
 
 <p>Implemented in <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Serializer&lt; RetType(Args...)&gt;</a>, <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Serializer&lt; RetType(Args...)&gt;</a>, <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Serializer&lt; RetType(Args...)&gt;</a>, <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Serializer&lt; RetType(Args...)&gt;</a>, and <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a00e80821a799ccab63c59accfdbecd49">Serializer&lt; RetType(Args...)&gt;</a>.</p>
 
@@ -204,14 +216,17 @@ template&lt;class RetType , class... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Inheriting class implements the write function to serialize data for transport. </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Serializes function arguments into the output stream. </p>
+<p>Called by the <code>DelegateRemote</code> when the user invokes a remote delegate. The implementation must write every argument in <code>args</code> into <code>os</code>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">os</td><td>The output stream </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td>The target function arguments </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">os</td><td>The output stream (buffer) to write data to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td>The actual arguments passed to the delegate invocation. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The output stream </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Reference to the output stream. </dd></dl>
 
 <p>Implemented in <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Serializer&lt; RetType(Args...)&gt;</a>, <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Serializer&lt; RetType(Args...)&gt;</a>, <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Serializer&lt; RetType(Args...)&gt;</a>, <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Serializer&lt; RetType(Args...)&gt;</a>, and <a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d">Serializer&lt; RetType(Args...)&gt;</a>.</p>
 

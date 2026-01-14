@@ -1,6 +1,19 @@
 /// @file
-/// @brief Implement a simple remote delegate example. Send/receive is using 
-/// a shared std::stringstream for ease of testing.
+/// @brief Implements a complete Remote Delegate example using a mock transport layer.
+/// 
+/// @details
+/// This example demonstrates how to implement the `DelegateRemote` pattern to send data 
+/// between two distinct active objects (`Sender` and `Receiver`) running on separate threads.
+/// 
+/// **Key Components:**
+/// * **Mock Transport:** Uses a shared `std::stringstream` protected by a mutex to simulate 
+///   sending and receiving byte streams over a network.
+/// * **Custom Serialization:** Implements a basic `Serializer` struct and stream operators 
+///   to marshal a custom `Data` object into the byte stream.
+/// * **Dispatcher:** A custom `IDispatcher` implementation that bridges the DelegateMQ 
+///   library with the mock transport.
+/// * **Active Objects:** Both Sender and Receiver run on their own threads (`m_thread`) 
+///   and use `Timer` objects to drive periodic sending and polling.
 
 #include "RemoteCommunication.h"
 #include "DelegateMQ.h"

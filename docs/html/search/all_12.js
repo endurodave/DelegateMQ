@@ -9,6 +9,7 @@ var searchData=
   ['unicastdelegatesafe_2eh_6',['UnicastDelegateSafe.h',['../_unicast_delegate_safe_8h.html',1,'']]],
   ['unicastdelegatesafe_3c_20rettype_28args_2e_2e_2e_29_3e_7',['UnicastDelegateSafe&lt; RetType(Args...)&gt;',['../classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
   ['unknown_8',['UNKNOWN',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a696b031073e74bf2cb98e5ef201d4aa3',1,'serialize']]],
-  ['user_5fdefined_9',['USER_DEFINED',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a5123cb514ff95a726922950380866e00',1,'serialize']]],
-  ['using_20delegatemq_10',['Other Projects Using DelegateMQ',['../index.html#autotoc_md14',1,'']]]
+  ['unlock_9',['unlock',['../classdmq_1_1_free_r_t_o_s_mutex.html#af668b1611deb9998880eea475c01f862',1,'dmq::FreeRTOSMutex::unlock()'],['../classdmq_1_1_free_r_t_o_s_recursive_mutex.html#a1e707688e22505ac477f6bb1ac6e9bb2',1,'dmq::FreeRTOSRecursiveMutex::unlock()']]],
+  ['user_5fdefined_10',['USER_DEFINED',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a5123cb514ff95a726922950380866e00',1,'serialize']]],
+  ['using_20delegatemq_11',['Other Projects Using DelegateMQ',['../index.html#autotoc_md14',1,'']]]
 ];

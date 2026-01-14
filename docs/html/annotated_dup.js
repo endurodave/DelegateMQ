@@ -9,6 +9,7 @@ var annotated_dup =
         [ "is_shared_ptr_reference< std::shared_ptr< T > & >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
         [ "is_shared_ptr_reference< std::shared_ptr< T > * >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ]
       ] ],
+      [ "BareMetalClock", "structdmq_1_1_bare_metal_clock.html", "structdmq_1_1_bare_metal_clock" ],
       [ "Connection", "classdmq_1_1_connection.html", "classdmq_1_1_connection" ],
       [ "Delegate", "structdmq_1_1_delegate.html", null ],
       [ "Delegate< RetType(Args...)>", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],
@@ -46,6 +47,9 @@ var annotated_dup =
       [ "DelegateMemberSp", "structdmq_1_1_delegate_member_sp.html", null ],
       [ "DelegateMemberSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
       [ "DelegateMsg", "classdmq_1_1_delegate_msg.html", "classdmq_1_1_delegate_msg" ],
+      [ "FreeRTOSClock", "structdmq_1_1_free_r_t_o_s_clock.html", "structdmq_1_1_free_r_t_o_s_clock" ],
+      [ "FreeRTOSMutex", "classdmq_1_1_free_r_t_o_s_mutex.html", "classdmq_1_1_free_r_t_o_s_mutex" ],
+      [ "FreeRTOSRecursiveMutex", "classdmq_1_1_free_r_t_o_s_recursive_mutex.html", "classdmq_1_1_free_r_t_o_s_recursive_mutex" ],
       [ "heap_arg_deleter", "classdmq_1_1heap__arg__deleter.html", "classdmq_1_1heap__arg__deleter" ],
       [ "heap_arg_deleter< T * >", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4" ],
       [ "heap_arg_deleter< T ** >", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_5_01_4.html", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_5_01_4" ],
