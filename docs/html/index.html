@@ -174,7 +174,7 @@ Examples</h1>
 <div class="ttc" id="a_delegate_m_q_8h_html"><div class="ttname"><a href="_delegate_m_q_8h.html">DelegateMQ.h</a></div><div class="ttdoc">A single-include header for the complete DelegateMQ library functionality.</div></div>
 <div class="ttc" id="aclass_dispatcher_html"><div class="ttname"><a href="class_dispatcher.html">Dispatcher</a></div><div class="ttdoc">Dispatcher sends data to the transport for transmission to the endpoint.</div><div class="ttdef"><b>Definition</b> Dispatcher.h:17</div></div>
 <div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdoc">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).</div><div class="ttdef"><b>Definition</b> freertos/Thread.h:14</div></div>
-<div class="ttc" id="anamespacedmq_html_a13a5bc30242a3c91cf0cc744e863ffca"><div class="ttname"><a href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a></div><div class="ttdeci">constexpr auto WAIT_INFINITE</div><div class="ttdef"><b>Definition</b> DelegateAsyncWait.h:68</div></div>
+<div class="ttc" id="anamespacedmq_html_a13a5bc30242a3c91cf0cc744e863ffca"><div class="ttname"><a href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a></div><div class="ttdeci">constexpr auto WAIT_INFINITE</div><div class="ttdef"><b>Definition</b> DelegateAsyncWait.h:70</div></div>
 <div class="ttc" id="anamespacedmq_html_a5c5e55328ae2cd1d800dfb6c83a21bda"><div class="ttname"><a href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a></div><div class="ttdeci">uint16_t DelegateRemoteId</div><div class="ttdef"><b>Definition</b> IDispatcher.h:12</div></div>
 <div class="ttc" id="anamespacedmq_html_a65e308cc5f3e37d2f7f89c72b9744ae2"><div class="ttname"><a href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:848</div></div>
 <div class="ttc" id="astruct_serializer_html"><div class="ttname"><a href="struct_serializer.html">Serializer</a></div><div class="ttdef"><b>Definition</b> bitsery/Serializer.h:24</div></div>
@@ -328,7 +328,7 @@ Remote Delegates</h2>
 <p><b>Supported Integrations:</b></p>
 <ul>
 <li><b>Serialization:</b> <a href="https://msgpack.org/index.html">MessagePack</a>, <a href="https://github.com/Tencent/rapidjson">RapidJSON</a>, <a href="https://github.com/USCiLab/cereal">Cereal</a>, <a href="https://github.com/fraillt/bitsery">Bitsery</a>, <a href="https://github.com/endurodave/MessageSerialize">MessageSerialize</a></li>
-<li><b>Transport:</b> <a href="https://zeromq.org/">ZeroMQ</a>, <a href="https://github.com/nanomsg/nng">NNG</a>, <a href="https://github.com/eclipse-paho/paho.mqtt.c">MQTT</a>, UDP, data pipe, memory buffer</li>
+<li><b>Transport:</b> <a href="https://zeromq.org/">ZeroMQ</a>, <a href="https://github.com/nanomsg/nng">NNG</a>, <a href="https://github.com/eclipse-paho/paho.mqtt.c">MQTT</a>, <a href="https://github.com/sigrokproject/libserialport">Serial Port</a>, TCP, UDP, data pipe, memory buffer</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md7"></a>
 Delegate Semantics</h2>

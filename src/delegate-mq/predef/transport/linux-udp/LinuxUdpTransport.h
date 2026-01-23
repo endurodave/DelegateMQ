@@ -120,19 +120,36 @@ public:
             return -1;
         }
 
+        // Create a local copy so we can modify the length
+        DmqHeader headerCopy = header;
+
+        // Calculate payload size and set it
+        std::string payload = os.str();
+        if (payload.length() > UINT16_MAX) {
+            std::cerr << "Error: Payload too large." << std::endl;
+            return -1;
+        }
+        headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
+
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        uint16_t marker = header.GetMarker();
-        uint16_t id = header.GetId();
-        uint16_t seqNum = header.GetSeqNum();
+        // Use the getters from the COPY, which has the correct length
+        uint16_t marker = headerCopy.GetMarker();
+        uint16_t id = headerCopy.GetId();
+        uint16_t seqNum = headerCopy.GetSeqNum();
+        uint16_t length = headerCopy.GetLength();
 
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
         ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
-        ss << os.str();
+        ss.write(reinterpret_cast<const char*>(&length), sizeof(length));
+
+        // Append Payload
+        ss << payload;
 
         std::string data = ss.str();
 
+        // Monitor Logic (Use values from copy)
         if (id != dmq::ACK_REMOTE_ID && m_transportMonitor)
             m_transportMonitor->Add(seqNum, id);
 
@@ -185,11 +202,13 @@ public:
             return -1;
         }
 
-        uint16_t id = 0, seqNum = 0;
+        uint16_t id = 0, seqNum = 0, length = 0;
         headerStream.read(reinterpret_cast<char*>(&id), sizeof(id));
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
+        headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
         header.SetId(id);
         header.SetSeqNum(seqNum);
+        header.SetLength(length);
 
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 

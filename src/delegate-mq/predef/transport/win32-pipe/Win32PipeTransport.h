@@ -79,34 +79,44 @@ public:
         if (os.bad() || os.fail())
             return -1;
 
+        // Create a local copy to modify the length
+        DmqHeader headerCopy = header;
+
+        // Calculate payload size and set it on the copy
+        std::string payload = os.str();
+        if (payload.length() > UINT16_MAX) {
+            std::cerr << "Error: Payload too large for 16-bit length." << std::endl;
+            return -1;
+        }
+        headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
+
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        // Write each header value using the getters from DmqHeader
-        auto marker = header.GetMarker();
+        // Write header values using the getters from the COPY
+        auto marker = headerCopy.GetMarker();
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
 
-        auto id = header.GetId();
+        auto id = headerCopy.GetId();
         ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
 
-        auto seqNum = header.GetSeqNum();
+        auto seqNum = headerCopy.GetSeqNum();
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
 
-        // Insert delegate arguments from the stream (os)
-        ss << os.str();
+        auto len = headerCopy.GetLength();
+        ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
-        size_t length = ss.str().length();
-        char* sendBuf = (char*)malloc(length);
+        // Insert delegate arguments (payload)
+        ss << payload;
 
-        // Copy char buffer into heap allocated memory
-        ss.rdbuf()->sgetn(sendBuf, length);
+        // --- Efficient Write Logic (No Malloc) ---
+        std::string fullPacket = ss.str();
 
-        // Send message through named pipe
         DWORD sentLen = 0;
-        BOOL success = WriteFile(m_hPipe, sendBuf, (DWORD)length, &sentLen, NULL);
-        free(sendBuf);
+        BOOL success = WriteFile(m_hPipe, fullPacket.c_str(), (DWORD)fullPacket.length(), &sentLen, NULL);
 
-        if (!success || sentLen != length)
+        if (!success || sentLen != fullPacket.length())
             return -1;
+
         return 0;
     }
 
@@ -154,6 +164,11 @@ public:
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
+        // Read length (again using the getter for byte swapping)
+        uint16_t length = 0;
+        headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
+        header.SetLength(length);
+
         // Write the remaining argument data to stream
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
@@ -162,6 +177,7 @@ public:
     }
 
 private:
+    // @TODO Update buffer size if necessary.
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE];
 

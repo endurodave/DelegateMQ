@@ -6,18 +6,21 @@ Description:
     1. Clones all required dependencies with specific version pinning to ensure stability.
     2. Initializes and updates Git submodules where necessary (e.g., FreeRTOS).
     3. Applies automated fixes to common build issues:
-       - Renames 'zeromq/INSTALL' to 'INSTALL.txt' to prevent Windows file/folder conflicts.
+        - Renames 'zeromq/INSTALL' to 'INSTALL.txt' to prevent Windows file/folder conflicts.
+
+    See Examples Setup within DETAILS.md before running script.
 
 Dependencies Pinned:
-    - ZeroMQ:    v4.3.5       (Stable C++ standard)
-    - NNG:       v1.8.0       (Known compatibility)
-    - MQTT:      v1.3.13      (Paho C stable release)
-    - RapidJSON: v1.1.0       (Official release)
-    - Spdlog:    v1.12.0      (Stable logging)
-    - Cereal:    v1.3.2       (Serialization stable)
-    - Bitsery:   v5.2.3       (Serialization stable)
-    - MsgPack:   cpp_master   (Required for C++ headers)
-    - FreeRTOS:  202212.00    (LTS Release)
+    - ZeroMQ:        v4.3.5       (Stable C++ standard)
+    - NNG:           v1.8.0       (Known compatibility)
+    - MQTT:          v1.3.13      (Paho C stable release)
+    - libserialport: v0.1.1       (Sigrok stable release)
+    - RapidJSON:     v1.1.0       (Official release)
+    - Spdlog:        v1.12.0      (Stable logging)
+    - Cereal:        v1.3.2       (Serialization stable)
+    - Bitsery:       v5.2.3       (Serialization stable)
+    - MsgPack:       cpp-7.0.0    (Required for C++ headers)
+    - FreeRTOS:      202212.00    (LTS Release)
 
 Usage:
     Run this script FIRST to download source code.
@@ -39,6 +42,9 @@ repos = {
 
     # MQTT (Paho): v1.3.13 is the robust, long-term stable release.
     "mqtt": ("https://github.com/eclipse/paho.mqtt.c.git", "v1.3.13", False),
+
+    # libserialport: v0.1.1 is the official stable tag from the sigrok project.
+    "libserialport": ("https://github.com/sigrokproject/libserialport.git", "v0.1.1", False),
 
     # RapidJSON: Pinned to v1.1.0 (Official release). 
     # Note: This is old (2016) but is the only official tag.

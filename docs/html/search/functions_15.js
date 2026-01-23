@@ -22,12 +22,14 @@ var searchData=
   ['_7escopedconnection_19',['~ScopedConnection',['../classdmq_1_1_scoped_connection.html#ae43e513b29d9587e4d65b4e32fa52f54',1,'dmq::ScopedConnection']]],
   ['_7esemaphore_20',['~Semaphore',['../classdmq_1_1_semaphore.html#ac3ebd49985c6c3b7ccde0a575a4c7b19',1,'dmq::Semaphore']]],
   ['_7eserialize_21',['~serialize',['../classserialize.html#a587c1fd9308681181e30579b9930539f',1,'serialize']]],
-  ['_7ethread_22',['~Thread',['../class_thread.html#a37d9edd3a1a776cbc27dedff949c9726',1,'Thread::~Thread()'],['../class_thread.html#a37d9edd3a1a776cbc27dedff949c9726',1,'Thread::~Thread()']]],
-  ['_7ethreadmsg_23',['~ThreadMsg',['../class_thread_msg.html#ac02d40fd2f1de2201f0ed13db547bf42',1,'ThreadMsg']]],
-  ['_7etimer_24',['~Timer',['../class_timer.html#af87243f09ef5b58b889fb4a7284b526d',1,'Timer']]],
-  ['_7etransportmonitor_25',['~TransportMonitor',['../class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6',1,'TransportMonitor']]],
-  ['_7eudptransport_26',['~UdpTransport',['../class_udp_transport.html#a92c331f873183c6678f064f722b94263',1,'UdpTransport::~UdpTransport()'],['../class_udp_transport.html#a92c331f873183c6678f064f722b94263',1,'UdpTransport::~UdpTransport()']]],
-  ['_7eunicastdelegate_27',['~UnicastDelegate',['../classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a1007ef20258f360d55360d688ac007e3',1,'dmq::UnicastDelegate&lt; RetType(Args...)&gt;']]],
-  ['_7eunicastdelegatesafe_28',['~UnicastDelegateSafe',['../classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a0510cc203b018f550fc99a0b3afa74ff',1,'dmq::UnicastDelegateSafe&lt; RetType(Args...)&gt;']]],
-  ['_7ezeromqtransport_29',['~ZeroMqTransport',['../class_zero_mq_transport.html#a373ba2039ee4607938c5486338deaf49',1,'ZeroMqTransport']]]
+  ['_7eserialtransport_22',['~SerialTransport',['../class_serial_transport.html#a9eece747cea9fed944ca10fb62b6d30a',1,'SerialTransport']]],
+  ['_7etcptransport_23',['~TcpTransport',['../class_tcp_transport.html#ab203d6679e0a43ebbe20202ee2a5a467',1,'TcpTransport']]],
+  ['_7ethread_24',['~Thread',['../class_thread.html#a37d9edd3a1a776cbc27dedff949c9726',1,'Thread::~Thread()'],['../class_thread.html#a37d9edd3a1a776cbc27dedff949c9726',1,'Thread::~Thread()']]],
+  ['_7ethreadmsg_25',['~ThreadMsg',['../class_thread_msg.html#ac02d40fd2f1de2201f0ed13db547bf42',1,'ThreadMsg']]],
+  ['_7etimer_26',['~Timer',['../class_timer.html#af87243f09ef5b58b889fb4a7284b526d',1,'Timer']]],
+  ['_7etransportmonitor_27',['~TransportMonitor',['../class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6',1,'TransportMonitor']]],
+  ['_7eudptransport_28',['~UdpTransport',['../class_udp_transport.html#a92c331f873183c6678f064f722b94263',1,'UdpTransport::~UdpTransport()'],['../class_udp_transport.html#a92c331f873183c6678f064f722b94263',1,'UdpTransport::~UdpTransport()']]],
+  ['_7eunicastdelegate_29',['~UnicastDelegate',['../classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a1007ef20258f360d55360d688ac007e3',1,'dmq::UnicastDelegate&lt; RetType(Args...)&gt;']]],
+  ['_7eunicastdelegatesafe_30',['~UnicastDelegateSafe',['../classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a0510cc203b018f550fc99a0b3afa74ff',1,'dmq::UnicastDelegateSafe&lt; RetType(Args...)&gt;']]],
+  ['_7ezeromqtransport_31',['~ZeroMqTransport',['../class_zero_mq_transport.html#a373ba2039ee4607938c5486338deaf49',1,'ZeroMqTransport']]]
 ];

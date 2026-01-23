@@ -155,33 +155,47 @@ public:
             return -1;
         }
 
+        // Create a local copy to modify the length
+        DmqHeader headerCopy = header;
+
+        // Get payload and set length on the copy
+        std::string payload = os.str();
+        if (payload.length() > UINT16_MAX) {
+            std::cerr << "Error: Payload too large for 16-bit length." << std::endl;
+            return -1;
+        }
+        headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
+
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        // Write each header value using the getters from DmqHeader
-        auto marker = header.GetMarker();
+        // Write header values from the COPY
+        auto marker = headerCopy.GetMarker();
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
 
-        auto id = header.GetId();
+        auto id = headerCopy.GetId();
         ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
 
-        auto seqNum = header.GetSeqNum();
+        auto seqNum = headerCopy.GetSeqNum();
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
 
-        // Insert delegate arguments from the stream (os)
-        ss << os.str();
+        auto len = headerCopy.GetLength();
+        ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
-        size_t length = ss.str().length();
+        // Insert delegate arguments (payload)
+        ss << payload;
+
+        // Note: Payload length might have changed if we used ss << payload vs ss << os.str(). 
+        // Using the string is safer here.
+        std::string fullPacket = ss.str();
 
         if (id != dmq::ACK_REMOTE_ID)
         {
-            // Add sequence number to monitor
             if (m_transportMonitor)
                 m_transportMonitor->Add(seqNum, id);
         }
 
-        // Send delegate argument data using NNG
-        std::string payload = ss.str();
-        int err = nng_send(m_nngSocket, payload.data(), payload.size(), 0);
+        // Send data using NNG
+        int err = nng_send(m_nngSocket, fullPacket.data(), fullPacket.size(), 0);
         if (err != 0)
         {
             std::cerr << "nng_send failed with error: " << nng_strerror(err) << std::endl;
@@ -247,6 +261,11 @@ public:
         uint16_t seqNum = 0;
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
+
+        // Read length using the getter for byte swapping
+        uint16_t length = 0;
+        headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
+        header.SetLength(length);
 
         // Write the remaining target function argument data to stream
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);

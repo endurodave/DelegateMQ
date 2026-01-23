@@ -93,6 +93,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [freertos-bare-metal](#freertos-bare-metal)
     - [mqtt-rapidjson](#mqtt-rapidjson)
     - [nng-bitsery](#nng-bitsery)
+    - [serialport-serializer](#serialport-serializer)
     - [win32-pipe-serializer](#win32-pipe-serializer)
     - [win32-udp-serializer](#win32-udp-serializer)
     - [zeromq-cereal](#zeromq-cereal)
@@ -181,6 +182,7 @@ DelegateMQWorkspace/
 ├── cereal/
 ├── DelegateMQ/
 ├── FreeRTOSv202212.00/
+├── libserialport/
 ├── msgpack-c/
 ├── mqtt/
 ├── nng/
@@ -2163,6 +2165,16 @@ Remote delegate example using NNG and Bitsery libraries.
 | `IThread` | `Thread` class implemented using `std::thread`. 
 | `ISerializer` | Bitsery serialization library.  
 | `IDispatcher` | NNG library for dispatcher transport.
+
+### serialport-serializer
+
+Remote delegate example using libserialport and `serialize` libraries.
+
+| Interface | Implementation |
+| --- | --- |
+| `IThread` | `Thread` class implemented using `std::thread`. 
+| `ISerializer` | `serialize` class.  
+| `IDispatcher` | `libserialport` library for serial dispatcher transport.
 
 ### win32-pipe-serializer
 

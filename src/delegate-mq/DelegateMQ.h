@@ -135,12 +135,18 @@
 #elif defined(DMQ_TRANSPORT_WIN32_UDP)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/win32-udp/Win32UdpTransport.h"
+#elif defined(DMQ_TRANSPORT_WIN32_TCP)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/win32-tcp/Win32TcpTransport.h"
 #elif defined(DMQ_TRANSPORT_LINUX_UDP)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/linux-udp/LinuxUdpTransport.h"
 #elif defined(DMQ_TRANSPORT_MQTT)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/mqtt/MqttTransport.h"
+#elif defined(DMQ_TRANSPORT_SERIAL_PORT)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/serial/SerialTransport.h"
 #elif defined(DMQ_TRANSPORT_NONE)
     // Create a custom application-specific transport
 #else

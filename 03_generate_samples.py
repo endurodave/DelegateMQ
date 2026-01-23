@@ -7,6 +7,8 @@ Description:
     
     IMPORTANT: It does NOT compile the code. It only prepares the build directory.
 
+    See Examples Setup within DETAILS.md before running script.
+
 Key Features:
     1. Smart Discovery: Recursively scans for 'CMakeLists.txt'.
     2. Exclusion Logic: Automatically skips shared library folders ('common', 'include', 'src')

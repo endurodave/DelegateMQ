@@ -26,5 +26,5 @@ var searchData=
   ['dispatch_23',['Dispatch',['../classdmq_1_1_i_dispatcher.html#a4a9710cb642631f21be1072b5ff2d179',1,'dmq::IDispatcher::Dispatch()'],['../class_dispatcher.html#a4f9e2ae95d440cc624d2f8caa46fb4f4',1,'Dispatcher::Dispatch()']]],
   ['dispatchdelegate_24',['DispatchDelegate',['../classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433',1,'dmq::IThread::DispatchDelegate()'],['../class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48',1,'Thread::DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg) override'],['../class_thread.html#a51acca469997ceb64b6a1224bc6c424a',1,'Thread::DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg)']]],
   ['dispatcher_25',['Dispatcher',['../class_dispatcher.html#ab7dabf79371e1372d16d2c979c35d27d',1,'Dispatcher']]],
-  ['dmqheader_26',['DmqHeader',['../class_dmq_header.html#a5ea151fe4df7cf03129c01ff7d74534f',1,'DmqHeader::DmqHeader()=default'],['../class_dmq_header.html#a875a7ad5ee8ea6c1ceb6245add808fbc',1,'DmqHeader::DmqHeader(uint16_t id, uint16_t seqNum)']]]
+  ['dmqheader_26',['DmqHeader',['../class_dmq_header.html#a5ea151fe4df7cf03129c01ff7d74534f',1,'DmqHeader::DmqHeader()=default'],['../class_dmq_header.html#a725d8c00c5b29049821d4e2e0652998b',1,'DmqHeader::DmqHeader(uint16_t id, uint16_t seqNum, uint16_t length=0)']]]
 ];

@@ -5,6 +5,8 @@ Description:
     This script compiles the raw source code cloned by '01_fetch_repos.py' into 
     static libraries usable by the sample projects.
 
+    See Examples Setup within DETAILS.md before running script.
+
 Key Features:
     1. Cross-Platform Support: 
        - Windows: Handles Multi-Configuration builds (Debug & Release) and enforces 

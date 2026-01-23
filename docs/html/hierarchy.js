@@ -109,6 +109,8 @@ var hierarchy =
     [ "ITransport", "class_i_transport.html", [
       [ "MqttTransport", "class_mqtt_transport.html", null ],
       [ "NngTransport", "class_nng_transport.html", null ],
+      [ "SerialTransport", "class_serial_transport.html", null ],
+      [ "TcpTransport", "class_tcp_transport.html", null ],
       [ "UdpTransport", "class_udp_transport.html", null ],
       [ "UdpTransport", "class_udp_transport.html", null ],
       [ "Win32PipeTransport", "class_win32_pipe_transport.html", null ],

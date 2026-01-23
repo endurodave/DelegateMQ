@@ -74,11 +74,13 @@ class NetworkClient:
             self._seq_num = (self._seq_num + 1) % 65535
             seq = self._seq_num
 
-        # struct.pack('<HHH'): Little-endian. We rely on DMQ_MARKER being pre-swapped.
-        header = struct.pack('<HHH', DMQ_MARKER, remote_id, seq)
-
         # 2. Prepare Payload (MsgPack)
         payload = msg_obj.to_msgpack()
+
+        length = len(payload)
+
+        # struct.pack('<HHHH'): Little-endian. We rely on DMQ_MARKER being pre-swapped.
+        header = struct.pack('<HHHH', DMQ_MARKER, remote_id, seq, length)
 
         # 3. Send Packet
         full_packet = header + payload
@@ -91,7 +93,7 @@ class NetworkClient:
     def _send_ack(self, seq_num):
         """Sends an ACK back to C++ so it stops waiting (if blocking)."""
         # Header with ID = 0 (ACK) and the RECEIVED sequence number
-        header = struct.pack('<HHH', DMQ_MARKER, RemoteId.ACK, seq_num)
+        header = struct.pack('<HHHH', DMQ_MARKER, RemoteId.ACK, seq_num, 0)
         try:
             self._send_socket.send(header) # ACK has no payload
         except zmq.ZMQError:
@@ -111,11 +113,11 @@ class NetworkClient:
                     # 1. Receive Raw Bytes
                     data = self._recv_socket.recv()
                     
-                    if len(data) < 6:
+                    if len(data) < 8:
                         continue # Malformed
 
-                    # 2. Parse Header (First 6 bytes)
-                    marker, remote_id, seq_num = struct.unpack('<HHH', data[:6])
+                    # 2. Parse Header (First 8 bytes)
+                    marker, remote_id, seq_num, length = struct.unpack('<HHHH', data[:8])
 
                     if marker != DMQ_MARKER:
                         print(f"Warning: Invalid Marker {hex(marker)}")
@@ -127,7 +129,7 @@ class NetworkClient:
                         pass
                     else:
                         # 4. Extract Payload
-                        payload = data[6:]
+                        payload = data[8:]
                         self._dispatch_message(remote_id, payload)
                         
                         # 5. Send ACK back to C++

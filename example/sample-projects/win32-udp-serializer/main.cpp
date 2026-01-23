@@ -2,7 +2,7 @@
 /// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
-/// @brief ZeroMQ with remote delegates examples. 
+/// @brief UDP with remote delegates examples. 
 
 #include "sender.h"
 #include "receiver.h"

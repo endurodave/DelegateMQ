@@ -469,7 +469,7 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a13a5bc30242a3c91cf0cc744e863ffca" id="r_a13a5bc30242a3c91cf0cc744e863ffca"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13a5bc30242a3c91cf0cc744e863ffca">WAIT_INFINITE</a></td></tr>
+<tr class="memitem:a13a5bc30242a3c91cf0cc744e863ffca" id="r_a13a5bc30242a3c91cf0cc744e863ffca"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13a5bc30242a3c91cf0cc744e863ffca">WAIT_INFINITE</a> = std::chrono::hours(1000)</td></tr>
 <tr class="separator:a13a5bc30242a3c91cf0cc744e863ffca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0278aebc59e9f350d10a47d1a5ef1acb" id="r_a0278aebc59e9f350d10a47d1a5ef1acb"><td class="memItemLeft" align="right" valign="top">const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0278aebc59e9f350d10a47d1a5ef1acb">INVALID_REMOTE_ID</a> = -1</td></tr>
 <tr class="separator:a0278aebc59e9f350d10a47d1a5ef1acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1967,7 +1967,7 @@ template&lt;typename Arg , typename... TupleElem&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">auto dmq::WAIT_INFINITE</td>
+          <td class="memname">auto dmq::WAIT_INFINITE = std::chrono::hours(1000)</td>
         </tr>
       </table>
   </td>
@@ -1976,10 +1976,7 @@ template&lt;typename Arg , typename... TupleElem&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(</div>
-<div class="line">    std::chrono::steady_clock::duration::max()</div>
-<div class="line">)</div>
-</div><!-- fragment -->
+
 </div>
 </div>
 </div><!-- contents -->

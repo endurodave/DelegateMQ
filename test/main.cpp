@@ -101,11 +101,11 @@ int main(void)
     workerThread1.CreateThread(std::chrono::milliseconds(5000));
     SysDataNoLock::GetInstance();
 
-    // Create a timer that expires every 250mS and calls 
+    // Create a timer that expires every 1S and calls 
     // TimerExpiredCb on workerThread1 upon expiration
     // Dereference shared_ptr and use +=
     (*GetTimer().OnExpired) += MakeDelegate(&TimerExpiredCb, workerThread1);
-    GetTimer().Start(std::chrono::milliseconds(250));
+    GetTimer().Start(std::chrono::seconds(1));
 
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);

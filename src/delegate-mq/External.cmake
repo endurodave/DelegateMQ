@@ -74,6 +74,37 @@ if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_MQTT")
         set_and_check(MQTT_BINARY_DIR "/usr/local/bin")
     endif()
 endif()
+
+# ---------------------------------------------------------------------------
+# libserialport library
+# ---------------------------------------------------------------------------
+if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_SERIAL_PORT")
+    # Define the root of libserialport relative to the DelegateMQ source directory
+    # Structure: Workspace/DelegateMQ/src/delegate-mq/External.cmake -> Workspace/libserialport
+    set(SERIALPORT_ROOT "${DMQ_ROOT_DIR}/../../../libserialport")
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        # 1. Header: Found in the root of the source folder (libserialport.h)
+        set_and_check(SERIALPORT_INCLUDE_DIR "${SERIALPORT_ROOT}") 
+        
+        # 2. Library: Found in the Visual Studio build output folder
+        # Note: Change 'Debug' to 'Release' if building in Release mode
+        set_and_check(SERIALPORT_LIBRARY_DIR "${SERIALPORT_ROOT}/x64/Debug")
+
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        # 1. Header: Found in the root of the source folder
+        set_and_check(SERIALPORT_INCLUDE_DIR "${SERIALPORT_ROOT}") 
+        
+        # 2. Library: Found in the local build directory
+        # Standard Autotools builds (./configure && make) place .so files in the hidden .libs/ directory
+        if(EXISTS "${SERIALPORT_ROOT}/.libs")
+            set_and_check(SERIALPORT_LIBRARY_DIR "${SERIALPORT_ROOT}/.libs")
+        else()
+            # Fallback: Check root if built differently
+            set_and_check(SERIALPORT_LIBRARY_DIR "${SERIALPORT_ROOT}")
+        endif()
+    endif()
+endif()
     
 # ---------------------------------------------------------------------------
 # MessagePack

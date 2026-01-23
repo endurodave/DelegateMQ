@@ -157,26 +157,39 @@ public:
             return -1;
         }
 
+        // Create a local copy to modify the length
+        DmqHeader headerCopy = header;
+
+        // Calculate payload size and set it on the copy
+        std::string payload = os.str();
+        if (payload.length() > UINT16_MAX) {
+            std::cerr << "Error: Payload too large for 16-bit length." << std::endl;
+            return -1;
+        }
+        headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
+
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        // Write each header value using the getters from DmqHeader
-        auto marker = header.GetMarker();
+        // Write header values from the COPY
+        auto marker = headerCopy.GetMarker();
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
 
-        auto id = header.GetId();
+        auto id = headerCopy.GetId();
         ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
 
-        auto seqNum = header.GetSeqNum();
+        auto seqNum = headerCopy.GetSeqNum();
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
 
-        // Insert delegate arguments from the stream (os)
-        ss << os.str();
+        auto len = headerCopy.GetLength();
+        ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
+
+        // Insert delegate arguments (payload)
+        ss << payload;
 
         size_t length = ss.str().length();
 
         if (id != dmq::ACK_REMOTE_ID)
         {
-            // Add sequence number to monitor
             if (m_transportMonitor)
                 m_transportMonitor->Add(seqNum, id);
         }
@@ -249,6 +262,11 @@ public:
         uint16_t seqNum = 0;
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
+
+        // Read length using the getter for byte swapping
+        uint16_t length = 0;
+        headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
+        header.SetLength(length);
 
         // Write the remaining target function argument data to stream
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
