@@ -124,52 +124,6 @@ public:
         return RawPhysicalSend(os, header);
     }
 
-    /// @brief The actual "Bit-Banging" method. 
-    /// Note: This is PUBLIC so the RetryMonitor can call it without causing recursion.
-    int RawPhysicalSend(xostringstream& os, const DmqHeader& header)
-    {
-        if (!m_port) return -1;
-
-        // 1. Prepare Header Copy and Payload
-        DmqHeader headerCopy = header;
-        std::string payload = os.str();
-        headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
-
-        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
-
-        // 2. Serialize Header
-        auto marker = headerCopy.GetMarker();
-        ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
-        auto id = headerCopy.GetId();
-        ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
-        auto seqNum = headerCopy.GetSeqNum();
-        ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
-        auto len = headerCopy.GetLength();
-        ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
-
-        // 3. Append Payload safely (Binary safe)
-        ss.write(payload.data(), payload.size());
-
-        // 4. Calculate and Append CRC16
-        std::string packetWithoutCrc = ss.str();
-        uint16_t crc = Crc16CalcBlock((unsigned char*)packetWithoutCrc.c_str(),
-            (int)packetWithoutCrc.length(), 0xFFFF);
-        ss.write(reinterpret_cast<const char*>(&crc), sizeof(crc));
-
-        std::string packetData = ss.str();
-
-        // 5. Monitor Logic (Only for non-ACKs)
-        // If RetryMonitor is active, IT will handle the Add() call. 
-        // We only Add() here if sending directly without a RetryMonitor.
-        if (!m_retryMonitor && id != dmq::ACK_REMOTE_ID && m_transportMonitor) {
-            m_transportMonitor->Add(seqNum, id);
-        }
-
-        // 6. Physical Write
-        int result = sp_blocking_write(m_port, packetData.c_str(), packetData.length(), 1000);
-        return (result == (int)packetData.length()) ? 0 : -1;
-    }
-
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
@@ -309,6 +263,51 @@ public:
     }
 
 private:
+    /// @brief The actual "Bit-Banging" method. 
+    int RawPhysicalSend(xostringstream& os, const DmqHeader& header)
+    {
+        if (!m_port) return -1;
+
+        // 1. Prepare Header Copy and Payload
+        DmqHeader headerCopy = header;
+        std::string payload = os.str();
+        headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
+
+        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+
+        // 2. Serialize Header
+        auto marker = headerCopy.GetMarker();
+        ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
+        auto id = headerCopy.GetId();
+        ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
+        auto seqNum = headerCopy.GetSeqNum();
+        ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
+        auto len = headerCopy.GetLength();
+        ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
+
+        // 3. Append Payload safely (Binary safe)
+        ss.write(payload.data(), payload.size());
+
+        // 4. Calculate and Append CRC16
+        std::string packetWithoutCrc = ss.str();
+        uint16_t crc = Crc16CalcBlock((unsigned char*)packetWithoutCrc.c_str(),
+            (int)packetWithoutCrc.length(), 0xFFFF);
+        ss.write(reinterpret_cast<const char*>(&crc), sizeof(crc));
+
+        std::string packetData = ss.str();
+
+        // 5. Monitor Logic (Only for non-ACKs)
+        // If RetryMonitor is active, IT will handle the Add() call. 
+        // We only Add() here if sending directly without a RetryMonitor.
+        if (!m_retryMonitor && id != dmq::ACK_REMOTE_ID && m_transportMonitor) {
+            m_transportMonitor->Add(seqNum, id);
+        }
+
+        // 6. Physical Write
+        int result = sp_blocking_write(m_port, packetData.c_str(), packetData.length(), 1000);
+        return (result == (int)packetData.length()) ? 0 : -1;
+    }
+
     /// @brief Helper to strictly read N bytes. Handles partial reads common in Serial.
     bool ReadExact(char* dest, size_t size, unsigned int timeoutMs)
     {
