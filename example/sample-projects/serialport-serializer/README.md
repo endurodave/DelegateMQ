@@ -31,6 +31,7 @@ Run `01_fetch_repos.py` to get the `libserialport` cloned to a workspace directo
 ### 1. Open the Solution
 1.  Navigate to `../../../../libserialport`.
 2.  Open **`libserialport.sln`** in Visual Studio.
+3.  In Visual Studio Solution Explorer pane, right click `libserialport` and select "Retarget Projects" and select a new "Retarget to Platform" selection and press Apply. 
 
 ### 2. Build the Library
 1.  Set the Solution Configuration to **Debug**.
