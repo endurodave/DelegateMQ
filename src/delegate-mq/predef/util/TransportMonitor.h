@@ -34,11 +34,16 @@ public:
         TIMEOUT   // Message timeout
     };
 
-    // Delegate callback to monitor message send status. Callback invoked by 
-    // either the Remove() caller's thread or the Process() caller's thread.
-    dmq::MulticastDelegateSafe<void(dmq::DelegateRemoteId id, uint16_t seqNum, Status status)> SendStatusCb;
+    /// Signal emitted when a message status is determined.
+    /// Subscribers receive: (remoteId, seqNum, status)
+    /// Use a shared_ptr for the signal as required by SignalSafe
+    std::shared_ptr<dmq::SignalSafe<void(dmq::DelegateRemoteId, uint16_t, Status)>> OnSendStatus;
 
-    TransportMonitor(const dmq::Duration timeout) : TRANSPORT_TIMEOUT(timeout) {}
+    TransportMonitor(const dmq::Duration timeout) : TRANSPORT_TIMEOUT(timeout) 
+    {
+        OnSendStatus = dmq::MakeSignal<void(dmq::DelegateRemoteId, uint16_t, Status)>();
+    }
+
     ~TransportMonitor() 
     { 
         const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
@@ -68,7 +73,8 @@ public:
         {
             TimeoutData d = it->second;
             m_pending.erase(it);
-            SendStatusCb(d.remoteId, seqNum, Status::SUCCESS);
+            if (OnSendStatus)
+                (*OnSendStatus)(d.remoteId, seqNum, Status::SUCCESS);
         }
     }
 
@@ -86,7 +92,8 @@ public:
             // Has message timeout expired?
             if (elapsed > TRANSPORT_TIMEOUT)
             {
-                SendStatusCb((*it).second.remoteId, (*it).first, Status::TIMEOUT);
+                if (OnSendStatus)
+                    (*OnSendStatus)((*it).second.remoteId, (*it).first, Status::TIMEOUT);
                 LOG_ERROR("TransportMonitor::Process TIMEOUT {} {}", (*it).second.remoteId, (*it).first);
                 it = m_pending.erase(it);                
             }

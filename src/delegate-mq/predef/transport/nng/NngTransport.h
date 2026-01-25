@@ -182,7 +182,7 @@ public:
         ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
         // Insert delegate arguments (payload)
-        ss << payload;
+        ss.write(payload.data(), payload.size());
 
         // Note: Payload length might have changed if we used ss << payload vs ss << os.str(). 
         // Using the string is safer here.

@@ -1,12 +1,30 @@
 #ifndef SERIAL_TRANSPORT_H
 #define SERIAL_TRANSPORT_H
 
-/// @file 
-/// @see https://github.com/endurodave/DelegateMQ
-/// @see https://sigrok.org/wiki/Libserialport or https://github.com/sigrokproject/libserialport
+/// @file SerialTransport.h
+/// @brief Libserialport-based transport implementation for DelegateMQ.
 /// 
-/// Transport callable argument data to/from a remote using libserialport. 
-/// Uses DmqHeader::m_length for stream framing.
+/// @details
+/// This class provides a reliable serial communication layer for DelegateMQ using the 
+/// libserialport library. It is designed as an "Active Object" with its own internal 
+/// worker thread to prevent blocking the caller.
+///
+/// ### Reliability Stack Structure
+/// 1. **TransportMonitor**: Detects missing ACKs via sequence number tracking and timeouts.
+/// 2. **RetryMonitor**: Decorates the Send process to store and re-send packets if timed out.
+/// 3. **SerialTransport**: The physical layer handling CRC16, binary framing, and COM hardware.
+///
+/// ### Recursion Management
+/// To maintain compatibility with the generic ITransport interface, this class uses a 
+/// reentrancy guard (`m_isSending`) and an RAII `SendGuard`. This allows the `RetryMonitor` 
+/// to call `Send()` recursively without causing a stack overflow; the second call is 
+/// automatically diverted directly to the physical hardware write (`RawPhysicalSend`).
+///
+/// ### Data Framing (Binary Safe)
+/// [Sync Marker (2)] + [Remote ID (2)] + [Seq Num (2)] + [Payload Len (2)] + [Payload (N)] + [CRC16 (2)]
+/// 
+/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://sigrok.org/wiki/Libserialport
 
 #include "libserialport.h"
 #include "predef/transport/ITransport.h"
@@ -77,70 +95,79 @@ public:
         }
     }
 
-    // We create a local copy to modify the length field.
+    /// @brief Public Entry Point for ITransport
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
+        // 1. Thread Marshalling
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
             return dmq::MakeDelegate(this, &SerialTransport::Send, m_thread, dmq::WAIT_INFINITE)(os, header);
 
+        // 2. Recursion Detection
+        if (m_isSending) {
+            return RawPhysicalSend(os, header);
+        }
+
+        // 3. Normal Entry Point with RAII Guard
+        if (m_retryMonitor) {
+            // Define a local guard that resets the flag when it goes out of scope
+            struct SendGuard {
+                bool& flag;
+                SendGuard(bool& f) : flag(f) { flag = true; }
+                ~SendGuard() { flag = false; }
+            } guard(m_isSending);
+
+            // Even if SendWithRetry returns -1 early, 'guard' destructor runs!
+            return m_retryMonitor->SendWithRetry(os, header);
+        }
+
+        // 4. Fallback (No monitor attached)
+        return RawPhysicalSend(os, header);
+    }
+
+    /// @brief The actual "Bit-Banging" method. 
+    /// Note: This is PUBLIC so the RetryMonitor can call it without causing recursion.
+    int RawPhysicalSend(xostringstream& os, const DmqHeader& header)
+    {
         if (!m_port) return -1;
 
-        if (os.bad() || os.fail()) return -1;
-
-        if (m_sendTransport != this) {
-            std::cerr << "Error: This transport used for receive only!" << std::endl;
-            return -1;
-        }
-
-        // 1. Create a local copy to modify the length
+        // 1. Prepare Header Copy and Payload
         DmqHeader headerCopy = header;
-
-        // 2. Get Payload and Set Length on the COPY
         std::string payload = os.str();
-        if (payload.length() > UINT16_MAX) {
-            std::cerr << "Error: Payload exceeds 64KB limit for 16-bit length field." << std::endl;
-            return -1;
-        }
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
-        // 3. Serialize Header (using the modified copy)
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
+        // 2. Serialize Header
         auto marker = headerCopy.GetMarker();
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
-
         auto id = headerCopy.GetId();
         ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
-
         auto seqNum = headerCopy.GetSeqNum();
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
-
         auto len = headerCopy.GetLength();
         ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
-        // 4. Append Payload
-        ss << payload;
+        // 3. Append Payload safely (Binary safe)
+        ss.write(payload.data(), payload.size());
+
+        // 4. Calculate and Append CRC16
+        std::string packetWithoutCrc = ss.str();
+        uint16_t crc = Crc16CalcBlock((unsigned char*)packetWithoutCrc.c_str(),
+            (int)packetWithoutCrc.length(), 0xFFFF);
+        ss.write(reinterpret_cast<const char*>(&crc), sizeof(crc));
 
         std::string packetData = ss.str();
 
-        // 5. Monitor Logic (Using ID/Seq from the copy)
-        if (id != dmq::ACK_REMOTE_ID)
-        {
-            if (m_transportMonitor)
-                m_transportMonitor->Add(seqNum, id);
+        // 5. Monitor Logic (Only for non-ACKs)
+        // If RetryMonitor is active, IT will handle the Add() call. 
+        // We only Add() here if sending directly without a RetryMonitor.
+        if (!m_retryMonitor && id != dmq::ACK_REMOTE_ID && m_transportMonitor) {
+            m_transportMonitor->Add(seqNum, id);
         }
 
-        // 6. Blocking Write
-        // Write the entire [Header + Payload] buffer in one go.
+        // 6. Physical Write
         int result = sp_blocking_write(m_port, packetData.c_str(), packetData.length(), 1000);
-
-        if (result < 0 || (size_t)result != packetData.length())
-        {
-            std::cerr << "SerialTransport: Write failed or incomplete." << std::endl;
-            return -1;
-        }
-
-        return 0;
+        return (result == (int)packetData.length()) ? 0 : -1;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
@@ -209,7 +236,29 @@ public:
             is.write(m_buffer, length);
         }
 
-        // 4. Ack Logic
+        // 4. Read Trailing CRC (2 bytes)
+        uint16_t receivedCrc = 0;
+        if (!ReadExact(reinterpret_cast<char*>(&receivedCrc), sizeof(receivedCrc), 500))
+        {
+            std::cerr << "SerialTransport: Failed to read trailing CRC." << std::endl;
+            return -1;
+        }
+
+        // 5. Verify Integrity
+        // Calculate CRC over Header (headerBuf) + Payload (m_buffer)
+        uint16_t calcCrc = Crc16CalcBlock((unsigned char*)headerBuf, DmqHeader::HEADER_SIZE, 0xFFFF);
+        if (length > 0) {
+            calcCrc = Crc16CalcBlock((unsigned char*)m_buffer, length, calcCrc);
+        }
+
+        if (receivedCrc != calcCrc)
+        {
+            std::cerr << "SerialTransport: CRC mismatch! Data corrupted." << std::endl;
+            sp_flush(m_port, SP_BUF_INPUT); // Flush to attempt re-sync
+            return -1;
+        }
+
+        // 6. Ack Logic
         if (id == dmq::ACK_REMOTE_ID)
         {
             if (m_transportMonitor)
@@ -217,7 +266,7 @@ public:
         }
         else
         {
-            if (m_transportMonitor && m_sendTransport)
+            if (m_sendTransport)
             {
                 xostringstream ss_ack;
                 DmqHeader ack;
@@ -252,6 +301,13 @@ public:
         m_recvTransport = recvTransport;
     }
 
+    void SetRetryMonitor(RetryMonitor* retryMonitor) 
+    {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+            return dmq::MakeDelegate(this, &SerialTransport::SetRetryMonitor, m_thread, dmq::WAIT_INFINITE)(retryMonitor);
+        m_retryMonitor = retryMonitor;
+    }
+
 private:
     /// @brief Helper to strictly read N bytes. Handles partial reads common in Serial.
     bool ReadExact(char* dest, size_t size, unsigned int timeoutMs)
@@ -270,12 +326,13 @@ private:
     }
 
     sp_port* m_port = nullptr;
-
     Thread m_thread;
-
+    RetryMonitor* m_retryMonitor = nullptr;
     ITransport* m_sendTransport = nullptr;
     ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
+
+    bool m_isSending = false; // The reentrancy guard
 
     // @TODO Update buffer size if necessary. Max 64KB for 16-bit length.
     static const int BUFFER_SIZE = 4096;

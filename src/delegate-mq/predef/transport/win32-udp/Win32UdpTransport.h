@@ -165,7 +165,7 @@ public:
         ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
         // Insert delegate arguments from the stream (payload)
-        ss << payload;
+        ss.write(payload.data(), payload.size());
 
         size_t length = ss.str().length();
 

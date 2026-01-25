@@ -654,7 +654,6 @@ static void DelegateMemberAsyncWaitSpTests()
 
     // NOTE: std::unique_ptr return types are NOT supported in AsyncWait delegates 
     // because std::any (used for storage) requires CopyConstructible types.
-    // The previous test case for unique_ptr has been removed to fix the build error.
 
     // 9. Equality Checks
     // Direct construction:

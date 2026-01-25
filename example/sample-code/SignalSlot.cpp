@@ -70,8 +70,11 @@ namespace Example {
         void Broadcast(const std::string& news)
         {
             std::cout << "[Publisher] Broadcasting: " << news << std::endl;
-            // Dereference to invoke
-            (*OnBreakingNews)(news);
+
+            // SAFE: Check if the shared_ptr points to a valid Signal instance
+            if (OnBreakingNews) {
+                (*OnBreakingNews)(news);
+            }
         }
     };
 
@@ -94,6 +97,13 @@ namespace Example {
         ~NewsSubscriber()
         {
             std::cout << "[Subscriber] " << m_name << " is shutting down (auto-disconnecting).\n";
+
+            // Explicitly disconnect BEFORE stopping the thread.
+            // This ensures no new messages are enqueued while the thread is exiting.
+            m_connection.Disconnect();
+
+            // Now stop the thread safely.
+            m_thread.ExitThread();
         }
 
     private:

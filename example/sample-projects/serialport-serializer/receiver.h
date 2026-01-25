@@ -30,13 +30,18 @@ public:
         // Set the transport
         m_transport.Create("COM2", 115200);
 
+        // Crucial for ACKs: The receiver's transport must know how to send
+        // Since it uses the same COM port for both, link them.
+        m_transport.SetSendTransport(&m_transport);
+        m_transport.SetRecvTransport(&m_transport);
+
         // Create the receiver thread
         m_thread.CreateThread();
     }
 
     ~Receiver()
     {
-        m_thread.ExitThread();
+        Stop();
         m_recvDelegate = nullptr;
     }
 
@@ -53,6 +58,7 @@ public:
         m_recvTimer.Stop();
         m_thread.ExitThread();
         m_recvTimer.Stop();
+        m_transport.Close();
     }
 
 private:
@@ -64,10 +70,18 @@ private:
         DmqHeader header;
         int error = m_transport.Receive(arg_data, header);
 
+        if (header.GetSeqNum() == m_lastSeqNum) {
+            // We already did this! The ACK must have been lost.
+            // The SerialTransport already sent a new ACK in Receive(), 
+            // so we just skip the duplicate invocation.
+            return;
+        }
+
         // Incoming remote delegate data arrived?
         if (!error && !arg_data.str().empty())
         {
             // Invoke the receiver target function with the sender's argument data
+            m_lastSeqNum = header.GetSeqNum();
             m_recvDelegate.Invoke(arg_data);
         }
     }
@@ -91,6 +105,8 @@ private:
 
     // Receiver remote delegate
     DelegateMemberRemote<Receiver, void(Data&, DataAux&)> m_recvDelegate;
+
+    uint16_t m_lastSeqNum = 0xFFFF; // Initialize to an impossible value
 };
 
 #endif

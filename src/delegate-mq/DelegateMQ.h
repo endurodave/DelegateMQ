@@ -146,6 +146,8 @@
     #include "predef/transport/mqtt/MqttTransport.h"
 #elif defined(DMQ_TRANSPORT_SERIAL_PORT)
     #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/util/crc16.h"
+    #include "predef/util/RetryMonitor.h"
     #include "predef/transport/serial/SerialTransport.h"
 #elif defined(DMQ_TRANSPORT_NONE)
     // Create a custom application-specific transport

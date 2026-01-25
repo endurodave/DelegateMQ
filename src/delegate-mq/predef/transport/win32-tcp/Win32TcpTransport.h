@@ -140,7 +140,7 @@ public:
         auto id = headerCopy.GetId();         ss.write((char*)&id, 2);
         auto seq = headerCopy.GetSeqNum();    ss.write((char*)&seq, 2);
         auto len = headerCopy.GetLength();    ss.write((char*)&len, 2);
-        ss << payload;
+        ss.write(payload.data(), payload.size());
 
         // 3. Send
         std::string data = ss.str();

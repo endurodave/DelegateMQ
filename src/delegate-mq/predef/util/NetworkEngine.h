@@ -141,8 +141,7 @@ public:
                 };
 
             // 4. [Caller Thread] Register the callback.
-            auto delegate = dmq::MakeDelegate(statusCbFunc);
-            m_transportMonitor.SendStatusCb += delegate;
+            dmq::ScopedConnection conn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(statusCbFunc));
 
             // 5. [Caller Thread] Define the "Send" logic lambda.
             auto* epPtr = &endpoint;
@@ -160,16 +159,15 @@ public:
             {
                 // 8. [Caller Thread] BLOCK and Wait.
                 std::unique_lock<std::mutex> lock(state->mtx);
-                while (!state->complete) {
-                    if (state->cv.wait_for(lock, RECV_TIMEOUT) == std::cv_status::timeout) {
-                        state->complete = true; // Timeout occurred
-                    }
-                }
+                // wait_for returns false if the predicate is still false after the timeout
+                state->cv.wait_for(lock, RECV_TIMEOUT, [&] {
+                    return state->complete;
+                    });
                 // 10. [Caller Thread] Wake up! The wait is over.
             }
 
             // 11. [Caller Thread] Cleanup and return result.
-            m_transportMonitor.SendStatusCb -= delegate;
+            // 'conn' goes out of scope here and automatically disconnects
             return state->success.load();
         }
         else
@@ -214,6 +212,8 @@ private:
 #endif
 
     std::map<dmq::DelegateRemoteId, dmq::IRemoteInvoker*> m_receiveIdMap;
+
+    dmq::ScopedConnection m_statusConn;
 
     static const std::chrono::milliseconds SEND_TIMEOUT;
     static const std::chrono::milliseconds RECV_TIMEOUT;

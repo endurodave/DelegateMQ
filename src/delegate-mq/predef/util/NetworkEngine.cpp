@@ -41,7 +41,7 @@ int NetworkEngine::Initialize(const std::string& sendAddr, const std::string& re
     err += m_sendTransport.Create(type, sendAddr.c_str());
     err += m_recvTransport.Create(type, recvAddr.c_str());
 
-    m_transportMonitor.SendStatusCb += dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler);
+    m_statusConn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
 
     m_sendTransport.SetTransportMonitor(&m_transportMonitor);
     m_recvTransport.SetTransportMonitor(&m_transportMonitor);
@@ -69,7 +69,7 @@ int NetworkEngine::Initialize(const std::string& sendIp, int sendPort, const std
     err += m_sendTransport.Create(UdpTransport::Type::PUB, sendIp.c_str(), sendPort);
     err += m_recvTransport.Create(UdpTransport::Type::SUB, recvIp.c_str(), recvPort);
 
-    m_transportMonitor.SendStatusCb += dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler);
+    m_statusConn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
 
     m_sendTransport.SetTransportMonitor(&m_transportMonitor);
     m_recvTransport.SetTransportMonitor(&m_transportMonitor);
@@ -115,6 +115,7 @@ void NetworkEngine::Stop()
     }
     m_timeoutTimer.Stop();
     m_timeoutTimerConn.Disconnect();
+    m_statusConn.Disconnect();
 }
 
 void NetworkEngine::RegisterEndpoint(dmq::DelegateRemoteId id, dmq::IRemoteInvoker* endpoint)

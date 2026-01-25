@@ -1,0 +1,130 @@
+#ifndef _RETRY_MONITOR_H
+#define _RETRY_MONITOR_H
+
+#include "DelegateMQ.h"
+#include "TransportMonitor.h"
+#include <map>
+#include <vector>
+#include <string>
+
+/// @file RetryMonitor.h
+/// @brief Automatic retransmission manager for DelegateMQ remote calls.
+/// 
+/// @details
+/// The RetryMonitor acts as a reliability decorator for any ITransport implementation.
+/// It bridges the gap between detection (TransportMonitor) and recovery (Physical Transport).
+///
+/// ### Core Responsibilities
+/// 1. **Data Persistence**: Stores the fully serialized binary payload of every outgoing 
+///    remote delegate call, indexed by its unique Sequence Number.
+/// 2. **Timeout Handling**: Subscribes to the `TransportMonitor::OnSendStatus` signal.
+/// 3. **Automatic Recovery**: If a TIMEOUT status is received, it decrements the retry 
+///    counter and re-submits the exact binary packet to the transport.
+/// 4. **Cleanup**: Discards stored packets upon SUCCESS (ACK received) or when 
+///    `maxRetries` is exhausted.
+///
+/// ### Sequence Number Integrity
+/// Retries use the **original** sequence number. This allows the Receiver to perform 
+/// idempotency checks (filtering out duplicate calls if an ACK was lost but the 
+/// function was already executed).
+///
+/// ### Reentrancy Note
+/// This class calls `ITransport::Send()`. If the underlying transport (e.g., SerialTransport)
+/// routes its high-level `Send()` back into this monitor, the transport MUST implement 
+/// a reentrancy guard to prevent infinite recursion.
+///
+/// @see https://github.com/endurodave/DelegateMQ
+class RetryMonitor 
+{
+public:
+    /// @brief Storage for a message that might need retransmission.
+    struct RetryEntry {
+        std::string packetData;     ///< The raw serialized arguments
+        DmqHeader header;           ///< Original metadata (ID, SeqNum, etc.)
+        int attemptsRemaining;      ///< Counter for retry budget
+    };
+
+    /// @brief Constructor
+    /// @param transport The underlying transport to use for re-sending.
+    /// @param monitor The monitor that detects the timeouts.
+    /// @param maxRetries Number of retries before giving up (default 3).
+    RetryMonitor(ITransport& transport, TransportMonitor& monitor, int maxRetries = 3)
+        : m_transport(transport), m_monitor(monitor), m_maxRetries(maxRetries) 
+    {
+        // Connection handled via RAII dmq::Connection member
+        m_connection = m_monitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &RetryMonitor::OnStatusChanged));
+    }
+
+    ~RetryMonitor() {
+        m_connection.Disconnect();
+
+        const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
+        m_retryStore.clear();
+    }
+
+    /// @brief Sends a message and tracks it for potential retries.
+    /// @return 0 on success, -1 on immediate transport failure.
+    int SendWithRetry(xostringstream& os, const DmqHeader& header) 
+    {
+        const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
+
+        // Store the raw binary data from the stream
+        RetryEntry entry;
+        entry.packetData = os.str();
+        entry.header = header;
+        entry.attemptsRemaining = m_maxRetries;
+
+        m_retryStore[header.GetSeqNum()] = entry;
+
+        // Perform the initial send through the actual transport
+        return m_transport.Send(os, header);
+    }
+
+private:
+    /// @brief Callback handled when a message is either ACK'd or Timed Out.
+    void OnStatusChanged(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) 
+    {
+        const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
+        
+        auto it = m_retryStore.find(seqNum);
+        if (it == m_retryStore.end()) return;
+
+        if (status == TransportMonitor::Status::SUCCESS) 
+        {
+            // Message arrived safely, we can forget about the data now
+            m_retryStore.erase(it);
+        }
+        else if (status == TransportMonitor::Status::TIMEOUT) 
+        {
+            if (it->second.attemptsRemaining > 0) 
+            {
+                it->second.attemptsRemaining--;
+                
+                // Log the retry attempt
+                // LOG_INFO("RetryMonitor: Retrying seq {} (ID: {})", seqNum, id);
+                
+                // Re-prepare the stream from our stored binary data
+                xostringstream os(std::ios::in | std::ios::out | std::ios::binary);
+                os.write(it->second.packetData.data(), it->second.packetData.size());
+                
+                // Re-send. The transport will re-add this to the TransportMonitor.
+                m_transport.Send(os, it->second.header);
+            }
+            else 
+            {
+                // We've tried our best. Clean up and let the monitor report final timeout.
+                // LOG_ERROR("RetryMonitor: Max retries exceeded for seq {}", seqNum);
+                m_retryStore.erase(it);
+            }
+        }
+    }
+
+    ITransport& m_transport;
+    TransportMonitor& m_monitor;
+    const int m_maxRetries;
+    std::map<uint16_t, RetryEntry> m_retryStore;
+    dmq::RecursiveMutex m_lock;
+    dmq::Connection m_connection;
+};
+
+#endif // _RETRY_MONITOR_H

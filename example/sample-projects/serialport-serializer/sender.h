@@ -19,7 +19,9 @@ public:
     Sender(DelegateRemoteId id) :
         m_thread("Sender"),
         m_sendDelegate(id),
-        m_argStream(ios::in | ios::out | ios::binary)
+        m_argStream(ios::in | ios::out | ios::binary),
+        m_monitor(chrono::milliseconds(1000)),      // 1s timeout
+        m_retry(m_transport, m_monitor, 3)          // 3 retries
     {
         // Set the delegate interfaces
         m_sendDelegate.SetStream(&m_argStream);
@@ -27,10 +29,13 @@ public:
         m_sendDelegate.SetDispatcher(&m_dispatcher);
         m_sendDelegate.SetErrorHandler(MakeDelegate(this, &Sender::ErrorHandler));
 
-        // Set the transport
+        // Set the transport and reliability layer
         m_transport.Create("COM1", 115200);
+        m_transport.SetTransportMonitor(&m_monitor);
+        m_transport.SetRetryMonitor(&m_retry);
+
         m_dispatcher.SetTransport(&m_transport);
-        
+
         // Create the sender thread
         m_thread.CreateThread();
     }
@@ -42,12 +47,16 @@ public:
         // Start a timer to send data
         (*m_sendTimer.OnExpired) += MakeDelegate(this, &Sender::Send, m_thread);
         m_sendTimer.Start(std::chrono::milliseconds(50));
+
+        // Start a timer to poll the transport monitor for timeouts
+        (*m_monitorTimer.OnExpired) += MakeDelegate(&m_monitor, &TransportMonitor::Process, m_thread);
+        m_monitorTimer.Start(std::chrono::milliseconds(100));
     }
 
     void Stop()
     {
-        (*m_sendTimer.OnExpired) -= MakeDelegate(this, &Sender::Send, m_thread);
         m_sendTimer.Stop();
+        m_monitorTimer.Stop();
         m_thread.ExitThread();
         m_transport.Close();
     }
@@ -80,10 +89,16 @@ private:
 
     Thread m_thread;
     Timer m_sendTimer;
+    Timer m_monitorTimer; // Polls the reliability layer
 
     xostringstream m_argStream;
     Dispatcher m_dispatcher;
     SerialTransport m_transport;
+
+    // Reliability Layer
+    TransportMonitor m_monitor;
+    RetryMonitor m_retry;
+
     Serializer<void(Data&, DataAux&)> m_serializer;
 
     // Sender remote delegate

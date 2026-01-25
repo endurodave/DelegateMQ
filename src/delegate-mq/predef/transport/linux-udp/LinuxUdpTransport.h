@@ -145,7 +145,7 @@ public:
         ss.write(reinterpret_cast<const char*>(&length), sizeof(length));
 
         // Append Payload
-        ss << payload;
+        ss.write(payload.data(), payload.size());
 
         std::string data = ss.str();
 

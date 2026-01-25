@@ -106,7 +106,7 @@ public:
         ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
         // Insert delegate arguments (payload)
-        ss << payload;
+        ss.write(payload.data(), payload.size());
 
         // --- Efficient Write Logic (No Malloc) ---
         std::string fullPacket = ss.str();
