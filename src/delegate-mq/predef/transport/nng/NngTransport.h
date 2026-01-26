@@ -1,6 +1,30 @@
 #ifndef NNG_TRANSPORT_H
 #define NNG_TRANSPORT_H
 
+/// @file NngTransport.h
+/// @see https://github.com/endurodave/DelegateMQ
+/// David Lafreniere, 2025.
+/// 
+/// @brief NNG transport implementation for DelegateMQ.
+/// 
+/// @details
+/// This class implements the ITransport interface using the NNG (Nanomsg Next Gen) 
+/// lightweight messaging library. It supports multiple scalability protocols including 
+/// PAIR (1-to-1 bidrectional) and PUB/SUB (1-to-many unidirectional).
+/// 
+/// Key Features:
+/// 1. **Active Object**: Encapsulates all NNG socket operations within a dedicated 
+///    worker thread to adhere to NNG's thread-safety constraints (sockets are not 
+///    inherently thread-safe for concurrent access).
+/// 2. **Scalability Protocols**: flexible configuration for different topologies:
+///    * `PAIR_CLIENT`/`PAIR_SERVER`: Exclusive 1-to-1 connection.
+///    * `PUB`/`SUB`: Efficient distribution to multiple subscribers.
+/// 3. **Non-Blocking**: Uses asynchronous messaging patterns provided by NNG.
+/// 4. **Reliability**: Integrates with `TransportMonitor` to providing sequence tracking 
+///    and ACKs even over PUB/SUB (when a return channel is available).
+/// 
+/// @note Requires the `libnng` library.
+
 #include "DelegateMQ.h"
 #include "predef/transport/ITransport.h"
 #include "predef/transport/ITransportMonitor.h"

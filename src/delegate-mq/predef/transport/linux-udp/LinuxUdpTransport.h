@@ -1,16 +1,30 @@
 #ifndef LINUX_UDP_TRANSPORT_H
 #define LINUX_UDP_TRANSPORT_H
 
-/// @file 
+/// @file LinuxUdpTransport.h
 /// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
-/// Transport callable argument data to/from a remote using Linux UDP socket.
-///
+/// @brief Linux UDP transport implementation for DelegateMQ.
+/// 
+/// @details
+/// This class implements the ITransport interface using standard Linux BSD sockets
+/// for connectionless UDP communication. It supports both PUB (Publisher/Sender)
+/// and SUB (Subscriber/Receiver) modes.
+/// 
+/// Key Features:
+/// 1. **Active Object**: Uses an internal worker thread to execute socket operations 
+///    and ensure thread-safe execution via delegate marshaling.
+/// 2. **Reliability Support**: Integrates with `TransportMonitor` to track outgoing 
+///    sequence numbers and process incoming ACKs to detect packet loss.
+/// 3. **Non-Blocking I/O**: Configures socket receive timeouts (`SO_RCVTIMEO`) to 
+///    prevent indefinite blocking during polling loops.
+/// 4. **Address Management**: Automatically updates the target address on the receiver 
+///    side to support reliable bidirectional ACKs.
+/// 
+/// @note This class is specific to Linux and uses POSIX socket APIs.
 
-#include "predef/transport/ITransport.h"
-#include "predef/transport/ITransportMonitor.h"
-#include "predef/transport/DmqHeader.h"
+#include "DelegateMQ.h"
 
 #include <iostream>
 #include <sstream>
@@ -68,6 +82,18 @@ public:
                 std::cerr << "Invalid IP address format." << std::endl;
                 return -1;
             }
+
+            // Set a short timeout (e.g. 2ms) so Sender::Send() doesn't hang
+            // while polling for ACKs.
+            struct timeval timeout;
+            timeout.tv_sec = 0;
+            timeout.tv_usec = 2000; // 2ms
+
+            if (setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
+            {
+                std::cerr << "setsockopt(SO_RCVTIMEO) failed: " << strerror(errno) << std::endl;
+                return -1;
+            }
         }
         else if (type == Type::SUB)
         {
@@ -115,8 +141,14 @@ public:
             return -1;
         }
 
-        if (m_type == Type::SUB || m_sendTransport != this) {
-            std::cerr << "Send operation not allowed." << std::endl;
+        // Allow ACKs on SUB sockets. Block only regular data.
+        if (m_type == Type::SUB && header.GetId() != dmq::ACK_REMOTE_ID) {
+            std::cerr << "Send operation not allowed on SUB socket." << std::endl;
+            return -1;
+        }
+
+        if (m_sendTransport != this) {
+            std::cerr << "Send operation not allowed (Receive only)." << std::endl;
             return -1;
         }
 
@@ -149,20 +181,14 @@ public:
 
         std::string data = ss.str();
 
-        // Monitor Logic (Use values from copy)
+        // Always track the message (unless it is an ACK)
         if (id != dmq::ACK_REMOTE_ID && m_transportMonitor)
             m_transportMonitor->Add(seqNum, id);
 
         ssize_t sent = sendto(m_socket, data.c_str(), data.size(), 0,
             (struct sockaddr*)&m_addr, sizeof(m_addr));
 
-        if (sent < 0)
-        {
-            std::cerr << "sendto failed: " << strerror(errno) << std::endl;
-            return -1;
-        }
-
-        return 0;
+        return (sent == (ssize_t)data.size()) ? 0 : -1;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
@@ -170,8 +196,8 @@ public:
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
             return MakeDelegate(this, &UdpTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
 
-        if (m_type == Type::PUB || m_recvTransport != this) {
-            std::cerr << "Receive operation not allowed." << std::endl;
+        if (m_recvTransport != this) {
+            std::cerr << "Receive operation not allowed (Send only)." << std::endl;
             return -1;
         }
 
@@ -184,8 +210,15 @@ public:
         {
             if (errno == EWOULDBLOCK || errno == EAGAIN)
                 return -1; // Timeout
-            std::cerr << "recvfrom failed: " << strerror(errno) << std::endl;
+            // std::cerr << "recvfrom failed: " << strerror(errno) << std::endl;
             return -1;
+        }
+
+        // Important: Update m_addr to the sender's address so we can ACK back
+        // Note: For a true 1-to-N PUB/SUB, you might not want to overwrite m_addr permanently,
+        // but for a 1-to-1 reliable link, this is required to route the ACK.
+        if (m_type == Type::SUB) {
+            m_addr = fromAddr;
         }
 
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);

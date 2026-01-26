@@ -10,6 +10,11 @@ The following remote delegate sample projects have no external library dependenc
 
 * [bare-metal](./bare-metal/) - simple remote delegate app on Windows and Linux.
 * [system-architecture-no-deps](./system-architecture-no-deps/) - complex remote delegate client/server apps using UDP on Windows or Linux.
+* [linux-tcp-serializer](./linux-tcp-serializer/) - simple TCP remote delegate app on Linux.
+* [linux-udp-serializer](./linux-udp-serializer/) - simple UDP remote delegate app on Linux.
+* [win32-tcp-serializer](./win32-tcp-serializer/) - simple TCP remote delegate app on Windows.
+* [win32-udp-serializer](./win32-udp-serializer/) - simple UDP remote delegate app on Windows.
+* [win32-pipe-serializer](./win32-pipe-serializer/) - simple pipe remote delegate app on Windows.
 
 All other projects require external 3rd party library support. See [Examples Setup](../../docs/DETAILS.md#examples-setup) for external library installation setup.
 

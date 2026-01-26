@@ -41,7 +41,7 @@ public:
         m_sendDelegate.SetErrorHandler(MakeDelegate(this, &Sender::ErrorHandler));
 
         // Set the transport
-        m_transport.Create(UdpTransport::Type::PUB, "127.0.0.1", 8080);
+        m_transport.Create(TcpTransport::Type::SERVER, "127.0.0.1", 8080);
         
         // Create the sender thread
         m_thread.CreateThread();
@@ -83,7 +83,7 @@ public:
         // 1. Send the message
         m_sendDelegate(data, dataAux);
 
-        // 2. Poll for the ACK 
+        // 2. Poll for the ACK
         // We try to read from the socket. 
         // If an ACK is waiting, Transport::Receive automatically processes it 
         // and calls m_transportMonitor->Remove(seq).
@@ -121,7 +121,7 @@ private:
     xostringstream m_argStream;
     Dispatcher m_dispatcher;
 
-    UdpTransport m_transport;           // 1. Initialized first
+    TcpTransport m_transport;           // 1. Initialized first
     TransportMonitor m_transportMonitor;// 2. Initialized second (Used by RetryMonitor)
     RetryMonitor m_retryMonitor;        // 3. Initialized third (Depends on above)
     ReliableTransport m_reliableTransport;

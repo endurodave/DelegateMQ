@@ -1,8 +1,25 @@
 #ifndef WIN32_TCP_TRANSPORT_H
 #define WIN32_TCP_TRANSPORT_H
 
-/// @file 
-/// @brief Win32 TCP transport (Non-blocking Create). 
+/// @file Win32TcpTransport.h
+/// @see https://github.com/endurodave/DelegateMQ
+/// David Lafreniere, 2025.
+/// 
+/// @brief Win32 TCP transport implementation for DelegateMQ.
+/// 
+/// @details
+/// This class implements the ITransport interface using Windows Sockets (Winsock2). 
+/// It supports both CLIENT and SERVER modes for transmitting serialized delegate data.
+/// 
+/// Key Features:
+/// 1. **Active Object**: Uses an internal worker thread to perform potentially blocking 
+///    initialization operations (like `connect` or `bind`) to avoid freezing the caller.
+/// 2. **Reliability Support**: Integrates with `TransportMonitor` to track sequence 
+///    numbers and acknowledge (ACK) receipts.
+/// 3. **Non-Blocking I/O**: Utilizes `select()` in the receive loop to prevent 
+///    thread blocking when no data is available, facilitating clean shutdowns.
+/// 
+/// @note This class handles `WSAStartup` and `WSACleanup` internally.
 
 #if !defined(_WIN32) && !defined(_WIN64)
 #error This code must be compiled as a Win32 or Win64 application.
@@ -54,7 +71,6 @@ public:
             return -1;
         }
 
-        // Setup the Service Address
         sockaddr_in service;
         service.sin_family = AF_INET;
         service.sin_port = htons(port);
@@ -62,7 +78,6 @@ public:
 
         if (type == Type::SERVER)
         {
-            // Only Bind and Listen here. Do NOT Accept yet.
             m_listenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
             if (m_listenSocket == INVALID_SOCKET) return -1;
 
@@ -83,21 +98,15 @@ public:
         }
         else if (type == Type::CLIENT)
         {
-            // For Client, we attempt to connect immediately. 
-            // If the server isn't ready, this might fail. Retry logic is handled by the app or user.
             m_clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
             if (connect(m_clientSocket, (SOCKADDR*)&service, sizeof(service)) == SOCKET_ERROR)
             {
-                // It's common for this to fail if the server hasn't started listening yet.
-                // We'll leave m_clientSocket as INVALID and try again in Send/Receive if needed,
-                // or just report error.
                 std::cerr << "Connect failed: " << WSAGetLastError() << std::endl;
                 Close();
                 return -1;
             }
             std::cout << "Connected to server." << std::endl;
 
-            // Set timeout
             DWORD timeout = 2000;
             setsockopt(m_clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
         }
@@ -128,13 +137,11 @@ public:
 
         if (m_clientSocket == INVALID_SOCKET) return -1;
 
-        // 1. Copy Header & Set Length
         DmqHeader headerCopy = header;
         std::string payload = os.str();
         if (payload.length() > UINT16_MAX) return -1;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
-        // 2. Serialize
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
         auto marker = headerCopy.GetMarker(); ss.write((char*)&marker, 2);
         auto id = headerCopy.GetId();         ss.write((char*)&id, 2);
@@ -142,7 +149,6 @@ public:
         auto len = headerCopy.GetLength();    ss.write((char*)&len, 2);
         ss.write(payload.data(), payload.size());
 
-        // 3. Send
         std::string data = ss.str();
         const char* ptr = data.c_str();
         int remaining = (int)data.length();
@@ -155,9 +161,9 @@ public:
             remaining -= sent;
         }
 
-        // Monitor Ack
+        // Always track the message (unless it is an ACK)
         if (id != dmq::ACK_REMOTE_ID && m_transportMonitor)
-            m_transportMonitor->Add(seq, id);
+            m_transportMonitor->Add(headerCopy.GetSeqNum(), id);
 
         return 0;
     }
@@ -167,18 +173,15 @@ public:
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
             return MakeDelegate(this, &TcpTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
 
-        // Lazy Accept Logic
+        // Lazy Accept Logic (Server)
         if (m_type == Type::SERVER && m_clientSocket == INVALID_SOCKET)
         {
-            // Check if we have a pending connection
-            // We use select() here to avoid blocking indefinitely if no client is waiting
-            TIMEVAL tv = { 0, 10000 }; // 10ms poll
+            TIMEVAL tv = { 0, 10000 };
             fd_set fds;
             FD_ZERO(&fds);
             FD_SET(m_listenSocket, &fds);
 
-            int res = select(0, &fds, NULL, NULL, &tv);
-            if (res > 0)
+            if (select(0, &fds, NULL, NULL, &tv) > 0)
             {
                 m_clientSocket = accept(m_listenSocket, NULL, NULL);
                 if (m_clientSocket != INVALID_SOCKET) {
@@ -190,6 +193,16 @@ public:
         }
 
         if (m_clientSocket == INVALID_SOCKET) return -1;
+
+        // Poll check to prevent blocking if no data is waiting (Critical for Sender polling ACKs)
+        fd_set readfds;
+        FD_ZERO(&readfds);
+        FD_SET(m_clientSocket, &readfds);
+        TIMEVAL tv = { 0, 1000 }; // 1ms poll
+
+        if (select(0, &readfds, NULL, NULL, &tv) <= 0) {
+            return -1;
+        }
 
         // 1. Read Header
         char headerBuf[DmqHeader::HEADER_SIZE];
@@ -231,18 +244,22 @@ public:
         return 0;
     }
 
-    // Setters omitted for brevity (same as before)
-    void SetTransportMonitor(ITransportMonitor* tm) {
+    void SetTransportMonitor(ITransportMonitor* tm)
+    {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
             return MakeDelegate(this, &TcpTransport::SetTransportMonitor, m_thread, dmq::WAIT_INFINITE)(tm);
         m_transportMonitor = tm;
     }
-    void SetSendTransport(ITransport* st) {
+
+    void SetSendTransport(ITransport* st)
+    {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
             return MakeDelegate(this, &TcpTransport::SetSendTransport, m_thread, dmq::WAIT_INFINITE)(st);
         m_sendTransport = st;
     }
-    void SetRecvTransport(ITransport* rt) {
+
+    void SetRecvTransport(ITransport* rt)
+    {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
             return MakeDelegate(this, &TcpTransport::SetRecvTransport, m_thread, dmq::WAIT_INFINITE)(rt);
         m_recvTransport = rt;

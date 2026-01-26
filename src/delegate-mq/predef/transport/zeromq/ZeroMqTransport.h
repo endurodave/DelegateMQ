@@ -1,12 +1,28 @@
 #ifndef ZEROMQ_TRANSPORT_H
 #define ZEROMQ_TRANSPORT_H
 
-/// @file 
+/// @file ZeroMqTransport.h
 /// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
-/// Transport callable argument data to/from a remote using ZeroMQ library. Update 
-/// BUFFER_SIZE below as necessary.
+/// @brief ZeroMQ transport implementation for DelegateMQ.
+/// 
+/// @details
+/// This class implements the ITransport interface using the ZeroMQ high-performance 
+/// asynchronous messaging library. It supports multiple patterns including PAIR (1-to-1) 
+/// and PUB/SUB (1-to-many).
+/// 
+/// Key Features:
+/// 1. **Active Object**: Encapsulates all ZeroMQ socket operations within a dedicated 
+///    worker thread to adhere to ZeroMQ's thread-safety constraints (sockets are not thread-safe).
+/// 2. **Flexible Patterns**: Supports both bidirectional (PAIR) and unidirectional (PUB/SUB)
+///    communication topologies.
+/// 3. **Non-Blocking**: Configures `ZMQ_RCVTIMEO` and `ZMQ_DONTWAIT` to ensure the 
+///    transport remains responsive and never blocks the application indefinitely.
+/// 4. **Reliability**: Integrates with `TransportMonitor` to providing sequence tracking 
+///    and ACKs even over PUB/SUB (when a return channel is available).
+/// 
+/// @note Requires the `libzmq` library.
 
 #include "DelegateMQ.h"
 #include "predef/transport/ITransport.h"

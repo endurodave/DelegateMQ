@@ -1,15 +1,30 @@
 #ifndef WIN32_UDP_TRANSPORT_H
 #define WIN32_UDP_TRANSPORT_H
 
-/// @file 
 /// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
-/// Transport callable argument data to/from a remote using Win32 UDP socket. 
+/// @brief Win32 UDP transport implementation for DelegateMQ.
 /// 
+/// @details
+/// This class implements the ITransport interface using Windows Sockets (Winsock2) 
+/// for connectionless UDP communication. It supports two modes: PUB (Publisher/Sender) 
+/// and SUB (Subscriber/Receiver).
+/// 
+/// Key Features:
+/// 1. **Active Object**: Uses an internal worker thread to manage socket operations 
+///    and ensure thread-safe execution via delegate marshaling.
+/// 2. **Message Oriented**: Transmits discrete packets containing serialized delegate 
+///    arguments and framing headers.
+/// 3. **Reliability Support**: Integrates with `TransportMonitor` to track outgoing 
+///    sequence numbers and process incoming ACKs to detect packet loss.
+/// 4. **Socket Management**: Automatically handles `WSAStartup` and socket creation/cleanup.
+/// 
+/// @note This implementation uses blocking sockets with timeouts (`SO_RCVTIMEO`) to 
+/// prevent indefinite blocking during receive operations.
 
 #if !defined(_WIN32) && !defined(_WIN64)
-    #error This code must be compiled as a Win32 or Win64 application.
+#error This code must be compiled as a Win32 or Win64 application.
 #endif
 
 #include <winsock2.h>
@@ -27,7 +42,7 @@
 class UdpTransport : public ITransport
 {
 public:
-    enum class Type 
+    enum class Type
     {
         PUB,
         SUB
@@ -53,7 +68,7 @@ public:
         m_type = type;
 
         // Initialize Winsock
-        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) 
+        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
         {
             std::cerr << "WSAStartup failed." << std::endl;
             return -1;
@@ -61,7 +76,7 @@ public:
 
         // Create a UDP socket
         m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        if (m_socket == INVALID_SOCKET) 
+        if (m_socket == INVALID_SOCKET)
         {
             std::cerr << "Socket creation failed." << std::endl;
             WSACleanup();
@@ -80,6 +95,9 @@ public:
                 std::cerr << "Invalid IP address format: " << addr << std::endl;
                 return -1;
             }
+
+            DWORD timeout = 2;
+            setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
         }
         else if (type == Type::SUB)
         {
@@ -128,8 +146,8 @@ public:
             return -1;
         }
 
-        if (m_type == Type::SUB) {
-            std::cout << "Error: Cannot send on SUB socket!" << std::endl;
+        if (m_type == Type::SUB && header.GetId() != dmq::ACK_REMOTE_ID) {
+            std::cout << "Error: Cannot send (non-ACK) on SUB socket!" << std::endl;
             return -1;
         }
 
@@ -164,43 +182,31 @@ public:
         auto len = headerCopy.GetLength();
         ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
-        // Insert delegate arguments from the stream (payload)
         ss.write(payload.data(), payload.size());
 
         size_t length = ss.str().length();
 
-        if (id != dmq::ACK_REMOTE_ID)
-        {
-            if (m_transportMonitor)
-                m_transportMonitor->Add(seqNum, id);
+        // Always track the message (unless it is an ACK)
+        if (id != dmq::ACK_REMOTE_ID && m_transportMonitor) {
+            m_transportMonitor->Add(seqNum, id);
         }
 
         char* sendBuf = (char*)malloc(length);
         if (!sendBuf)
             return -1;
 
-        // Copy char buffer into heap allocated memory
         ss.rdbuf()->sgetn(sendBuf, length);
 
         int err = sendto(m_socket, sendBuf, (int)length, 0, (sockaddr*)&m_addr, sizeof(m_addr));
         free(sendBuf);
-        if (err == SOCKET_ERROR)
-        {
-            std::cerr << "sendto failed." << std::endl;
-            return -1;
-        }
-        return 0;
+
+        return (err == SOCKET_ERROR) ? -1 : 0;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
             return MakeDelegate(this, &UdpTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
-
-        if (m_type == Type::PUB) {
-            std::cout << "Error: Cannot receive on PUB socket!" << std::endl;
-            return -1;
-        }
 
         if (m_recvTransport != this) {
             std::cout << "Error: This transport used for send only!" << std::endl;
@@ -211,16 +217,14 @@ public:
 
         int addrLen = sizeof(m_addr);
         int size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, (sockaddr*)&m_addr, &addrLen);
-        if (size == SOCKET_ERROR) 
+        if (size == SOCKET_ERROR)
         {
-            // timeout
-            //std::cerr << "recvfrom failed." << std::endl;
             return -1;
         }
 
         // Write the received data into the stringstream
         headerStream.write(m_buffer, size);
-        headerStream.seekg(0);  
+        headerStream.seekg(0);
 
         uint16_t marker = 0;
         headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
@@ -228,30 +232,25 @@ public:
 
         if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
-            return -1;  // @TODO: Optionally handle this case more gracefully
+            return -1;
         }
 
-        // Read the DelegateRemoteId (2 bytes) into the `id` variable
         uint16_t id = 0;
         headerStream.read(reinterpret_cast<char*>(&id), sizeof(id));
         header.SetId(id);
 
-        // Read seqNum (again using the getter for byte swapping)
         uint16_t seqNum = 0;
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
         header.SetSeqNum(seqNum);
 
-        // Read length
         uint16_t length = 0;
         headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
         header.SetLength(length);
 
-        // Write the remaining argument data to stream
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
         if (id == dmq::ACK_REMOTE_ID)
         {
-            // Receiver ack'ed message. Remove sequence number from monitor.
             if (m_transportMonitor)
                 m_transportMonitor->Remove(seqNum);
         }
@@ -259,20 +258,17 @@ public:
         {
             if (m_transportMonitor && m_sendTransport)
             {
-                // Send header with received seqNum as the ack message
                 xostringstream ss_ack;
                 DmqHeader ack;
                 ack.SetId(dmq::ACK_REMOTE_ID);
                 ack.SetSeqNum(seqNum);
-                m_sendTransport->Send(ss_ack, ack);
+                //m_sendTransport->Send(ss_ack, ack);
             }
         }
 
-        // argStream contains the serialized remote argument data
-        return 0;   // Success
+        return 0;
     }
 
-    // Set a transport monitor for checking message ack
     void SetTransportMonitor(ITransportMonitor* transportMonitor)
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
@@ -280,7 +276,6 @@ public:
         m_transportMonitor = transportMonitor;
     }
 
-    // Set an alternative send transport
     void SetSendTransport(ITransport* sendTransport)
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
@@ -288,7 +283,6 @@ public:
         m_sendTransport = sendTransport;
     }
 
-    // Set an alternative receive transport
     void SetRecvTransport(ITransport* recvTransport)
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())

@@ -1,11 +1,11 @@
 #ifndef RECEIVER_H
 #define RECEIVER_H
 
-/// @file main.cpp
+/// @file Receiver.h
 /// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
-/// @brief ZeroMQ with remote delegates examples. 
+/// @brief TCP Receiver example. 
 
 #include "DelegateMQ.h"
 #include "data.h"
@@ -21,7 +21,7 @@ public:
         m_id(id),
         m_thread("Receiver"),
         m_argStream(ios::in | ios::out | ios::binary),
-        m_transportMonitor(std::chrono::milliseconds(500))
+        m_transportMonitor(std::chrono::milliseconds(2000))
     {
         // Link Monitor (For ACK management)
         m_transport.SetTransportMonitor(&m_transportMonitor);
@@ -31,8 +31,10 @@ public:
         m_recvDelegate.SetSerializer(&m_serializer);
         m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, id);
 
-        // Set the transport
-        m_transport.Create(UdpTransport::Type::SUB, "127.0.0.1", 8080);
+        // Use Type::SERVER (Listens/Accepts connection)
+        // Note: This call blocks until a client (Sender) connects!
+        // (Assuming blocking connect for simplicity in this example)
+        m_transport.Create(TcpTransport::Type::SERVER, "127.0.0.1", 8080);
 
         // Create the receiver thread
         m_thread.CreateThread();
@@ -40,7 +42,8 @@ public:
 
     ~Receiver()
     {
-        m_thread.ExitThread();
+        // Ensure we stop the timer and detach delegates before destruction
+        Stop();
         m_recvDelegate = nullptr;
     }
 
@@ -53,10 +56,12 @@ public:
 
     void Stop()
     {
-        (*m_recvTimer.OnExpired) -= MakeDelegate(this, &Receiver::Poll, m_thread);
-        m_recvTimer.Stop();
+        if (m_recvTimer.Enabled()) {
+            (*m_recvTimer.OnExpired) -= MakeDelegate(this, &Receiver::Poll, m_thread);
+            m_recvTimer.Stop();
+        }
         m_thread.ExitThread();
-        m_recvTimer.Stop();
+        m_transport.Close();
     }
 
 private:
@@ -66,6 +71,8 @@ private:
         // Get incoming data
         xstringstream arg_data(std::ios::in | std::ios::out | std::ios::binary);
         DmqHeader header;
+
+        // Receive will return -1 if timeout or error, 0 on success
         int error = m_transport.Receive(arg_data, header);
 
         // Incoming remote delegate data arrived?
@@ -75,7 +82,7 @@ private:
             m_recvDelegate.Invoke(arg_data);
         }
 
-        // Process monitor (Optional on receiver unless sending responses)
+        // Process monitor (Handles ACK cleanup)
         m_transportMonitor.Process();
     }
 
@@ -83,7 +90,7 @@ private:
     void DataUpdate(Data& data, DataAux& dataAux)
     {
         if (data.dataPoints.size() > 0)
-            cout << data.msg << " " << data.dataPoints[0].x << " " << data.dataPoints[0].y << " " << dataAux.auxMsg << endl;
+            cout << data.msg << " " << data.dataPoints[0].x << ", " << data.dataPoints[0].y << " " << dataAux.auxMsg << endl;
         else
             cout << "DataUpdate incoming data error!" << endl;
     }
@@ -93,7 +100,7 @@ private:
     Timer m_recvTimer;
 
     xostringstream m_argStream;
-    UdpTransport m_transport;
+    TcpTransport m_transport;
     Serializer<void(Data&, DataAux&)> m_serializer;
     TransportMonitor m_transportMonitor; // Tracks sequence numbers
 

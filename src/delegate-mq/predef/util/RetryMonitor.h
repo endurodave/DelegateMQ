@@ -82,40 +82,57 @@ public:
 
 private:
     /// @brief Callback handled when a message is either ACK'd or Timed Out.
-    void OnStatusChanged(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status) 
+    void OnStatusChanged(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
     {
-        const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
-        
-        auto it = m_retryStore.find(seqNum);
-        if (it == m_retryStore.end()) return;
+        // Variables to hold data for the retry OUTSIDE the lock
+        bool shouldRetry = false;
+        std::string retryPayload;
+        DmqHeader retryHeader;
 
-        if (status == TransportMonitor::Status::SUCCESS) 
         {
-            // Message arrived safely, we can forget about the data now
-            m_retryStore.erase(it);
-        }
-        else if (status == TransportMonitor::Status::TIMEOUT) 
-        {
-            if (it->second.attemptsRemaining > 0) 
+            // 1. Critical Section: Read/Modify Map ONLY
+            const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
+
+            auto it = m_retryStore.find(seqNum);
+            if (it == m_retryStore.end()) return;
+
+            if (status == TransportMonitor::Status::SUCCESS)
             {
-                it->second.attemptsRemaining--;
-                
-                // Log the retry attempt
-                // LOG_INFO("RetryMonitor: Retrying seq {} (ID: {})", seqNum, id);
-                
-                // Re-prepare the stream from our stored binary data
-                xostringstream os(std::ios::in | std::ios::out | std::ios::binary);
-                os.write(it->second.packetData.data(), it->second.packetData.size());
-                
-                // Re-send. The transport will re-add this to the TransportMonitor.
-                m_transport.Send(os, it->second.header);
-            }
-            else 
-            {
-                // We've tried our best. Clean up and let the monitor report final timeout.
-                // LOG_ERROR("RetryMonitor: Max retries exceeded for seq {}", seqNum);
+                // Message arrived safely, we can forget about the data now
                 m_retryStore.erase(it);
+                return; // Done
             }
+            else if (status == TransportMonitor::Status::TIMEOUT)
+            {
+                if (it->second.attemptsRemaining > 0)
+                {
+                    // Decrement counter
+                    it->second.attemptsRemaining--;
+
+                    // COPY data to local variables so we can use them after unlocking
+                    retryPayload = it->second.packetData;
+                    retryHeader = it->second.header;
+                    shouldRetry = true;
+                }
+                else
+                {
+                    // Max retries exceeded. Clean up.
+                    // LOG_ERROR("RetryMonitor: Max retries exceeded for seq {}", seqNum);
+                    m_retryStore.erase(it);
+                }
+            }
+        } // <--- LOCK IS RELEASED HERE
+
+        // 2. Non-Critical Section: Perform blocking network operations
+        if (shouldRetry)
+        {
+            // Re-prepare the stream from our local copy
+            xostringstream os(std::ios::in | std::ios::out | std::ios::binary);
+            os.write(retryPayload.data(), retryPayload.size());
+
+            // Re-send. The transport will re-add this to the TransportMonitor.
+            // This runs without holding m_lock, preventing a deadlock.
+            m_transport.Send(os, retryHeader);
         }
     }
 

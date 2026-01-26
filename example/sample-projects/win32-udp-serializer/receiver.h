@@ -20,8 +20,12 @@ public:
     Receiver(DelegateRemoteId id) :
         m_id(id),
         m_thread("Receiver"),
-        m_argStream(ios::in | ios::out | ios::binary)
+        m_argStream(ios::in | ios::out | ios::binary),
+        m_transportMonitor(std::chrono::milliseconds(2000))
     {
+        // Link Monitor (For ACK management)
+        m_transport.SetTransportMonitor(&m_transportMonitor);
+
         // Set the delegate interfaces
         m_recvDelegate.SetStream(&m_argStream);
         m_recvDelegate.SetSerializer(&m_serializer);
@@ -70,6 +74,9 @@ private:
             // Invoke the receiver target function with the sender's argument data
             m_recvDelegate.Invoke(arg_data);
         }
+
+        // Process monitor (Optional on receiver unless sending responses)
+        m_transportMonitor.Process();
     }
 
     // Receiver target function called when sender remote delegate is invoked
@@ -88,6 +95,7 @@ private:
     xostringstream m_argStream;
     UdpTransport m_transport;
     Serializer<void(Data&, DataAux&)> m_serializer;
+    TransportMonitor m_transportMonitor; // Tracks sequence numbers
 
     // Receiver remote delegate
     DelegateMemberRemote<Receiver, void(Data&, DataAux&)> m_recvDelegate;
