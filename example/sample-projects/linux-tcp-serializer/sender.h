@@ -6,6 +6,8 @@
 /// David Lafreniere, 2025.
 
 #include "DelegateMQ.h"
+#include "predef/util/RetryMonitor.h"
+#include "predef/util/ReliableTransport.h"
 #include "data.h"
 
 using namespace dmq;
@@ -41,7 +43,7 @@ public:
         m_sendDelegate.SetErrorHandler(MakeDelegate(this, &Sender::ErrorHandler));
 
         // Set the transport
-        m_transport.Create(TcpTransport::Type::SERVER, "127.0.0.1", 8080);
+        m_transport.Create(TcpTransport::Type::CLIENT, "127.0.0.1", 8080);
         
         // Create the sender thread
         m_thread.CreateThread();

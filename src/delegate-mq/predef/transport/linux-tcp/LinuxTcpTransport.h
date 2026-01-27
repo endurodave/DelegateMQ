@@ -70,8 +70,7 @@ public:
             if (bind(m_socket, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) < 0) return -1;
             if (listen(m_socket, 1) < 0) return -1;
 
-            // Note: accept() happens on the worker thread
-            m_connFd = accept(m_socket, nullptr, nullptr);
+            // We will accept lazily in Receive().
         }
         else {
             if (connect(m_socket, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) < 0) return -1;
@@ -85,7 +84,7 @@ public:
             setsockopt(m_connFd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
         }
 
-        return (m_connFd < 0) ? -1 : 0;
+        return 0;
     }
 
     void Close()
@@ -132,6 +131,23 @@ public:
     {
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
             return MakeDelegate(this, &TcpTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
+
+        // Lazy Accept Logic (Server Mode)
+        if (m_type == Type::SERVER && m_connFd < 0) {
+            fd_set fds;
+            FD_ZERO(&fds);
+            FD_SET(m_socket, &fds);
+            struct timeval tv = { 0, 1000 }; // 1ms poll
+
+            if (select(m_socket + 1, &fds, nullptr, nullptr, &tv) > 0) {
+                m_connFd = accept(m_socket, nullptr, nullptr);
+                if (m_connFd >= 0) {
+                    // Set timeout on new socket
+                    struct timeval t; t.tv_sec = 2; t.tv_usec = 0;
+                    setsockopt(m_connFd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&t, sizeof(t));
+                }
+            }
+        }
 
         if (m_connFd < 0) return -1;
 

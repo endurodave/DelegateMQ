@@ -77,13 +77,20 @@ def build_samples():
                 
             except subprocess.CalledProcessError as e:
                 print(f"   FAILED: {project_name}")
+
+                # --- SPECIAL HANDLING FOR SERIALPORT ---
+                if "serialport-serializer" in project_name:
+                    print(f"   >> NOTICE: This project requires manual dependency setup.")
+                    print(f"   >> Please read: {os.path.join(dirpath, 'README.md')}")
+                    print(f"   >> You likely need to build 'libserialport' manually first.\n")
+
                 if e.stderr:
                     lines = e.stderr.split('\n')
                     for i, line in enumerate(lines):
                         if "CMake Error" in line or "Could not find" in line or "FATAL_ERROR" in line:
                             print(f"   Reason: {line.strip()}")
                             # Print a bit of context
-                            if i+1 < len(lines): print(f"           {lines[i+1].strip()}")
+                            if i+1 < len(lines): print(f"          {lines[i+1].strip()}")
                             break
 
 if __name__ == "__main__":

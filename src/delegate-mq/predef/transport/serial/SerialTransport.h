@@ -25,11 +25,9 @@
 /// @note This class requires `libserialport` to be linked.
 
 #include "libserialport.h"
-#include "predef/transport/ITransport.h"
-#include "predef/transport/ITransportMonitor.h"
-#include "predef/transport/DmqHeader.h"
-#include "predef/util/crc16.h" // Ensure you have this included
 #include "DelegateMQ.h" 
+#include "predef/util/crc16.h"
+#include "predef/transport/ITransportMonitor.h"
 
 #include <sstream>
 #include <iostream>

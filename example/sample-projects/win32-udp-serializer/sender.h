@@ -6,6 +6,8 @@
 /// David Lafreniere, 2025.
 
 #include "DelegateMQ.h"
+#include "predef/util/RetryMonitor.h"
+#include "predef/util/ReliableTransport.h"
 #include "data.h"
 
 using namespace dmq;

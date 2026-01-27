@@ -308,7 +308,7 @@ DelegateMQ at a glance.
 | Message Priority | Asynchronous delegates support prioritization to ensure timely execution of critical messages |
 | Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |
 | Transport | External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (`ITransport`)  |
-| Timeouts and Retries | Provided by a communication library (e.g. ZeroMQ REQ-REP (Request-Reply)), TCP/IP stack, or custom solution (`ITransportMonitor`) |
+| Transport Reliability | Provided by the built-in reliability layer (`ReliableTransport`) or communication library (e.g. ZeroMQ, nng, TCP/IP stack). | |
 | Message Buffering | Remote delegate message buffering provided by a communication library (e.g. ZeroMQ) or custom solution within transport |
 | Dynamic Memory | Heap or DelegateMQ fixed-block allocator |
 | Debug Logging | Debug logging using spdlog C++ logging library |
