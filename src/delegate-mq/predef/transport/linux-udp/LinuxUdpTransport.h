@@ -25,6 +25,7 @@
 /// @note This class is specific to Linux and uses POSIX socket APIs.
 
 #include "DelegateMQ.h"
+#include "predef/transport/ITransportMonitor.h"
 
 #include <iostream>
 #include <sstream>

@@ -33,6 +33,7 @@
 #include <vector>
 
 #include "DelegateMQ.h"
+#include "predef/transport/ITransportMonitor.h"
 
 class TcpTransport : public ITransport
 {
