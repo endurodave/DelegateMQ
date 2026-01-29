@@ -12,6 +12,24 @@ elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_FREERTOS")
         "${DMQ_ROOT_DIR}/predef/os/freertos/*.c*" 
         "${DMQ_ROOT_DIR}/predef/os/freertos/*.h" 
     )
+elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_THREADX")
+    add_compile_definitions(DMQ_THREAD_THREADX)
+    file(GLOB THREAD_SOURCES 
+        "${DMQ_ROOT_DIR}/predef/os/threadx/*.c*" 
+        "${DMQ_ROOT_DIR}/predef/os/threadx/*.h" 
+    )
+elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_ZEPHYR")
+    add_compile_definitions(DMQ_THREAD_ZEPHYR)
+    file(GLOB THREAD_SOURCES 
+        "${DMQ_ROOT_DIR}/predef/os/zephyr/*.c*" 
+        "${DMQ_ROOT_DIR}/predef/os/zephyr/*.h" 
+    )
+elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_CMSIS_RTOS2")
+    add_compile_definitions(DMQ_THREAD_CMSIS_RTOS2)
+    file(GLOB THREAD_SOURCES 
+        "${DMQ_ROOT_DIR}/predef/os/cmsis-rtos2/*.c*" 
+        "${DMQ_ROOT_DIR}/predef/os/cmsis-rtos2/*.h" 
+    )
 elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_NONE")
     add_compile_definitions(DMQ_THREAD_NONE)
 else()
@@ -68,6 +86,9 @@ elseif (DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_LINUX_TCP")
 elseif (DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_SERIAL_PORT")
     add_compile_definitions(DMQ_TRANSPORT_SERIAL_PORT)
     file(GLOB TRANSPORT_SOURCES "${DMQ_ROOT_DIR}/predef/transport/serial/*.h")
+elseif (DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ARM_LWIP_UDP")
+    add_compile_definitions(DMQ_TRANSPORT_ARM_LWIP_UDP)
+    file(GLOB TRANSPORT_SOURCES "${DMQ_ROOT_DIR}/predef/transport/arm-lwip-udp/*.h")
 else()
     message(FATAL_ERROR "Must set DMQ_TRANSPORT option.")
 endif()

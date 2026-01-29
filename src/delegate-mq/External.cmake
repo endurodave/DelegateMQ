@@ -105,6 +105,36 @@ if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_SERIAL_PORT")
         endif()
     endif()
 endif()
+
+# ---------------------------------------------------------------------------
+# lwIP library (For ARM/Embedded)
+# ---------------------------------------------------------------------------
+if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ARM_LWIP_UDP")
+    # Adjust this path if your lwIP root is different
+    set(LWIP_ROOT "${DMQ_ROOT_DIR}/../../../lwip")
+
+    # lwIP requires 3 main include directories for the socket API
+    set_and_check(LWIP_INCLUDE_DIR_1 "${LWIP_ROOT}/src/include")
+    set_and_check(LWIP_INCLUDE_DIR_2 "${LWIP_ROOT}/src/include/ipv4")
+    
+    # Often required for lwipopts.h or arch/cc.h. 
+    # NOTE: You may need to customize this depending on where your project keeps 'lwipopts.h'
+    # For now, we point to the generic 'contrib' ports if present, or just the root.
+    set(LWIP_INCLUDE_DIR_3 "${LWIP_ROOT}/contrib/ports/unix/port/include")
+
+    set(LWIP_INCLUDE_DIRS 
+        "${LWIP_INCLUDE_DIR_1}"
+        "${LWIP_INCLUDE_DIR_2}"
+        "${LWIP_INCLUDE_DIR_3}"
+    )
+    
+    # Collect core lwIP sources
+    file(GLOB_RECURSE LWIP_SOURCES 
+        "${LWIP_ROOT}/src/core/*.c"
+        "${LWIP_ROOT}/src/api/*.c"
+        "${LWIP_ROOT}/src/netif/*.c"
+    )
+endif()
     
 # ---------------------------------------------------------------------------
 # MessagePack
@@ -156,6 +186,74 @@ if(DMQ_THREAD STREQUAL "DMQ_THREAD_FREERTOS")
         "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW/port.c"
         "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MemMang/heap_5.c"
     )
+endif()
+
+# ---------------------------------------------------------------------------
+# ThreadX
+# ---------------------------------------------------------------------------
+if(DMQ_THREAD STREQUAL "DMQ_THREAD_THREADX")
+    set_and_check(THREADX_ROOT_DIR "${DMQ_ROOT_DIR}/../../../threadx")
+    
+    # Collect Common Core Sources
+    file(GLOB THREADX_SOURCES 
+        "${THREADX_ROOT_DIR}/common/src/*.c"
+        "${THREADX_ROOT_DIR}/common/inc/*.h"
+    )
+
+    # Note: You generally need to append architecture-specific port sources here
+    # Example for Windows Simulation (MSVC):
+    if(MSVC)
+        # file(GLOB PORT_SOURCES "${THREADX_ROOT_DIR}/ports/win32/vs_2019/src/*.c")
+        # list(APPEND THREADX_SOURCES ${PORT_SOURCES})
+    endif()
+endif()
+
+# ---------------------------------------------------------------------------
+# Zephyr
+# ---------------------------------------------------------------------------
+if(DMQ_THREAD STREQUAL "DMQ_THREAD_ZEPHYR")
+    # Zephyr is a build system, not just a library. 
+    # We typically do NOT manually glob source files here.
+    # The application's main CMakeLists.txt must call `find_package(Zephyr)` 
+    # which sets up the include paths and kernel linking automatically.
+
+    # Optional: Just verify the root directory exists if you want to be safe
+    set_and_check(ZEPHYR_ROOT_DIR "${DMQ_ROOT_DIR}/../../../zephyr")
+    
+    # Do NOT glob sources. Zephyr builds itself.
+endif()
+
+# ---------------------------------------------------------------------------
+# CMSIS-RTOS2
+# ---------------------------------------------------------------------------
+if(DMQ_THREAD STREQUAL "DMQ_THREAD_CMSIS_RTOS2")
+    # CMSIS is usually provided by the IDE (Keil/IAR) or a silicon vendor pack (STM32Cube).
+    # We do NOT glob sources here by default.
+    # Users must ensure the 'cmsis_os2.h' path is in their include path.
+endif()
+
+# ---------------------------------------------------------------------------
+# Qt Framework
+# ---------------------------------------------------------------------------
+if(DMQ_THREAD STREQUAL "DMQ_THREAD_QT")
+    add_compile_definitions(DMQ_THREAD_QT)
+    
+    # Find the Qt packages (Core is usually sufficient for QThread)
+    find_package(Qt6 COMPONENTS Core REQUIRED)
+    # Or Qt5: find_package(Qt5 COMPONENTS Core REQUIRED)
+
+    # Collect the source files
+    file(GLOB THREAD_SOURCES 
+        "${DMQ_ROOT_DIR}/predef/os/qt/*.cpp" 
+        "${DMQ_ROOT_DIR}/predef/os/qt/*.h" 
+    )
+    
+    # Important: Enable CMAKE_AUTOMOC for the Qt Meta-Object system 
+    # (needed for signals/slots in Thread.h)
+    set(CMAKE_AUTOMOC ON)
+    
+    # You might need to link Qt6::Core to your main target later:
+    # target_link_libraries(YourApp PRIVATE Qt6::Core)
 endif()
 
 # ---------------------------------------------------------------------------

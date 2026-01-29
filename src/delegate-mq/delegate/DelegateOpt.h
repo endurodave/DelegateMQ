@@ -10,6 +10,12 @@
 #if defined(DMQ_THREAD_FREERTOS)
     #include "predef/util/FreeRTOSClock.h"
     #include "predef/util/FreeRTOSMutex.h"
+#elif defined(DMQ_THREAD_THREADX)
+    #include "predef/util/ThreadXClock.h"
+    #include "predef/util/ThreadXMutex.h"
+#elif defined(DMQ_THREAD_CMSIS_RTOS2)
+    #include "predef/util/CmsisRtos2Clock.h"
+    #include "predef/util/CmsisRtos2Mutex.h"
 #elif defined(DMQ_THREAD_NONE)
     #include "predef/util/BareMetalClock.h"
 #endif
@@ -23,12 +29,23 @@ namespace dmq
     // Use the custom FreeRTOS wrapper
     using Clock = dmq::FreeRTOSClock;
 
+#elif defined(DMQ_THREAD_THREADX)
+    // Use the custom ThreadX wrapper
+    using Clock = dmq::ThreadXClock;
+
+#elif defined(DMQ_THREAD_ZEPHYR)
+    // Use the custom Zephyr wrapper
+    using Clock = dmq::ZephyrClock;
+
 #elif defined(DMQ_THREAD_NONE)
     // Assuming implemented the 'g_ticks' variable
     using Clock = dmq::BareMetalClock;
 
+ #elif defined(DMQ_THREAD_CMSIS_RTOS2)
+    using Clock = dmq::CmsisRtos2Clock;
+
 #else
-    // Windows / Linux / macOS (Standard)
+    // Windows / Linux / macOS / Qt
     using Clock = std::chrono::steady_clock;
 #endif
 
@@ -43,6 +60,20 @@ namespace dmq
     using Mutex = dmq::FreeRTOSMutex;
     using RecursiveMutex = dmq::FreeRTOSRecursiveMutex;
 
+#elif defined(DMQ_THREAD_THREADX)
+    // Use the custom ThreadX wrapper
+    using Mutex = dmq::ThreadXMutex;
+    using RecursiveMutex = dmq::ThreadXRecursiveMutex;
+
+#elif defined(DMQ_THREAD_ZEPHYR)
+    // Use the custom Zephyr wrapper
+    using Mutex = dmq::ZephyrMutex;
+    using RecursiveMutex = dmq::ZephyrRecursiveMutex;
+
+#elif defined(DMQ_THREAD_CMSIS_RTOS2)
+    using Mutex = dmq::CmsisRtos2Mutex;
+    using RecursiveMutex = dmq::CmsisRtos2RecursiveMutex;
+
 #elif defined(DMQ_THREAD_NONE)
     // Bare metal has no threads, so no locking is required.
     // We define a dummy "No-Op" mutex.
@@ -54,7 +85,7 @@ namespace dmq
     using RecursiveMutex = NullMutex;
 
 #else
-    // Windows / Linux / macOS
+    // Windows / Linux / macOS / Qt
     using Mutex = std::mutex;
     using RecursiveMutex = std::recursive_mutex;
 #endif

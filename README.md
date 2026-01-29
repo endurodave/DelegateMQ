@@ -46,39 +46,30 @@ size_t MsgOut(const std::string& msg)
     return msg.size();
 }
 
-// Examples to create and invoke sync, async and remote delegates
+// Examples to create and invoke sync and async delegates
 int main(void)
 {
     Thread thread("WorkerThread");
     thread.CreateThread();
 
+    // 1. Synchronous Invocation
     auto sync = dmq::MakeDelegate(&MsgOut);
     sync("Invoke MsgOut sync!");
 
+    // 2. Asynchronous Invocation (Non-blocking / Fire-and-forget)
     auto async = dmq::MakeDelegate(&MsgOut, thread);
     async("Invoke MsgOut async (non-blocking)!");
 
+    // 3. Asynchronous Invocation (Blocking / Wait for result)
     auto asyncWait = dmq::MakeDelegate(&MsgOut, thread, dmq::WAIT_INFINITE);
     size_t size = asyncWait("Invoke MsgOut async wait (blocking)!");
 
+    // 4. Asynchronous Invocation with Timeout
     auto asyncWait1s = dmq::MakeDelegate(&MsgOut, thread, std::chrono::seconds(1));
     auto retVal = asyncWait1s.AsyncInvoke("Invoke MsgOut async wait (blocking max 1s)!");
     if (retVal.has_value())     // Async invoke completed within 1 second?
         size = retVal.value();  // Get return value
 
-    // Create remote delegate support objects
-    std::ostringstream stream(std::ios::out | std::ios::binary);
-    Dispatcher dispatcher;
-    Serializer<void(const std::string&)> serializer;
-    
-    // Configure remote delegate
-    dmq::DelegateFreeRemote<void(const std::string&)> remote(dmq::DelegateRemoteId(1));
-    remote.SetStream(&stream);
-    remote.SetDispatcher(&dispatcher);
-    remote.SetSerializer(&serializer);
-
-    // Invoke remote delegate
-    remote("Invoke MsgOut remote!");
     return 0;
 }
 ```
@@ -207,15 +198,17 @@ private:
 
 In C++, a delegate function object encapsulates a callable entity, such as a function, method, or lambda, so it can be invoked later. A delegate is a type-safe wrapper around a callable function that allows it to be passed around, stored, or invoked at a later time, typically within different contexts or on different threads. Delegates are particularly useful for event-driven programming, signal-slots, callbacks, asynchronous APIs, or when you need to pass functions as arguments.
 
+DelegateMQ serves as a middleware library that utilizes simple, pure virtual interface classes for the OS, transport, and serializer. This architecture allows easy swapping of underlying technologies without changing application logic.
+
 Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.
 
 ## Synchronous Delegates
 
-Synchronous delegates invoke the target function anonymously within the current execution context. No external library dependencies are required.
+Synchronous delegates invoke the target function anonymously within the current execution context. No external library or OS dependencies are required.
 
 ## Asynchronous Delegates
 
-Asynchronous delegates simplify multithreaded programming by allowing you to invoke functions across thread boundaries safely and effortlessly. This enables the Active Object pattern, where method execution is decoupled from method invocation. The library automatically marshals all arguments—whether passed by value, pointer, or reference—ensuring thread safety without manual locking or complex queue management.
+Asynchronous delegates simplify multithreaded programming by allowing you to invoke functions across thread boundaries safely and effortlessly. This enables the Active Object pattern, where method execution is decoupled from method invocation. The library automatically marshals all arguments—whether passed by value, pointer, or reference—ensuring thread safety without manual locking or complex queue management. The library is designed for easy porting to any platform by simply implementing a lightweight threading interface (`IThread`).
 
 **Key Features:**
 
@@ -228,7 +221,7 @@ Asynchronous delegates simplify multithreaded programming by allowing you to inv
 
 **Supported Platforms:**
 
-* **Operating System:** Windows, Linux, [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS), bare-metal
+* **Operating System:** Windows, Linux, [FreeRTOS](https://github.com/FreeRTOS/FreeRTOS), [ThreadX](https://github.com/eclipse-threadx/threadx), [Zephyr](https://github.com/zephyrproject-rtos/zephyr), [CMSIS-RTOS2](https://github.com/ARM-software/CMSIS_5), [Qt](https://www.qt.io/), bare-metal
 
 ## Remote Delegates
 
@@ -243,7 +236,7 @@ Remote delegates extend the library to enable Remote Procedure Calls (RPC) acros
 **Supported Integrations:**
 
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [Cereal](https://github.com/USCiLab/cereal), [Bitsery](https://github.com/fraillt/bitsery), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
-* **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), [Serial Port](https://github.com/sigrokproject/libserialport), TCP, UDP, data pipe, memory buffer
+* **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), [Serial Port](https://github.com/sigrokproject/libserialport), TCP, UDP, ARM LwIP, data pipe, memory buffer
  
 ## Delegate Semantics
 
@@ -276,7 +269,7 @@ To build and run DelegateMQ, follow these simple steps. The library uses <a href
    `cmake -B build .`
 3. Build and run the project within the `build` directory. 
 
-See [Example Projects](docs/DETAILS.md/#example-projects) to build remote delegate project examples. See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
+See [Example Projects](docs/DETAILS.md/#example-projects) to build more project examples (remote/IPC, embedded). See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
 
 # Documentation
 

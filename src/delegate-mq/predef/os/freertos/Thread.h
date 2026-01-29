@@ -1,6 +1,27 @@
 #ifndef _THREAD_FREERTOS_H
 #define _THREAD_FREERTOS_H
 
+/// @file Thread.h
+/// @see https://github.com/endurodave/DelegateMQ
+/// David Lafreniere, 2025.
+///
+/// @brief FreeRTOS implementation of the DelegateMQ IThread interface.
+///
+/// @details
+/// This class provides a concrete implementation of the `IThread` interface using 
+/// FreeRTOS primitives (Tasks and Queues). It enables DelegateMQ to dispatch 
+/// asynchronous delegates to a dedicated FreeRTOS task.
+///
+/// **Key Features:**
+/// * **Task Integration:** Wraps a FreeRTOS `xTaskCreate` call to establish a 
+///   dedicated worker loop.
+/// * **Queue-Based Dispatch:** Uses a FreeRTOS `QueueHandle_t` to receive and 
+///   process incoming delegate messages in a thread-safe manner.
+/// * **Thread Identification:** Implements `GetThreadId()` using `TaskHandle_t` 
+///   to ensure correct thread context checks (used by `AsyncInvoke` optimizations).
+/// * **Graceful Shutdown:** Provides mechanisms (`ExitThread`) to cleanup resources, 
+///   though typical embedded tasks often run forever.
+
 #include "delegate/IThread.h"
 #include "FreeRTOS.h"
 #include "task.h"

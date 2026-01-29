@@ -133,10 +133,10 @@ It unifies function calls across threads or systems via a simple delegate interf
 12. **Lambda Support** - bind and invoke lambda functions asynchronously using delegates
 13. **Automatic Heap Handling** – automatically copy argument data to the heap for safe transport through a message queue
 14. **Memory Management** - support for global heap or fixed-block memory allocator
-15. **Any OS** – easy porting to any OS. Windows, Linux and FreeRTOS port included
+15. **Any OS** – easy porting to any OS. Windows, Linux, FreeRTOS, ThreadX, and other port included
 16. **32/64-bit** - Support for 32 and 64-bit projects
 17. **Dynamic Storage Allocation** - optional fixed-block memory allocator
-18. **CMake Build** - CMake supports most toolchains including Windows and Linux
+18. **CMake Build** - CMake supports most toolchains including Windows, Linux, and others
 19. **Unit Tests** - extensive unit testing of the delegate library included
 
 # Build
@@ -250,7 +250,7 @@ Include `DelegateMQ.h` to use the delegate library features. Build and execute t
 
 # Porting Guide
 
-Numerous predefined platforms are already supported such as Windows, Linux, FreeRTOS, and ARM "bare-metal". Ready-made plugins for threading and communication interfaces exist, or you can create new ones. The library also supports different configurable items such as error handling and heap allocation options.
+Numerous predefined platforms are already supported such as Windows, Linux, FreeRTOS, ARM "bare-metal", and others. Ready-made plugins for threading and communication interfaces exist, or you can create new ones. The library also supports different configurable items such as error handling and heap allocation options.
 
 1.  **Search codebase for `@TODO`**: Find specific decision locations tagged in the source files.
 2.  **Implement `IThread`**: Required to use **Asynchronous** delegates. 

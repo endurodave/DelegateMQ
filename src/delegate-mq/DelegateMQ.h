@@ -69,7 +69,14 @@
 // - FreeRTOS: Uses FreeRTOSRecursiveMutex
 // - Bare Metal: Uses NullMutex
 // - StdLib: Uses std::recursive_mutex
-#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_FREERTOS) || defined(DMQ_THREAD_NONE)
+// Valid for any platform where a Mutex is defined in DelegateOpt.h
+#if defined(DMQ_THREAD_STDLIB) || \
+    defined(DMQ_THREAD_FREERTOS) || \
+    defined(DMQ_THREAD_THREADX) || \
+    defined(DMQ_THREAD_ZEPHYR) || \
+    defined(DMQ_THREAD_CMSIS_RTOS2) || \
+    defined(DMQ_THREAD_QT) || \
+    defined(DMQ_THREAD_NONE)
     #include "delegate/MulticastDelegateSafe.h"
     #include "delegate/UnicastDelegateSafe.h"
     #include "delegate/SignalSafe.h"
@@ -81,17 +88,24 @@
 // - FreeRTOS: OK 
 // - Bare Metal: OK (Requires you to implement IThread wrapper for Event Loop)
 // - StdLib: OK
-#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_FREERTOS) || defined(DMQ_THREAD_NONE)
+// Valid for any platform that implements the IThread interface
+#if defined(DMQ_THREAD_STDLIB) || \
+    defined(DMQ_THREAD_FREERTOS) || \
+    defined(DMQ_THREAD_THREADX) || \
+    defined(DMQ_THREAD_ZEPHYR) || \
+    defined(DMQ_THREAD_CMSIS_RTOS2) || \
+    defined(DMQ_THREAD_QT) || \
+    defined(DMQ_THREAD_NONE)
     #include "delegate/DelegateAsync.h"
 #endif
 
 // -----------------------------------------------------------------------------
 // 4. Asynchronous "Blocking" Delegates (Wait for Result)
 // -----------------------------------------------------------------------------
-// - FreeRTOS: NO (Requires Semaphore/Condition Variable)
-// - Bare Metal: NO (Cannot block/sleep)
-// - StdLib: OK
-#if defined(DMQ_THREAD_STDLIB)
+// Depends on std::future/std::promise. 
+// Valid for StdLib (Windows/Linux) and Qt.
+// (RTOS support depends on if the toolchain provides a full C++ STL)
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_QT)
     #include "delegate/DelegateAsyncWait.h"
 #endif
 
@@ -101,6 +115,18 @@
 #elif defined(DMQ_THREAD_FREERTOS)
     #include "predef/os/freertos/Thread.h"
     #include "predef/os/freertos/ThreadMsg.h"
+#elif defined(DMQ_THREAD_THREADX)
+    #include "predef/os/threadx/Thread.h"
+    #include "predef/os/threadx/ThreadMsg.h"
+#elif defined(DMQ_THREAD_ZEPHYR)
+    #include "predef/os/zephyr/Thread.h"
+    #include "predef/os/zephyr/ThreadMsg.h"
+#elif defined(DMQ_THREAD_CMSIS_RTOS2)
+    #include "predef/os/cmsis-rtos2/Thread.h"
+    #include "predef/os/cmsis-rtos2/ThreadMsg.h"
+#elif defined(DMQ_THREAD_QT)
+    #include "predef/os/qt/Thread.h"
+    #include "predef/os/qt/ThreadMsg.h"
 #elif defined(DMQ_THREAD_NONE)
     // Bare metal: User must implement their own polling/interrupt logic
 #else
@@ -150,6 +176,9 @@
 #elif defined(DMQ_TRANSPORT_SERIAL_PORT)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/serial/SerialTransport.h"
+#elif defined(DMQ_TRANSPORT_ARM_LWIP_UDP)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/arm-lwip-udp/ArmLwipUdpTransport.h"
 #elif defined(DMQ_TRANSPORT_NONE)
     // Create a custom application-specific transport
 #else

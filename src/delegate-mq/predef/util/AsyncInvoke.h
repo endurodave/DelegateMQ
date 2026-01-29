@@ -1,16 +1,34 @@
 #ifndef ASYNC_INVOKE_H
 #define ASYNC_INVOKE_H
 
+/// @file AsyncInvoke.h
+/// @see https://github.com/endurodave/DelegateMQ
+/// David Lafreniere, 2025.
+///
+/// @brief Helper functions for simplified, one-line asynchronous function invocation.
+///
+/// @details
+/// The `AsyncInvoke` helper functions provide a convenient wrapper around the 
+/// DelegateMQ library to execute any callable (free function, lambda, or member function) 
+/// on a specific target thread. 
+///
+/// **Key Features:**
+/// * **Automatic Context Switching:** Automatically detects if the caller is already 
+///   executing on the target thread. 
+///   - If **Yes**: It executes the function synchronously (immediately) to avoid overhead.
+///   - If **No**: It creates a temporary asynchronous delegate, marshals the arguments, 
+///     and executes the function on the target thread.
+/// * **Blocking Wait:** Supports a timeout parameter to wait for the asynchronous 
+///   execution to complete and return a value.
+/// * **Return Value Handling:** Safely retrieves the return value from the target 
+///   function across thread boundaries.
+
 #include "DelegateMQ.h"
 #include <functional>
 #include <type_traits>
 #include <utility>
 #include <any>
 #include <memory> 
-
-/// @file
-/// @brief Helper functions to simplify invoking a free or member function
-/// on the user-specified thread of control using a single line of code.
 
 /// Helper function to simplify asynchronous invoke of a free function/lambda.
 /// @param[in] func - the function/lambda to invoke

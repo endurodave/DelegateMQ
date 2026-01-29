@@ -1,6 +1,36 @@
 /// @file msg_serialize.h
 /// @see https://github.com/endurodave/MessageSerialize
-/// David Lafreniere, 2024.
+/// @author David Lafreniere
+/// @date 2024
+///
+/// @brief A robust, header-only C++ binary serialization library.
+///
+/// @details
+/// This library provides a framework for marshaling C++ objects, primitives, and STL 
+/// containers into binary streams (std::ostream) and demarshaling them back (std::istream).
+/// It is designed for network communication and data persistence where binary compatibility 
+/// and protocol evolution are required.
+///
+/// **Key Features:**
+/// * **Single Header:** A self-contained, header-only library with no external dependencies 
+///   beyond the standard C++ library (STL).
+/// * **Endianness Handling:** Automatic endianness detection and byte-swapping to ensure 
+///   compatibility between Big-Endian and Little-Endian architectures.
+/// * **STL Container Support:** Native serialization for std::vector, std::list, std::map, 
+///   std::set, std::string, and std::wstring.
+/// * **Protocol Versioning:** Supports "Forward/Backward Compatibility" by handling 
+///   size mismatches. If a received user-defined object is larger than expected (newer version), 
+///   the parser safely discards the extra data.
+/// * **Type Safety:** Uses SFINAE and compile-time static assertions to prevent 
+///   serialization of unsupported types or unsafe pointers.
+/// * **Deep Copying:** Supports serializing containers of pointers, automatically 
+///   allocating memory upon deserialization.
+/// * **Error Handling:** Includes a callback-based error reporting mechanism for 
+///   stream errors, type mismatches, and boundary violations.
+///
+/// **Usage:**
+/// User-defined classes must inherit from `serialize::I` and implement the `read()` 
+/// and `write()` methods.
 
 #ifndef _MSG_SERIALIZE_H
 #define _MSG_SERIALIZE_H

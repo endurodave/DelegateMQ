@@ -158,15 +158,19 @@ void RunSimpleExamples()
         }
     };
 
+    // 1. Synchronous Invocation
     auto sync = dmq::MakeDelegate(&MsgOut);
     sync("Invoke MsgOut sync!");
 
+    // 2. Asynchronous Invocation (Non-blocking / Fire-and-forget)
     auto async = dmq::MakeDelegate(&MsgOut, workerThread1);
     async("Invoke MsgOut async (non-blocking)!");
 
+    // 3. Asynchronous Invocation (Blocking / Wait for result)
     auto asyncWait = dmq::MakeDelegate(&MsgOut, workerThread1, dmq::WAIT_INFINITE);
     size_t size = asyncWait("Invoke MsgOut async wait (blocking)!");
 
+    // 4. Asynchronous Invocation with Timeout
     auto asyncWait1s = dmq::MakeDelegate(&MsgOut, workerThread1, std::chrono::seconds(1));
     auto retVal = asyncWait1s.AsyncInvoke("Invoke MsgOut async wait (blocking max 1s)!");
     if (retVal.has_value())     // Async invoke completed within 1 second?
@@ -183,7 +187,7 @@ void RunSimpleExamples()
     remote.SetDispatcher(&dispatcher);
     remote.SetSerializer(&serializer);
 
-    // Invoke remote delegate
+    // 5. Invoke remote delegate
     remote("Invoke MsgOut remote!");
 }
 

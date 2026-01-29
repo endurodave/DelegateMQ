@@ -262,7 +262,7 @@ public:
                 DmqHeader ack;
                 ack.SetId(dmq::ACK_REMOTE_ID);
                 ack.SetSeqNum(seqNum);
-                //m_sendTransport->Send(ss_ack, ack);
+                m_sendTransport->Send(ss_ack, ack);
             }
         }
 
