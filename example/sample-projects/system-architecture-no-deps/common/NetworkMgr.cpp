@@ -80,6 +80,12 @@ bool NetworkMgr::SendDataMsgWait(DataMsg& data) {
     return RemoteInvokeWait(m_dataMsgDel, data);
 }
 
+void NetworkMgr::SendActuatorMsg(ActuatorMsg& msg) {
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::SendActuatorMsg, m_thread)(msg);
+    m_actuatorMsgDel(msg);
+}
+
 bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg) {
     return RemoteInvokeWait(m_actuatorMsgDel, msg);
 }

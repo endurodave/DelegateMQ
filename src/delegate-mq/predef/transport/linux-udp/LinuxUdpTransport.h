@@ -13,8 +13,8 @@
 /// and SUB (Subscriber/Receiver) modes.
 /// 
 /// Key Features:
-/// 1. **Active Object**: Uses an internal worker thread to execute socket operations 
-///    and ensure thread-safe execution via delegate marshaling.
+/// 1. **Direct Execution**: Executes socket operations directly on the calling thread, 
+///    relying on OS-level thread safety to avoid deadlocks.
 /// 2. **Reliability Support**: Integrates with `TransportMonitor` to track outgoing 
 ///    sequence numbers and process incoming ACKs to detect packet loss.
 /// 3. **Non-Blocking I/O**: Configures socket receive timeouts (`SO_RCVTIMEO`) to 
@@ -47,21 +47,17 @@ public:
         SUB
     };
 
-    UdpTransport() : m_thread("UdpTransport"), m_sendTransport(this), m_recvTransport(this)
+    UdpTransport() : m_sendTransport(this), m_recvTransport(this)
     {
-        m_thread.CreateThread();
     }
 
     ~UdpTransport()
     {
-        m_thread.ExitThread();
+        Close();
     }
 
     int Create(Type type, const char* addr, uint16_t port)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &UdpTransport::Create, m_thread, dmq::WAIT_INFINITE)(type, addr, port);
-
         m_type = type;
 
         // Create UDP socket
@@ -122,11 +118,10 @@ public:
 
     void Close()
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &UdpTransport::Close, m_thread, dmq::WAIT_INFINITE)();
-
-        if (m_socket >= 0)
+        if (m_socket != -1)
         {
+            // SHUT_RDWR breaks the blocking recvfrom() immediately
+            shutdown(m_socket, SHUT_RDWR);
             close(m_socket);
             m_socket = -1;
         }
@@ -134,9 +129,6 @@ public:
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &UdpTransport::Send, m_thread, dmq::WAIT_INFINITE)(os, header);
-
         if (os.bad() || os.fail()) {
             std::cerr << "Stream state error." << std::endl;
             return -1;
@@ -166,11 +158,11 @@ public:
 
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        // Use the getters from the COPY, which has the correct length
-        uint16_t marker = headerCopy.GetMarker();
-        uint16_t id = headerCopy.GetId();
-        uint16_t seqNum = headerCopy.GetSeqNum();
-        uint16_t length = headerCopy.GetLength();
+        // Convert to Network Byte Order (Big Endian)
+        uint16_t marker = htons(headerCopy.GetMarker());
+        uint16_t id     = htons(headerCopy.GetId());
+        uint16_t seqNum = htons(headerCopy.GetSeqNum());
+        uint16_t length = htons(headerCopy.GetLength());
 
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
         ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
@@ -183,8 +175,9 @@ public:
         std::string data = ss.str();
 
         // Always track the message (unless it is an ACK)
-        if (id != dmq::ACK_REMOTE_ID && m_transportMonitor)
-            m_transportMonitor->Add(seqNum, id);
+        // Use Host Byte Order for ID check
+        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
+            m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
 
         ssize_t sent = sendto(m_socket, data.c_str(), data.size(), 0,
             (struct sockaddr*)&m_addr, sizeof(m_addr));
@@ -194,9 +187,6 @@ public:
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &UdpTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
-
         if (m_recvTransport != this) {
             std::cerr << "Receive operation not allowed (Send only)." << std::endl;
             return -1;
@@ -226,25 +216,35 @@ public:
         headerStream.write(m_buffer, size);
         headerStream.seekg(0);
 
-        uint16_t marker = 0;
-        headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
-        header.SetMarker(marker);
+        uint16_t val = 0;
 
-        if (marker != DmqHeader::MARKER)
+        // 1. Read Marker (Convert Network -> Host)
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetMarker(ntohs(val));
+
+        if (header.GetMarker() != DmqHeader::MARKER)
         {
             std::cerr << "Invalid sync marker!" << std::endl;
             return -1;
         }
 
-        uint16_t id = 0, seqNum = 0, length = 0;
-        headerStream.read(reinterpret_cast<char*>(&id), sizeof(id));
-        headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
-        headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
-        header.SetId(id);
-        header.SetSeqNum(seqNum);
-        header.SetLength(length);
+        // 2. Read ID
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetId(ntohs(val));
+
+        // 3. Read SeqNum
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetSeqNum(ntohs(val));
+
+        // 4. Read Length
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetLength(ntohs(val));
 
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
+
+        // Get Host Byte Order values for logic check
+        uint16_t id = header.GetId();
+        uint16_t seqNum = header.GetSeqNum();
 
         if (id == dmq::ACK_REMOTE_ID)
         {
@@ -265,22 +265,16 @@ public:
 
     void SetTransportMonitor(ITransportMonitor* transportMonitor)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &UdpTransport::SetTransportMonitor, m_thread, dmq::WAIT_INFINITE)(transportMonitor);
         m_transportMonitor = transportMonitor;
     }
 
     void SetSendTransport(ITransport* sendTransport)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &UdpTransport::SetSendTransport, m_thread, dmq::WAIT_INFINITE)(sendTransport);
         m_sendTransport = sendTransport;
     }
 
     void SetRecvTransport(ITransport* recvTransport)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &UdpTransport::SetRecvTransport, m_thread, dmq::WAIT_INFINITE)(recvTransport);
         m_recvTransport = recvTransport;
     }
 
@@ -288,7 +282,6 @@ private:
     int m_socket = -1;
     sockaddr_in m_addr{};
     Type m_type = Type::PUB;
-    Thread m_thread;
 
     ITransport* m_sendTransport = nullptr;
     ITransport* m_recvTransport = nullptr;

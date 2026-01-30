@@ -13,16 +13,25 @@
 /// and PUB/SUB (1-to-many).
 /// 
 /// Key Features:
-/// 1. **Active Object**: Encapsulates all ZeroMQ socket operations within a dedicated 
-///    worker thread to adhere to ZeroMQ's thread-safety constraints (sockets are not thread-safe).
+/// 1. **Thread Safety**: Uses a `std::recursive_mutex` to protect the ZeroMQ socket, 
+///    allowing safe concurrent access from the Send and Receive threads (ZeroMQ sockets 
+///    are not inherently thread-safe).
 /// 2. **Flexible Patterns**: Supports both bidirectional (PAIR) and unidirectional (PUB/SUB)
 ///    communication topologies.
 /// 3. **Non-Blocking**: Configures `ZMQ_RCVTIMEO` and `ZMQ_DONTWAIT` to ensure the 
 ///    transport remains responsive and never blocks the application indefinitely.
-/// 4. **Reliability**: Integrates with `TransportMonitor` to providing sequence tracking 
+/// 4. **Reliability**: Integrates with `TransportMonitor` to provide sequence tracking 
 ///    and ACKs even over PUB/SUB (when a return channel is available).
 /// 
 /// @note Requires the `libzmq` library.
+
+// Add Windows Sockets headers for htons/ntohs
+#if defined(_WIN32) || defined(_WIN64)
+    #include <winsock2.h>
+    #pragma comment(lib, "ws2_32.lib")
+#else
+    #include <arpa/inet.h>
+#endif
 
 #include "DelegateMQ.h"
 #include "predef/transport/ITransport.h"
@@ -31,15 +40,16 @@
 #include <zmq.h>
 #include <sstream>
 #include <cstdio>
+#include <mutex>
+#include <iostream> // For std::cout/cerr
 
-/// @brief ZeroMQ transport class. ZeroMQ socket instances must only be called by a 
-/// single thread of control. Each transport instance has its own internal thread of 
-/// control and all transport APIs are asynchronous. Each instances is an "active 
-/// object" with a private internal thread of control and async public APIs.
+/// @brief ZeroMQ transport class.
+/// @details Logic now executes directly on the caller's thread, protected by a mutex
+/// to prevent concurrent access to the underlying ZeroMQ socket.
 class ZeroMqTransport : public ITransport
 {
 public:
-    enum class Type 
+    enum class Type
     {
         PAIR_CLIENT,
         PAIR_SERVER,
@@ -47,23 +57,23 @@ public:
         SUB
     };
 
-    ZeroMqTransport() : m_thread("ZeroMQTransport"), m_sendTransport(this), m_recvTransport(this)
+    ZeroMqTransport() : m_sendTransport(this), m_recvTransport(this)
     {
-        // Create thread with a 5s watchdog timeout
-        m_thread.CreateThread(std::chrono::milliseconds(5000));
     }
 
     ~ZeroMqTransport()
     {
-        m_thread.ExitThread();
+        Destroy();
     }
 
     int Create(Type type, const char* addr)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &ZeroMqTransport::Create, m_thread, dmq::WAIT_INFINITE)(type, addr);
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-        m_zmqContext = zmq_ctx_new();
+        if (m_zmqContext == nullptr) {
+            m_zmqContext = zmq_ctx_new();
+        }
+
         m_type = type;
 
         if (m_type == Type::PAIR_CLIENT)
@@ -72,6 +82,7 @@ public:
             m_zmq = zmq_socket(m_zmqContext, ZMQ_PAIR);
             int rc = zmq_connect(m_zmq, addr);
             if (rc != 0) {
+                // perror is less useful on Windows for ZMQ specific errors, but ok for console
                 perror("zmq_connect failed");
                 zmq_close(m_zmq);
                 return 1;
@@ -101,7 +112,7 @@ public:
             m_zmq = zmq_socket(m_zmqContext, ZMQ_PUB);
             int rc = zmq_bind(m_zmq, addr);
             if (rc != 0) {
-                perror("zmq_bind failed"); 
+                perror("zmq_bind failed");
                 return 1;
             }
         }
@@ -134,32 +145,39 @@ public:
 
     void Close()
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &ZeroMqTransport::Close, m_thread, dmq::WAIT_INFINITE)();
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
         // Close the subscriber socket and context
-        if (m_zmq)
+        if (m_zmq) {
+            // Linger 0 ensures close doesn't block waiting for unsent messages
+            int linger = 0;
+            zmq_setsockopt(m_zmq, ZMQ_LINGER, &linger, sizeof(linger));
             zmq_close(m_zmq);
-        m_zmq = nullptr;
+            m_zmq = nullptr;
+        }
     }
 
     void Destroy()
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &ZeroMqTransport::Destroy, m_thread, dmq::WAIT_INFINITE)();
+        Close();
 
-        if (m_zmqContext)
+        // Context termination is thread-safe in ZMQ
+        if (m_zmqContext) {
             zmq_ctx_term(m_zmqContext);
-        m_zmqContext = nullptr;
+            m_zmqContext = nullptr;
+        }
     }
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &ZeroMqTransport::Send, m_thread, dmq::WAIT_INFINITE)(os, header);
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
         if (os.bad() || os.fail()) {
             std::cout << "Error: xostringstream is in a bad state!" << std::endl;
+            return -1;
+        }
+
+        if (m_zmq == nullptr) {
             return -1;
         }
 
@@ -187,16 +205,16 @@ public:
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write header values from the COPY
-        auto marker = headerCopy.GetMarker();
+        auto marker = htons(headerCopy.GetMarker());
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
 
-        auto id = headerCopy.GetId();
+        auto id = htons(headerCopy.GetId());
         ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
 
-        auto seqNum = headerCopy.GetSeqNum();
+        auto seqNum = htons(headerCopy.GetSeqNum());
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
 
-        auto len = headerCopy.GetLength();
+        auto len = htons(headerCopy.GetLength());
         ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
         // Insert delegate arguments (payload)
@@ -204,17 +222,17 @@ public:
 
         size_t length = ss.str().length();
 
-        if (id != dmq::ACK_REMOTE_ID)
+        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID)
         {
             if (m_transportMonitor)
-                m_transportMonitor->Add(seqNum, id);
+                m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
         }
 
         // Send delegate argument data using ZeroMQ
         int err = zmq_send(m_zmq, ss.str().c_str(), length, ZMQ_DONTWAIT);
         if (err == -1)
         {
-            std::cerr << "zmq_send failed with error: " << zmq_strerror(zmq_errno()) << std::endl;
+            // EAGAIN is common if queue is full, treat as error so RetryMonitor retries
             return zmq_errno();
         }
         return 0;
@@ -222,11 +240,10 @@ public:
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &ZeroMqTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
         if (m_zmq == nullptr) {
-            std::cout << "Error: Socket not created!" << std::endl;
+            // std::cout << "Error: Socket not created!" << std::endl;
             return -1;
         }
 
@@ -239,8 +256,6 @@ public:
             std::cout << "Error: This transport used for send only!" << std::endl;
             return -1;
         }
-
-        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         int size = zmq_recv(m_zmq, m_buffer, BUFFER_SIZE, 0);
         if (size == -1) {
@@ -256,13 +271,15 @@ public:
             return -1;
         }
 
+        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
+
         // Write the received header data into the stringstream
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
         headerStream.seekg(0);
 
         uint16_t marker = 0;
         headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
-        header.SetMarker(marker);
+        header.SetMarker(ntohs(marker));
 
         if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
@@ -272,36 +289,39 @@ public:
         // Read the DelegateRemoteId (2 bytes) into the `id` variable
         uint16_t id = 0;
         headerStream.read(reinterpret_cast<char*>(&id), sizeof(id));
-        header.SetId(id);
+        header.SetId(ntohs(id));
 
         // Read seqNum using the getter for byte swapping
         uint16_t seqNum = 0;
         headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
-        header.SetSeqNum(seqNum);
+        header.SetSeqNum(ntohs(seqNum));
 
         // Read length using the getter for byte swapping
         uint16_t length = 0;
         headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
-        header.SetLength(length);
+        header.SetLength(ntohs(length));
 
         // Write the remaining target function argument data to stream
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
-        if (id == dmq::ACK_REMOTE_ID)
+        if (header.GetId() == dmq::ACK_REMOTE_ID)
         {
             // Receiver ack'ed message. Remove sequence number from monitor.
             if (m_transportMonitor)
-                m_transportMonitor->Remove(seqNum);
+                m_transportMonitor->Remove(header.GetSeqNum());
         }
         else
-        {          
+        {
             if (m_transportMonitor && m_sendTransport)
             {
                 // Send header with received seqNum as the ack message
                 xostringstream ss_ack;
                 DmqHeader ack;
                 ack.SetId(dmq::ACK_REMOTE_ID);
-                ack.SetSeqNum(seqNum);
+                ack.SetSeqNum(header.GetSeqNum());
+
+                // Note: Recursive mutex allows us to call Send() if m_sendTransport == this.
+                // If m_sendTransport is a different instance, that instance's lock will be taken.
                 m_sendTransport->Send(ss_ack, ack);
             }
         }
@@ -312,24 +332,18 @@ public:
     // Set a transport monitor for checking message ack
     void SetTransportMonitor(ITransportMonitor* transportMonitor)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &ZeroMqTransport::SetTransportMonitor, m_thread, dmq::WAIT_INFINITE)(transportMonitor);
         m_transportMonitor = transportMonitor;
     }
 
     // Set an alternative send transport
     void SetSendTransport(ITransport* sendTransport)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &ZeroMqTransport::SetSendTransport, m_thread, dmq::WAIT_INFINITE)(sendTransport);
         m_sendTransport = sendTransport;
     }
 
     // Set an alternative receive transport
     void SetRecvTransport(ITransport* recvTransport)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &ZeroMqTransport::SetRecvTransport, m_thread, dmq::WAIT_INFINITE)(recvTransport);
         m_recvTransport = recvTransport;
     }
 
@@ -338,7 +352,7 @@ private:
     void* m_zmq = nullptr;
     Type m_type = Type::PAIR_CLIENT;
 
-    Thread m_thread;
+    std::recursive_mutex m_mutex;
 
     ITransport* m_sendTransport = nullptr;
     ITransport* m_recvTransport = nullptr;

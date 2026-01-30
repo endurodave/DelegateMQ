@@ -12,6 +12,11 @@ const std::chrono::milliseconds NetworkEngine::RECV_TIMEOUT(2000);
 NetworkEngine::NetworkEngine()
     : m_thread("NetworkEngine"),
     m_transportMonitor(RECV_TIMEOUT)
+#if defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+    // Only initialize reliability layers for UDP transports
+    , m_retryMonitor(m_sendTransport, m_transportMonitor)
+    , m_reliableTransport(m_sendTransport, m_retryMonitor)
+#endif
 {
     m_thread.CreateThread(std::chrono::milliseconds(5000));
 }
@@ -49,6 +54,7 @@ int NetworkEngine::Initialize(const std::string& sendAddr, const std::string& re
     m_sendTransport.SetRecvTransport(&m_recvTransport);
     m_recvTransport.SetSendTransport(&m_sendTransport);
 
+    // ZeroMQ handles its own reliability, so we DO NOT use ReliableTransport here.
     m_dispatcher.SetTransport(&m_sendTransport);
 
     return err;
@@ -77,7 +83,8 @@ int NetworkEngine::Initialize(const std::string& sendIp, int sendPort, const std
     m_sendTransport.SetRecvTransport(&m_recvTransport);
     m_recvTransport.SetSendTransport(&m_sendTransport);
 
-    m_dispatcher.SetTransport(&m_sendTransport);
+    // UDP: Reliable wrapper usage (Adds ACKs/Retries)
+    m_dispatcher.SetTransport(&m_reliableTransport);
 
     return err;
 }

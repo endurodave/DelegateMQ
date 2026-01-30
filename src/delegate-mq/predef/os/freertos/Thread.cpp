@@ -22,6 +22,11 @@ Thread::Thread(const std::string& threadName) : THREAD_NAME(threadName)
 Thread::~Thread()
 {
     ExitThread();
+    // Safe to delete semaphore now that the thread is definitely gone
+    if (m_exitSem) {
+        vSemaphoreDelete(m_exitSem);
+        m_exitSem = nullptr;
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -31,12 +36,16 @@ bool Thread::CreateThread()
 {
     if (!m_thread)
     {
-        // 1. Create the Queue first
+        // 1. Create Exit Synchronization Semaphore
+        m_exitSem = xSemaphoreCreateBinary();
+        ASSERT_TRUE(m_exitSem != nullptr);
+
+        // 2. Create the Queue
         // Holds pointers to ThreadMsg objects (heap allocated)
         m_queue = xQueueCreate(20, sizeof(ThreadMsg*));
         ASSERT_TRUE(m_queue != nullptr);
 
-        // 2. Create the Task
+        // 3. Create the Task
         BaseType_t xReturn = xTaskCreate(
             (TaskFunction_t)&Thread::Process,
             THREAD_NAME.c_str(),
@@ -58,12 +67,26 @@ void Thread::ExitThread()
     if (m_queue) {
         // Send exit message
         ThreadMsg* msg = new ThreadMsg(MSG_EXIT_THREAD);
-        if (xQueueSend(m_queue, &msg, 100) != pdPASS) {
+        // Wait 100ms to send
+        if (xQueueSend(m_queue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
             delete msg; // Failed to send, clean up
         }
-        // Note: We don't join/wait here because FreeRTOS tasks 
-        // delete themselves asynchronously.
-        m_thread = nullptr; // Detach
+
+        // Wait for the thread to actually finish to avoid Use-After-Free.
+        // We only wait if we are NOT the thread itself (prevent deadlock).
+        if (xTaskGetCurrentTaskHandle() != m_thread && m_exitSem) {
+            xSemaphoreTake(m_exitSem, portMAX_DELAY);
+        }
+
+        // Now safe to clean up resources
+        // Delete Queue
+        if (m_queue) {
+            vQueueDelete(m_queue);
+            m_queue = nullptr;
+        }
+
+        // Note: m_thread handle is invalid after the task deletes itself
+        m_thread = nullptr;
     }
 }
 
@@ -99,7 +122,7 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     {
         // 3. Handle failure: Delete to prevent memory leak
         delete threadMsg;
-        printf("Error: Thread '%s' queue full! Delegate dropped.\n", THREAD_NAME.c_str());
+        // printf("Error: Thread '%s' queue full! Delegate dropped.\n", THREAD_NAME.c_str());
     }
 }
 
@@ -110,6 +133,7 @@ void Thread::Process(void* instance)
 {
     Thread* thread = static_cast<Thread*>(instance);
     ASSERT_TRUE(thread != nullptr);
+
     thread->Run();
 
     // Self-delete when Run() returns (ExitThread called)
@@ -146,6 +170,10 @@ void Thread::Run()
             case MSG_EXIT_THREAD:
             {
                 delete msg;
+                // Signal ExitThread() that we are done
+                if (m_exitSem) {
+                    xSemaphoreGive(m_exitSem);
+                }
                 return; // Breaks loop, Process() calls vTaskDelete
             }
 

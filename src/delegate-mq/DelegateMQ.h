@@ -179,13 +179,20 @@
 #elif defined(DMQ_TRANSPORT_ARM_LWIP_UDP)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/arm-lwip-udp/ArmLwipUdpTransport.h"
+#elif defined(DMQ_TRANSPORT_THREADX_UDP)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/threadx-udp/NetXUdpTransport.h"
+#elif defined(DMQ_TRANSPORT_ZEPHYR_UDP)
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/zephyr-udp/ZephyrUdpTransport.h"
 #elif defined(DMQ_TRANSPORT_NONE)
     // Create a custom application-specific transport
 #else
     #error "Transport implementation not found."
 #endif
 
-#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || \
+    defined(DMQ_TRANSPORT_THREADX_UDP) || defined(DMQ_TRANSPORT_ZEPHYR_UDP)
     #include "predef/util/NetworkEngine.h"
 #endif
 

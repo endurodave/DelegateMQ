@@ -16,7 +16,7 @@ DelegateMQ is a C++ header-only library for invoking any callable (e.g., functio
 * Asynchronously (Blocking and non-blocking)
 * Remotely (Across processes or processors)
 
-It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, and inter-thread data transfer. The library is unit-tested and is designed for easy portability to any platform (Windows, Linux, RTOS, bare-metal).
+It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, and inter-thread data transfer. The library is unit-tested and has been ported to numerous embedded and PC platforms (e.g. Windows, Linux, RTOS, bare-metal), with a design that facilitates easy porting to others.
 
 **Key Use Cases**
 * **Callbacks**: Synchronous and asynchronous execution.
@@ -236,7 +236,7 @@ Remote delegates extend the library to enable Remote Procedure Calls (RPC) acros
 **Supported Integrations:**
 
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [Cereal](https://github.com/USCiLab/cereal), [Bitsery](https://github.com/fraillt/bitsery), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
-* **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), [Serial Port](https://github.com/sigrokproject/libserialport), TCP, UDP, ARM LwIP, data pipe, memory buffer
+* **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), [Serial Port](https://github.com/sigrokproject/libserialport), TCP, UDP, ARM LwIP, ThreadX NetX/Duo, Zephyr Networking, data pipe, memory buffer
  
 ## Delegate Semantics
 

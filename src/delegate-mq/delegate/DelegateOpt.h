@@ -13,6 +13,9 @@
 #elif defined(DMQ_THREAD_THREADX)
     #include "predef/util/ThreadXClock.h"
     #include "predef/util/ThreadXMutex.h"
+#elif defined(DMQ_THREAD_ZEPHYR)
+    #include "predef/util/ZephyrClock.h"
+    #include "predef/util/ZephyrMutex.h"
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
     #include "predef/util/CmsisRtos2Clock.h"
     #include "predef/util/CmsisRtos2Mutex.h"
@@ -146,4 +149,4 @@ namespace dmq
     #define LOG_ERROR(...)   do {} while(0)
 #endif
 
-#endif
+#endif // _DELEGATE_OPT_H

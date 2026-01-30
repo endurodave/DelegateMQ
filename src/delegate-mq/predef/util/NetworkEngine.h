@@ -23,8 +23,12 @@
 #include "predef/transport/zeromq/ZeroMqTransport.h"
 #elif defined(DMQ_TRANSPORT_WIN32_UDP)
 #include "predef/transport/win32-udp/Win32UdpTransport.h"
+#include "predef/util/ReliableTransport.h"
+#include "predef/util/RetryMonitor.h"
 #elif defined(DMQ_TRANSPORT_LINUX_UDP)
 #include "predef/transport/linux-udp/LinuxUdpTransport.h"
+#include "predef/util/ReliableTransport.h"
+#include "predef/util/RetryMonitor.h"
 #endif
 
 /// @brief Base class for handling network transport, threading, and synchronization.
@@ -203,16 +207,25 @@ private:
 #if defined(DMQ_TRANSPORT_ZEROMQ)
     ZeroMqTransport m_sendTransport;
     ZeroMqTransport m_recvTransport;
+
 #elif defined(DMQ_TRANSPORT_WIN32_UDP)
     UdpTransport m_sendTransport;
     UdpTransport m_recvTransport;
+
+    // Reliability Layers
+    RetryMonitor m_retryMonitor;
+    ReliableTransport m_reliableTransport;
+
 #elif defined(DMQ_TRANSPORT_LINUX_UDP)
     UdpTransport m_sendTransport;
     UdpTransport m_recvTransport;
+
+    // Reliability Layers
+    RetryMonitor m_retryMonitor;
+    ReliableTransport m_reliableTransport;
 #endif
 
     std::map<dmq::DelegateRemoteId, dmq::IRemoteInvoker*> m_receiveIdMap;
-
     dmq::ScopedConnection m_statusConn;
 
     static const std::chrono::milliseconds SEND_TIMEOUT;

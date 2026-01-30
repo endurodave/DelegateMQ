@@ -70,6 +70,7 @@ public:
     bool SendCommandMsgWait(CommandMsg& command);
     void SendDataMsg(DataMsg& data);
     bool SendDataMsgWait(DataMsg& data);
+    void SendActuatorMsg(ActuatorMsg& msg);
     bool SendActuatorMsgWait(ActuatorMsg& msg);
     std::future<bool> SendActuatorMsgFuture(ActuatorMsg& msg);
 

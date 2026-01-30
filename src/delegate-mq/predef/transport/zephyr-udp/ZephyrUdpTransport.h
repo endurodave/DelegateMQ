@@ -1,49 +1,41 @@
-#ifndef ARM_LWIP_UDP_TRANSPORT_H
-#define ARM_LWIP_UDP_TRANSPORT_H
+#ifndef ZEPHYR_UDP_TRANSPORT_H
+#define ZEPHYR_UDP_TRANSPORT_H
 
-/// @file ArmLwipUdpTransport.h
+/// @file ZephyrUdpTransport.h
 /// @see https://github.com/endurodave/DelegateMQ
 /// David Lafreniere, 2026.
 /// 
-/// @brief ARM lwIP UDP transport implementation for DelegateMQ.
+/// @brief Zephyr RTOS UDP transport implementation for DelegateMQ.
 /// 
 /// @details
-/// This class implements the ITransport interface using the lwIP (Lightweight IP) 
-/// BSD-style socket API. It is designed for embedded ARM targets running FreeRTOS 
-/// (or similar) with the lwIP stack.
+/// This class implements the ITransport interface using the Zephyr Networking Subsystem
+/// (BSD Socket API). It is designed for embedded targets running Zephyr RTOS.
 /// 
-/// Prerequisites:
-/// - lwIP must be compiled with `LWIP_SOCKET=1`
-/// - lwIP must be compiled with `LWIP_SO_RCVTIMEO=1` (for non-blocking timeouts)
+/// **Prerequisites:**
+/// * Enable BSD Sockets: `CONFIG_NET_SOCKETS=y`
+/// * Enable POSIX Names: `CONFIG_NET_SOCKETS_POSIX_NAMES=y` (Default)
+/// * Enable IPv4: `CONFIG_NET_IPV4=y`
 /// 
-/// Key Features:
-/// 1. **Zero-Copy Logic**: Executes network operations directly on the calling thread, 
-///    avoiding context switch overhead and reducing RAM usage (no separate stack needed).
-/// 2. **Memory Efficient**: Reduced buffer size to 1500 bytes (MTU) to fit constrained RAM.
-/// 3. **Reliability Support**: Fully compatible with `TransportMonitor` for ACKs/Retries.
-/// 4. **Endianness Safe**: Uses network byte order (htons/ntohs) for headers to support 
-///    mixed-architecture (ARM <-> x86) communication.
+/// **Key Features:**
+/// 1. **Direct Execution**: Executes network operations directly on the calling thread,
+///    avoiding context switch overhead and preventing deadlocks.
+/// 2. **Zero-Copy Friendly**: Uses the standard BSD API which Zephyr optimizes internally.
+/// 3. **Reliability**: Fully integrated with `TransportMonitor` for ACKs/Retries.
+/// 4. **Endianness**: Uses `htons`/`ntohs` for standard network byte order compatibility.
 
 #include "DelegateMQ.h"
 #include "predef/transport/ITransportMonitor.h"
 
-// lwIP Includes
-#include "lwip/sockets.h"
-#include "lwip/inet.h"
-#include "lwip/sys.h"
-#include "lwip/api.h"
+#include <zephyr/kernel.h>
+#include <zephyr/net/socket.h>
 
 #include <iostream>
 #include <sstream>
 #include <cstring>
 #include <cstdlib>
+#include <cerrno>
 
-// Ensure lwIP is configured correctly
-#if !defined(LWIP_SO_RCVTIMEO) || LWIP_SO_RCVTIMEO == 0
-    #error "ArmLwipUdpTransport requires LWIP_SO_RCVTIMEO=1 in lwipopts.h"
-#endif
-
-class UdpTransport : public ITransport
+class ZephyrUdpTransport : public ITransport
 {
 public:
     enum class Type
@@ -52,11 +44,11 @@ public:
         SUB
     };
 
-    UdpTransport() : m_sendTransport(this), m_recvTransport(this)
+    ZephyrUdpTransport() : m_sendTransport(this), m_recvTransport(this)
     {
     }
 
-    ~UdpTransport()
+    ~ZephyrUdpTransport()
     {
         Close();
     }
@@ -65,11 +57,11 @@ public:
     {
         m_type = type;
 
-        // Create lwIP UDP socket
-        m_socket = lwip_socket(AF_INET, SOCK_DGRAM, 0);
+        // Create UDP socket using Zephyr BSD API
+        m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (m_socket < 0)
         {
-            // std::cerr << "Socket creation failed: " << errno << std::endl;
+            // printk("Socket creation failed: %d\n", errno);
             return -1;
         }
 
@@ -79,10 +71,10 @@ public:
 
         if (type == Type::PUB)
         {
-            // Note: inet_aton in lwIP returns 1 on success
-            if (inet_aton(addr, &m_addr.sin_addr) == 0)
+            // inet_pton is standard in Zephyr's socket.h
+            if (inet_pton(AF_INET, addr, &m_addr.sin_addr) != 1)
             {
-                // std::cerr << "Invalid IP address format." << std::endl;
+                // printk("Invalid IP address format.\n");
                 return -1;
             }
 
@@ -92,9 +84,9 @@ public:
             timeout.tv_sec = 0;
             timeout.tv_usec = 50000; // 50ms
 
-            if (lwip_setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
+            if (setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
             {
-                // std::cerr << "setsockopt(SO_RCVTIMEO) failed" << std::endl;
+                // printk("setsockopt(SO_RCVTIMEO) failed\n");
                 return -1;
             }
         }
@@ -102,20 +94,20 @@ public:
         {
             m_addr.sin_addr.s_addr = INADDR_ANY;
 
-            if (lwip_bind(m_socket, (struct sockaddr*)&m_addr, sizeof(m_addr)) < 0)
+            if (bind(m_socket, (struct sockaddr*)&m_addr, sizeof(m_addr)) < 0)
             {
-                // std::cerr << "Bind failed" << std::endl;
+                // printk("Bind failed: %d\n", errno);
                 return -1;
             }
 
-            // Set a 2 second receive timeout to allow thread exit checks
+            // Set a 2-second receive timeout
             struct timeval timeout;
             timeout.tv_sec = 2;
             timeout.tv_usec = 0;
 
-            if (lwip_setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
+            if (setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
             {
-                // std::cerr << "setsockopt(SO_RCVTIMEO) failed" << std::endl;
+                // printk("setsockopt(SO_RCVTIMEO) failed\n");
                 return -1;
             }
         }
@@ -127,7 +119,9 @@ public:
     {
         if (m_socket >= 0)
         {
-            lwip_close(m_socket);
+            // zsock_shutdown helps wake up blocked threads
+            zsock_shutdown(m_socket, ZSOCK_SHUT_RDWR);
+            zsock_close(m_socket);
             m_socket = -1;
         }
     }
@@ -147,7 +141,7 @@ public:
             return -1;
         }
 
-        // Create a local copy so we can modify the length
+        // Create a local copy to modify the length
         DmqHeader headerCopy = header;
 
         // Calculate payload size and set it
@@ -159,8 +153,7 @@ public:
 
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        // Convert header fields to Network Byte Order (Big Endian) 
-        // to support cross-platform communication (e.g. ARM <-> x86)
+        // Convert to Network Byte Order (Big Endian)
         uint16_t marker = htons(headerCopy.GetMarker());
         uint16_t id     = htons(headerCopy.GetId());
         uint16_t seqNum = htons(headerCopy.GetSeqNum());
@@ -177,10 +170,10 @@ public:
         std::string data = ss.str();
 
         // Always track the message (unless it is an ACK)
-        if (header.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
+        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
 
-        ssize_t sent = lwip_sendto(m_socket, data.c_str(), data.size(), 0,
+        ssize_t sent = sendto(m_socket, data.c_str(), data.size(), 0,
             (struct sockaddr*)&m_addr, sizeof(m_addr));
 
         return (sent == (ssize_t)data.size()) ? 0 : -1;
@@ -195,18 +188,16 @@ public:
         sockaddr_in fromAddr;
         socklen_t addrLen = sizeof(fromAddr);
         
-        // lwip_recvfrom
-        ssize_t size = lwip_recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0,
+        ssize_t size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0,
             (struct sockaddr*)&fromAddr, &addrLen);
 
         if (size < 0)
         {
-            // Explicit check for timeout vs real error
+            // Zephyr uses standard errno values
             if (errno == EWOULDBLOCK || errno == EAGAIN)
-                return -1; // Timeout (No data)
+                return -1; // Timeout
             
-            // Real socket error
-            return -1; 
+            return -1;
         }
 
         // Important: Update m_addr to the sender's address so we can ACK back
@@ -218,51 +209,47 @@ public:
         headerStream.write(m_buffer, size);
         headerStream.seekg(0);
 
-        uint16_t netVal = 0;
+        uint16_t val = 0;
 
-        // Read Marker (Convert Network -> Host)
-        headerStream.read(reinterpret_cast<char*>(&netVal), sizeof(netVal));
-        header.SetMarker(ntohs(netVal));
+        // 1. Read Marker (Convert Network -> Host)
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetMarker(ntohs(val));
 
         if (header.GetMarker() != DmqHeader::MARKER)
         {
-            return -1; // Sync marker mismatch
+            return -1; // Invalid marker
         }
 
-        // Read ID
-        headerStream.read(reinterpret_cast<char*>(&netVal), sizeof(netVal));
-        header.SetId(ntohs(netVal));
+        // 2. Read ID
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetId(ntohs(val));
 
-        // Read SeqNum
-        headerStream.read(reinterpret_cast<char*>(&netVal), sizeof(netVal));
-        header.SetSeqNum(ntohs(netVal));
+        // 3. Read SeqNum
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetSeqNum(ntohs(val));
 
-        // Read Length
-        headerStream.read(reinterpret_cast<char*>(&netVal), sizeof(netVal));
-        header.SetLength(ntohs(netVal));
+        // 4. Read Length
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetLength(ntohs(val));
 
-        // Security Check: Ensure received packet is large enough for the claimed payload
-        if (size < DmqHeader::HEADER_SIZE + header.GetLength())
-        {
-            return -1; // Malformed packet / Partial payload
-        }
+        is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
-        // Extract payload
-        is.write(m_buffer + DmqHeader::HEADER_SIZE, header.GetLength());
+        // Logic check using Host values
+        uint16_t id = header.GetId();
+        uint16_t seqNum = header.GetSeqNum();
 
-        if (header.GetId() == dmq::ACK_REMOTE_ID)
+        if (id == dmq::ACK_REMOTE_ID)
         {
             if (m_transportMonitor)
-                m_transportMonitor->Remove(header.GetSeqNum());
+                m_transportMonitor->Remove(seqNum);
         }
         else if (m_transportMonitor && m_sendTransport)
         {
-            // Send ACK back
+            // Send ACK
             xostringstream ss_ack;
             DmqHeader ack;
             ack.SetId(dmq::ACK_REMOTE_ID);
-            ack.SetSeqNum(header.GetSeqNum());
-            ack.SetLength(0);
+            ack.SetSeqNum(seqNum);
             m_sendTransport->Send(ss_ack, ack);
         }
 
@@ -293,9 +280,8 @@ private:
     ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
 
-    // Reduced to 1500 (Standard Ethernet MTU) for embedded environments
-    static const int BUFFER_SIZE = 1500;
+    static const int BUFFER_SIZE = 1500; // Ethernet MTU size
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
 
-#endif // ARM_LWIP_UDP_TRANSPORT_H  
+#endif // ZEPHYR_UDP_TRANSPORT_H

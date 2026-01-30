@@ -79,8 +79,9 @@ class NetworkClient:
 
         length = len(payload)
 
-        # struct.pack('<HHHH'): Little-endian. We rely on DMQ_MARKER being pre-swapped.
-        header = struct.pack('<HHHH', DMQ_MARKER, remote_id, seq, length)
+        # [FIX] Use '!HHHH' for Network Byte Order (Big Endian)
+        # Matches C++ htons() usage
+        header = struct.pack('!HHHH', DMQ_MARKER, remote_id, seq, length)
 
         # 3. Send Packet
         full_packet = header + payload
@@ -93,7 +94,8 @@ class NetworkClient:
     def _send_ack(self, seq_num):
         """Sends an ACK back to C++ so it stops waiting (if blocking)."""
         # Header with ID = 0 (ACK) and the RECEIVED sequence number
-        header = struct.pack('<HHHH', DMQ_MARKER, RemoteId.ACK, seq_num, 0)
+        # [FIX] Use '!HHHH' (Big Endian)
+        header = struct.pack('!HHHH', DMQ_MARKER, RemoteId.ACK, seq_num, 0)
         try:
             self._send_socket.send(header) # ACK has no payload
         except zmq.ZMQError:
@@ -117,7 +119,8 @@ class NetworkClient:
                         continue # Malformed
 
                     # 2. Parse Header (First 8 bytes)
-                    marker, remote_id, seq_num, length = struct.unpack('<HHHH', data[:8])
+                    # Use '!HHHH' (Big Endian) to match C++
+                    marker, remote_id, seq_num, length = struct.unpack('!HHHH', data[:8])
 
                     if marker != DMQ_MARKER:
                         print(f"Warning: Invalid Marker {hex(marker)}")
@@ -129,7 +132,13 @@ class NetworkClient:
                         pass
                     else:
                         # 4. Extract Payload
-                        payload = data[8:]
+                        # C++ payload is after header. 
+                        # Safety check length
+                        if len(data) < 8 + length:
+                            print(f"Warning: Incomplete packet. Expected {length}, got {len(data)-8}")
+                            continue
+                            
+                        payload = data[8:8+length]
                         self._dispatch_message(remote_id, payload)
                         
                         # 5. Send ACK back to C++
@@ -155,26 +164,33 @@ class NetworkClient:
             for unpacked_item in unpacker:
                 args.append(unpacked_item)
 
+            # Note: msgpack itself is Endian-safe (Big Endian by spec), 
+            # so we don't need to change how we unpack the payload content.
+
             if remote_id == RemoteId.ALARM:
                 # AlarmMsgCb -> void(AlarmMsg&, AlarmNote&)
-                msg = AlarmMsg.from_msgpack(msgpack.packb(args[0]))
-                note = AlarmNote.from_msgpack(msgpack.packb(args[1]))
-                callback(msg, note)
+                if len(args) >= 2:
+                    msg = AlarmMsg.from_msgpack(msgpack.packb(args[0]))
+                    note = AlarmNote.from_msgpack(msgpack.packb(args[1]))
+                    callback(msg, note)
 
             elif remote_id == RemoteId.COMMAND:
                 # CommandMsgCb -> void(CommandMsg&)
-                msg = CommandMsg.from_msgpack(msgpack.packb(args[0]))
-                callback(msg)
+                if len(args) >= 1:
+                    msg = CommandMsg.from_msgpack(msgpack.packb(args[0]))
+                    callback(msg)
 
             elif remote_id == RemoteId.DATA:
                 # DataMsgCb -> void(DataMsg&)
-                msg = DataMsg.from_msgpack(msgpack.packb(args[0]))
-                callback(msg)
+                if len(args) >= 1:
+                    msg = DataMsg.from_msgpack(msgpack.packb(args[0]))
+                    callback(msg)
                 
             elif remote_id == RemoteId.ACTUATOR:
                 # ActuatorMsgCb -> void(ActuatorMsg&)
-                # Placeholder for Actuator logic
-                print("Received Actuator Msg")
+                if len(args) >= 1:
+                    msg = ActuatorMsg.from_msgpack(msgpack.packb(args[0]))
+                    print(f"Received Actuator Msg: {msg}")
                 
         except Exception as e:
             print(f"Dispatch Error for ID {remote_id}: {e}")

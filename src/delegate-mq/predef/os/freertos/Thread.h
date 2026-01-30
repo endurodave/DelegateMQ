@@ -26,6 +26,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
 #include <string>
 #include <memory>
 
@@ -71,6 +72,8 @@ private:
 
     TaskHandle_t m_thread = nullptr;
     QueueHandle_t m_queue = nullptr;
+    SemaphoreHandle_t m_exitSem = nullptr; // Synchronization for safe destruction
+
     const std::string THREAD_NAME;
 };
 

@@ -13,9 +13,9 @@
 /// PAIR (1-to-1 bidrectional) and PUB/SUB (1-to-many unidirectional).
 /// 
 /// Key Features:
-/// 1. **Active Object**: Encapsulates all NNG socket operations within a dedicated 
-///    worker thread to adhere to NNG's thread-safety constraints (sockets are not 
-///    inherently thread-safe for concurrent access).
+/// 1. **Thread Safety**: Uses a `std::recursive_mutex` to protect the NNG socket, 
+///    allowing safe concurrent access from the Send and Receive threads (NNG sockets 
+///    are not inherently thread-safe).
 /// 2. **Scalability Protocols**: flexible configuration for different topologies:
 ///    * `PAIR_CLIENT`/`PAIR_SERVER`: Exclusive 1-to-1 connection.
 ///    * `PUB`/`SUB`: Efficient distribution to multiple subscribers.
@@ -24,6 +24,14 @@
 ///    and ACKs even over PUB/SUB (when a return channel is available).
 /// 
 /// @note Requires the `libnng` library.
+
+// Add Windows Sockets headers for htons/ntohs
+#if defined(_WIN32) || defined(_WIN64)
+    #include <winsock2.h>
+    #pragma comment(lib, "ws2_32.lib")
+#else
+    #include <arpa/inet.h>
+#endif
 
 #include "DelegateMQ.h"
 #include "predef/transport/ITransport.h"
@@ -35,11 +43,12 @@
 #include <nng/protocol/pubsub0/sub.h>
 #include <sstream>
 #include <cstdio>
+#include <mutex>
+#include <iostream>
 
-/// @brief NNG transport class. NNG socket instances must only be called by a 
-/// single thread of control. Each transport instance has its own internal thread of 
-/// control and all transport APIs are asynchronous. Each instance is an "active 
-/// object" with a private internal thread of control and async public APIs.
+/// @brief NNG transport class. 
+/// @details Logic now executes directly on the caller's thread, protected by a mutex
+/// to prevent concurrent access to the underlying NNG socket.
 class NngTransport : public ITransport
 {
 public:
@@ -51,20 +60,18 @@ public:
         SUB
     };
 
-    NngTransport() : m_thread("NngTransport"), m_sendTransport(this), m_recvTransport(this)
+    NngTransport() : m_sendTransport(this), m_recvTransport(this)
     {
-        m_thread.CreateThread();
     }
 
     ~NngTransport()
     {
-        m_thread.ExitThread();
+        Destroy();
     }
 
     int Create(Type type, const char* addr)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &NngTransport::Create, m_thread, dmq::WAIT_INFINITE)(type, addr);
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
         // Initialize NNG context
         m_type = type;
@@ -83,6 +90,9 @@ public:
                 nng_close(m_nngSocket);
                 return rc;
             }
+            // Set recv timeout to avoid blocking forever
+            nng_duration timeout = 100; // 100ms
+            nng_setopt_ms(m_nngSocket, NNG_OPT_RECVTIMEO, timeout);
         }
         else if (m_type == Type::PAIR_SERVER)
         {
@@ -96,6 +106,9 @@ public:
                 std::cerr << "Failed to listen on address: " << nng_strerror(rc) << std::endl;
                 return rc;
             }
+            // Set recv timeout
+            nng_duration timeout = 100; // 100ms
+            nng_setopt_ms(m_nngSocket, NNG_OPT_RECVTIMEO, timeout);
         }
         else if (m_type == Type::PUB)
         {
@@ -129,6 +142,10 @@ public:
                 std::cerr << "Failed to set subscription filter: " << nng_strerror(rc) << std::endl;
                 return rc;
             }
+            
+            // Set recv timeout
+            nng_duration timeout = 100; // 100ms
+            nng_setopt_ms(m_nngSocket, NNG_OPT_RECVTIMEO, timeout);
         }
         else
         {
@@ -141,8 +158,7 @@ public:
 
     void Close()
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &NngTransport::Close, m_thread, dmq::WAIT_INFINITE)();
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
         // Close the socket
         if (nng_socket_id(m_nngSocket) != 0) {
@@ -153,16 +169,13 @@ public:
 
     void Destroy()
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &NngTransport::Destroy, m_thread, dmq::WAIT_INFINITE)();
-
-        // NNG doesn't require explicit context terminations
+        Close();
+        // NNG doesn't require explicit context terminations like ZMQ
     }
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &NngTransport::Send, m_thread, dmq::WAIT_INFINITE)(os, header);
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
         if (os.bad() || os.fail()) {
             std::cout << "Error: xostringstream is in a bad state!" << std::endl;
@@ -192,37 +205,39 @@ public:
 
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        // Write header values from the COPY
-        auto marker = headerCopy.GetMarker();
+        // Write header values from the COPY (using htons)
+        uint16_t marker = htons(headerCopy.GetMarker());
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
 
-        auto id = headerCopy.GetId();
+        uint16_t id = htons(headerCopy.GetId());
         ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
 
-        auto seqNum = headerCopy.GetSeqNum();
+        uint16_t seqNum = htons(headerCopy.GetSeqNum());
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
 
-        auto len = headerCopy.GetLength();
+        uint16_t len = htons(headerCopy.GetLength());
         ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
         // Insert delegate arguments (payload)
         ss.write(payload.data(), payload.size());
 
-        // Note: Payload length might have changed if we used ss << payload vs ss << os.str(). 
-        // Using the string is safer here.
         std::string fullPacket = ss.str();
 
-        if (id != dmq::ACK_REMOTE_ID)
+        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID)
         {
             if (m_transportMonitor)
-                m_transportMonitor->Add(seqNum, id);
+                m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
         }
 
         // Send data using NNG
-        int err = nng_send(m_nngSocket, fullPacket.data(), fullPacket.size(), 0);
+        // Use NNG_FLAG_NONBLOCK to prevent deadlocks if peer is gone
+        int err = nng_send(m_nngSocket, (void*)fullPacket.data(), fullPacket.size(), NNG_FLAG_NONBLOCK);
         if (err != 0)
         {
-            std::cerr << "nng_send failed with error: " << nng_strerror(err) << std::endl;
+            // NNG_EAGAIN means queue full (congestion), treat as error to trigger retry logic
+            if (err != NNG_EAGAIN) {
+                // std::cerr << "nng_send failed with error: " << nng_strerror(err) << std::endl;
+            }
             return err;
         }
 
@@ -231,11 +246,11 @@ public:
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &NngTransport::Receive, m_thread, dmq::WAIT_INFINITE)(is, header);
+        // Lock Guard
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
         if (nng_socket_id(m_nngSocket) == 0) {
-            std::cout << "Error: Socket not created!" << std::endl;
+            // std::cout << "Error: Socket not created!" << std::endl;
             return -1;
         }
 
@@ -252,9 +267,15 @@ public:
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         size_t size = sizeof(m_buffer);
+        
+        // Receive with 100ms timeout (set in Create)
         int err = nng_recv(m_nngSocket, m_buffer, &size, 0);
-        if (size == -1) {
-            std::cerr << "nng_recv failed with error: " << nng_strerror(err) << std::endl;
+        if (err != 0) {
+            if (err == NNG_ETIMEDOUT) {
+                // Just a timeout, not a fatal error
+                return -1;
+            }
+            // std::cerr << "nng_recv failed with error: " << nng_strerror(err) << std::endl;
             return -1;
         }
 
@@ -267,9 +288,11 @@ public:
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
         headerStream.seekg(0);
 
-        uint16_t marker = 0;
-        headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
-        header.SetMarker(marker);
+        uint16_t val = 0;
+
+        // Read Marker (Convert Network -> Host)
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetMarker(ntohs(val));
 
         if (header.GetMarker() != DmqHeader::MARKER) {
             std::cerr << "Invalid sync marker!" << std::endl;
@@ -277,28 +300,25 @@ public:
         }
 
         // Read the DelegateRemoteId (2 bytes) into the `id` variable
-        uint16_t id = 0;
-        headerStream.read(reinterpret_cast<char*>(&id), sizeof(id));
-        header.SetId(id);
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetId(ntohs(val));
 
         // Read seqNum using the getter for byte swapping
-        uint16_t seqNum = 0;
-        headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
-        header.SetSeqNum(seqNum);
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetSeqNum(ntohs(val));
 
         // Read length using the getter for byte swapping
-        uint16_t length = 0;
-        headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
-        header.SetLength(length);
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetLength(ntohs(val));
 
         // Write the remaining target function argument data to stream
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
-        if (id == dmq::ACK_REMOTE_ID)
+        if (header.GetId() == dmq::ACK_REMOTE_ID)
         {
             // Receiver ack'ed message. Remove sequence number from monitor.
             if (m_transportMonitor)
-                m_transportMonitor->Remove(seqNum);
+                m_transportMonitor->Remove(header.GetSeqNum());
         }
         else
         {
@@ -308,7 +328,9 @@ public:
                 xostringstream ss_ack;
                 DmqHeader ack;
                 ack.SetId(dmq::ACK_REMOTE_ID);
-                ack.SetSeqNum(seqNum);
+                ack.SetSeqNum(header.GetSeqNum());
+                
+                // Note: Recursive mutex allows Send() here
                 m_sendTransport->Send(ss_ack, ack);
             }
         }
@@ -319,24 +341,18 @@ public:
     // Set a transport monitor for checking message ack
     void SetTransportMonitor(ITransportMonitor* transportMonitor)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &NngTransport::SetTransportMonitor, m_thread, dmq::WAIT_INFINITE)(transportMonitor);
         m_transportMonitor = transportMonitor;
     }
 
     // Set an alternative send transport
     void SetSendTransport(ITransport* sendTransport)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &NngTransport::SetSendTransport, m_thread, dmq::WAIT_INFINITE)(sendTransport);
         m_sendTransport = sendTransport;
     }
 
     // Set an alternative receive transport
     void SetRecvTransport(ITransport* recvTransport)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
-            return MakeDelegate(this, &NngTransport::SetRecvTransport, m_thread, dmq::WAIT_INFINITE)(recvTransport);
         m_recvTransport = recvTransport;
     }
 
@@ -344,7 +360,8 @@ private:
     nng_socket m_nngSocket = NNG_SOCKET_INITIALIZER;
     Type m_type = Type::PAIR_CLIENT;
 
-    Thread m_thread;
+    // Mutex to protect non-thread-safe socket
+    std::recursive_mutex m_mutex;
 
     ITransport* m_sendTransport = nullptr;
     ITransport* m_recvTransport = nullptr;

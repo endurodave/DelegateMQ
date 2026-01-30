@@ -8,9 +8,7 @@ SEND_PORT = 5556  # Port the C++ Server Listens on (We send here)
 RECV_PORT = 5555  # Port the C++ Server Publishes on (We receive here)
 
 # Sync Marker
-# The C++ server expects the marker 0xAA55. 
-# Because we use Little Endian packing ('<HHH'), we must swap the bytes here
-# (0x55AA) so they appear as [0xAA, 0x55] on the wire.
+# The C++ server expects the marker 0x55AA. 
 DMQ_MARKER = 0x55AA
 
 # ------------------------------------------------------------------------------

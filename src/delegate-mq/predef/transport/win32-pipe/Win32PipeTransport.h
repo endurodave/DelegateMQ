@@ -11,6 +11,10 @@
     #error This code must be compiled as a Win32 or Win64 application.
 #endif
 
+// Include Winsock for htons/ntohs consistency
+#include <winsock2.h>
+#pragma comment(lib, "ws2_32.lib")
+
 #include "predef/transport/ITransport.h"
 #include "predef/transport/DmqHeader.h"
 #include <windows.h>
@@ -28,11 +32,18 @@ public:
         SUB
     };
 
+    Win32PipeTransport() = default;
+    
+    ~Win32PipeTransport()
+    {
+        Close();
+    }
+
     int Create(Type type, LPCSTR pipeName)
     {
         if (type == Type::PUB)
         {
-            // Create named pipe
+            // Connect to an existing pipe (Client)
             m_hPipe = CreateFile(
                 pipeName,       // pipe name 
                 GENERIC_READ |  // read and write access 
@@ -45,7 +56,7 @@ public:
         }
         else if (type == Type::SUB)
         {
-            // Create named pipe
+            // Create named pipe (Server)
             m_hPipe = CreateNamedPipe(
                 pipeName,             // pipe name 
                 PIPE_ACCESS_DUPLEX,       // read/write access 
@@ -61,23 +72,29 @@ public:
 
         if (m_hPipe == INVALID_HANDLE_VALUE)
         {
-            DWORD dwError = GetLastError();
-            std::cout << "Create pipe failed: " << dwError << std::endl;
+            // DWORD dwError = GetLastError();
+            // std::cout << "Create pipe failed: " << dwError << std::endl;
             return -1;
         }
         return 0;
     }
 
-    void Close()
+    void Close() 
     {
-        CloseHandle(m_hPipe);
-        m_hPipe = INVALID_HANDLE_VALUE;
+        if (m_hPipe != INVALID_HANDLE_VALUE)
+        {
+            DisconnectNamedPipe(m_hPipe); // Good practice for server pipes
+            CloseHandle(m_hPipe);
+            m_hPipe = INVALID_HANDLE_VALUE;
+        }
     }
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         if (os.bad() || os.fail())
             return -1;
+
+        if (m_hPipe == INVALID_HANDLE_VALUE) return -1;
 
         // Create a local copy to modify the length
         DmqHeader headerCopy = header;
@@ -92,23 +109,20 @@ public:
 
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        // Write header values using the getters from the COPY
-        auto marker = headerCopy.GetMarker();
+        // Use Network Byte Order (htons) for consistency
+        uint16_t marker = htons(headerCopy.GetMarker());
+        uint16_t id     = htons(headerCopy.GetId());
+        uint16_t seqNum = htons(headerCopy.GetSeqNum());
+        uint16_t len    = htons(headerCopy.GetLength());
+
         ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
-
-        auto id = headerCopy.GetId();
         ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
-
-        auto seqNum = headerCopy.GetSeqNum();
         ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
-
-        auto len = headerCopy.GetLength();
         ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
 
         // Insert delegate arguments (payload)
         ss.write(payload.data(), payload.size());
 
-        // --- Efficient Write Logic (No Malloc) ---
         std::string fullPacket = ss.str();
 
         DWORD sentLen = 0;
@@ -122,13 +136,18 @@ public:
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
-        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
+        if (m_hPipe == INVALID_HANDLE_VALUE) return -1;
 
-        // Check if client connected
+        // Check/Accept connection
+        // Note: In non-blocking mode (PIPE_NOWAIT), this returns false immediately 
+        // if connected, or error if already connected.
         BOOL connected = ConnectNamedPipe(m_hPipe, NULL) ?
             TRUE : (GetLastError() == ERROR_PIPE_CONNECTED);
-        if (connected == FALSE)
-            return -1;
+        
+        // If not connected yet, we can't read.
+        if (connected == FALSE && GetLastError() == ERROR_NO_DATA) {
+             return -1; 
+        }
 
         DWORD size = 0;
         BOOL success = ReadFile(m_hPipe, m_buffer, BUFFER_SIZE, &size, NULL);
@@ -137,48 +156,44 @@ public:
             return -1;
 
         if (size <= DmqHeader::HEADER_SIZE) {
-            std::cerr << "Received data is too small to process." << std::endl;
+            // std::cerr << "Received data is too small to process." << std::endl;
             return -1;
         }
 
-        // Write the received data into the stringstream
+        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
         headerStream.seekg(0);
 
-        uint16_t marker = 0;
-        headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
-        header.SetMarker(marker);
+        uint16_t val = 0;
+
+        // Use Network Byte Order (ntohs)
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetMarker(ntohs(val));
 
         if (header.GetMarker() != DmqHeader::MARKER) {
-            std::cerr << "Invalid sync marker!" << std::endl;
-            return -1;  // @TODO: Optionally handle this case more gracefully
+            return -1;
         }
 
-        // Read the DelegateRemoteId (2 bytes) into the `id` variable
-        uint16_t id = 0;
-        headerStream.read(reinterpret_cast<char*>(&id), sizeof(id));
-        header.SetId(id);
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetId(ntohs(val));
 
-        // Read seqNum (again using the getter for byte swapping)
-        uint16_t seqNum = 0;
-        headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
-        header.SetSeqNum(seqNum);
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetSeqNum(ntohs(val));
 
-        // Read length (again using the getter for byte swapping)
-        uint16_t length = 0;
-        headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
-        header.SetLength(length);
+        headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
+        header.SetLength(ntohs(val));
 
         // Write the remaining argument data to stream
+        // Note: This relies on PIPE_TYPE_MESSAGE mode preserving boundaries.
+        // If 'size' is > HEADER_SIZE + payload length, we strictly write the payload part.
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
 
-        // Now `is` contains the rest of the remote argument data
-        return 0;  // Success
+        return 0;
     }
 
 private:
-    // @TODO Update buffer size if necessary.
-    static const int BUFFER_SIZE = 4096;
+    // Increase buffer to Max Packet Size (64KB) to avoid truncation
+    static const int BUFFER_SIZE = 65536; 
     char m_buffer[BUFFER_SIZE];
 
     HANDLE m_hPipe = INVALID_HANDLE_VALUE;

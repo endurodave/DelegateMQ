@@ -54,7 +54,7 @@ public:
     {
         CommandMsg command;
         command.action = CommandMsg::Action::STOP;
-        NetworkMgr::Instance().SendCommandMsg(command); // Fire and forget is fine here
+        NetworkMgr::Instance().SendCommandMsg(command);
 
         m_pollTimer.Stop();
         m_pollTimerConn.Disconnect();
@@ -93,6 +93,9 @@ private:
 
         // Set data collected locally
         DataMgr::Instance().SetDataMsg(dataMsg);
+
+        // [OPTIONAL] If you want to send this data to the server:
+        // NetworkMgr::Instance().SendDataMsg(dataMsg);
     }
 
     void ActuatorUpdate()
@@ -109,10 +112,10 @@ private:
         msg.actuatorPosition = position;
 
         msg.actuatorId = 1;
-        NetworkMgr::Instance().SendActuatorMsgWait(msg);
+        NetworkMgr::Instance().SendActuatorMsg(msg);
 
         msg.actuatorId = 2;
-        NetworkMgr::Instance().SendActuatorMsgWait(msg);
+        NetworkMgr::Instance().SendActuatorMsg(msg);
 
         // Explicitly start timer for next time
         m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
@@ -120,14 +123,16 @@ private:
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
+        // Only log critical errors, ignore basic timeouts if expected
         if (error != dmq::DelegateError::SUCCESS && id == ids::COMMAND_MSG_ID)
             std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
     void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
     {
-        if (status != TransportMonitor::Status::SUCCESS && id == ids::COMMAND_MSG_ID)
-            std::cout << "ClientApp Timeout: " << id << " " << seqNum << std::endl;
+        // Log timeouts so you know Retries are happening, but don't treat as fatal
+        if (status != TransportMonitor::Status::SUCCESS)
+            std::cout << "Msg Timeout (Retrying): ID " << id << " Seq " << seqNum << std::endl;
     }
 
     Thread m_thread;

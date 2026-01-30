@@ -117,7 +117,7 @@ if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ARM_LWIP_UDP")
     set_and_check(LWIP_INCLUDE_DIR_1 "${LWIP_ROOT}/src/include")
     set_and_check(LWIP_INCLUDE_DIR_2 "${LWIP_ROOT}/src/include/ipv4")
     
-    # Often required for lwipopts.h or arch/cc.h. 
+    # Often required for lwipopts.h or arch/cc.h.
     # NOTE: You may need to customize this depending on where your project keeps 'lwipopts.h'
     # For now, we point to the generic 'contrib' ports if present, or just the root.
     set(LWIP_INCLUDE_DIR_3 "${LWIP_ROOT}/contrib/ports/unix/port/include")
@@ -134,6 +134,25 @@ if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ARM_LWIP_UDP")
         "${LWIP_ROOT}/src/api/*.c"
         "${LWIP_ROOT}/src/netif/*.c"
     )
+endif()
+
+# ---------------------------------------------------------------------------
+# NetX / NetX Duo library (For ThreadX)
+# ---------------------------------------------------------------------------
+if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_THREADX_UDP")
+    # Adjust this path to your NetX / NetX Duo root
+    set(NETX_ROOT "${DMQ_ROOT_DIR}/../../../netxduo")
+    
+    # Verify root
+    set_and_check(NETX_INCLUDE_DIR "${NETX_ROOT}/common/inc")
+    
+    # Collect common sources
+    file(GLOB NETX_SOURCES 
+        "${NETX_ROOT}/common/src/*.c"
+        "${NETX_ROOT}/common/inc/*.h"
+    )
+    
+    # Note: Architecture-specific ports usually handled by your main ThreadX build system
 endif()
     
 # ---------------------------------------------------------------------------
@@ -180,6 +199,7 @@ if(DMQ_THREAD STREQUAL "DMQ_THREAD_FREERTOS")
         "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/*.c"
         "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/include/*.h"
     )
+    
     list(APPEND FREERTOS_SOURCES 
         "${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/trcKernelPort.c"
         "${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/trcSnapshotRecorder.c"
@@ -212,11 +232,10 @@ endif()
 # Zephyr
 # ---------------------------------------------------------------------------
 if(DMQ_THREAD STREQUAL "DMQ_THREAD_ZEPHYR")
-    # Zephyr is a build system, not just a library. 
+    # Zephyr is a build system, not just a library.
     # We typically do NOT manually glob source files here.
     # The application's main CMakeLists.txt must call `find_package(Zephyr)` 
     # which sets up the include paths and kernel linking automatically.
-
     # Optional: Just verify the root directory exists if you want to be safe
     set_and_check(ZEPHYR_ROOT_DIR "${DMQ_ROOT_DIR}/../../../zephyr")
     

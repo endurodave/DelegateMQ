@@ -14,7 +14,7 @@ using namespace dmq;
 using namespace std;
 
 /// @brief Receiver receives data from the Sender.
-class Receiver : public IMqttReceiveHandler
+class Receiver
 {
 public:
     dmq::MulticastDelegateSafe<void(Data&)> DataCb;
@@ -32,14 +32,19 @@ public:
         // Set the transport
         m_transport.Create(MqttTransport::Type::SUB);
 
-        m_transport.SetReceiveHandler(this);
-
         // Create the receiver thread
         m_thread.CreateThread();
+
+        // Start the polling loop on the background thread
+        MakeDelegate(this, &Receiver::ReceiveLoop, m_thread).AsyncInvoke();
     }
 
     ~Receiver()
     {
+        // Set exit flag and stop transport to unblock the loop
+        m_exit = true;
+        m_transport.Close();
+
         m_thread.ExitThread();
         m_recvDelegate = nullptr;
     }
@@ -50,23 +55,29 @@ public:
 
     void Stop()
     {
+        m_exit = true;
+        m_transport.Close();
         m_thread.ExitThread();
     }
 
 private:
-    // Handle incoming data message
-    void Receive() override
+    void ReceiveLoop()
     {
-        // Get incoming data
-        xstringstream arg_data(std::ios::in | std::ios::out | std::ios::binary);
-        DmqHeader header;
-        int error = m_transport.Receive(arg_data, header);
-
-        // Incoming remote delegate data arrived?
-        if (!error && !arg_data.str().empty())
+        while (!m_exit)
         {
-            // Invoke the receiver target function with the sender's argument data
-            m_recvDelegate.Invoke(arg_data);
+            // Get incoming data
+            xstringstream arg_data(std::ios::in | std::ios::out | std::ios::binary);
+            DmqHeader header;
+
+            // This blocks for up to 1000ms (set in MqttTransport)
+            int error = m_transport.Receive(arg_data, header);
+
+            // Incoming remote delegate data arrived?
+            if (!error && !m_exit)
+            {
+                // Invoke the receiver target function with the sender's argument data
+                m_recvDelegate.Invoke(arg_data);
+            }
         }
     }
 
@@ -85,7 +96,7 @@ private:
 
     DelegateRemoteId m_id;
     Thread m_thread;
-    Timer m_recvTimer;
+    std::atomic<bool> m_exit{ false }; 
 
     xostringstream m_argStream;
     MqttTransport m_transport;

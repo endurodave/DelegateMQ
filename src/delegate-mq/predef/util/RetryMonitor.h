@@ -64,19 +64,21 @@ public:
 
     /// @brief Sends a message and tracks it for potential retries.
     /// @return 0 on success, -1 on immediate transport failure.
-    int SendWithRetry(xostringstream& os, const DmqHeader& header) 
+    int SendWithRetry(xostringstream& os, const DmqHeader& header)
     {
-        const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
+        // Critical Section: Store the packet for retry
+        {
+            std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
+            RetryEntry entry;
+            entry.attemptsRemaining = m_maxRetries;
+            entry.header = header;
+            entry.packetData = os.str(); // Copy data
+            m_retryStore[header.GetSeqNum()] = entry;
+        }
 
-        // Store the raw binary data from the stream
-        RetryEntry entry;
-        entry.packetData = os.str();
-        entry.header = header;
-        entry.attemptsRemaining = m_maxRetries;
-
-        m_retryStore[header.GetSeqNum()] = entry;
-
-        // Perform the initial send through the actual transport
+        // Non-Critical Section: Send via Transport
+        // We must NOT hold m_lock while calling Send().
+        // Send() calls TransportMonitor::Add(), which takes its own lock.
         return m_transport.Send(os, header);
     }
 
