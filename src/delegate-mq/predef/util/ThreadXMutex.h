@@ -8,7 +8,9 @@ namespace dmq {
     // =========================================================================
     // ThreadXMutex 
     // Wraps TX_MUTEX.
-    // Note: ThreadX mutexes support priority inheritance by default (TX_INHERIT).
+    // Note 1: ThreadX mutexes support priority inheritance by default (TX_INHERIT).
+    // Note 2: ThreadX mutexes are inherently recursive. The same thread can 
+    //         lock the mutex multiple times without deadlocking.
     // =========================================================================
     class ThreadXMutex {
     public:
@@ -43,35 +45,9 @@ namespace dmq {
 
     // =========================================================================
     // ThreadXRecursiveMutex
-    // Wraps TX_MUTEX (ThreadX mutexes are recursive by default)
+    // Alias for ThreadXMutex because TX_MUTEX is recursive by design.
     // =========================================================================
-    class ThreadXRecursiveMutex {
-    public:
-        ThreadXRecursiveMutex() {
-            UINT status = tx_mutex_create(&m_mutex, (CHAR*)"DMQ_RecMutex", TX_INHERIT);
-            if (status != TX_SUCCESS) {
-                while(1);
-            }
-        }
-
-        ~ThreadXRecursiveMutex() {
-            tx_mutex_delete(&m_mutex);
-        }
-
-        void lock() {
-            tx_mutex_get(&m_mutex, TX_WAIT_FOREVER);
-        }
-
-        void unlock() {
-            tx_mutex_put(&m_mutex);
-        }
-
-        ThreadXRecursiveMutex(const ThreadXRecursiveMutex&) = delete;
-        ThreadXRecursiveMutex& operator=(const ThreadXRecursiveMutex&) = delete;
-
-    private:
-        TX_MUTEX m_mutex;
-    };
+    using ThreadXRecursiveMutex = ThreadXMutex;
 }
 
 #endif // THREADX_MUTEX_H

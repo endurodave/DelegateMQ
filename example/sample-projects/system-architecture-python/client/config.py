@@ -9,7 +9,7 @@ RECV_PORT = 5555  # Port the C++ Server Publishes on (We receive here)
 
 # Sync Marker
 # The C++ server expects the marker 0x55AA. 
-DMQ_MARKER = 0x55AA
+DMQ_MARKER = 0xAA55
 
 # ------------------------------------------------------------------------------
 # Protocol IDs

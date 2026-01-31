@@ -6,37 +6,19 @@
 /// David Lafreniere, 2025.
 /// 
 /// Serialize callable argument data using MessagePack library for transport
-/// to a remote. Endinaness correctly handled by MessagePack library. 
+/// to a remote. Endianness correctly handled by MessagePack library. 
 
 #include "msgpack.hpp"
 #include "delegate/ISerializer.h"
 #include <iostream>
+#include <sstream> // Needed for dynamic_cast check
 #include <type_traits>
-
-// Type trait to check if a type is const
-template <typename T>
-using is_const_type = std::is_const<std::remove_reference_t<T>>;
+#include <vector>
 
 // make_serialized serializes each remote function argument
 template<typename... Args>
 void make_serialized(msgpack::sbuffer& buffer, Args&&... args) {
     (msgpack::pack(buffer, args), ...);  // C++17 fold expression to serialize
-}
-
-// make_unserialized unserializes each remote function argument
-template<typename Arg1, typename... Args>
-void make_unserialized(msgpack::unpacker& unpacker, Arg1& arg1, Args&&... args) {
-    static_assert(!std::is_pointer<Arg1>::value, "Arg1 cannot be a pointer.");
-    static_assert(!is_const_type<Arg1>::value, "Arg1 cannot be const.");
-    msgpack::object_handle oh;
-    if (!unpacker.next(oh)) 
-        throw std::runtime_error("Error during MsgPack unpacking.");
-    arg1 = oh.get().as<Arg1>();
-
-    // Recursively call for other arguments
-    if constexpr (sizeof...(args) > 0) {
-        make_unserialized(unpacker, args...);
-    }
 }
 
 template <class R>
@@ -50,7 +32,20 @@ public:
     // Write arguments to a stream
     virtual std::ostream& Write(std::ostream& os, Args... args) override {
         try {
+            // Reset stream position. DelegateMQ reuses the stream instance.
+            // If we don't reset, we append new data to old data, sending [Old][New] 
+            // and the receiver will always deserialize [Old].
             os.seekp(0, std::ios::beg);
+
+            // Optimization: If it's a stringstream, clear it completely to avoid 
+            // sending "tail garbage" if the new packet is smaller than the previous one.
+            // (Note: Even with garbage tail, msgpack works because it stops reading 
+            // after the valid object, but clearing saves network bandwidth).
+            auto* ss = dynamic_cast<std::ostringstream*>(&os);
+            if (ss) {
+                ss->str("");
+            }
+
             msgpack::sbuffer buffer;
             make_serialized(buffer, args...);
             os.write(buffer.data(), buffer.size());
@@ -65,12 +60,26 @@ public:
     // Read arguments from a stream
     virtual std::istream& Read(std::istream& is, Args&... args) override {
         try {
-            std::string buffer_data((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
-            msgpack::unpacker unpacker;
-            unpacker.reserve_buffer(buffer_data.size());
-            std::memcpy(unpacker.buffer(), buffer_data.data(), buffer_data.size());
-            unpacker.buffer_consumed(buffer_data.size());
-            make_unserialized(unpacker, args...);
+            // Read entire stream into memory buffer
+            std::vector<char> buffer_data((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
+
+            if (buffer_data.empty() && sizeof...(Args) > 0) {
+                return is;
+            }
+
+            size_t offset = 0;
+
+            // Helper lambda to unpack one argument at a time from the buffer
+            auto unpack_one = [&](auto& arg) {
+                // msgpack::unpack parses one object and updates 'offset' to point to the next byte
+                msgpack::object_handle oh = msgpack::unpack(buffer_data.data(), buffer_data.size(), offset);
+
+                // Convert msgpack object to specific C++ type
+                arg = oh.get().as<std::decay_t<decltype(arg)>>();
+                };
+
+            // Use C++17 fold expression to call unpack_one for each argument in 'args'
+            (unpack_one(args), ...);
         }
         catch (const msgpack::type_error& e) {
             std::cerr << "Deserialize type conversion error: " << e.what() << std::endl;
@@ -84,4 +93,4 @@ public:
     }
 };
 
-#endif
+#endif // SERIALIZER_H

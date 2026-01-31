@@ -7,20 +7,40 @@
 namespace dmq {
     struct ThreadXClock {
         // 1. Define duration traits 
-        // ASSUMPTION: ThreadX is configured for 1000Hz (1ms) ticks.
-        // If your TX_TIMER_TICKS_PER_SECOND is 100, change std::milli to std::ratio<1, 100>
         using rep = int64_t;
-        using period = std::milli; 
+        using period = std::milli;
         using duration = std::chrono::duration<rep, period>;
         using time_point = std::chrono::time_point<ThreadXClock>;
         static const bool is_steady = true;
 
         // 2. The critical "now()" function
         static time_point now() noexcept {
-            // tx_time_get() returns ULONG (32-bit). 
-            // We cast to int64_t for chrono compatibility.
-            // Note: 32-bit ticks at 1ms wrap every ~49 days.
-            return time_point(duration(tx_time_get()));
+            static ULONG last = 0;
+            static uint64_t high = 0;
+
+            // Enter Critical Section
+            // This prevents other threads (and ISRs) from interrupting 
+            // the read-modify-write of 'last' and 'high'.
+            TX_INTERRUPT_SAVE_AREA
+            TX_DISABLE
+
+            ULONG cur = tx_time_get();
+
+            constexpr uint64_t TICK_MODULO = static_cast<uint64_t>(1ULL) << (sizeof(ULONG) * 8);
+
+            if (cur < last) {
+                high += TICK_MODULO;
+            }
+
+            last = cur;
+
+            // Capture value before re-enabling interrupts
+            uint64_t ticks = high + cur;
+
+            // Exit Critical Section
+            TX_RESTORE
+
+            return time_point(duration(static_cast<rep>(ticks)));
         }
     };
 }

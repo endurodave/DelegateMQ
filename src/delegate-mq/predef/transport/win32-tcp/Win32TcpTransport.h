@@ -18,8 +18,8 @@
 ///    numbers and acknowledge (ACK) receipts.
 /// 3. **Non-Blocking I/O**: Utilizes `select()` in the receive loop to prevent 
 ///    thread blocking when no data is available, facilitating clean shutdowns.
-/// 
-/// @note This class handles `WSAStartup` and `WSACleanup` internally.
+/// 4. **Socket Management**: Use WinsockConnect class in main() for `WSAStartup` and 
+///    socket creation/cleanup.
 
 #if !defined(_WIN32) && !defined(_WIN64)
 #error This code must be compiled as a Win32 or Win64 application.
@@ -57,15 +57,6 @@ public:
 
     int Create(Type type, LPCSTR addr, USHORT port)
     {
-        WSADATA wsaData;
-        m_type = type;
-
-        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-        {
-            std::cerr << "WSAStartup failed." << std::endl;
-            return -1;
-        }
-
         sockaddr_in service;
         service.sin_family = AF_INET;
         service.sin_port = htons(port);

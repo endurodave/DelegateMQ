@@ -40,32 +40,32 @@ public:
     /// Use a shared_ptr for the signal as required by SignalSafe
     std::shared_ptr<dmq::SignalSafe<void(dmq::DelegateRemoteId, uint16_t, Status)>> OnSendStatus;
 
-    TransportMonitor(const dmq::Duration timeout) : TRANSPORT_TIMEOUT(timeout) 
+    TransportMonitor(const dmq::Duration timeout) : TRANSPORT_TIMEOUT(timeout)
     {
         OnSendStatus = dmq::MakeSignal<void(dmq::DelegateRemoteId, uint16_t, Status)>();
     }
 
-    ~TransportMonitor() 
-    { 
+    ~TransportMonitor()
+    {
         const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
-        m_pending.clear(); 
+        m_pending.clear();
     }
 
-	/// Add a sequence number
-	/// param[in] seqNum - the delegate message sequence number
+    /// Add a sequence number
+    /// param[in] seqNum - the delegate message sequence number
     /// param[in] remoteId - the remote ID
     virtual void Add(uint16_t seqNum, dmq::DelegateRemoteId remoteId) override
     {
         const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
         TimeoutData d;
-        d.timeStamp = std::chrono::steady_clock::now();
+        d.timeStamp = dmq::Clock::now();
         d.remoteId = remoteId;
         m_pending[seqNum] = d;
     }
 
-	/// Remove a sequence number. Invokes SendStatusCb callback to notify 
+    /// Remove a sequence number. Invokes SendStatusCb callback to notify 
     /// registered client of removal.
-	/// param[in] seqNum - the delegate message sequence number
+    /// param[in] seqNum - the delegate message sequence number
     virtual void Remove(uint16_t seqNum) override
     {
         const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
@@ -79,7 +79,7 @@ public:
         }
     }
 
-	/// Call periodically to process message timeouts
+    /// Call periodically to process message timeouts
     void Process()
     {
         // 1. Collect expired items into a local list
@@ -89,11 +89,13 @@ public:
         {
             // Lock ONLY while reading/modifying the map
             const std::lock_guard<dmq::RecursiveMutex> lock(m_lock);
-            auto now = std::chrono::steady_clock::now();
+
+            auto now = dmq::Clock::now();
             auto it = m_pending.begin();
 
             while (it != m_pending.end())
             {
+                // Ensure consistent duration types
                 auto elapsed = std::chrono::duration_cast<dmq::Duration>(now - (*it).second.timeStamp);
 
                 if (elapsed > TRANSPORT_TIMEOUT)
@@ -116,6 +118,7 @@ public:
             for (const auto& item : expiredItems)
             {
                 // Simple logging to console
+                // Note: std::cerr is generally safe, but on embedded might be redirected or empty.
                 std::cerr << "TransportMonitor::Process TIMEOUT RemoteID: " << item.data.remoteId << " Seq: " << item.seq << std::endl;
                 (*OnSendStatus)(item.data.remoteId, item.seq, Status::TIMEOUT);
             }
@@ -126,11 +129,11 @@ private:
     struct TimeoutData
     {
         dmq::DelegateRemoteId remoteId = 0;
-        std::chrono::steady_clock::time_point timeStamp;
+        dmq::TimePoint timeStamp;
     };
 
-	std::map<uint16_t, TimeoutData> m_pending;
-	const dmq::Duration TRANSPORT_TIMEOUT;
+    std::map<uint16_t, TimeoutData> m_pending;
+    const dmq::Duration TRANSPORT_TIMEOUT;
     dmq::RecursiveMutex m_lock;
 };
 

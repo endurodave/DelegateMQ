@@ -13,6 +13,7 @@
 #include "AlarmMgr.h"
 #include "DataMgr.h"
 #include "ClientApp.h"
+#include "predef/util/WinsockConnect.h"
 #include <thread>
 
 #ifdef DMQ_LOG
@@ -72,6 +73,9 @@ int main()
     spdlog::set_level(spdlog::level::debug); // Show debug and above
 #endif
 #endif
+
+    // Starts Winsock now; automatically cleans up when main exits.
+    WinsockContext wsContext;
 
     std::cout << "Client start!" << std::endl;
 

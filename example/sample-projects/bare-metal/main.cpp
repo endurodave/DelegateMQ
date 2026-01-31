@@ -205,6 +205,11 @@ public:
         // Set the delegate interfaces
         m_recvDelegate.SetStream(&m_args);
         m_recvDelegate.SetSerializer(&m_serializer);
+
+        // Register the Error Handler. 
+        // This prevents the delegate from throwing std::runtime_error on failure.
+        m_recvDelegate.SetErrorHandler(MakeDelegate(this, &Receiver::ErrorHandler));
+
         m_recvDelegate = MakeDelegate(this, &Receiver::DataUpdate, id);
 
         m_thread.CreateThread();
@@ -213,6 +218,7 @@ public:
         (*m_recvTimer.OnExpired) += MakeDelegate(this, &Receiver::Poll, m_thread);
         m_recvTimer.Start(std::chrono::milliseconds(50));
     }
+
     ~Receiver()
     {
         (*m_recvTimer.OnExpired) -= MakeDelegate(this, &Receiver::Poll, m_thread);
@@ -229,8 +235,21 @@ public:
         // Incoming remote delegate data arrived?
         if (!arg_data.str().empty())
         {
-            // Invoke the receiver target function with the sender's argument data
-            m_recvDelegate.Invoke(arg_data);
+            // Try/Catch Block
+            // Protect the thread loop from crashing on bad data
+            try
+            {
+                // Invoke the receiver target function with the sender's argument data
+                m_recvDelegate.Invoke(arg_data);
+            }
+            catch (const std::exception& e)
+            {
+                std::cerr << "[Exception] Receiver caught: " << e.what() << std::endl;
+            }
+            catch (...)
+            {
+                std::cerr << "[Exception] Receiver caught unknown error." << std::endl;
+            }
         }
     }
 
@@ -241,6 +260,13 @@ public:
         cout << " " << data.y;
         cout << " " << data.msg;
         cout << endl;
+    }
+
+    // Handle DelegateMQ internal errors
+    void ErrorHandler(DelegateRemoteId id, DelegateError err, DelegateErrorAux aux)
+    {
+        // Log error but DO NOT throw.
+        std::cerr << "[Error] Receiver ID: " << id << " Code: " << (int)err << std::endl;
     }
 
 private:

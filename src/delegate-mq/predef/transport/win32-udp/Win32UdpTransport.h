@@ -16,7 +16,8 @@
 ///    arguments and framing headers.
 /// 2. **Reliability Support**: Integrates with `TransportMonitor` to track outgoing 
 ///    sequence numbers and process incoming ACKs to detect packet loss.
-/// 3. **Socket Management**: Automatically handles `WSAStartup` and socket creation/cleanup.
+/// 3. **Socket Management**: Use WinsockConnect class in main() for `WSAStartup` and 
+///    socket creation/cleanup.
 /// 
 /// @note This implementation uses blocking sockets with timeouts (`SO_RCVTIMEO`) to 
 /// prevent indefinite blocking during receive operations.
@@ -56,22 +57,11 @@ public:
 
     int Create(Type type, LPCSTR addr, USHORT port)
     {
-        WSADATA wsaData;
-        m_type = type;
-
-        // Initialize Winsock
-        if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-        {
-            std::cerr << "WSAStartup failed." << std::endl;
-            return -1;
-        }
-
         // Create a UDP socket
         m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (m_socket == INVALID_SOCKET)
         {
             std::cerr << "Socket creation failed." << std::endl;
-            WSACleanup();
             return -1;
         }
 

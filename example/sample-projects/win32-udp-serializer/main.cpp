@@ -6,6 +6,7 @@
 
 #include "sender.h"
 #include "receiver.h"
+#include "predef/util/WinsockConnect.h"
 
 std::atomic<bool> processTimerExit = false;
 static void ProcessTimers()
@@ -20,6 +21,9 @@ static void ProcessTimers()
 
 int main() 
 {
+    // Starts Winsock now; automatically cleans up when main exits.
+    WinsockContext wsContext;
+
     const DelegateRemoteId id = 1;
 
     // Start the thread that will run ProcessTimers
