@@ -13,8 +13,11 @@
 #include "AlarmMgr.h"
 #include "DataMgr.h"
 #include "ClientApp.h"
-#include "predef/util/WinsockConnect.h"
 #include <thread>
+
+#ifdef _WIN32
+#include "predef/util/WinsockConnect.h"
+#endif
 
 #ifdef DMQ_LOG
 #ifdef _WIN32
@@ -74,8 +77,10 @@ int main()
 #endif
 #endif
 
+#ifdef _WIN32
     // Starts Winsock now; automatically cleans up when main exits.
     WinsockContext wsContext;
+#endif
 
     std::cout << "Client start!" << std::endl;
 
