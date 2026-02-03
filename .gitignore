@@ -305,3 +305,33 @@ __pycache__/
 
 # OpenCover UI analysis results
 OpenCover/
+
+# ---------------------------------
+# STM32CubeIDE / Eclipse / GCC Specifics
+# ---------------------------------
+
+# STM32CubeIDE Build Output Directories
+STM32CubeIDE/Debug/
+STM32CubeIDE/Release/
+
+# GCC/Compiler Analysis Files (Seen in your directory listing)
+*.su
+*.cyclo
+*.d
+*.o
+*.mk
+*.list
+
+# Binary and Map Files
+*.elf
+*.bin
+*.hex
+*.map
+
+# Eclipse/STM32 Internal Metadata
+.metadata/
+.mxproject
+
+# Debugger Logs
+JLinkLog.txt
+*.jlink

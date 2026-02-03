@@ -63,6 +63,12 @@
 #include "delegate/UnicastDelegate.h"
 #include "delegate/Signal.h"
 
+// --- AUTO DETECT NO-EXCEPTIONS ---
+// If the compiler has exceptions disabled, force DMQ_ASSERTS on.
+#if !defined(DMQ_ASSERTS) && defined(__GNUC__) && !defined(__EXCEPTIONS)
+    #define DMQ_ASSERTS
+#endif
+
 // -----------------------------------------------------------------------------
 // 2. Thread-Safe Wrappers (Mutex Only)
 // -----------------------------------------------------------------------------

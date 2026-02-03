@@ -10,6 +10,7 @@ The following remote delegate sample projects have no external library dependenc
 
 * [bare-metal](./bare-metal/) - simple remote delegate app on Windows and Linux.
 * [system-architecture-no-deps](./system-architecture-no-deps/) - complex remote delegate client/server apps using UDP on Windows or Linux.
+* [stm32-freertos](./stm32-freertos/) - simple FreeRTOS remote delegate app on STM32F4 Discovery board.
 * [linux-tcp-serializer](./linux-tcp-serializer/) - simple TCP remote delegate app on Linux.
 * [linux-udp-serializer](./linux-udp-serializer/) - simple UDP remote delegate app on Linux.
 * [win32-tcp-serializer](./win32-tcp-serializer/) - simple TCP remote delegate app on Windows.

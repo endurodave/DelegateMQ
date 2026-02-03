@@ -44,13 +44,21 @@ namespace dmq {
         [[nodiscard]] Connection Connect(const DelegateType& delegate) {
             std::weak_ptr<SignalSafe> weakSelf;
 
+            // Handle Assert vs Exception environments
+#if defined(DMQ_ASSERTS) 
+            // No exceptions: We simply assume the object is managed by shared_ptr.
+            // If this object is on the stack, shared_from_this() will likely cause 
+            // a strict abort/terminate depending on the STL implementation.
+            weakSelf = this->shared_from_this();
+#else
             try {
                 weakSelf = this->shared_from_this();
             }
             catch (const std::bad_weak_ptr&) {
-                assert(false && "SignalSafe::Connect() requires the Signal instance to be managed by a std::shared_ptr. Use dmq::MakeSignal or std::make_shared.");
+                assert(false && "Signal::Connect() requires the Signal instance to be managed by a std::shared_ptr. Use std::make_shared.");
                 throw;
             }
+#endif
 
             this->PushBack(delegate);
 

@@ -30,7 +30,7 @@ public:
 	/// Constructor
 	/// @param[in] invoker - the invoker instance the delegate is registered with.
 	DelegateMsg(std::shared_ptr<IThreadInvoker> invoker, Priority priority) :
-		m_priority(priority), m_invoker(invoker)
+		m_invoker(invoker), m_priority(priority)
 	{
 	}
 

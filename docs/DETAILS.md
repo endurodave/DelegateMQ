@@ -88,19 +88,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Sample Projects](#sample-projects)
     - [External Dependencies](#external-dependencies)
     - [system-architecture](#system-architecture)
-    - [bare-metal](#bare-metal)
-    - [bare-metal-arm](#bare-metal-arm)
-    - [freertos-bare-metal](#freertos-bare-metal)
-    - [mqtt-rapidjson](#mqtt-rapidjson)
-    - [nng-bitsery](#nng-bitsery)
-    - [serialport-serializer](#serialport-serializer)
-    - [win32-pipe-serializer](#win32-pipe-serializer)
-    - [win32-udp-serializer](#win32-udp-serializer)
-    - [zeromq-cereal](#zeromq-cereal)
-    - [zeromq-bitsery](#zeromq-bitsery)
-    - [zeromq-serializer](#zeromq-serializer)
-    - [zeromq-msgpack-cpp](#zeromq-msgpack-cpp)
-    - [zeromq-rapidjson](#zeromq-rapidjson)
+    - [Sample Projects Comparison](#sample-projects-comparison)
 - [Tests](#tests)
   - [Unit Tests](#unit-tests)
   - [Valgrind Memory Tests](#valgrind-memory-tests)
@@ -2116,135 +2104,24 @@ Interface implementation details.
 | `ITransport` | `ZeroMqTransport` | ZeroMQ message transport |
 | `ITransportMonitor` | `TransportMonitor` | Monitor message timeouts |
 
-### bare-metal
+### Sample Projects Comparison
 
-Remote delegate example with no external libraries. 
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
-| `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
-
-### bare-metal-arm
-
-Delegate example built with ARM compiler with no external libraries and no `std::thread` nor `std::mutex`. See `README.md` in `bare-metal-arm` directory.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | None.
-| `ISerializer` | None.  
-| `IDispatcher` | None. 
-
-### freertos-bare-metal
-
-Remote delegate example using FreeRTOS and no external libraries. Tested using the FreeRTOS Windows port and Visual Studio. Must build as 32-bit application. See CMakeList.txt for details.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using FreeRTOS. 
-| `ISerializer` | Insertion `operator<<` and extraction `operator>>` operators. 
-| `IDispatcher` | Shared sender/receiver `std::stringstream` for dispatcher transport.
-
-### mqtt-rapidjson
-
-Remote delegate example with MQTT and RapidJSON. Execute the pub and sub projects to run the example. See CMakeList.txt for details.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | RapidJSON library. 
-| `IDispatcher` | Shared sender/receiver MQTT library for dispatcher transport.
-
-### nng-bitsery
-
-Remote delegate example using NNG and Bitsery libraries.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | Bitsery serialization library.  
-| `IDispatcher` | NNG library for dispatcher transport.
-
-### serialport-serializer
-
-Remote delegate example using libserialport and `serialize` libraries.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | `serialize` class.  
-| `IDispatcher` | `libserialport` library for serial dispatcher transport.
-
-### win32-pipe-serializer
-
-Remote delegate example with Windows pipe and `serialize`. 
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | `serialize` class.
-| `IDispatcher` | Windows data pipe for dispatcher transport.
-
-### win32-udp-serializer
-
-Remote delegate example with Windows UDP socket and `serialize`. 
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | `serialize` class.
-| `IDispatcher` | Windows UDP socket for dispatcher transport.
-
-### zeromq-cereal
-
-Remote delegate example using ZeroMQ and Cereal libraries.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | Cereal library.  
-| `IDispatcher` | ZeroMQ library for dispatcher transport.
-
-### zeromq-bitsery
-
-Remote delegate example using ZeroMQ and Bitsery libraries.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | Bitsery library.  
-| `IDispatcher` | ZeroMQ library for dispatcher transport.
-
-### zeromq-serializer
-
-Remote delegate example using ZeroMQ and `serialize`.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | `serialize` class.  
-| `IDispatcher` | ZeroMQ library for dispatcher transport.
-
-### zeromq-msgpack-cpp
-
-Remote delegate example using ZeroMQ and MessagePack libraries.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | MessagePack library.  
-| `IDispatcher` | ZeroMQ library for dispatcher transport.
-
-### zeromq-rapidjson
-
-Remote delegate example using ZeroMQ and RapidJSON libraries.
-
-| Interface | Implementation |
-| --- | --- |
-| `IThread` | `Thread` class implemented using `std::thread`. 
-| `ISerializer` | RapidJSON library.  
-| `IDispatcher` | ZeroMQ library for dispatcher transport.
+| Project Name | Description | Threading (`IThread`) | Serialization (`ISerializer`) | Transport (`IDispatcher`) |
+| :--- | :--- | :--- | :--- | :--- |
+| **bare-metal** | Simple remote delegate example with no external libraries. | `std::thread` | `operator<<` / `operator>>` | `std::stringstream` |
+| **bare-metal-arm** | ARM compiler example with no external libs, threads, or mutexes. | None | None | None |
+| **freertos-bare-metal** | FreeRTOS Windows port example (32-bit build). | FreeRTOS | `operator<<` / `operator>>` | `std::stringstream` |
+| **stm32-freertos** | Embedded FreeRTOS example for STM32F4 Discovery. | FreeRTOS | None | None |
+| **mqtt-rapidjson** | Remote delegate using MQTT and RapidJSON (Client/Server). | `std::thread` | RapidJSON | MQTT |
+| **nng-bitsery** | Remote delegate using NNG and Bitsery. | `std::thread` | Bitsery | NNG |
+| **serialport-serializer** | Remote delegate using libserialport. | `std::thread` | `serialize` class | `libserialport` |
+| **win32-pipe-serializer** | Windows Named Pipe example. | `std::thread` | `serialize` class | Windows Pipe |
+| **win32-udp-serializer** | Windows UDP Socket example. | `std::thread` | `serialize` class | Windows UDP |
+| **zeromq-cereal** | ZeroMQ transport with Cereal serialization. | `std::thread` | Cereal | ZeroMQ |
+| **zeromq-bitsery** | ZeroMQ transport with Bitsery serialization. | `std::thread` | Bitsery | ZeroMQ |
+| **zeromq-serializer** | ZeroMQ transport with custom `serialize` class. | `std::thread` | `serialize` class | ZeroMQ |
+| **zeromq-msgpack-cpp** | ZeroMQ transport with MessagePack. | `std::thread` | MessagePack | ZeroMQ |
+| **zeromq-rapidjson** | ZeroMQ transport with RapidJSON. | `std::thread` | RapidJSON | ZeroMQ |
 
 # Tests
 
