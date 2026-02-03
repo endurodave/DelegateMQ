@@ -2111,18 +2111,23 @@ Interface implementation details.
 | **bare-metal** | Simple remote delegate example with no external libraries. | `std::thread` | `operator<<` / `operator>>` | `std::stringstream` |
 | **bare-metal-arm** | ARM compiler example with no external libs, threads, or mutexes. | None | None | None |
 | **freertos-bare-metal** | FreeRTOS Windows port example (32-bit build). | FreeRTOS | `operator<<` / `operator>>` | `std::stringstream` |
-| **stm32-freertos** | Embedded FreeRTOS example for STM32F4 Discovery. | FreeRTOS | None | None |
+| **linux-tcp-serializer** | Simple TCP remote delegate app on Linux. | `std::thread` | `serialize` class | Linux TCP Socket |
+| **linux-udp-serializer** | Simple UDP remote delegate app on Linux. | `std::thread` | `serialize` class | Linux UDP Socket |
 | **mqtt-rapidjson** | Remote delegate using MQTT and RapidJSON (Client/Server). | `std::thread` | RapidJSON | MQTT |
 | **nng-bitsery** | Remote delegate using NNG and Bitsery. | `std::thread` | Bitsery | NNG |
 | **serialport-serializer** | Remote delegate using libserialport. | `std::thread` | `serialize` class | `libserialport` |
+| **stm32-freertos** | Embedded FreeRTOS example for STM32F4 Discovery. | FreeRTOS | None | None |
+| **system-architecture** | System architecture example with dependencies. | `std::thread` | Various | Various |
+| **system-architecture-no-deps** | System architecture example (UDP) with no deps. | `std::thread` | `operator<<` / `operator>>` | UDP Socket |
+| **system-architecture-python** | Python binding example. | `std::thread` | N/A | Python Binding |
 | **win32-pipe-serializer** | Windows Named Pipe example. | `std::thread` | `serialize` class | Windows Pipe |
-| **win32-udp-serializer** | Windows UDP Socket example. | `std::thread` | `serialize` class | Windows UDP |
-| **zeromq-cereal** | ZeroMQ transport with Cereal serialization. | `std::thread` | Cereal | ZeroMQ |
+| **win32-tcp-serializer** | Windows TCP Socket example. | `std::thread` | `serialize` class | Windows TCP Socket |
+| **win32-udp-serializer** | Windows UDP Socket example. | `std::thread` | `serialize` class | Windows UDP Socket |
 | **zeromq-bitsery** | ZeroMQ transport with Bitsery serialization. | `std::thread` | Bitsery | ZeroMQ |
-| **zeromq-serializer** | ZeroMQ transport with custom `serialize` class. | `std::thread` | `serialize` class | ZeroMQ |
+| **zeromq-cereal** | ZeroMQ transport with Cereal serialization. | `std::thread` | Cereal | ZeroMQ |
 | **zeromq-msgpack-cpp** | ZeroMQ transport with MessagePack. | `std::thread` | MessagePack | ZeroMQ |
 | **zeromq-rapidjson** | ZeroMQ transport with RapidJSON. | `std::thread` | RapidJSON | ZeroMQ |
-
+| **zeromq-serializer** | ZeroMQ transport with custom `serialize` class. | `std::thread` | `serialize` class | ZeroMQ |
 # Tests
 
 The current master branch build passes all unit tests and Valgrind memory tests.
