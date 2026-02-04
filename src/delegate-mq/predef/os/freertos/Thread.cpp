@@ -12,8 +12,11 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread Constructor
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName) : THREAD_NAME(threadName)
+Thread::Thread(const std::string& threadName, size_t maxQueueSize)
+    : THREAD_NAME(threadName)
 {
+    // If 0 is passed, use the default size
+    m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
 }
 
 //----------------------------------------------------------------------------
@@ -42,10 +45,12 @@ bool Thread::CreateThread()
 
         // 2. Create the Queue
         // Holds pointers to ThreadMsg objects (heap allocated)
-        m_queue = xQueueCreate(20, sizeof(ThreadMsg*));
+        // Uses m_queueSize determined in constructor
+        m_queue = xQueueCreate(m_queueSize, sizeof(ThreadMsg*));
         ASSERT_TRUE(m_queue != nullptr);
 
         // 3. Create the Task
+        // Note: Stack size is in words (e.g. 4 bytes), not bytes.
         BaseType_t xReturn = xTaskCreate(
             (TaskFunction_t)&Thread::Process,
             THREAD_NAME.c_str(),
@@ -67,7 +72,9 @@ void Thread::ExitThread()
     if (m_queue) {
         // Send exit message
         ThreadMsg* msg = new ThreadMsg(MSG_EXIT_THREAD);
-        // Wait 100ms to send
+
+        // Wait 100ms to send.
+        // Note: If queue is full, we might fail to exit cleanly if we don't force it.
         if (xQueueSend(m_queue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
             delete msg; // Failed to send, clean up
         }

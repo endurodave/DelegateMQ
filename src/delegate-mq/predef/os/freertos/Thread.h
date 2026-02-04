@@ -13,13 +13,13 @@
 /// asynchronous delegates to a dedicated FreeRTOS task.
 ///
 /// **Key Features:**
-/// * **Task Integration:** Wraps a FreeRTOS `xTaskCreate` call to establish a 
+/// * **Task Integration:** Wraps a FreeRTOS `xTaskCreate` call to establish a
 ///   dedicated worker loop.
-/// * **Queue-Based Dispatch:** Uses a FreeRTOS `QueueHandle_t` to receive and 
+/// * **Queue-Based Dispatch:** Uses a FreeRTOS `QueueHandle_t` to receive and
 ///   process incoming delegate messages in a thread-safe manner.
-/// * **Thread Identification:** Implements `GetThreadId()` using `TaskHandle_t` 
+/// * **Thread Identification:** Implements `GetThreadId()` using `TaskHandle_t`
 ///   to ensure correct thread context checks (used by `AsyncInvoke` optimizations).
-/// * **Graceful Shutdown:** Provides mechanisms (`ExitThread`) to cleanup resources, 
+/// * **Graceful Shutdown:** Provides mechanisms (`ExitThread`) to cleanup resources,
 ///   though typical embedded tasks often run forever.
 
 #include "delegate/IThread.h"
@@ -35,8 +35,13 @@ class ThreadMsg;
 class Thread : public dmq::IThread
 {
 public:
+    /// Default queue size if 0 is passed
+    static const size_t DEFAULT_QUEUE_SIZE = 20;
+
     /// Constructor
-    Thread(const std::string& threadName);
+    /// @param threadName Name for the FreeRTOS task
+    /// @param maxQueueSize Max number of messages in queue (0 = Default 20)
+    Thread(const std::string& threadName, size_t maxQueueSize = 0);
 
     /// Destructor
     ~Thread();
@@ -75,6 +80,7 @@ private:
     SemaphoreHandle_t m_exitSem = nullptr; // Synchronization for safe destruction
 
     const std::string THREAD_NAME;
+    size_t m_queueSize;
 };
 
 #endif

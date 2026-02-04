@@ -25,7 +25,7 @@ The following projects require external 3rd party library support (e.g., STM32 F
 * [mqtt-rapidjson](./mqtt-rapidjson/) - Remote delegate example with MQTT and RapidJSON.
 * [nnq-bitsery](./nnq-bitsery/) - Remote delegate example using NNG and Bitsery libraries.
 * [serialport-serializer](./serialport-serializer/) - Remote delegate example using libserialport.
-* [stm32-freertos](./stm32-freertos/) - Simple FreeRTOS remote delegate app on STM32F4 Discovery board (Requires STM32Cube Firmware).
+* [stm32-freertos](./stm32-freertos/) - Simple FreeRTOS delegate app on STM32F4 Discovery board (Requires STM32Cube Firmware).
 * [system-architecture](./system-architecture/) - System architecture example with dependencies.
 * [system-architecture-python](./system-architecture-python/) - Python binding example.
 * [zeromq-bitsery](./zeromq-bitsery/) - ZeroMQ transport with Bitsery serialization.

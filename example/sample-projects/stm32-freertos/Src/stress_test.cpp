@@ -145,7 +145,7 @@ public:
 
     StressSubscriber(int id) 
         // Pass only the name string to the Thread wrapper
-        : m_thread("Sub" + std::to_string(id)), m_id(id)
+        : m_thread("Sub" + std::to_string(id), QUEUE_SIZE), m_id(id)
     {
         m_thread.CreateThread();
     }

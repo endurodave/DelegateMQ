@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file           : main.cpp
   * @brief          : DelegateMQ + FreeRTOS Integration Demo on STM32F4-Discovery
-  * @version        : 1.1.0
+  * @version        : 1.2.0
   *
   * @details
   * This application demonstrates the integration of the DelegateMQ messaging
@@ -14,6 +14,7 @@
   * 3. Thread-Safe Delegates (Mutex protected)
   * 4. Asynchronous Timers
   * 5. Signals & Slots (RAII Connection Management)
+  * 6. Async Delegates (Cross-Thread Dispatch)
   *
   * ============================================================================
   * LED STATUS INDICATORS
@@ -30,8 +31,9 @@
 #include "task.h"
 #include "timers.h"
 #include "DelegateMQ.h"
-#include <memory> // Required for std::make_shared
+#include <memory>
 #include <stdio.h>
+#include <string> // Required for Thread class
 
 using namespace dmq;
 
@@ -51,7 +53,6 @@ using namespace dmq;
 
 // Redirects printf to the SWV Data Console
 extern "C" int __io_putchar(int ch) {
-    // ITM_SendChar is a CMSIS function that sends data via the SWO pin
     ITM_SendChar(ch);
     return ch;
 }
@@ -98,6 +99,13 @@ public:
     void OnTimerExpired() {
         PRINTF("  [Callback] Timer Expired!\n");
         BSP_LED_Toggle(LED6); // Toggle Blue LED
+    }
+
+    // This will be executed on the worker thread
+    void AsyncMemberFunc(int val) {
+        // Use task name to prove we are on a different thread
+        char* taskName = pcTaskGetName(NULL);
+        PRINTF("  [Callback] AsyncMemberFunc: %d (Running on: %s)\n", val, taskName);
     }
 };
 
@@ -149,8 +157,8 @@ int main(void)
 
   BSP_LED_On(LED3);   // Orange ON = Main Reached
 
-// Uncommnet to run stress tests
-//#define STRESS_TEST
+// Uncomment to run stress tests
+#define STRESS_TEST
 #ifdef STRESS_TEST
   extern void StartStressTest();
   StartStressTest();
@@ -245,6 +253,32 @@ static void ExecuteAllTests(void) {
     // 'conn' has been destroyed here.
     PRINTF("  Firing Signal outside scope (Expect NO Callback)\n");
     (*signal)(666);
+
+    // --- Test 6: Async Delegate (Cross-Thread Dispatch) ---
+    #if defined(DMQ_THREAD_FREERTOS)
+    PRINTF("[6] Async Delegate (Cross-Thread)\n");
+
+    // 1. Create a worker thread wrapper
+    Thread worker("Worker");
+    worker.CreateThread();
+
+    // 2. Create an asynchronous delegate targeted at the worker thread
+    //    We bind it to 'AsyncMemberFunc' on the 'handler' object.
+    auto asyncDelegate = MakeDelegate(&handler, &TestHandler::AsyncMemberFunc, worker);
+
+    PRINTF("  Invoking Async Delegate (Should run on 'Worker' task)...\n");
+
+    // 3. Invoke it (Non-blocking)
+    //    This posts a message to the worker thread's queue.
+    asyncDelegate(777);
+
+    // 4. Wait a bit to ensure the worker thread has time to process it
+    //    (In a real app, you wouldn't wait here)
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    // 5. Cleanup
+    worker.ExitThread();
+    #endif
 
     PRINTF("=== TESTS FINISHED ===\n");
 }

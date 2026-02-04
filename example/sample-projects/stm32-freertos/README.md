@@ -18,24 +18,21 @@ The application runs a suite of tests in `main.cpp` verifying the following Dele
 * **Firmware:** STM32Cube FW_F4 V1.28.3 (or compatible).
 * **Library:** [DelegateMQ](https://github.com/endurodave/DelegateMQ) (Source code must be available locally).
 
-## ⚙️ Project Configuration
+## 🔧 Configuring Build Paths & Variables (Critical)
 
-### 1. FreeRTOS Settings (`FreeRTOSConfig.h`)
-To run DelegateMQ successfully, ensure the following settings are active:
-* `#define configUSE_TIMERS 1` (Required for `Timer.cpp`)
-* `#define configTOTAL_HEAP_SIZE ((size_t)(50 * 1024))` (Increased to 50KB for C++ objects)
-* `#define xPortSysTickHandler SysTick_Handler` (Map FreeRTOS tick to CMSIS handler)
+This project avoids hardcoded absolute paths by using Eclipse **Build Variables**. If you move this project to a new computer or update your STM32 Firmware version, you **must** update these variables, or the project will not build.
 
-### 2. Interrupt Handling (`stm32f4xx_it.c`)
-**Crucial:** The `SysTick_Handler` must "bridge" the HAL and the RTOS. Ensure it calls both:
-```c
-void SysTick_Handler(void) {
-    HAL_IncTick(); // For STM32 HAL drivers
-    if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
-        xPortSysTickHandler(); // For FreeRTOS Scheduler
-    }
-}
-```
+### Update the STM32 Firmware Path (`STM32_REPO`)
+
+The project expects to find the STM32 HAL drivers via the `STM32_REPO` variable.
+
+1.  Right-click the project in the Project Explorer -> **Properties**.
+2.  Navigate to **C/C++ Build** > **Build Variables**.
+3.  Find the variable named `STM32_REPO`.
+4.  Click **Edit** and set it to your local STM32Cube repository path.
+    * *Windows Example:* `C:\Users\YourName\STM32Cube\Repository\STM32Cube_FW_F4_V1.28.3`
+    * *Linux/Mac Example:* `/home/yourname/STM32Cube/Repository/STM32Cube_FW_F4_V1.28.3`
+5.  Click **Apply**.
 
 ## 🔨 Building and Flashing
 
@@ -61,18 +58,31 @@ void SysTick_Handler(void) {
 * 🔵 **Blue (LED6):** **SUCCESS** - Tests passed, application heartbeat blinking.
 * 🔴 **Red (LED5):** **ERROR** - Initialization failed or Heap Exhausted.
 
-## 📝 Viewing Test Output (SWV)
+## 📝 Configuring printf Output (SWV ITM)
 
-Standard output (`printf`) is redirected to the **SWV ITM Data Console**.
+This project redirects `printf` to the **SWV ITM Data Console** (Instrumentation Trace Macrocell). You must configure the debugger to capture this stream.
 
-1. Open **Window > Show View > SWV > SWV ITM Data Console**.
-2. Click **Configure Trace** (Wrench icon) -> Check **Port 0**.
-3. Click **Start Trace** (Red Circle).
-4. Reset the board.
+### 1. Enable SWV in Debug Configurations
+1.  In STM32CubeIDE, click the arrow next to the **Debug** (Bug) icon and select **Debug Configurations...**.
+2.  Select your project configuration on the left.
+3.  Click the **Debugger** tab.
+4.  Scroll down to the **Serial Wire Viewer (SWV)** section.
+5.  **Check the "Enable" box.**
+6.  **Set "Core Clock" to 168.0 MHz.**
+    * *Note:* The STM32F4 Discovery runs at 168 MHz. If this value does not match the actual system clock, the output will be garbage or blank.
+7.  Click **Apply** and then **Debug**.
 
+### 2. Viewing the Output
+Once the debug session starts (and the code is paused at `main`):
+1.  Go to **Window** > **Show View** > **SWV** > **SWV ITM Data Console**.
+2.  Click the **Configure Trace** button (Wrench/Gear icon 🔧) in the console toolbar.
+3.  Under "ITM Stimulus Ports", **check Port 0**.
+4.  Click **OK**.
+5.  Click the **Start Trace** button (Red Circle 🔴) to begin recording.
+6.  Press **Resume** (Play button) to run the code.
 ## Troubleshooting
 
-* **Linker Error: `undefined reference to xTimerCreate**`
+* **Linker Error:** `undefined reference to xTimerCreate`
   * Ensure `#define configUSE_TIMERS 1` is set in `FreeRTOSConfig.h` and Rebuild (Clean first).
 
 
