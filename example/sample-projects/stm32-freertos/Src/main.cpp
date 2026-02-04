@@ -149,8 +149,13 @@ int main(void)
 
   BSP_LED_On(LED3);   // Orange ON = Main Reached
 
-  ASSERT_TRUE(false);
+// Uncommnet to run stress tests
+//#define STRESS_TEST
+#ifdef STRESS_TEST
+  extern void StartStressTest();
+  StartStressTest();
 
+#else
   // 3. Initialize DelegateMQ System Timer (if using FreeRTOS mode)
   #if defined(DMQ_THREAD_FREERTOS)
       xSystemTimer = xTimerCreate("SysTimer", mainTIMER_FREQUENCY_MS, pdTRUE, NULL, TimerCallback);
@@ -168,6 +173,7 @@ int main(void)
       PRINTF("Error: Failed to create MainTask (Heap too small?)\n");
       Error_Handler();
   }
+#endif
 
   // 5. Start the Scheduler (Should never return)
   PRINTF("Starting Scheduler...\n");

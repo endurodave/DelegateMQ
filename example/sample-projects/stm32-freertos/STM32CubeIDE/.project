@@ -52,6 +52,11 @@
 			<locationURI>copy_PARENT/Src/stm32f4xx_it.c</locationURI>
 		</link>
 		<link>
+			<name>Application/User/stress_test.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/stress_test.cpp</locationURI>
+		</link>
+		<link>
 			<name>Application/User/usbd_conf.c</name>
 			<type>1</type>
 			<locationURI>copy_PARENT/Src/usbd_conf.c</locationURI>
