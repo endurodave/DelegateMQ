@@ -103,6 +103,7 @@ void UsageFault_Handler(void)
   }
 }
 
+#if 0
 /**
   * @brief  This function handles SVCall exception.
   * @param  None
@@ -111,6 +112,7 @@ void UsageFault_Handler(void)
 void SVC_Handler(void)
 {
 }
+#endif
 
 /**
   * @brief  This function handles Debug Monitor exception.
@@ -121,27 +123,28 @@ void DebugMon_Handler(void)
 {
 }
 
-/**
-  * @brief  This function handles PendSVC exception.
-  * @param  None
-  * @retval None
-  */
-void PendSV_Handler(void)
-{
-}
+/* Keep PendSV_Handler disabled (0) because FreeRTOS handles it directly via mapping */
+#if 0
+void PendSV_Handler(void) {}
+#endif
 
-/**
-  * @brief  This function handles SysTick Handler.
-  * @param  None
-  * @retval None
-  */
+/* -------------------------------------------------------------------------- */
+/* ENABLE SysTick_Handler MANUALLY TO BRIDGE HAL AND FREERTOS                 */
+/* -------------------------------------------------------------------------- */
+#include "FreeRTOS.h"
+#include "task.h"
+
+extern void xPortSysTickHandler(void);
+
 void SysTick_Handler(void)
 {
+  // 1. Keep the HAL timebase running (Standard STM32 requirement)
   HAL_IncTick();
   
-  /* Call user callback */
-  HAL_SYSTICK_IRQHandler();
-  
+  // 2. Pass the tick to FreeRTOS (Drives the Scheduler)
+  if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
+      xPortSysTickHandler();
+  }
 }
 
 /******************************************************************************/

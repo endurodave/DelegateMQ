@@ -1,670 +1,269 @@
 /**
   ******************************************************************************
-  * @file    Demonstrations/Src/main.c 
-  * @author  MCD Application Team
-  * @brief   This demo describes how to use accelerometer to control mouse on 
-  *          PC.
-  ******************************************************************************
-  * @attention
+  * @file           : main.cpp
+  * @brief          : DelegateMQ + FreeRTOS Integration Demo on STM32F4-Discovery
+  * @version        : 1.1.0
   *
-  * Copyright (c) 2017 STMicroelectronics.
-  * All rights reserved.
+  * @details
+  * This application demonstrates the integration of the DelegateMQ messaging
+  * library with the FreeRTOS real-time operating system on an STM32F407.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * Tests included:
+  * 1. Unicast Delegates (Free functions)
+  * 2. Multicast Delegates (Broadcasts)
+  * 3. Thread-Safe Delegates (Mutex protected)
+  * 4. Asynchronous Timers
+  * 5. Signals & Slots (RAII Connection Management)
+  *
+  * ============================================================================
+  * LED STATUS INDICATORS
+  * ============================================================================
+  * - ORANGE (LD3):  System Initialization.
+  * - GREEN  (LD4):  FreeRTOS Scheduler Started.
+  * - RED    (LD5):  ERROR / FAULT.
+  * - BLUE   (LD6):  HEARTBEAT (Blinks if successful).
   *
   ******************************************************************************
   */
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
-// Typically add DMQ options to project build settings
-#define DMQ_THREAD_NONE
-#define DMQ_SERIALIZE_NONE
-#define DMQ_TRANSPORT_NONE
-#define DMQ_ASSERTS
-
+#include "FreeRTOS.h"
+#include "task.h"
+#include "timers.h"
 #include "DelegateMQ.h"
+#include <memory> // Required for std::make_shared
+#include <stdio.h>
 
 using namespace dmq;
 
-// Set this to 1 to enable output, 0 to disable it completely
-#define ENABLE_LOGGING  0
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+// Set to 1 to enable printf via SWV/ITM
+#define ENABLE_LOGGING  1
 
 #if ENABLE_LOGGING
     #include <stdio.h>
-    // Maps PRINTF to the standard printf function
     #define PRINTF(...)  printf(__VA_ARGS__)
 #else
-    // Disables PRINTF by replacing it with a no-op loop that compiles to nothing
     #define PRINTF(...)  do {} while (0)
 #endif
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-#define KEY_PRESSED     0x01
-#define KEY_NOT_PRESSED 0x00
-
-/* TIM4 Autoreload and Capture Compare register values */
-#define TIM_ARR        (uint16_t)1999
-#define TIM_CCR        (uint16_t)1000
-
-#define CURSOR_STEP     7
-
-/* Private macro -------------------------------------------------------------*/
-#define ABS(x)         (x < 0) ? (-x) : x
-#define MAX_AB(a,b)       (a < b) ? (b) : a
-
-/* Private variables ---------------------------------------------------------*/
-__IO uint8_t UserButtonPressed = 0x00;
-__IO uint8_t DemoEnterCondition = 0x00;
-
-/* Variables used for accelerometer */
-__IO int16_t X_Offset, Y_Offset;
-int16_t Buffer[3];
-
-/* MEMS thresholds {Low/High} */
-static int16_t ThreadholdAcceleroLow = -110, ThreadholdAcceleroHigh = 110;
-
-/* Variables used for USB */
-USBD_HandleTypeDef  hUSBDDevice;
-
-/* Variables used for timer */
-uint16_t PrescalerValue = 0;
-TIM_HandleTypeDef htim4;
-TIM_OC_InitTypeDef sConfigTim4;
-
-/* Variables used during Systick ISR*/
-uint8_t Counter  = 0x00;
-__IO uint16_t MaxAcceleration = 0;
-
-/* Private function prototypes -----------------------------------------------*/
-static void ExecuteAllTests(void);
-static uint32_t Demo_USBConfig(void);
-static void TIM4_Config(void);
-static void Demo_Exec(void);
-static uint8_t *USBD_HID_GetPos (void);
-static void SystemClock_Config(void);
-static void Error_Handler(void);
-
-int main(void)
-{
-  HAL_Init();
-
-  /* Configure LED3, LED4, LED5 and LED6 */
-  BSP_LED_Init(LED3);
-  BSP_LED_Init(LED4);
-  BSP_LED_Init(LED5);
-  BSP_LED_Init(LED6);
-
-  /* Configure the system clock to 168 MHz */
-  SystemClock_Config();
-
-  /* Configure USER Button */
-  BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI); 
-
-  /* Execute Demo application */
-  ExecuteAllTests();
-  //Demo_Exec();
-  
-  while (1)
-  {    
-  }
+// Redirects printf to the SWV Data Console
+extern "C" int __io_putchar(int ch) {
+    // ITM_SendChar is a CMSIS function that sends data via the SWO pin
+    ITM_SendChar(ch);
+    return ch;
 }
 
-// --------------------------------------------------------------------------
-// FREERTOS CONFIGURATION & HELPERS
-// --------------------------------------------------------------------------
+// ============================================================================
+// DELEGATEMQ & FREERTOS GLOBALS
+// ============================================================================
+
 #if defined(DMQ_THREAD_FREERTOS)
+    // Defines the frequency for the DelegateMQ timer tick
+    #define mainTIMER_FREQUENCY_MS pdMS_TO_TICKS(10UL)
 
-#define mainTIMER_FREQUENCY_MS pdMS_TO_TICKS(10UL)
-static TimerHandle_t xSystemTimer = nullptr;
+    static TimerHandle_t xSystemTimer = nullptr;
 
-static void TimerCallback(TimerHandle_t xTimerHandle) {
-    Timer::ProcessTimers();
-}
-
+    // Called by FreeRTOS Timer Task to drive DelegateMQ timers
+    static void TimerCallback(TimerHandle_t xTimerHandle) {
+        Timer::ProcessTimers();
+    }
 #endif
 
-// --------------------------------------------------------------------------
-// CALLBACK FUNCTIONS
-// --------------------------------------------------------------------------
+// ============================================================================
+// PROTOTYPES
+// ============================================================================
+static void SystemClock_Config(void);
+static void Error_Handler(void);
+static void ExecuteAllTests(void);
+
+// ============================================================================
+// TEST CALLBACKS & CLASSES
+// ============================================================================
+
+// A simple free function callback
 void FreeFunction(int val) {
-    //PRINTF("  [Callback] FreeFunction: %d (Task: %s)\n", val, pcTaskGetName(NULL));
+    PRINTF("  [Callback] FreeFunction: %d\n", val);
 }
 
+// A class method callback
 class TestHandler {
 public:
     void MemberFunc(int val) {
-        //PRINTF("  [Callback] MemberFunc: %d (Task: %s, Instance: %p)\n", val, pcTaskGetName(NULL), this);
+        PRINTF("  [Callback] MemberFunc: %d\n", val);
     }
 
     void OnTimerExpired() {
-        //PRINTF("  [Callback] Timer Expired! (Task: %s)\n", pcTaskGetName(NULL));
+        PRINTF("  [Callback] Timer Expired!\n");
+        BSP_LED_Toggle(LED6); // Toggle Blue LED
     }
 };
 
+// ============================================================================
+// FREERTOS TASKS
+// ============================================================================
 
+// The task that runs our C++ tests
+void RunTestsTask(void* pvParameters) {
+    BSP_LED_On(LED4); // Green LED ON = Task Started
+
+    PRINTF("--- RunTestsTask Started ---\n");
+
+    // 1. Sanity Check: Test vTaskDelay
+    PRINTF("Waiting 1 second (Testing SysTick)...\n");
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
+    // 2. Run the actual C++ logic
+    PRINTF("Running DelegateMQ Tests...\n");
+    ExecuteAllTests();
+
+    PRINTF("Tests Complete. Task entering idle loop.\n");
+    BSP_LED_Off(LED4); // Green OFF = Finished
+
+    // Blink Blue LED forever to show system is alive
+    for(;;) {
+        BSP_LED_Toggle(LED6);
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
+
+// ============================================================================
+// MAIN
+// ============================================================================
+int main(void)
+{
+  // 1. Hardware Initialization
+  HAL_Init();
+  SystemClock_Config();
+
+  // CRITICAL: FreeRTOS requires Priority Group 4 on STM32
+  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+
+  // 2. Initialize LEDs
+  BSP_LED_Init(LED3); // Orange
+  BSP_LED_Init(LED4); // Green
+  BSP_LED_Init(LED5); // Red
+  BSP_LED_Init(LED6); // Blue
+
+  BSP_LED_On(LED3);   // Orange ON = Main Reached
+
+  ASSERT_TRUE(false);
+
+  // 3. Initialize DelegateMQ System Timer (if using FreeRTOS mode)
+  #if defined(DMQ_THREAD_FREERTOS)
+      xSystemTimer = xTimerCreate("SysTimer", mainTIMER_FREQUENCY_MS, pdTRUE, NULL, TimerCallback);
+      if (xSystemTimer) {
+          xTimerStart(xSystemTimer, 0);
+      } else {
+          PRINTF("Error: Failed to create xSystemTimer\n");
+          Error_Handler();
+      }
+  #endif
+
+  // 4. Create the main application task
+  BaseType_t status = xTaskCreate(RunTestsTask, "MainTask", 2048, NULL, 2, NULL);
+  if (status != pdPASS) {
+      PRINTF("Error: Failed to create MainTask (Heap too small?)\n");
+      Error_Handler();
+  }
+
+  // 5. Start the Scheduler (Should never return)
+  PRINTF("Starting Scheduler...\n");
+  vTaskStartScheduler();
+
+  // 6. We only get here if the Scheduler failed to start (usually Out of Heap)
+  while (1)
+  {
+      BSP_LED_Toggle(LED5); // Fast Red Blink = Error
+      HAL_Delay(100);
+  }
+}
+
+// ============================================================================
+// TEST LOGIC
+// ============================================================================
 static void ExecuteAllTests(void) {
-    // 1. Critical: Disable buffering
+    // Disable buffering to ensure printf prints immediately
     setvbuf(stdout, NULL, _IONBF, 0);
 
-#if defined(DMQ_THREAD_FREERTOS)
-    vTaskDelay(pdMS_TO_TICKS(100))
-#endif
+    PRINTF("\n=== STARTING DELEGATE MQ TESTS ===\n");
 
-    PRINTF("\n=========================================\n");
-    PRINTF("   FREERTOS DELEGATE SYSTEM ONLINE       \n");
-    PRINTF("=========================================\n");
-
-    // --- TEST 1: Unicast Delegate ---
-    PRINTF("\n[Test 1] Unicast Delegate (Free Function):\n");
+    // --- Test 1: Unicast ---
+    PRINTF("[1] Unicast Delegate\n");
     UnicastDelegate<void(int)> unicast;
     unicast = MakeDelegate(FreeFunction);
     unicast(100);
 
-    // --- TEST 2: Lambda Support ---
-    PRINTF("\n[Test 2] Unicast Delegate (Lambda):\n");
-    int capture_value = 42;
-    unicast = MakeDelegate(std::function<void(int)>([capture_value](int val) {
-        PRINTF("  [Callback] Lambda called! Capture: %d, Arg: %d\n", capture_value, val);
-        }));
-    unicast(200);
-
-    // --- TEST 3: Multicast Delegate ---
-    PRINTF("\n[Test 3] Multicast Delegate (Broadcast):\n");
+    // --- Test 2: Multicast ---
+    PRINTF("[2] Multicast Delegate\n");
     MulticastDelegate<void(int)> multicast;
     TestHandler handler;
-
-    multicast += MakeDelegate(FreeFunction);
     multicast += MakeDelegate(&handler, &TestHandler::MemberFunc);
+    multicast += MakeDelegate(FreeFunction);
+    multicast(200);
 
-    multicast += MakeDelegate(std::function<void(int)>([](int val) {
-        PRINTF("  [Callback] Multicast Lambda called! Val: %d\n", val);
-        }));
-
-    PRINTF("Firing all 3 targets...\n");
-    multicast(300);
-
-    // --- TEST 4: Removal ---
-    PRINTF("\n[Test 4] Removing a Delegate:\n");
-    multicast -= MakeDelegate(FreeFunction);
-    PRINTF("Firing remaining targets (Expected: 2)...\n");
-    multicast(400);
-
-    // --- TEST 5: Signals & Connections (RAII) ---
-    PRINTF("\n[Test 5] Signals & Scoped Connections:\n");
-    auto signal = std::make_shared<Signal<void(int)>>();
-
-    {
-        PRINTF("  -> Creating ScopedConnection inside block...\n");
-        ScopedConnection conn = signal->Connect(MakeDelegate(FreeFunction));
-
-        PRINTF("  -> Firing Signal (Expect Callback):\n");
-        (*signal)(500);
-
-        PRINTF("  -> Exiting block (ScopedConnection will destruct)...\n");
-    }
-    PRINTF("  -> Firing Signal outside block (Expect NO Callback):\n");
-    (*signal)(600);
-
-#if defined(DMQ_THREAD_FREERTOS)
-    // --- TEST 6: Thread-Safe Delegates ---
-    PRINTF("\n[Test 6] Thread-Safe Multicast (Mutex Protected):\n");
+    // --- Test 3: Thread-Safe (Only valid if OS is defined) ---
+    #if defined(DMQ_THREAD_FREERTOS)
+    PRINTF("[3] Thread-Safe Delegate\n");
     MulticastDelegateSafe<void(int)> safeMulticast;
     safeMulticast += MakeDelegate(FreeFunction);
+    safeMulticast(300);
 
-    PRINTF("Firing Thread-Safe Delegate...\n");
-    safeMulticast(700);
-
-    // --- TEST 7: Async Delegates (Cross-Thread) ---
-    PRINTF("\n[Test 7] Async Delegate (Cross-Thread Dispatch):\n");
-
-    // Create a worker thread (Active Object)
-    // NOTE: C++ Destructor ~Thread() MUST run to close the queue properly!
-    Thread workerThread("WorkerThread");
-    if (workerThread.CreateThread()) {
-
-        auto asyncDelegate = MakeDelegate(FreeFunction, workerThread);
-
-        PRINTF("  -> Dispatching to Worker Thread (Non-Blocking)...\n");
-        asyncDelegate(800);
-
-        vTaskDelay(pdMS_TO_TICKS(100));
-    }
-    else {
-        PRINTF("  [Error] Failed to create WorkerThread!\n");
-    }
-
-    // --- TEST 8: Timers ---
-    PRINTF("\n[Test 8] Timer Delegate (One-Shot):\n");
-
-    // NOTE: C++ Destructor ~Timer() MUST run to unregister from the global list!
+    // --- Test 4: Timer ---
+    PRINTF("[4] Timer Delegate (Wait 500ms)\n");
     Timer myTimer;
-
     (*myTimer.OnExpired) += MakeDelegate(&handler, &TestHandler::OnTimerExpired);
 
-    PRINTF("  -> Starting Timer (200ms delay)...\n");
     myTimer.Start(std::chrono::milliseconds(200));
 
-    // Wait for timer
-    vTaskDelay(pdMS_TO_TICKS(300));
+    // Block this task to let the timer expire
+    vTaskDelay(pdMS_TO_TICKS(500));
     myTimer.Stop();
-#endif
+    #endif
 
-    PRINTF("\n=========================================\n");
-    PRINTF("           ALL TESTS PASSED              \n");
-    PRINTF("=========================================\n");
-
-    // FUNCTION RETURN:
-    // This closing brace '}' forces ~Timer(), ~Thread(), etc. to execute.
-    // This safely unregisters the Timer before the task is deleted.
-}
-
-/**
-  * @brief  Execute the demo application.
-  * @param  None
-  * @retval None
-  */
-[[maybe_unused]] static void Demo_Exec(void)
-{
-  uint8_t togglecounter = 0x00;
-  
-  /* Initialize Accelerometer MEMS */
-  if(BSP_ACCELERO_Init() != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler(); 
-  }
-
-  while(1)
-  {
-    DemoEnterCondition = 0x00;
-    
-    /* Reset UserButton_Pressed variable */
-    UserButtonPressed = 0x00;
-    
-    /* Configure LEDs to be managed by GPIO */
-    BSP_LED_Init(LED4);
-    BSP_LED_Init(LED3);
-    BSP_LED_Init(LED5);
-    BSP_LED_Init(LED6);
-    
-    /* SysTick end of count event each 10ms */
-    SystemCoreClock = HAL_RCC_GetHCLKFreq();
-    SysTick_Config(SystemCoreClock / 100);  
-    
-    /* Turn OFF all LEDs */
-    BSP_LED_Off(LED4);
-    BSP_LED_Off(LED3);
-    BSP_LED_Off(LED5);
-    BSP_LED_Off(LED6);
-    
-    /* Waiting USER Button is pressed */
-    while (UserButtonPressed == 0x00)
+    // --- Test 5: Signals & Slots (RAII) ---
+    PRINTF("[5] Signals & Slots (RAII)\n");
+    auto signal = std::make_shared<Signal<void(int)>>();
     {
-      /* Toggle LED4 */
-      BSP_LED_Toggle(LED4);
-      HAL_Delay(10);
-      /* Toggle LED4 */
-      BSP_LED_Toggle(LED3);
-      HAL_Delay(10);
-      /* Toggle LED4 */
-      BSP_LED_Toggle(LED5);
-      HAL_Delay(10);
-      /* Toggle LED4 */
-      BSP_LED_Toggle(LED6);
-      HAL_Delay(10);
-      togglecounter ++;
-      if (togglecounter == 0x10)
-      {
-        togglecounter = 0x00;
-        while (togglecounter < 0x10)
-        {
-          BSP_LED_Toggle(LED4);
-          BSP_LED_Toggle(LED3);
-          BSP_LED_Toggle(LED5);
-          BSP_LED_Toggle(LED6);
-          HAL_Delay(10);
-          togglecounter ++;
-        }
-        togglecounter = 0x00;
-      }
+        // Connect a delegate. 'ScopedConnection' manages the lifetime.
+        ScopedConnection conn = signal->Connect(MakeDelegate(FreeFunction));
+
+        PRINTF("  Firing Signal inside scope (Expect Callback: 555)\n");
+        // Invoke the signal
+        (*signal)(555);
+
+        PRINTF("  Exiting scope (Connection will auto-disconnect)...\n");
     }
-    
-    /* Waiting USER Button is Released */
-    while (BSP_PB_GetState(BUTTON_KEY) != KEY_NOT_PRESSED)
-    {}
-    UserButtonPressed = 0x00;
-    
-    /* TIM4 channels configuration */
-    TIM4_Config();
-  
-    DemoEnterCondition = 0x01; 
-    
-    /* USB configuration */
-    Demo_USBConfig();
-    
-    /* Waiting USER Button is pressed */
-    while (UserButtonPressed == 0x00)
-    {}
-    
-    /* Waiting USER Button is Released */
-    while (BSP_PB_GetState(BUTTON_KEY) != KEY_NOT_PRESSED)
-    {}
-    
-    /* Disconnect the USB device */
-    USBD_Stop(&hUSBDDevice);
-    USBD_DeInit(&hUSBDDevice);
-    if(HAL_TIM_PWM_DeInit(&htim4) != HAL_OK)
-    {
-      /* Initialization Error */
-      Error_Handler();
-    }
-  }
+    // 'conn' has been destroyed here.
+    PRINTF("  Firing Signal outside scope (Expect NO Callback)\n");
+    (*signal)(666);
+
+    PRINTF("=== TESTS FINISHED ===\n");
 }
 
-/**
-  * @brief  Initializes the USB for the demonstration application.
-  * @param  None
-  * @retval None
-  */
-static uint32_t Demo_USBConfig(void)
-{
-  /* Init Device Library */
-  USBD_Init(&hUSBDDevice, &HID_Desc, 0);
-  
-  /* Add Supported Class */
-  USBD_RegisterClass(&hUSBDDevice, USBD_HID_CLASS);
-  
-  /* Start Device Process */
-  USBD_Start(&hUSBDDevice);
-  
-  return 0;
-}
-
-/**
-  * @brief  Configures the TIM Peripheral.
-  * @param  None
-  * @retval None
-  */
-static void TIM4_Config(void)
-{
-  /* -----------------------------------------------------------------------
-  TIM4 Configuration: Output Compare Timing Mode:
-  
-  In this example TIM4 input clock (TIM4CLK) is set to 2 * APB1 clock (PCLK1), 
-  since APB1 prescaler is different from 1 (APB1 Prescaler = 4, see system_stm32f4xx.c file).
-  TIM4CLK = 2 * PCLK1  
-  PCLK1 = HCLK / 4 
-  => TIM4CLK = 2*(HCLK / 4) = HCLK/2 = SystemCoreClock/2
-  
-  To get TIM4 counter clock at 2 KHz, the prescaler is computed as follows:
-  Prescaler = (TIM4CLK / TIM4 counter clock) - 1
-  Prescaler = (84 MHz/(2 * 2 KHz)) - 1 = 41999
-  
-  To get TIM4 output clock at 1 Hz, the period (ARR)) is computed as follows:
-  ARR = (TIM4 counter clock / TIM4 output clock) - 1
-  = 1999
-  
-  TIM4 Channel1 duty cycle = (TIM4_CCR1/ TIM4_ARR)* 100 = 50%
-  TIM4 Channel2 duty cycle = (TIM4_CCR2/ TIM4_ARR)* 100 = 50%
-  TIM4 Channel3 duty cycle = (TIM4_CCR3/ TIM4_ARR)* 100 = 50%
-  TIM4 Channel4 duty cycle = (TIM4_CCR4/ TIM4_ARR)* 100 = 50%
-  
-  ==> TIM4_CCRx = TIM4_ARR/2 = 1000  (where x = 1, 2, 3 and 4).
-  ----------------------------------------------------------------------- */ 
-  
-  /* Compute the prescaler value */
-  PrescalerValue = (uint16_t) ((SystemCoreClock /2) / 2000) - 1;
-  
-  /* Time base configuration */
-  htim4.Instance             = TIM4;
-  htim4.Init.Period          = TIM_ARR;
-  htim4.Init.Prescaler       = PrescalerValue;
-  htim4.Init.ClockDivision   = 0;
-  htim4.Init.CounterMode     = TIM_COUNTERMODE_UP;
-  if(HAL_TIM_PWM_Init(&htim4) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler();
-  }
-
-  /* TIM PWM1 Mode configuration: Channel */
-  /* Output Compare Timing Mode configuration: Channel1 */
-  sConfigTim4.OCMode = TIM_OCMODE_PWM1;
-  sConfigTim4.OCIdleState = TIM_CCx_ENABLE;
-  sConfigTim4.Pulse = TIM_CCR;
-  sConfigTim4.OCPolarity = TIM_OCPOLARITY_HIGH;
-  
-  /* Output Compare PWM1 Mode configuration: Channel1 */
-  if(HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigTim4, TIM_CHANNEL_1) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler();
-  }
-
-  /* Output Compare PWM1 Mode configuration: Channel2 */
-  if(HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigTim4, TIM_CHANNEL_2) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler();
-  }
-
-  /* Output Compare PWM1 Mode configuration: Channel3 */
-  if(HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigTim4, TIM_CHANNEL_3) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler();
-  }
-  /* Output Compare PWM1 Mode configuration: Channel4 */
-  if(HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigTim4, TIM_CHANNEL_4) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler();
-  }
-}
-
-/**
-  * @brief  SYSTICK callback.
-  * @param  None
-  * @retval None
-  */
-void HAL_SYSTICK_Callback(void)
-{
-  uint8_t *buf;
-  uint16_t Temp_X, Temp_Y = 0x00;
-  uint16_t NewARR_X, NewARR_Y = 0x00;
-  
- if (DemoEnterCondition != 0x00)
-  {
-    buf = USBD_HID_GetPos();
-    if((buf[1] != 0) ||(buf[2] != 0))
-    {
-      USBD_HID_SendReport (&hUSBDDevice, 
-                           buf,
-                           4);
-    } 
-    Counter ++;
-    if (Counter == 10)
-    {
-      /* Reset Buffer used to get accelerometer values */
-      Buffer[0] = 0;
-      Buffer[1] = 0;
-      
-      /* Disable All TIM4 Capture Compare Channels */
-      HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_1);
-      HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_2);
-      HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_3);
-      HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_4);
-
-      /* Read Acceleration*/
-      BSP_ACCELERO_GetXYZ(Buffer);
-      
-      /* Set X and Y positions */
-      X_Offset = Buffer[0];
-      Y_Offset = Buffer[1];
-      
-      /* Update New autoreload value in case of X or Y acceleration*/
-      /* Basic acceleration X_Offset and Y_Offset are divide by 40 to fir with ARR range */
-      NewARR_X = TIM_ARR - ABS(X_Offset/3);
-      NewARR_Y = TIM_ARR - ABS(Y_Offset/3);
-      
-      /* Calculation of Max acceleration detected on X or Y axis */
-      Temp_X = ABS(X_Offset/3);
-      Temp_Y = ABS(Y_Offset/3);
-      MaxAcceleration = MAX_AB(Temp_X, Temp_Y);
-
-      if(MaxAcceleration != 0)
-      {
-        
-        /* Reset CNT to a lowest value (equal to min CCRx of all Channels) */
-        __HAL_TIM_SET_COUNTER(&htim4,(TIM_ARR-MaxAcceleration)/2);
-        
-        if (X_Offset < ThreadholdAcceleroLow)
-        {
-          
-          /* Sets the TIM4 Capture Compare for Channel1 Register value */
-          /* Equal to NewARR_X/2 to have duty cycle equal to 50% */
-          __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, NewARR_X/2);  
-          
-          /* Time base configuration */      
-          __HAL_TIM_SET_AUTORELOAD(&htim4, NewARR_X);
-          
-          /* Enable TIM4 Capture Compare Channel1 */
-          HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);  
-          
-        }
-        else if (X_Offset > ThreadholdAcceleroHigh)
-        {
-          
-          /* Sets the TIM4 Capture Compare for Channel3 Register value */
-          /* Equal to NewARR_X/2 to have duty cycle equal to 50% */
-          __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, NewARR_X/2);                  
-          
-          /* Time base configuration */      
-          __HAL_TIM_SET_AUTORELOAD(&htim4, NewARR_X);
-          
-          /* Enable TIM4 Capture Compare Channel3 */
-          HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);  
-          
-        }
-        if (Y_Offset > ThreadholdAcceleroHigh)
-        { 
-          
-          /* Sets the TIM4 Capture Compare for Channel2 Register value */
-          /* Equal to NewARR_Y/2 to have duty cycle equal to 50% */
-          __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2,NewARR_Y/2);    
-    
-          /* Time base configuration */      
-          __HAL_TIM_SET_AUTORELOAD(&htim4, NewARR_Y);
-
-          /* Enable TIM4 Capture Compare Channel2 */
-          HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);    
-          
-        }      
-        else if (Y_Offset < ThreadholdAcceleroLow)
-        { 
-          
-          /* Sets the TIM4 Capture Compare for Channel4 Register value */
-          /* Equal to NewARR_Y/2 to have duty cycle equal to 50% */
-          __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, NewARR_Y/2);   
-          
-          /* Time base configuration */      
-          __HAL_TIM_SET_AUTORELOAD(&htim4, NewARR_Y);
-          
-          /* Enable TIM4 Capture Compare Channel4 */
-          HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);    
-          
-        }
-      }
-      Counter = 0x00;
-    }  
-  }
-}
-
-/**
-  * @brief  EXTI line detection callbacks.
-  * @param  GPIO_Pin: Specifies the pins connected EXTI line
-  * @retval None
-  */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if(GPIO_Pin == KEY_BUTTON_PIN) 
-  {
-    UserButtonPressed = 0x01;
-  }
-}
-
-/**
-* @brief  USBD_HID_GetPos
-* @param  None
-* @retval Pointer to report
-*/
-static uint8_t *USBD_HID_GetPos (void)
-{
-  static uint8_t HID_Buffer[4] = {0};
-  
-  HID_Buffer[1] = 0;
-  HID_Buffer[2] = 0;
-  /* LEFT Direction */
-  if((X_Offset) < ThreadholdAcceleroLow)
-  {
-    HID_Buffer[1] -= CURSOR_STEP;
-  }
-  /* RIGHT Direction */ 
-  if((X_Offset) > ThreadholdAcceleroHigh)
-  {
-   HID_Buffer[1] += CURSOR_STEP;
-  } 
-  /* DOWN Direction */
-  if((Y_Offset) < ThreadholdAcceleroLow)
-  {
-    HID_Buffer[2] += CURSOR_STEP;
-  }
-  /* UP Direction */ 
-  if((Y_Offset) > ThreadholdAcceleroHigh)
-  {
-    HID_Buffer[2] -= CURSOR_STEP;
-  } 
-  
-  return HID_Buffer;
-}
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
-static void Error_Handler(void)
-{
-  /* Turn LED4 on */
-  BSP_LED_On(LED4);
-  while(1)
-  {
-  }
-}
+// ============================================================================
+// SYSTEM BOILERPLATE
+// ============================================================================
 
 /**
   * @brief  System Clock Configuration
-  *         The system Clock is configured as follow : 
-  *            System Clock source            = PLL (HSE)
-  *            SYSCLK(Hz)                     = 168000000
-  *            HCLK(Hz)                       = 168000000
-  *            AHB Prescaler                  = 1
-  *            APB1 Prescaler                 = 4
-  *            APB2 Prescaler                 = 2
-  *            HSE Frequency(Hz)              = 8000000
-  *            PLL_M                          = 8
-  *            PLL_N                          = 336
-  *            PLL_P                          = 2
-  *            PLL_Q                          = 7
-  *            VDD(V)                         = 3.3
-  *            Main regulator output voltage  = Scale1 mode
-  *            Flash Latency(WS)              = 5
-  * @param  None
-  * @retval None
+  * The system Clock is configured as follow :
+  * System Clock source            = PLL (HSE)
+  * SYSCLK(Hz)                     = 168000000
+  * HCLK(Hz)                       = 168000000
+  * AHB Prescaler                  = 1
+  * APB1 Prescaler                 = 4
+  * APB2 Prescaler                 = 2
+  * HSE Frequency(Hz)              = 8000000
+  * PLL_M                          = 8
+  * PLL_N                          = 336
+  * PLL_P                          = 2
+  * PLL_Q                          = 7
+  * VDD(V)                         = 3.3
+  * Main regulator output voltage  = Scale1 mode
+  * Flash Latency(WS)              = 5
   */
 static void SystemClock_Config(void)
 {
@@ -673,10 +272,9 @@ static void SystemClock_Config(void)
 
   /* Enable Power Control clock */
   __HAL_RCC_PWR_CLK_ENABLE();
-  
-  /* The voltage scaling allows optimizing the power consumption when the device is 
-     clocked below the maximum system frequency, to update the voltage scaling value 
-     regarding system frequency refer to product datasheet.  */
+
+  /* The voltage scaling allows optimizing the power consumption when the device is
+     clocked below the maximum system frequency */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   
   /* Enable HSE Oscillator and activate PLL with HSE as source */
@@ -690,8 +288,7 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 7;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
   
-  /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
-     clocks dividers */
+  /* Select PLL as system clock source and configure clocks dividers */
   RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
@@ -699,39 +296,23 @@ static void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 
-  /* STM32F405x/407x/415x/417x Revision Z and upper devices: prefetch is supported  */
+  /* Enable the Flash prefetch if supported */
   if (HAL_GetREVID() >= 0x1001)
   {
-    /* Enable the Flash prefetch */
     __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
   }
 }
 
-#ifdef  USE_FULL_ASSERT
+static void Error_Handler(void)
+{
+  /* Turn LED5 (Red) on */
+  BSP_LED_On(LED5);
+  while(1) {}
+}
 
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+#ifdef  USE_FULL_ASSERT
 void assert_failed(uint8_t* file, uint32_t line)
 {
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-  /* Infinite loop */
-  while (1)
-  {
-  }
+  while (1) {}
 }
 #endif
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */

@@ -135,14 +135,20 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
         delete heap_arg;
         BAD_ALLOC();
     }
+
+#if defined(DMQ_ASSERTS)
+    heapArgs.push_back(deleter);
+    return std::tuple_cat(tup, std::make_tuple(heap_arg));
+#else
     try {
         heapArgs.push_back(deleter);
         return std::tuple_cat(tup, std::make_tuple(heap_arg));
-    } 
+    }
     catch (const std::bad_alloc&) {
         BAD_ALLOC();
         throw;
     }
+#endif
 }
 
 /// @brief Append a pointer argument to the tuple
@@ -161,6 +167,11 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
         delete heap_arg;
         BAD_ALLOC();
     }
+
+#if defined(DMQ_ASSERTS)
+    heapArgs.push_back(deleter);
+    return std::tuple_cat(tup, std::make_tuple(heap_arg));
+#else
     try {
         heapArgs.push_back(deleter);
         return std::tuple_cat(tup, std::make_tuple(heap_arg));
@@ -169,6 +180,7 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
         BAD_ALLOC();
         throw;
     }
+#endif
 }
 
 /// @brief Append a reference argument to the tuple
@@ -184,6 +196,14 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
         delete heap_arg;
         BAD_ALLOC();
     }
+
+#if defined(DMQ_ASSERTS)
+    heapArgs.push_back(deleter);
+
+    auto temp = std::make_tuple(std::forward_as_tuple(*heap_arg));  // Dereference heap_arg when creating tuple element
+    auto new_type = std::get<0>(temp);
+    return std::tuple_cat(tup, new_type);
+#else
     try {
         heapArgs.push_back(deleter);
 
@@ -195,6 +215,7 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
         BAD_ALLOC();
         throw;
     }
+#endif
 }
 
 /// @brief Terminate the template metaprogramming argument loop. This function is 

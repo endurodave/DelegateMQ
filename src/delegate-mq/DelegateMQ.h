@@ -63,12 +63,6 @@
 #include "delegate/UnicastDelegate.h"
 #include "delegate/Signal.h"
 
-// --- AUTO DETECT NO-EXCEPTIONS ---
-// If the compiler has exceptions disabled, force DMQ_ASSERTS on.
-#if !defined(DMQ_ASSERTS) && defined(__GNUC__) && !defined(__EXCEPTIONS)
-    #define DMQ_ASSERTS
-#endif
-
 // -----------------------------------------------------------------------------
 // 2. Thread-Safe Wrappers (Mutex Only)
 // -----------------------------------------------------------------------------
@@ -136,7 +130,7 @@
 #elif defined(DMQ_THREAD_NONE)
     // Bare metal: User must implement their own polling/interrupt logic
 #else
-    #error "Thread implementation not found."
+    #warning "Thread implementation not found."
 #endif
 
 #if defined(DMQ_SERIALIZE_MSGPACK)
@@ -152,7 +146,7 @@
 #elif defined(DMQ_SERIALIZE_NONE)
     // Create a custom application-specific serializer
 #else
-    #error "Serialize implementation not found."
+    #warning "Serialize implementation not found."
 #endif
 
 #if defined(DMQ_TRANSPORT_ZEROMQ)
@@ -194,7 +188,7 @@
 #elif defined(DMQ_TRANSPORT_NONE)
     // Create a custom application-specific transport
 #else
-    #error "Transport implementation not found."
+    #warning "Transport implementation not found."
 #endif
 
 #if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || \

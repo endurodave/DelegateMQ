@@ -11,7 +11,7 @@ bool Timer::m_timerStopped = false;
 //------------------------------------------------------------------------------
 // TimerDisabled
 //------------------------------------------------------------------------------
-static bool TimerDisabled (Timer* value)
+static bool TimerDisabled(Timer* value)
 {
     return !(value->Enabled());
 }
@@ -19,7 +19,7 @@ static bool TimerDisabled (Timer* value)
 //------------------------------------------------------------------------------
 // Constructor
 //------------------------------------------------------------------------------
-Timer::Timer() 
+Timer::Timer()
 {
     const std::lock_guard<RecursiveMutex> lock(GetLock());
     m_enabled = false;
@@ -31,6 +31,20 @@ Timer::Timer()
 //------------------------------------------------------------------------------
 Timer::~Timer()
 {
+#if defined(DMQ_ASSERTS)
+    // Exception handling disabled. 
+    // We assume standard mutex operations won't throw in this embedded context.
+    const std::lock_guard<RecursiveMutex> lock(GetLock());
+    auto& timers = GetTimers();
+
+    if (timers.size() != 0) {
+        // Safely check before removing
+        auto it = std::find(timers.begin(), timers.end(), this);
+        if (it != timers.end()) {
+            timers.erase(it);
+        }
+    }
+#else
     try {
         const std::lock_guard<RecursiveMutex> lock(GetLock());
         auto& timers = GetTimers();
@@ -46,6 +60,7 @@ Timer::~Timer()
     catch (...) {
         // Failsafe during static destruction
     }
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -53,8 +68,15 @@ Timer::~Timer()
 //------------------------------------------------------------------------------
 void Timer::Start(dmq::Duration timeout, bool once)
 {
-    if (timeout <= dmq::Duration(0))
+    if (timeout <= dmq::Duration(0)) {
+#if defined(DMQ_ASSERTS)
+        // Use the macro from Fault.h to halt the system
+        ASSERT();
+        return;
+#else
         throw std::invalid_argument("Timeout cannot be 0");
+#endif
+    }
 
     const std::lock_guard<RecursiveMutex> lock(GetLock());
 
@@ -71,8 +93,8 @@ void Timer::Start(dmq::Duration timeout, bool once)
     // Only add if not already in the list. 
     // If it IS in the list (even if disabled/stopped), we just updated 
     // its state above, so it is now active again.
-    if (!found) 
-        timers.push_back(this);    
+    if (!found)
+        timers.push_back(this);
 
     LOG_INFO("Timer::Start timeout={}", m_timeout.count());
 }
@@ -175,4 +197,3 @@ dmq::TimePoint Timer::GetNow()
     // to your custom resolution (millis) inside the time_point wrapper.
     return std::chrono::time_point_cast<dmq::Duration>(dmq::Clock::now());
 }
-

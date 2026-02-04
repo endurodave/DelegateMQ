@@ -7,7 +7,7 @@ This project demonstrates the use of the **DelegateMQ** C++ library on embedded 
 The application runs a suite of tests in `main.cpp` verifying the following DelegateMQ features on bare-metal/RTOS hardware:
 * **Unicast Delegates:** Binding to free functions and lambdas.
 * **Multicast Delegates:** Broadcasting events to multiple listeners.
-* **Signals & Slots:**  RAII-based connection management using `ScopedConnection`.
+* **Signals & Slots:** RAII-based connection management using `ScopedConnection`.
 * **Thread Safety:** Using Mutex-protected delegates.
 * **Async Dispatch:** Dispatching delegates across thread boundaries (if FreeRTOS is enabled).
 
@@ -18,67 +18,71 @@ The application runs a suite of tests in `main.cpp` verifying the following Dele
 * **Firmware:** STM32Cube FW_F4 V1.28.3 (or compatible).
 * **Library:** [DelegateMQ](https://github.com/endurodave/DelegateMQ) (Source code must be available locally).
 
-## ⚙️ Project Setup & Path Configuration
+## ⚙️ Project Configuration
 
-**CRITICAL STEP:** This project references external libraries (STM32 Drivers) using absolute paths. To build this on your machine, you must configure the **Build Variables** to point to your specific installation directories.
+### 1. FreeRTOS Settings (`FreeRTOSConfig.h`)
+To run DelegateMQ successfully, ensure the following settings are active:
+* `#define configUSE_TIMERS 1` (Required for `Timer.cpp`)
+* `#define configTOTAL_HEAP_SIZE ((size_t)(50 * 1024))` (Increased to 50KB for C++ objects)
+* `#define xPortSysTickHandler SysTick_Handler` (Map FreeRTOS tick to CMSIS handler)
 
-### 1. Configure the STM32 Firmware Repository Path
-The compiler needs to know where your STM32 HAL and CMSIS drivers are located. We use a build variable named `STM32_REPO` to handle this.
-
-1.  Open the project in **STM32CubeIDE**.
-2.  Right-click the project `stm32-freertos` in the **Project Explorer** and select **Properties**.
-3.  Navigate to **C/C++ Build** > **Environment**.
-4.  Click **Add...** to create a new variable:
-    * **Name:** `STM32_REPO`
-    * **Value:** `[Path to your STM32 F4 Firmware]`
-    * *Example Value:* `C:\Users\YourName\STM32Cube\Repository\STM32Cube_FW_F4_V1.28.3`
-5.  Click **OK**.
-6.  Ensure the **"Add to environment"** checkbox is selected for `STM32_REPO`.
-7.  Click **Apply and Close**.
-
-### 2. Configure the DelegateMQ Library Path
-The project expects the `delegate-mq` source code to be linked into the project tree.
-
-1.  Look at the project explorer. If the folder `delegate-mq` has a small arrow icon but appears empty or has a red "x", the link is broken.
-2.  **Delete** the broken `delegate-mq` folder from the Project Explorer (Right-click -> Delete -> OK). **Do not** delete contents on disk if asked.
-3.  Right-click the project root -> **New** -> **Folder**.
-4.  Click **Advanced >>**.
-5.  Select **Link to alternate location (Linked Folder)**.
-6.  Browse to the location where you downloaded the DelegateMQ library:
-    * *Target:* `C:\Projects\DelegateMQWorkspace\DelegateMQ\src\delegate-mq` (or wherever you cloned the repo).
-7.  Click **Finish**.
-
-### 3. Verify Include Paths (Optional)
-If the build fails after the steps above, ensure the compiler includes are using the variables:
-1.  Go to **Properties** > **C/C++ Build** > **Settings**.
-2.  Check **MCU GCC Compiler** > **Include paths**.
-3.  Ensure you see paths utilizing the variable, such as:
-    * `"${STM32_REPO}/Drivers/STM32F4xx_HAL_Driver/Inc"`
-    * `"${workspace_loc:/${ProjName}/delegate-mq}"`
+### 2. Interrupt Handling (`stm32f4xx_it.c`)
+**Crucial:** The `SysTick_Handler` must "bridge" the HAL and the RTOS. Ensure it calls both:
+```c
+void SysTick_Handler(void) {
+    HAL_IncTick(); // For STM32 HAL drivers
+    if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED) {
+        xPortSysTickHandler(); // For FreeRTOS Scheduler
+    }
+}
+```
 
 ## 🔨 Building and Flashing
 
-1.  **Clean the Project:**
-    * Right-click the project -> **Clean Project**.
-2.  **Build:**
-    * Click the **Hammer** icon or press `Ctrl+B`.
-    * Ensure the console shows **"Build Finished"**.
-3.  **Flash:**
-    * Connect your Discovery board via USB (Mini-B).
-    * Click the **Debug** (Bug icon) or **Run** (Play icon).
-    * Select **STM32 Cortex-M C/C++ Application** if prompted.
+1. **Clean the Project:**
+* Right-click the project -> **Clean Project**.
 
 
-# Troubleshooting
+2. **Build:**
+* Click the **Hammer** icon or press `Ctrl+B`.
+* Ensure the console shows **"Build Finished"**.
 
-* Error: fatal error: stm32f4xx_hal.h: No such file or directory
 
-  * Your `STM32_REPO` variable is either not defined or pointing to the wrong version/folder. Check `Project Properties > C/C++ Build > Environment`.
+3. **Flash:**
+* Connect your Discovery board via USB (Mini-B).
+* Click the **Debug** (Bug icon) or **Run** (Play icon).
 
-* Error: exception handling disabled, use '-fexceptions'
 
-  * Ensure `DMQ_ASSERTS` is defined in `DelegateOpt.h` or in your build settings. Embedded C++ usually runs with `-fno-exceptions`, so try/catch blocks must be compiled out using the library's preprocessor macros.
 
-* Undefined reference to DelegateMQ symbols
+## 💡 LED Status Indicators
 
-  * Ensure the `delegate-mq` folder is correctly linked in the project explorer and that the source files inside it (if any .cpp exist) are not excluded from the build.
+* 🟠 **Orange (LED3):** System Initialization (main entered).
+* 🟢 **Green (LED4):** FreeRTOS Scheduler Started & Test Task Running.
+* 🔵 **Blue (LED6):** **SUCCESS** - Tests passed, application heartbeat blinking.
+* 🔴 **Red (LED5):** **ERROR** - Initialization failed or Heap Exhausted.
+
+## 📝 Viewing Test Output (SWV)
+
+Standard output (`printf`) is redirected to the **SWV ITM Data Console**.
+
+1. Open **Window > Show View > SWV > SWV ITM Data Console**.
+2. Click **Configure Trace** (Wrench icon) -> Check **Port 0**.
+3. Click **Start Trace** (Red Circle).
+4. Reset the board.
+
+## Troubleshooting
+
+* **Linker Error: `undefined reference to xTimerCreate**`
+  * Ensure `#define configUSE_TIMERS 1` is set in `FreeRTOSConfig.h` and Rebuild (Clean first).
+
+
+* **Blue LED never turns on (Application hangs)**
+  * The Scheduler is likely not receiving ticks. Check `stm32f4xx_it.c` to ensure `SysTick_Handler` is calling `xPortSysTickHandler`.
+
+
+* **Red LED Blinking Fast**
+  * Heap Exhaustion. Increase `configTOTAL_HEAP_SIZE` in `FreeRTOSConfig.h`.
+
+
+* **Error: exception handling disabled, use '-fexceptions'**
+  * Ensure `DMQ_ASSERTS` is defined in project settings to disable try/catch blocks for embedded targets.

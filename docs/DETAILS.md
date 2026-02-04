@@ -19,6 +19,8 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Embedded Example Setup](#embedded-example-setup)
     - [Examples Build](#examples-build)
   - [Build Integration](#build-integration)
+    - [CMake](#cmake)
+    - [Generic (Make/IDE)](#generic-makeide)
 - [Porting Guide](#porting-guide)
 - [Quick Start](#quick-start)
   - [Basic Examples](#basic-examples)
@@ -200,6 +202,8 @@ See [Sample Projects](#sample-projects) for details regarding each sample projec
 
 Follow these steps to integrate DelegateMQ into a project.
 
+### CMake
+
 Set the desired DMQ build options and include `DelegateMQ.cmake` within your `CMakeLists.txt` file. See `Predef.cmake` for all available DMQ build configuration variables.
 
 ```
@@ -235,6 +239,25 @@ include_directories(
 ```
 
 Include `DelegateMQ.h` to use the delegate library features. Build and execute the project.
+
+### Generic (Make/IDE)
+
+Include `DelegateMQ.h` and select the DMQ build options via preprocessor definitions.
+
+```cpp
+// Define options globally in compiler settings (see DelegateMQ.h for all options)
+// DMQ_THREAD_NONE
+// DMQ_SERIALIZE_NONE
+// DMQ_TRANSPORT_NONE
+// DMQ_ASSERTS
+
+#include "DelegateMQ.h"
+using namespace dmq;
+
+// Your DelegateMQ code...
+```
+
+**Note:** If using utility features (like `Thread` or `Timer`), ensure you compile and link the corresponding `.cpp` files found in the `delegate-mq/predef` directory.
 
 # Porting Guide
 
