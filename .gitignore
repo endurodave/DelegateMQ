@@ -311,9 +311,9 @@ OpenCover/
 # ---------------------------------
 
 # Use **/ to match these folders anywhere in the repo structure
-**/.settings/com.st.stm32cube.ide.mcu.sfrview.prefs
-**/.settings/org.eclipse.core.resources.prefs
-**/.settings/org.eclipse.ui.prefs
+com.st.stm32cube.ide.mcu.sfrview.prefs
+org.eclipse.core.resources.prefs
+org.eclipse.ui.prefs
 
 # STM32CubeIDE Build Output Directories (Match anywhere)
 **/STM32CubeIDE/Debug/
