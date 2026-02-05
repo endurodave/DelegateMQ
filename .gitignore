@@ -310,28 +310,31 @@ OpenCover/
 # STM32CubeIDE / Eclipse / GCC Specifics
 # ---------------------------------
 
-# STM32CubeIDE Build Output Directories
-STM32CubeIDE/Debug/
-STM32CubeIDE/Release/
+# Use **/ to match these folders anywhere in the repo structure
+**/.settings/com.st.stm32cube.ide.mcu.sfrview.prefs
+**/.settings/org.eclipse.core.resources.prefs
+**/.settings/org.eclipse.ui.prefs
 
-# GCC/Compiler Analysis Files (Seen in your directory listing)
-*.su
-*.cyclo
-*.d
-*.o
-*.mk
-*.list
+# STM32CubeIDE Build Output Directories (Match anywhere)
+**/STM32CubeIDE/Debug/
+**/STM32CubeIDE/Release/
+**/Debug/
+**/Release/
+
+# GCC/Compiler Analysis Files
+**/*.su
+**/*.cyclo
+**/*.d
+**/*.o
+**/*.mk
+**/*.list
 
 # Binary and Map Files
-*.elf
-*.bin
-*.hex
-*.map
+**/*.elf
+**/*.bin
+**/*.hex
+**/*.map
 
 # Eclipse/STM32 Internal Metadata
-.metadata/
-.mxproject
-
-# Debugger Logs
-JLinkLog.txt
-*.jlink
+**/.metadata/
+**/.mxproject

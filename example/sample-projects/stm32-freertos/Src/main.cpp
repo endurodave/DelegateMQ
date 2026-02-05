@@ -158,7 +158,7 @@ int main(void)
   BSP_LED_On(LED3);   // Orange ON = Main Reached
 
 // Uncomment to run stress tests
-#define STRESS_TEST
+//#define STRESS_TEST
 #ifdef STRESS_TEST
   extern void StartStressTest();
   StartStressTest();
