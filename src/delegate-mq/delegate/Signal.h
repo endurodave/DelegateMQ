@@ -125,6 +125,7 @@ namespace dmq {
     public:
         using BaseType = MulticastDelegate<RetType(Args...)>;
         using DelegateType = Delegate<RetType(Args...)>;
+        using MulticastDelegate<RetType(Args...)>::operator=;
 
         Signal() = default;
         Signal(const Signal&) = delete;

@@ -32,6 +32,7 @@ namespace dmq {
     public:
         using BaseType = MulticastDelegateSafe<RetType(Args...)>;
         using DelegateType = Delegate<RetType(Args...)>;
+        using MulticastDelegateSafe<RetType(Args...)>::operator=;
 
         SignalSafe() = default;
         SignalSafe(const SignalSafe&) = delete;
