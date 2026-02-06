@@ -1,7 +1,7 @@
 #include "NetworkEngine.h"
 
 // Only compile implementation if a compatible transport is selected
-#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART)
 
 using namespace dmq;
 using namespace std;
@@ -11,21 +11,21 @@ const std::chrono::milliseconds NetworkEngine::RECV_TIMEOUT(2000);
 
 NetworkEngine::NetworkEngine()
     : m_thread("NetworkEngine"),
-    m_transportMonitor(RECV_TIMEOUT)
-#if defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+    m_transportMonitor(RECV_TIMEOUT),
+	m_recvThread("NetworkRecv")
+#if defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART)
     // Only initialize reliability layers for UDP transports
     , m_retryMonitor(m_sendTransport, m_transportMonitor)
     , m_reliableTransport(m_sendTransport, m_retryMonitor)
 #endif
 {
-    m_thread.CreateThread(std::chrono::milliseconds(5000));
+    m_thread.CreateThread();
 }
 
 NetworkEngine::~NetworkEngine()
 {
     Stop();
     m_thread.ExitThread();
-    delete m_recvThread;
 }
 
 // SWITCH: Initialize Implementation
@@ -89,6 +89,33 @@ int NetworkEngine::Initialize(const std::string& sendIp, int sendPort, const std
     return err;
 }
 
+#elif defined(DMQ_TRANSPORT_STM32_UART)
+
+// --------------------------------------------------------
+// STM32 UART Implementation
+// --------------------------------------------------------
+int NetworkEngine::Initialize(UART_HandleTypeDef* huart)
+{
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkEngine::Initialize, m_thread, WAIT_INFINITE)(huart);
+
+    int err = 0;
+    err += m_sendTransport.Create(huart);
+    err += m_recvTransport.Create(huart);
+
+    m_statusConn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
+
+    m_sendTransport.SetTransportMonitor(&m_transportMonitor);
+    m_recvTransport.SetTransportMonitor(&m_transportMonitor);
+
+    m_sendTransport.SetRecvTransport(&m_recvTransport);
+    m_recvTransport.SetSendTransport(&m_sendTransport);
+
+    // Use Reliable wrapper for UART
+    m_dispatcher.SetTransport(&m_reliableTransport);
+
+    return err;
+}
 #endif
 
 void NetworkEngine::Start()
@@ -96,8 +123,15 @@ void NetworkEngine::Start()
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
         return MakeDelegate(this, &NetworkEngine::Start, m_thread)();
 
-    if (!m_recvThread) {
-        m_recvThread = new std::thread(&NetworkEngine::RecvThread, this);
+    static bool bRecvThreadCreated = false;
+
+    if (!bRecvThreadCreated)
+    {
+        bRecvThreadCreated = true;
+        m_recvThread.CreateThread();
+
+        // Post the "RecvThread" loop to run on this new thread.
+        MakeDelegate(this, &NetworkEngine::RecvThread, m_recvThread).AsyncInvoke();
     }
 
     m_timeoutTimerConn = m_timeoutTimer.OnExpired->Connect(MakeDelegate(this, &NetworkEngine::Timeout, m_thread));
@@ -113,11 +147,8 @@ void NetworkEngine::Stop()
         m_sendTransport.Close();
 
         m_recvThreadExit = true;
-        if (m_recvThread && m_recvThread->joinable()) {
-            m_recvThread->join();
-            delete m_recvThread;
-            m_recvThread = nullptr;
-        }
+        m_recvThread.ExitThread();
+
         return MakeDelegate(this, &NetworkEngine::Stop, m_thread, WAIT_INFINITE)();
     }
     m_timeoutTimer.Stop();

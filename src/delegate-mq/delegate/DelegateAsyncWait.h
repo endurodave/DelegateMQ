@@ -437,12 +437,27 @@ public:
     /// Get the asynchronous function return value
     /// @return The destination thread target function return value
     RetType GetRetVal() noexcept {
+        // Use pointer cast if exceptions are disabled OR if user requested Asserts-only mode
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+        // Fast, non-throwing check suitable for Embedded/Real-time
+        auto* p = std::any_cast<RetType>(&m_retVal);
+        if (p) return *p;
+
+        // Optional: If you want to trap this error in debug mode
+#if defined(DMQ_ASSERTS)
+        ASSERT();
+#endif
+
+        return RetType();
+#else
+        // Standard C++ behavior with Exception Handling
         try {
             return std::any_cast<RetType>(m_retVal);
         }
         catch (const std::bad_any_cast&) {
-            return RetType();  // Return a default value if error
+            return RetType();
         }
+#endif
     }
 
     ///@brief Get the destination thread that the target function is invoked on.
@@ -858,12 +873,27 @@ public:
     /// Get the asynchronous function return value
     /// @return The destination thread target function return value
     RetType GetRetVal() noexcept {
+        // Use pointer cast if exceptions are disabled OR if user requested Asserts-only mode
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+        // Fast, non-throwing check suitable for Embedded/Real-time
+        auto* p = std::any_cast<RetType>(&m_retVal);
+        if (p) return *p;
+
+        // Optional: If you want to trap this error in debug mode
+#if defined(DMQ_ASSERTS)
+        ASSERT();
+#endif
+
+        return RetType();
+#else
+        // Standard C++ behavior with Exception Handling
         try {
             return std::any_cast<RetType>(m_retVal);
         }
         catch (const std::bad_any_cast&) {
-            return RetType();  // Return a default value if error
+            return RetType();
         }
+#endif
     }
 
     ///@brief Get the destination thread that the target function is invoked on.
@@ -1196,12 +1226,27 @@ public:
     /// Get the asynchronous function return value
     /// @return The destination thread target function return value
     RetType GetRetVal() noexcept {
+        // Use pointer cast if exceptions are disabled OR if user requested Asserts-only mode
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+        // Fast, non-throwing check suitable for Embedded/Real-time
+        auto* p = std::any_cast<RetType>(&m_retVal);
+        if (p) return *p;
+
+        // Optional: If you want to trap this error in debug mode
+#if defined(DMQ_ASSERTS)
+        ASSERT();
+#endif
+
+        return RetType();
+#else
+        // Standard C++ behavior with Exception Handling
         try {
             return std::any_cast<RetType>(m_retVal);
         }
         catch (const std::bad_any_cast&) {
-            return RetType();  // Return a default value if error
+            return RetType();
         }
+#endif
     }
 
     ///@brief Get the destination thread that the target function is invoked on.
@@ -1536,12 +1581,27 @@ public:
     /// Get the asynchronous function return value
     /// @return The destination thread target function return value
     RetType GetRetVal() noexcept {
+        // Use pointer cast if exceptions are disabled OR if user requested Asserts-only mode
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+        // Fast, non-throwing check suitable for Embedded/Real-time
+        auto* p = std::any_cast<RetType>(&m_retVal);
+        if (p) return *p;
+
+        // Optional: If you want to trap this error in debug mode
+#if defined(DMQ_ASSERTS)
+        ASSERT();
+#endif
+
+        return RetType();
+#else
+        // Standard C++ behavior with Exception Handling
         try {
             return std::any_cast<RetType>(m_retVal);
         }
         catch (const std::bad_any_cast&) {
-            return RetType();  // Return a default value if error
+            return RetType();
         }
+#endif
     }
 
     ///@brief Get the destination thread that the target function is invoked on.

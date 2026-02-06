@@ -5,8 +5,6 @@
 /// @brief Delegate library semaphore wrapper class. 
 
 #include "DelegateOpt.h"
-#include <condition_variable>
-#include <mutex>
 
 // Fix compiler error on Windows
 #undef max
@@ -25,7 +23,7 @@ public:
 	/// @return Return true if semaphore signaled, false if timeout occurred. 
 	bool Wait(Duration timeout)
 	{
-        std::unique_lock<std::mutex> lk(m_lock);
+        std::unique_lock<dmq::Mutex> lk(m_lock);
         if (timeout == Duration::max())
         {
             m_sema.wait(lk, [this] { return m_signaled; });
@@ -53,7 +51,7 @@ public:
     void Signal()
     {
         {
-            std::unique_lock<std::mutex> lk(m_lock);
+            std::unique_lock<dmq::Mutex> lk(m_lock);
             m_signaled = true;
         }
         m_sema.notify_one();
@@ -64,8 +62,8 @@ private:
 	Semaphore(const Semaphore&) = delete;
 	Semaphore& operator=(const Semaphore&) = delete;
 
-	std::condition_variable m_sema;
-	std::mutex m_lock;
+	dmq::ConditionVariable m_sema;
+	dmq::Mutex m_lock;
 	bool m_signaled = false;
 };
 

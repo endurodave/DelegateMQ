@@ -109,7 +109,7 @@ public:
         if (!delegateClone)
             BAD_ALLOC();
 
-#if defined(DMQ_ASSERTS)
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
         // No exceptions: Direct execution. 
         // If shared_ptr or vector allocation fails here on embedded, 
         // standard behavior is usually an abort() or system reset.
@@ -175,7 +175,7 @@ private:
             if (!delegateClone)
                 BAD_ALLOC();
 
-#if defined(DMQ_ASSERTS)
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
             // No exceptions: Direct execution.
             std::shared_ptr<DelegateType> sharedDelegate(delegateClone);
             m_delegates.push_back(sharedDelegate);

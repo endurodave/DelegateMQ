@@ -35,6 +35,85 @@
 #include <stdio.h>
 #include <string> // Required for Thread class
 
+// Declare global pointer (safe)
+NetworkEngine* g_netEngine = nullptr;
+
+// ============================================================================
+// MANUAL HARDWARE SETUP (No .ioc file)
+// ============================================================================
+
+// 1. Global UART Handle
+UART_HandleTypeDef huart6;
+
+// 2. Forward Declarations (so main can see them)
+extern "C" {
+    void MX_GPIO_Init(void);
+    void MX_USART6_UART_Init(void);
+}
+
+// 3. UART Initialization Function
+void MX_USART6_UART_Init(void)
+{
+  huart6.Instance = USART6;
+  huart6.Init.BaudRate = 115200;
+  huart6.Init.WordLength = UART_WORDLENGTH_8B;
+  huart6.Init.StopBits = UART_STOPBITS_1;
+  huart6.Init.Parity = UART_PARITY_NONE;
+  huart6.Init.Mode = UART_MODE_TX_RX;
+  huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+
+  if (HAL_UART_Init(&huart6) != HAL_OK)
+  {
+    // Initialization Error
+    while(1);
+  }
+}
+
+// 4. GPIO Initialization (Enable Clocks)
+void MX_GPIO_Init(void)
+{
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE(); // LEDs usually on GPIOD
+}
+
+// 5. Hardware Low-Level Init (MSP)
+// This configures the Pins (PC6/PC7) and the Clock for USART6
+extern "C" void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  if(uartHandle->Instance == USART6)
+  {
+    /* 1. Enable Peripheral Clocks */
+    __HAL_RCC_USART6_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+
+    /* 2. Configure GPIO Pins: PC6 (TX) and PC7 (RX) */
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;      // Alternate Function Push-Pull
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF8_USART6; // AF8 is USART6 for F4 series
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  }
+}
+
+extern "C" void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
+{
+  if(uartHandle->Instance == USART6)
+  {
+    /* Disable Peripheral Clock */
+    __HAL_RCC_USART6_CLK_DISABLE();
+
+    /* DeInit GPIO Pins: PC6, PC7 */
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_6 | GPIO_PIN_7);
+  }
+}
+
 using namespace dmq;
 
 // ============================================================================
@@ -146,6 +225,27 @@ int main(void)
   HAL_Init();
   SystemClock_Config();
 
+  // Initialize Peripherals (Manual Init)
+  MX_GPIO_Init();
+  MX_USART6_UART_Init();
+
+#if 0
+   // 2. Instantiate and Initialize AFTER Hardware Init
+    static Stm32UartTransport uartTransport(&huart6);
+
+    // Create Engine on heap (or static inside main)
+    // This ensures the constructor runs NOW, not before main()
+    static NetworkEngine engine;
+    g_netEngine = &engine;
+
+    // Initialize Engine
+    g_netEngine->Initialize(&huart6);
+    g_netEngine->Start();
+
+  // Register a remote function (e.g. ID 100)
+  //g_netEngine.RegisterEndpoint(100, /* Your RemoteEndpoint here */);
+#endif
+
   // CRITICAL: FreeRTOS requires Priority Group 4 on STM32
   HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
 
@@ -156,6 +256,11 @@ int main(void)
   BSP_LED_Init(LED6); // Blue
 
   BSP_LED_On(LED3);   // Orange ON = Main Reached
+
+  // 3. Setup DelegateMQ Transport
+  //    Pass the handle initialized above
+  //static Stm32UartTransport uartTransport(&huart6);   TODO
+  //DelegateMQ::SetTransport(&uartTransport);
 
 // Uncomment to run stress tests
 //#define STRESS_TEST

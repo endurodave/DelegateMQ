@@ -705,7 +705,7 @@ public:
     /// @param[in] func The `std::function` to bind to the delegate. This function must 
     /// match the signature of the delegate.
     void Bind(FunctionType func) {
-#if defined(DMQ_ASSERTS)
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
         // No exceptions: Direct assignment.
         // If the STL needs to allocate memory here and fails, 
         // it will likely abort() internally on embedded systems.

@@ -31,7 +31,7 @@ Timer::Timer()
 //------------------------------------------------------------------------------
 Timer::~Timer()
 {
-#if defined(DMQ_ASSERTS)
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
     // Exception handling disabled. 
     // We assume standard mutex operations won't throw in this embedded context.
     const std::lock_guard<RecursiveMutex> lock(GetLock());
@@ -69,7 +69,7 @@ Timer::~Timer()
 void Timer::Start(dmq::Duration timeout, bool once)
 {
     if (timeout <= dmq::Duration(0)) {
-#if defined(DMQ_ASSERTS)
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
         // Use the macro from Fault.h to halt the system
         ASSERT();
         return;

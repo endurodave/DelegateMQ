@@ -15,14 +15,6 @@
 /// Prerequisites:
 /// - lwIP must be compiled with `LWIP_SOCKET=1`
 /// - lwIP must be compiled with `LWIP_SO_RCVTIMEO=1` (for non-blocking timeouts)
-/// 
-/// Key Features:
-/// 1. **Zero-Copy Logic**: Executes network operations directly on the calling thread, 
-///    avoiding context switch overhead and reducing RAM usage (no separate stack needed).
-/// 2. **Memory Efficient**: Reduced buffer size to 1500 bytes (MTU) to fit constrained RAM.
-/// 3. **Reliability Support**: Fully compatible with `TransportMonitor` for ACKs/Retries.
-/// 4. **Endianness Safe**: Uses network byte order (htons/ntohs) for headers to support 
-///    mixed-architecture (ARM <-> x86) communication.
 
 #include "DelegateMQ.h"
 #include "predef/transport/ITransportMonitor.h"
@@ -37,6 +29,7 @@
 #include <sstream>
 #include <cstring>
 #include <cstdlib>
+#include <cerrno> 
 
 // Ensure lwIP is configured correctly
 #if !defined(LWIP_SO_RCVTIMEO) || LWIP_SO_RCVTIMEO == 0
@@ -69,7 +62,6 @@ public:
         m_socket = lwip_socket(AF_INET, SOCK_DGRAM, 0);
         if (m_socket < 0)
         {
-            // std::cerr << "Socket creation failed: " << errno << std::endl;
             return -1;
         }
 
@@ -82,7 +74,7 @@ public:
             // Note: inet_aton in lwIP returns 1 on success
             if (inet_aton(addr, &m_addr.sin_addr) == 0)
             {
-                // std::cerr << "Invalid IP address format." << std::endl;
+                Close(); 
                 return -1;
             }
 
@@ -94,7 +86,7 @@ public:
 
             if (lwip_setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
             {
-                // std::cerr << "setsockopt(SO_RCVTIMEO) failed" << std::endl;
+                Close(); 
                 return -1;
             }
         }
@@ -104,7 +96,7 @@ public:
 
             if (lwip_bind(m_socket, (struct sockaddr*)&m_addr, sizeof(m_addr)) < 0)
             {
-                // std::cerr << "Bind failed" << std::endl;
+                Close(); 
                 return -1;
             }
 
@@ -115,7 +107,7 @@ public:
 
             if (lwip_setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
             {
-                // std::cerr << "setsockopt(SO_RCVTIMEO) failed" << std::endl;
+                Close(); 
                 return -1;
             }
         }
@@ -160,7 +152,6 @@ public:
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
         // Convert header fields to Network Byte Order (Big Endian) 
-        // to support cross-platform communication (e.g. ARM <-> x86)
         uint16_t marker = htons(headerCopy.GetMarker());
         uint16_t id     = htons(headerCopy.GetId());
         uint16_t seqNum = htons(headerCopy.GetSeqNum());
@@ -241,11 +232,25 @@ public:
         headerStream.read(reinterpret_cast<char*>(&netVal), sizeof(netVal));
         header.SetLength(ntohs(netVal));
 
+        // Check if header reads actually succeeded
+        if (headerStream.fail()) {
+            return -1;
+        }
+
+        // Bounds Check (Prevent overflow if header claims more than buffer size)
+        if (header.GetLength() > BUFFER_SIZE - DmqHeader::HEADER_SIZE) {
+            return -1;
+        }
+
         // Security Check: Ensure received packet is large enough for the claimed payload
         if (size < DmqHeader::HEADER_SIZE + header.GetLength())
         {
             return -1; // Malformed packet / Partial payload
         }
+
+        // Reset stream state before writing new payload
+        is.clear();
+        is.str("");
 
         // Extract payload
         is.write(m_buffer + DmqHeader::HEADER_SIZE, header.GetLength());
@@ -298,4 +303,4 @@ private:
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
 
-#endif // ARM_LWIP_UDP_TRANSPORT_H  
+#endif // ARM_LWIP_UDP_TRANSPORT_H

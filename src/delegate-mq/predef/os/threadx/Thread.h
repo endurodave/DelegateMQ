@@ -2,7 +2,24 @@
 #define _THREAD_THREADX_H
 
 /// @file Thread.h
+/// @see https://github.com/endurodave/DelegateMQ
+/// David Lafreniere, 2026.
+///
 /// @brief ThreadX implementation of the DelegateMQ IThread interface.
+///
+/// @details
+/// This class provides a concrete implementation of the `IThread` interface using 
+/// Azure RTOS ThreadX primitives. It enables DelegateMQ to dispatch asynchronous 
+/// delegates to a dedicated ThreadX thread.
+///
+/// **Key Features:**
+/// * **Task Integration:** Wraps `tx_thread_create` to establish a dedicated worker loop.
+/// * **Queue-Based Dispatch:** Uses a `TX_QUEUE` to receive and process incoming 
+///   delegate messages in a thread-safe manner.
+/// * **Priority Control:** Supports runtime priority configuration via `SetThreadPriority`.
+/// * **Dynamic Configuration:** Allows configuring stack size and queue depth at construction.
+/// * **Graceful Shutdown:** Implements robust termination logic using semaphores to ensure 
+///   the thread exits cleanly before destruction.
 
 #include "delegate/IThread.h"
 #include "tx_api.h"
@@ -15,8 +32,13 @@ class ThreadMsg;
 class Thread : public dmq::IThread
 {
 public:
+    /// Default queue size if 0 is passed
+    static const ULONG DEFAULT_QUEUE_SIZE = 20;
+
     /// Constructor
-    Thread(const std::string& threadName);
+    /// @param threadName Name for the ThreadX thread
+    /// @param maxQueueSize Max number of messages in queue (0 = Default 20)
+    Thread(const std::string& threadName, size_t maxQueueSize = 0);
 
     /// Destructor
     ~Thread();
@@ -33,6 +55,13 @@ public:
 
     /// Get the ID of the currently executing thread
     static TX_THREAD* GetCurrentThreadId();
+
+    /// Set the ThreadX Priority (0 = Highest). 
+    /// Can be called before or after CreateThread().
+    void SetThreadPriority(UINT priority);
+
+    /// Get current priority
+    UINT GetThreadPriority();
 
     /// Get thread name
     std::string GetThreadName() { return THREAD_NAME; }
@@ -62,9 +91,11 @@ private:
     
     const std::string THREAD_NAME;
     
-    // Configurable stack size (bytes) and queue depth
+    // Configurable stack size (bytes)
     static const ULONG STACK_SIZE = 2048; 
-    static const ULONG QUEUE_SIZE = 20;   
+    
+    size_t m_queueSize; // Stored queue size
+    UINT m_priority;    // Stored priority
 };
 
 #endif // _THREAD_THREADX_H

@@ -46,7 +46,7 @@ namespace dmq {
             std::weak_ptr<SignalSafe> weakSelf;
 
             // Handle Assert vs Exception environments
-#if defined(DMQ_ASSERTS) 
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
             // No exceptions: We simply assume the object is managed by shared_ptr.
             // If this object is on the stack, shared_from_this() will likely cause 
             // a strict abort/terminate depending on the STL implementation.

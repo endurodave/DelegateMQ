@@ -17,6 +17,10 @@ Thread::Thread(const std::string& threadName, size_t maxQueueSize)
 {
     // If 0 is passed, use the default size
     m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
+
+    // Default Priority: Normal (Adjust based on your system needs)
+    // Often tskIDLE_PRIORITY + 2 or similar.
+    m_priority = configMAX_PRIORITIES > 2 ? configMAX_PRIORITIES - 2 : tskIDLE_PRIORITY + 1;
 }
 
 //----------------------------------------------------------------------------
@@ -56,7 +60,7 @@ bool Thread::CreateThread()
             THREAD_NAME.c_str(),
             configMINIMAL_STACK_SIZE * 4, // Ensure enough stack for delegates
             this,
-            configMAX_PRIORITIES - 2, // Normal priority
+            m_priority,
             &m_thread);
 
         ASSERT_TRUE(xReturn == pdPASS);
@@ -114,6 +118,19 @@ TaskHandle_t Thread::GetCurrentThreadId()
 }
 
 //----------------------------------------------------------------------------
+// SetThreadPriority
+//----------------------------------------------------------------------------
+void Thread::SetThreadPriority(int priority)
+{
+    m_priority = priority;
+
+    // If the thread is already running, update it live
+    if (m_thread) {
+        vTaskPrioritySet(m_thread, (UBaseType_t)m_priority);
+    }
+}
+
+//----------------------------------------------------------------------------
 // DispatchDelegate
 //----------------------------------------------------------------------------
 void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
@@ -129,6 +146,7 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     {
         // 3. Handle failure: Delete to prevent memory leak
         delete threadMsg;
+        // @TODO Handle queue full if necessary.
         // printf("Error: Thread '%s' queue full! Delegate dropped.\n", THREAD_NAME.c_str());
     }
 }

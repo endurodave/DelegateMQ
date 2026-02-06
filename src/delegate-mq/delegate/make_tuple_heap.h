@@ -136,7 +136,7 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
         BAD_ALLOC();
     }
 
-#if defined(DMQ_ASSERTS)
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
     heapArgs.push_back(deleter);
     return std::tuple_cat(tup, std::make_tuple(heap_arg));
 #else
@@ -168,7 +168,7 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
         BAD_ALLOC();
     }
 
-#if defined(DMQ_ASSERTS)
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
     heapArgs.push_back(deleter);
     return std::tuple_cat(tup, std::make_tuple(heap_arg));
 #else
@@ -197,7 +197,7 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
         BAD_ALLOC();
     }
 
-#if defined(DMQ_ASSERTS)
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
     heapArgs.push_back(deleter);
 
     auto temp = std::make_tuple(std::forward_as_tuple(*heap_arg));  // Dereference heap_arg when creating tuple element

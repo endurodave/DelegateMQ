@@ -109,7 +109,8 @@ endif()
 # ---------------------------------------------------------------------------
 # lwIP library (For ARM/Embedded)
 # ---------------------------------------------------------------------------
-if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ARM_LWIP_UDP")
+if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ARM_LWIP_UDP" OR DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ARM_LWIP_NETCONN_UDP")
+    
     # Adjust this path if your lwIP root is different
     set(LWIP_ROOT "${DMQ_ROOT_DIR}/../../../lwip")
 
@@ -119,7 +120,6 @@ if(DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ARM_LWIP_UDP")
     
     # Often required for lwipopts.h or arch/cc.h.
     # NOTE: You may need to customize this depending on where your project keeps 'lwipopts.h'
-    # For now, we point to the generic 'contrib' ports if present, or just the root.
     set(LWIP_INCLUDE_DIR_3 "${LWIP_ROOT}/contrib/ports/unix/port/include")
 
     set(LWIP_INCLUDE_DIRS 

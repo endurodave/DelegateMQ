@@ -13,9 +13,14 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread Constructor
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName) 
+Thread::Thread(const std::string& threadName, size_t maxQueueSize) 
     : THREAD_NAME(threadName)
 {
+    // If 0 is passed, use the default size
+    m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
+    
+    // Default Priority
+    m_priority = osPriorityNormal;
 }
 
 //----------------------------------------------------------------------------
@@ -45,19 +50,40 @@ bool Thread::CreateThread()
 
         // 2. Create Message Queue
         // We store pointers (ThreadMsg*), so msg_size = sizeof(ThreadMsg*)
-        m_msgq = osMessageQueueNew(MSGQ_SIZE, sizeof(ThreadMsg*), NULL);
+        m_msgq = osMessageQueueNew(m_queueSize, sizeof(ThreadMsg*), NULL);
         ASSERT_TRUE(m_msgq != NULL);
 
         // 3. Create Thread
         osThreadAttr_t attr = {0};
         attr.name = THREAD_NAME.c_str();
         attr.stack_size = STACK_SIZE;
-        attr.priority = osPriorityNormal;
+        attr.priority = m_priority;
         
         m_thread = osThreadNew(Thread::Process, this, &attr);
         ASSERT_TRUE(m_thread != NULL);
     }
     return true;
+}
+
+//----------------------------------------------------------------------------
+// SetThreadPriority
+//----------------------------------------------------------------------------
+void Thread::SetThreadPriority(osPriority_t priority)
+{
+    m_priority = priority;
+
+    // If the thread is already running, update it live
+    if (m_thread != NULL) {
+        osThreadSetPriority(m_thread, m_priority);
+    }
+}
+
+//----------------------------------------------------------------------------
+// GetThreadPriority
+//----------------------------------------------------------------------------
+osPriority_t Thread::GetThreadPriority()
+{
+    return m_priority;
 }
 
 //----------------------------------------------------------------------------

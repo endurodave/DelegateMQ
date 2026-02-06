@@ -7,7 +7,7 @@
 #define NETWORK_ENGINE_H
 
 // Only define NetworkEngine if a compatible transport is selected
-#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART)
 
 #include "predef/util/RemoteEndpoint.h"
 #include "predef/util/TransportMonitor.h"
@@ -29,6 +29,12 @@
 #include "predef/transport/linux-udp/LinuxUdpTransport.h"
 #include "predef/util/ReliableTransport.h"
 #include "predef/util/RetryMonitor.h"
+#elif defined(DMQ_TRANSPORT_STM32_UART)
+#include "predef/transport/stm32-uart/Stm32UartTransport.h"
+#include "predef/util/ReliableTransport.h"
+#include "predef/util/RetryMonitor.h"
+#else
+#error "Select a NetworkEngine transport"
 #endif
 
 /// @brief Base class for handling network transport, threading, and synchronization.
@@ -59,6 +65,9 @@ public:
 #elif defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
     // UDP requires explicit IP and Port for sending and receiving
     int Initialize(const std::string& sendIp, int sendPort, const std::string& recvIp, int recvPort);
+#elif defined(DMQ_TRANSPORT_STM32_UART)
+    // Initialize with HAL Handle
+    int Initialize(UART_HandleTypeDef* huart);
 #endif
 
     /// @brief Starts the network engine and its receiving thread.
@@ -122,8 +131,8 @@ public:
             struct SyncState {
                 std::atomic<bool> success{ false };
                 bool complete = false;
-                std::mutex mtx;
-                std::condition_variable cv;
+                dmq::Mutex mtx;              // Generic Mutex
+                dmq::ConditionVariable cv;   // Generic CV
                 XALLOCATOR
             };
             auto state = std::make_shared<SyncState>();
@@ -134,7 +143,7 @@ public:
                 [state, remoteId](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
                 if (id == remoteId) {
                     {
-                        std::lock_guard<std::mutex> lock(state->mtx);
+                        std::lock_guard<dmq::Mutex> lock(state->mtx);
                         state->complete = true;
                         if (status == TransportMonitor::Status::SUCCESS)
                             state->success.store(true);
@@ -162,7 +171,7 @@ public:
             if (retVal.has_value() && retVal.value() == true)
             {
                 // 8. [Caller Thread] BLOCK and Wait.
-                std::unique_lock<std::mutex> lock(state->mtx);
+                std::unique_lock<dmq::Mutex> lock(state->mtx);
                 // wait_for returns false if the predicate is still false after the timeout
                 state->cv.wait_for(lock, RECV_TIMEOUT, [&] {
                     return state->complete;
@@ -198,7 +207,7 @@ private:
     void InternalErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux);
     void InternalStatusHandler(dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status);
 
-    std::thread* m_recvThread = nullptr;
+    Thread m_recvThread;
     std::atomic<bool> m_recvThreadExit{ false };
     Timer m_timeoutTimer;
     dmq::ScopedConnection m_timeoutTimerConn;
@@ -207,6 +216,8 @@ private:
 #if defined(DMQ_TRANSPORT_ZEROMQ)
     ZeroMqTransport m_sendTransport;
     ZeroMqTransport m_recvTransport;
+
+    // ZeroMQ already has reliable communication
 
 #elif defined(DMQ_TRANSPORT_WIN32_UDP)
     UdpTransport m_sendTransport;
@@ -219,6 +230,14 @@ private:
 #elif defined(DMQ_TRANSPORT_LINUX_UDP)
     UdpTransport m_sendTransport;
     UdpTransport m_recvTransport;
+
+    // Reliability Layers
+    RetryMonitor m_retryMonitor;
+    ReliableTransport m_reliableTransport;
+
+#elif defined(DMQ_TRANSPORT_STM32_UART)
+    Stm32UartTransport m_sendTransport;
+    Stm32UartTransport m_recvTransport;
 
     // Reliability Layers
     RetryMonitor m_retryMonitor;

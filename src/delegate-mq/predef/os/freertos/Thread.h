@@ -62,6 +62,11 @@ public:
     /// Get thread name
     std::string GetThreadName() { return THREAD_NAME; }
 
+    /// Set the FreeRTOS Task Priority.
+    /// Can be called before or after CreateThread().
+    /// @param priority FreeRTOS priority level (0 to configMAX_PRIORITIES-1)
+    void SetThreadPriority(int priority);
+
     // IThread Interface Implementation
     virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg) override;
 
@@ -81,6 +86,7 @@ private:
 
     const std::string THREAD_NAME;
     size_t m_queueSize;
+    int m_priority;
 };
 
 #endif

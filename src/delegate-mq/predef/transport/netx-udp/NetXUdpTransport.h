@@ -17,15 +17,10 @@
 /// * A valid `NX_IP` instance and `NX_PACKET_POOL` must be provided at construction.
 ///
 /// **Key Features:**
-/// 1.  **Direct Execution**: Executes network operations directly on the calling thread, 
-///     avoiding context switch overhead and preventing deadlocks.
-/// 2.  **Thread Safety**: Uses a `TX_MUTEX` to protect the NetX socket from concurrent 
-///     access (Send vs Receive).
-/// 3.  **Packet Management**: Handles manual `nx_packet_allocate` and `nx_packet_release`
-///     required by the NetX Zero-Copy architecture.
-/// 4.  **Reliability**: Integrated with `TransportMonitor` for reliable delivery (ACKs/Retries).
-/// 5.  **Endianness**: Manually marshals headers to Network Byte Order (Big Endian) to
-///     ensure compatibility with PC-based transports.
+/// 1.  **Direct Execution**: Executes network operations directly on the calling thread.
+/// 2.  **Thread Safety**: Uses a `TX_MUTEX` to protect the NetX socket.
+/// 3.  **Reliability**: Integrated with `TransportMonitor` for ACKs/Retries.
+/// 4.  **Robustness**: Validates packet allocation and append results to prevent corruption.
 
 #include "DelegateMQ.h"
 #include "predef/transport/ITransportMonitor.h"
@@ -35,12 +30,11 @@
 #include <cstring>
 #include <cstdlib>
 
-// Helper to check for standard endian headers, otherwise define locals
+// Helper to check for standard endian headers
 #if defined(__GNUC__) || defined(__clang__)
     #define NETX_HTONS(x) __builtin_bswap16(x)
     #define NETX_NTOHS(x) __builtin_bswap16(x)
 #else
-    // Fallback for generic compilers if ntohs is not available in libc
     inline uint16_t netx_swap16(uint16_t val) {
         return (val << 8) | (val >> 8);
     }
@@ -66,7 +60,7 @@ public:
         , m_sendTransport(this)
         , m_recvTransport(this)
     {
-        // Initialize mutex for socket protection
+        // Initialize mutex for socket protection (No Inherit to detect deadlocks easier)
         tx_mutex_create(&m_mutex, (CHAR*)"NetXTransportMutex", TX_NO_INHERIT);
         memset(&m_socket, 0, sizeof(m_socket));
     }
@@ -78,30 +72,24 @@ public:
     }
 
     /// @brief Initialize the UDP socket.
-    /// @param type PUB or SUB.
-    /// @param addr_str Target IP address string (e.g., "192.168.1.100").
-    /// @param port UDP port.
     int Create(Type type, const char* addr_str, uint16_t port)
     {
-        // Lock mutex
         tx_mutex_get(&m_mutex, TX_WAIT_FOREVER);
 
         m_type = type;
         m_port = port;
 
-        // Convert string IP to ULONG (NetX IPv4 format)
-        // If your toolchain supports inet_pton, use it. Otherwise, simple parse:
+        // Parse IP Address
         m_targetIp = 0;
         if (addr_str) {
             uint32_t a, b, c, d;
             if (std::sscanf(addr_str, "%u.%u.%u.%u", &a, &b, &c, &d) == 4) {
-                // NetX expects IP in host byte order usually, but let's pack it standard
+                // Construct IP ULONG (Assumes NetX expects Host Byte Order for setup)
                 m_targetIp = (a << 24) | (b << 16) | (c << 8) | d;
             }
         }
 
         // Create the UDP Socket
-        // Name, IP Instance, Type, Window Size, Queue Depth, Wait Option
         UINT ret = nx_udp_socket_create(m_ip, &m_socket, (CHAR*)"DelegateMQ_Sock", 
                                         NX_IP_NORMAL, NX_FRAGMENT_OKAY, 0x80, 5);
         if (ret != NX_SUCCESS) {
@@ -111,10 +99,8 @@ public:
 
         // Bind
         if (type == Type::SUB) {
-            // Bind to specific port for receiving
             ret = nx_udp_socket_bind(&m_socket, port, NX_WAIT_FOREVER);
         } else {
-            // Bind to any ephemeral port for sending
             ret = nx_udp_socket_bind(&m_socket, NX_ANY_PORT, NX_WAIT_FOREVER);
         }
 
@@ -185,27 +171,35 @@ public:
         uint16_t seqNum = NETX_HTONS(headerCopy.GetSeqNum());
         uint16_t length = NETX_HTONS(headerCopy.GetLength());
 
-        // 3. Append Data
-        // NetX appends to the packet payload area
-        nx_packet_data_append(packet_ptr, &marker, sizeof(marker), m_pool, NX_NO_WAIT);
-        nx_packet_data_append(packet_ptr, &id, sizeof(id), m_pool, NX_NO_WAIT);
-        nx_packet_data_append(packet_ptr, &seqNum, sizeof(seqNum), m_pool, NX_NO_WAIT);
-        nx_packet_data_append(packet_ptr, &length, sizeof(length), m_pool, NX_NO_WAIT);
-        nx_packet_data_append(packet_ptr, (VOID*)payload.data(), payload.size(), m_pool, NX_NO_WAIT);
+        // 3. Append Data (With Error Checks)
+        // Check return value of every append. If one fails, the packet is corrupted/partial.
+        if (nx_packet_data_append(packet_ptr, &marker, sizeof(marker), m_pool, NX_NO_WAIT) != NX_SUCCESS) 
+            goto cleanup_and_fail;
+
+        if (nx_packet_data_append(packet_ptr, &id, sizeof(id), m_pool, NX_NO_WAIT) != NX_SUCCESS) 
+            goto cleanup_and_fail;
+
+        if (nx_packet_data_append(packet_ptr, &seqNum, sizeof(seqNum), m_pool, NX_NO_WAIT) != NX_SUCCESS) 
+            goto cleanup_and_fail;
+
+        if (nx_packet_data_append(packet_ptr, &length, sizeof(length), m_pool, NX_NO_WAIT) != NX_SUCCESS) 
+            goto cleanup_and_fail;
+
+        if (nx_packet_data_append(packet_ptr, (VOID*)payload.data(), payload.size(), m_pool, NX_NO_WAIT) != NX_SUCCESS) 
+            goto cleanup_and_fail;
 
         // 4. Track Reliability
         if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
 
         // 5. Send
-        // Note: nx_udp_socket_send releases the packet on success or failure internally
-        // (unless it fails immediately with basic param errors, but usually it consumes ownership)
+        // nx_udp_socket_send typically releases the packet on internal errors.
+        // However, if it fails due to binding issues (before driver), it might not.
         ret = nx_udp_socket_send(&m_socket, packet_ptr, m_targetIp, m_port);
         
         if (ret != NX_SUCCESS) {
-            // NetX usually releases packet on failure inside nx_udp_socket_send, 
-            // but double check your specific NetX version documentation. 
-            // Often if it returns non-success, the user must release.
+            // Defensive release: Verify if your specific NetX version auto-releases on specific errors.
+            // Standard practice is often to release if send fails.
             nx_packet_release(packet_ptr); 
             tx_mutex_put(&m_mutex);
             return -1;
@@ -213,15 +207,15 @@ public:
 
         tx_mutex_put(&m_mutex);
         return 0;
+
+    cleanup_and_fail:
+        nx_packet_release(packet_ptr);
+        tx_mutex_put(&m_mutex);
+        return -1;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
-        // Don't hold the lock while waiting for a packet if it's blocking!
-        // But here we use a short timeout (1 tick).
-        // However, nx_udp_socket_receive itself is thread-safe on the socket handle in NetX Duo
-        // usually. We only lock to protect our member variables.
-        
         tx_mutex_get(&m_mutex, TX_WAIT_FOREVER);
 
         if (m_recvTransport != this) {
@@ -231,10 +225,8 @@ public:
 
         NX_PACKET* packet_ptr = nullptr;
         
-        // Temporarily unlock to allow Send() while we wait?
-        // If we block here, Send() can't run. 
-        // We use NO_WAIT or minimal wait to keep the loop responsive.
-        UINT ret = nx_udp_socket_receive(&m_socket, &packet_ptr, 1); // 1 tick wait
+        // 1 tick wait to keep loop responsive
+        UINT ret = nx_udp_socket_receive(&m_socket, &packet_ptr, 1); 
 
         if (ret != NX_SUCCESS) {
             tx_mutex_put(&m_mutex);
@@ -246,24 +238,25 @@ public:
         UINT srcPort;
         nx_udp_source_extract(packet_ptr, &srcIp, &srcPort);
 
-        // Update target if we are a Subscriber (handle dynamic sender address)
         if (m_type == Type::SUB) {
             m_targetIp = srcIp;
             m_port = srcPort;
         }
 
         // --- Read Data ---
-        // NetX allows reading bytes from the packet.
-        // We'll extract to a temp buffer.
         ULONG bytesRead;
-        UCHAR buffer[512]; // Temp buffer for header + small payload
+        UCHAR buffer[1500]; 
         
-        // Extract Header
-        // Note: DelegateMQ header is 8 bytes.
-        // nx_packet_data_retrieve copies data out.
+        // Validate total length before attempting retrieve
+        if (packet_ptr->nx_packet_length > sizeof(buffer)) {
+            nx_packet_release(packet_ptr);
+            tx_mutex_put(&m_mutex);
+            return -1; // Packet too large for buffer
+        }
+
+        // Retrieve copies data out of packet (handling chained packets if necessary)
         ret = nx_packet_data_retrieve(packet_ptr, buffer, &bytesRead);
         
-        // We are done with the NetX packet now
         nx_packet_release(packet_ptr);
 
         if (ret != NX_SUCCESS || bytesRead < DmqHeader::HEADER_SIZE) {
@@ -283,11 +276,15 @@ public:
             return -1;
         }
 
-        // Check payload size
+        // Check payload bounds
         if (bytesRead < (ULONG)(DmqHeader::HEADER_SIZE + header.GetLength())) {
             tx_mutex_put(&m_mutex);
             return -1;
         }
+
+        // Reset stream state before writing
+        is.clear();
+        is.str("");
 
         // Write Payload to stream
         is.write((char*)(buffer + DmqHeader::HEADER_SIZE), header.GetLength());
@@ -304,12 +301,7 @@ public:
             ack.SetSeqNum(header.GetSeqNum());
             ack.SetLength(0);
             
-            // NOTE: Recursive calls to Send() are safe if mutex is recursive 
-            // OR if we are careful. NetX mutexes are usually NOT recursive by default 
-            // unless TX_INHERIT is used, but even then...
-            // It is safer to release lock before calling Send() if Send() also locks.
-            // But here, Send() is part of this class.
-            // Let's release first to be safe and avoid deadlocks if Send() logic changes.
+            // Release lock before recursive call to Send to prevent deadlock
             tx_mutex_put(&m_mutex);
             m_sendTransport->Send(ss_ack, ack);
             return 0; 
@@ -319,15 +311,9 @@ public:
         return 0;
     }
 
-    void SetTransportMonitor(ITransportMonitor* tm) {
-        m_transportMonitor = tm;
-    }
-    void SetSendTransport(ITransport* st) {
-        m_sendTransport = st;
-    }
-    void SetRecvTransport(ITransport* rt) {
-        m_recvTransport = rt;
-    }
+    void SetTransportMonitor(ITransportMonitor* tm) { m_transportMonitor = tm; }
+    void SetSendTransport(ITransport* st) { m_sendTransport = st; }
+    void SetRecvTransport(ITransport* rt) { m_recvTransport = rt; }
 
 private:
     NX_IP* m_ip = nullptr;
