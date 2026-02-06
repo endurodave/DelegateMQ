@@ -23,6 +23,9 @@
     #include "predef/util/CmsisRtos2Mutex.h"
 #elif defined(DMQ_THREAD_NONE)
     #include "predef/util/BareMetalClock.h"
+#else
+    // Windows / Linux / macOS (Standard Library)
+    #include <condition_variable> 
 #endif
 
 namespace dmq
