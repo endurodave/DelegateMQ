@@ -2,7 +2,6 @@
 #include "ThreadMsg.h"
 #include <cstdio>
 
-// Use configASSERT for embedded checking
 #ifndef ASSERT_TRUE
 #define ASSERT_TRUE(x) configASSERT(x)
 #endif
@@ -15,24 +14,30 @@ using namespace dmq;
 Thread::Thread(const std::string& threadName, size_t maxQueueSize)
     : THREAD_NAME(threadName)
 {
-    // If 0 is passed, use the default size
     m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
-
-    // Default Priority: Normal (Adjust based on your system needs)
-    // Often tskIDLE_PRIORITY + 2 or similar.
     m_priority = configMAX_PRIORITIES > 2 ? configMAX_PRIORITIES - 2 : tskIDLE_PRIORITY + 1;
 }
 
 //----------------------------------------------------------------------------
-// Thread Destructor
+// Destructor
 //----------------------------------------------------------------------------
 Thread::~Thread()
 {
     ExitThread();
-    // Safe to delete semaphore now that the thread is definitely gone
     if (m_exitSem) {
         vSemaphoreDelete(m_exitSem);
         m_exitSem = nullptr;
+    }
+}
+
+//----------------------------------------------------------------------------
+// SetStackMem (Static Stack Configuration)
+//----------------------------------------------------------------------------
+void Thread::SetStackMem(StackType_t* stackBuffer, uint32_t stackSizeInWords)
+{
+    if (stackBuffer && stackSizeInWords > 0) {
+        m_stackBuffer = stackBuffer;
+        m_stackSize = stackSizeInWords;
     }
 }
 
@@ -41,30 +46,60 @@ Thread::~Thread()
 //----------------------------------------------------------------------------
 bool Thread::CreateThread()
 {
-    if (!m_thread)
-    {
-        // 1. Create Exit Synchronization Semaphore
+    //if (IsThreadCreated())
+    //    return true;
+
+    // 1. Create Synchronization Semaphore (Critical for cleanup)
+    if (!m_exitSem) {
         m_exitSem = xSemaphoreCreateBinary();
         ASSERT_TRUE(m_exitSem != nullptr);
+    }
 
-        // 2. Create the Queue
-        // Holds pointers to ThreadMsg objects (heap allocated)
-        // Uses m_queueSize determined in constructor
+    // 2. Create the Queue NOW (Synchronously)
+    // We must do this BEFORE creating the task so it's ready for immediate use.
+    if (!m_queue) {
         m_queue = xQueueCreate(m_queueSize, sizeof(ThreadMsg*));
-        ASSERT_TRUE(m_queue != nullptr);
+        if (m_queue == nullptr) {
+            printf("Error: Thread '%s' failed to create queue.\n", THREAD_NAME.c_str());
+            return false;
+        }
+    }
 
-        // 3. Create the Task
-        // Note: Stack size is in words (e.g. 4 bytes), not bytes.
+    // 3. Create Task
+    if (m_stackBuffer != nullptr)
+    {
+        // --- STATIC ALLOCATION ---
+        m_thread = xTaskCreateStatic(
+            (TaskFunction_t)&Thread::Process,
+            THREAD_NAME.c_str(),
+            m_stackSize,
+            this,
+            m_priority,
+            m_stackBuffer,
+            &m_tcb
+        );
+    }
+    else
+    {
+        // --- DYNAMIC ALLOCATION (Heap) ---
+        // Increase default stack to 1024 words (4KB) for safety
+        const uint32_t DYNAMIC_STACK_SIZE = 1024; 
+        
         BaseType_t xReturn = xTaskCreate(
             (TaskFunction_t)&Thread::Process,
             THREAD_NAME.c_str(),
-            configMINIMAL_STACK_SIZE * 4, // Ensure enough stack for delegates
+            DYNAMIC_STACK_SIZE, 
             this,
             m_priority,
             &m_thread);
 
-        ASSERT_TRUE(xReturn == pdPASS);
+        if (xReturn != pdPASS) {
+            printf("Error: Failed to create task '%s'. OOM?\n", THREAD_NAME.c_str());
+            return false; 
+        }
     }
+
+    ASSERT_TRUE(m_thread != nullptr);
     return true;
 }
 
@@ -74,57 +109,32 @@ bool Thread::CreateThread()
 void Thread::ExitThread()
 {
     if (m_queue) {
-        // Send exit message
         ThreadMsg* msg = new ThreadMsg(MSG_EXIT_THREAD);
 
-        // Wait 100ms to send.
-        // Note: If queue is full, we might fail to exit cleanly if we don't force it.
         if (xQueueSend(m_queue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
-            delete msg; // Failed to send, clean up
+            delete msg;
         }
 
-        // Wait for the thread to actually finish to avoid Use-After-Free.
-        // We only wait if we are NOT the thread itself (prevent deadlock).
         if (xTaskGetCurrentTaskHandle() != m_thread && m_exitSem) {
             xSemaphoreTake(m_exitSem, portMAX_DELAY);
         }
 
-        // Now safe to clean up resources
-        // Delete Queue
         if (m_queue) {
             vQueueDelete(m_queue);
             m_queue = nullptr;
         }
-
-        // Note: m_thread handle is invalid after the task deletes itself
         m_thread = nullptr;
     }
 }
 
 //----------------------------------------------------------------------------
-// GetThreadId
+// Getters / Setters
 //----------------------------------------------------------------------------
-TaskHandle_t Thread::GetThreadId()
-{
-    return m_thread;
-}
+TaskHandle_t Thread::GetThreadId() { return m_thread; }
+TaskHandle_t Thread::GetCurrentThreadId() { return xTaskGetCurrentTaskHandle(); }
 
-//----------------------------------------------------------------------------
-// GetCurrentThreadId
-//----------------------------------------------------------------------------
-TaskHandle_t Thread::GetCurrentThreadId()
-{
-    return xTaskGetCurrentTaskHandle();
-}
-
-//----------------------------------------------------------------------------
-// SetThreadPriority
-//----------------------------------------------------------------------------
-void Thread::SetThreadPriority(int priority)
-{
+void Thread::SetThreadPriority(int priority) {
     m_priority = priority;
-
-    // If the thread is already running, update it live
     if (m_thread) {
         vTaskPrioritySet(m_thread, (UBaseType_t)m_priority);
     }
@@ -135,45 +145,38 @@ void Thread::SetThreadPriority(int priority)
 //----------------------------------------------------------------------------
 void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
-    ASSERT_TRUE(m_queue != nullptr);
+    if (!m_queue) 
+        return; 
 
-    // 1. Allocate message container on heap
     ThreadMsg* threadMsg = new ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
+    
+    // Safety check: In case 'new' returns NULL instead of trapping
+    if (threadMsg == nullptr) {
+        // OOM detected
+        return;
+    }
 
-    // 2. Send pointer to queue
-    // Use a finite block time (e.g., 10ms) so we don't lock up the system if full
-    if (xQueueSend(m_queue, &threadMsg, pdMS_TO_TICKS(10)) != pdPASS)
-    {
-        // 3. Handle failure: Delete to prevent memory leak
+    if (xQueueSend(m_queue, &threadMsg, pdMS_TO_TICKS(10)) != pdPASS) {
         delete threadMsg;
-        // @TODO Handle queue full if necessary.
-        // printf("Error: Thread '%s' queue full! Delegate dropped.\n", THREAD_NAME.c_str());
     }
 }
 
 //----------------------------------------------------------------------------
-// Process (Static Entry Point)
+// Process & Run
 //----------------------------------------------------------------------------
 void Thread::Process(void* instance)
 {
     Thread* thread = static_cast<Thread*>(instance);
     ASSERT_TRUE(thread != nullptr);
-
     thread->Run();
-
-    // Self-delete when Run() returns (ExitThread called)
     vTaskDelete(NULL);
 }
 
-//----------------------------------------------------------------------------
-// Run (Member Function Loop)
-//----------------------------------------------------------------------------
 void Thread::Run()
 {
     ThreadMsg* msg = nullptr;
     while (true)
     {
-        // Block forever waiting for a message
         if (xQueueReceive(m_queue, &msg, portMAX_DELAY) == pdPASS)
         {
             if (!msg) continue;
@@ -191,22 +194,16 @@ void Thread::Run()
                 }
                 break;
             }
-
             case MSG_EXIT_THREAD:
             {
                 delete msg;
-                // Signal ExitThread() that we are done
                 if (m_exitSem) {
                     xSemaphoreGive(m_exitSem);
                 }
-                return; // Breaks loop, Process() calls vTaskDelete
+                return;
             }
-
-            default:
-                break;
+            default: break;
             }
-
-            // Important: Delete the message container we 'new'ed in DispatchDelegate
             delete msg;
         }
     }

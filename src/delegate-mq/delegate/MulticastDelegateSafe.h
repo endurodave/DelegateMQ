@@ -33,6 +33,16 @@ public:
         BaseType::operator=(std::move(rhs));
     }
 
+    /// Constructor to initialize from a single Delegate (Copy)
+    MulticastDelegateSafe(const DelegateType& d) {
+        this->PushBack(d);
+    }
+
+    /// Constructor to initialize from a single Delegate (Move)
+    MulticastDelegateSafe(DelegateType&& d) {
+        this->PushBack(std::move(d));
+    }
+
     /// Invoke the bound target function for all stored delegate instances.
     /// A void return value is used since multiple targets invoked.
     /// @param[in] args The arguments used when invoking the target functions

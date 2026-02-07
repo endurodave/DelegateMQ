@@ -39,6 +39,16 @@ public:
     /// @param[in] rhs The object to move from.
     MulticastDelegate(MulticastDelegate&& rhs) noexcept : m_delegates(std::move(rhs.m_delegates)) { }
 
+    /// Constructor to initialize from a single Delegate (Copy)
+    MulticastDelegate(const DelegateType& d) {
+        PushBack(d);
+    }
+
+    /// Constructor to initialize from a single Delegate (Move)
+    MulticastDelegate(DelegateType&& d) {
+        PushBack(d);
+    }
+
     /// Invoke all bound target functions. Safe to remove delegates during invocation.
     /// A void return value is used since multiple targets invoked.
     /// @param[in] args The arguments used when invoking the target functions

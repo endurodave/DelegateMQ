@@ -67,6 +67,11 @@ public:
     /// @param priority FreeRTOS priority level (0 to configMAX_PRIORITIES-1)
     void SetThreadPriority(int priority);
 
+    /// Optional: Provide a static buffer for the task stack to avoid Heap usage.
+    /// @param stackBuffer Pointer to a buffer of type StackType_t. 
+    /// @param stackSizeInWords Size of the buffer in WORDS (not bytes).
+    void SetStackMem(StackType_t* stackBuffer, uint32_t stackSizeInWords);
+
     // IThread Interface Implementation
     virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg) override;
 
@@ -87,6 +92,11 @@ private:
     const std::string THREAD_NAME;
     size_t m_queueSize;
     int m_priority;
+
+    // Static allocation support
+    StackType_t* m_stackBuffer = nullptr;
+    uint32_t m_stackSize = 1024; // Default size (words)
+    StaticTask_t m_tcb;          // TCB storage for static creation
 };
 
 #endif

@@ -19,11 +19,21 @@ class TClass
 {
 public:
     void Func(int i) { classInt = i; }
-    void Func2(int i) { classInt = i+1; }
+    void Func2(int i) { classInt = i + 1; }
 };
 
 static void UnicastDelegateTests()
 {
+    // Verify Constructor(DelegateType&&)
+    {
+        UnicastDelegate<void(int)> directInit(MakeDelegate(FreeFuncInt1));
+        ASSERT_TRUE(directInit.Size() == 1);
+        ASSERT_TRUE(!directInit.Empty());
+        // Verify invocation works
+        funcInt = 0; // Reset side effect var if used
+        directInit(TEST_INT);
+    }
+
     UnicastDelegateSafe<void(int)> src;
     src = MakeDelegate(FreeFuncInt1);
     ASSERT_TRUE(src.Size() == 1);
@@ -71,6 +81,14 @@ static void UnicastDelegateTests()
 
 static void UnicastDelegateSafeTests()
 {
+    // Verify Constructor(DelegateType&&) for Safe version
+    {
+        UnicastDelegateSafe<void(int)> directInit(MakeDelegate(FreeFuncInt1));
+        ASSERT_TRUE(directInit.Size() == 1);
+        ASSERT_TRUE(!directInit.Empty());
+        directInit(TEST_INT);
+    }
+
     UnicastDelegateSafe<void(int)> src;
     src = MakeDelegate(FreeFuncInt1);
     ASSERT_TRUE(src.Size() == 1);
@@ -118,6 +136,17 @@ static void UnicastDelegateSafeTests()
 
 static void MulticastDelegateTests()
 {
+    // Verify Constructor(DelegateType&&)
+    {
+        MulticastDelegate<void(int)> directInit(MakeDelegate(FreeFuncInt1));
+        ASSERT_TRUE(directInit.Size() == 1);
+        ASSERT_TRUE(!directInit.Empty());
+
+        // Verify we can add more to it after construction
+        directInit += MakeDelegate(FreeFuncInt1);
+        ASSERT_TRUE(directInit.Size() == 2);
+    }
+
     MulticastDelegate<void(int)> src;
     src += MakeDelegate(&FreeFuncInt1);
     ASSERT_TRUE(src.Size() == 1);
@@ -134,7 +163,7 @@ static void MulticastDelegateTests()
     dest = std::move(src);
     ASSERT_TRUE(src.Size() == 0);
     ASSERT_TRUE(dest.Size() == 1);
-    
+
     src = dest;
     ASSERT_TRUE(src.Size() == 1);
     ASSERT_TRUE(dest.Size() == 1);
@@ -250,6 +279,14 @@ static void MulticastDelegateTests()
 
 static void MulticastDelegateSafeTests()
 {
+    // Verify Constructor(DelegateType&&) for Safe version
+    {
+        MulticastDelegateSafe<void(int)> directInit(MakeDelegate(FreeFuncInt1));
+        ASSERT_TRUE(directInit.Size() == 1);
+        ASSERT_TRUE(!directInit.Empty());
+        directInit(TEST_INT);
+    }
+
     MulticastDelegateSafe<void(int)> src;
     src += MakeDelegate(&FreeFuncInt1);
     ASSERT_TRUE(src.Size() == 1);

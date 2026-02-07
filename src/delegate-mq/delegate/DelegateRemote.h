@@ -303,13 +303,20 @@ public:
         }
         else {
             if (m_serializer && m_stream) {
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+                // Serialize all target function arguments into a stream
+                m_serializer->Write(*m_stream, std::forward<Args>(args)...);
+                RaiseSuccess(m_id);
+#else
                 try {
                     // Serialize all target function arguments into a stream
                     m_serializer->Write(*m_stream, std::forward<Args>(args)...);
                     RaiseSuccess(m_id);
-                } catch (std::exception&) {
+                }
+                catch (std::exception&) {
                     RaiseError(m_id, DelegateError::ERR_SERIALIZE);
                 }
+#endif
 
                 if (!m_stream->good()) {
                     RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
@@ -317,14 +324,22 @@ public:
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+                        int error = m_dispatcher->Dispatch(*m_stream, m_id);
+                        if (error)
+                            RaiseError(m_id, DelegateError::ERR_DISPATCH, error);
+#else
                         try {
                             int error = m_dispatcher->Dispatch(*m_stream, m_id);
                             if (error)
                                 RaiseError(m_id, DelegateError::ERR_DISPATCH, error);
-                        } catch (std::exception&) {
+                        }
+                        catch (std::exception&) {
                             RaiseError(m_id, DelegateError::ERR_DISPATCH);
                         }
-                    } else {
+#endif
+                    }
+                    else {
                         RaiseError(m_id, DelegateError::ERR_NO_DISPATCHER);
                     }
                 }
@@ -377,6 +392,32 @@ public:
         // Invoke the delegate function synchronously
         m_sync = true;
 
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+        if constexpr (ArgCnt::value == 0) {
+            BaseType::operator()();
+        }
+        else {
+            // 1. Create a tuple of RemoteArg<T> to hold the temporary storage
+            std::tuple<RemoteArg<Args>...> remoteArgs;
+
+            // 2. Use std::apply to unpack the tuple elements
+            std::apply([this, &is](auto&... rArgs) {
+
+                // 3. Deserialize: Expand the pack to call Read(is, arg1, arg2...)
+                // rArgs.Get() returns the reference/pointer to the internal storage
+                m_serializer->Read(is, rArgs.Get()...);
+
+                if (!is.bad() && !is.fail()) {
+                    // 4. Invoke: Expand the pack to call operator()(arg1, arg2...)
+                    this->operator()(rArgs.Get()...);
+                }
+                else {
+                    this->RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
+                }
+
+                }, remoteArgs);
+        }
+#else
         try {
             if constexpr (ArgCnt::value == 0) {
                 BaseType::operator()();
@@ -402,10 +443,11 @@ public:
 
                     }, remoteArgs);
             }
-        } 
+        }
         catch (std::exception&) {
             RaiseError(m_id, DelegateError::ERR_DESERIALIZE_EXCEPTION);
         }
+#endif
 
         return true;
     }
@@ -472,8 +514,13 @@ private:
         m_error = error;
         if (m_errorHandler) {
             m_errorHandler(id, error, auxCode);
-        } else {
+        }
+        else {
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+            // No throw
+#else
             throw std::runtime_error("Delegate remote error.");
+#endif
         }
     }
 
@@ -746,13 +793,20 @@ public:
         }
         else {
             if (m_serializer && m_stream) {
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+                // Serialize all target function arguments into a stream
+                m_serializer->Write(*m_stream, std::forward<Args>(args)...);
+                RaiseSuccess(m_id);
+#else
                 try {
                     // Serialize all target function arguments into a stream
                     m_serializer->Write(*m_stream, std::forward<Args>(args)...);
                     RaiseSuccess(m_id);
-                } catch (std::exception&) {
+                }
+                catch (std::exception&) {
                     RaiseError(m_id, DelegateError::ERR_SERIALIZE);
                 }
+#endif
 
                 if (!m_stream->good()) {
                     RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
@@ -760,14 +814,22 @@ public:
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+                        int error = m_dispatcher->Dispatch(*m_stream, m_id);
+                        if (error)
+                            RaiseError(m_id, DelegateError::ERR_DISPATCH, error);
+#else
                         try {
                             int error = m_dispatcher->Dispatch(*m_stream, m_id);
                             if (error)
                                 RaiseError(m_id, DelegateError::ERR_DISPATCH, error);
-                        } catch (std::exception&) {
+                        }
+                        catch (std::exception&) {
                             RaiseError(m_id, DelegateError::ERR_DISPATCH);
                         }
-                    } else {
+#endif
+                    }
+                    else {
                         RaiseError(m_id, DelegateError::ERR_NO_DISPATCHER);
                     }
                 }
@@ -820,6 +882,32 @@ public:
         // Invoke the delegate function synchronously
         m_sync = true;
 
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+        if constexpr (ArgCnt::value == 0) {
+            BaseType::operator()();
+        }
+        else {
+            // 1. Create a tuple of RemoteArg<T> to hold the temporary storage
+            std::tuple<RemoteArg<Args>...> remoteArgs;
+
+            // 2. Use std::apply to unpack the tuple elements
+            std::apply([this, &is](auto&... rArgs) {
+
+                // 3. Deserialize: Expand the pack to call Read(is, arg1, arg2...)
+                // rArgs.Get() returns the reference/pointer to the internal storage
+                m_serializer->Read(is, rArgs.Get()...);
+
+                if (!is.bad() && !is.fail()) {
+                    // 4. Invoke: Expand the pack to call operator()(arg1, arg2...)
+                    this->operator()(rArgs.Get()...);
+                }
+                else {
+                    this->RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
+                }
+
+                }, remoteArgs);
+        }
+#else
         try {
             if constexpr (ArgCnt::value == 0) {
                 BaseType::operator()();
@@ -845,10 +933,11 @@ public:
 
                     }, remoteArgs);
             }
-        } 
+        }
         catch (std::exception&) {
             RaiseError(m_id, DelegateError::ERR_DESERIALIZE_EXCEPTION);
         }
+#endif
 
         return true;
     }
@@ -915,8 +1004,13 @@ private:
         m_error = error;
         if (m_errorHandler) {
             m_errorHandler(id, error, auxCode);
-        } else {
+        }
+        else {
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+            // No throw
+#else
             throw std::runtime_error("Delegate remote error.");
+#endif
         }
     }
 
@@ -1129,13 +1223,20 @@ public:
         }
         else {
             if (m_serializer && m_stream) {
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+                // Serialize all target function arguments into a stream
+                m_serializer->Write(*m_stream, std::forward<Args>(args)...);
+                RaiseSuccess(m_id);
+#else
                 try {
                     // Serialize all target function arguments into a stream
                     m_serializer->Write(*m_stream, std::forward<Args>(args)...);
                     RaiseSuccess(m_id);
-                } catch (std::exception&) {
+                }
+                catch (std::exception&) {
                     RaiseError(m_id, DelegateError::ERR_SERIALIZE);
                 }
+#endif
 
                 if (!m_stream->good()) {
                     RaiseError(m_id, DelegateError::ERR_STREAM_NOT_GOOD);
@@ -1143,14 +1244,22 @@ public:
                 else {
                     // Dispatch delegate invocation to the remote destination
                     if (m_dispatcher) {
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+                        int error = m_dispatcher->Dispatch(*m_stream, m_id);
+                        if (error)
+                            RaiseError(m_id, DelegateError::ERR_DISPATCH, error);
+#else
                         try {
                             int error = m_dispatcher->Dispatch(*m_stream, m_id);
                             if (error)
                                 RaiseError(m_id, DelegateError::ERR_DISPATCH, error);
-                        } catch (std::exception&) {
+                        }
+                        catch (std::exception&) {
                             RaiseError(m_id, DelegateError::ERR_DISPATCH);
                         }
-                    } else {
+#endif
+                    }
+                    else {
                         RaiseError(m_id, DelegateError::ERR_NO_DISPATCHER);
                     }
                 }
@@ -1203,6 +1312,32 @@ public:
         // Invoke the delegate function synchronously
         m_sync = true;
 
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+        if constexpr (ArgCnt::value == 0) {
+            BaseType::operator()();
+        }
+        else {
+            // 1. Create a tuple of RemoteArg<T> to hold the temporary storage
+            std::tuple<RemoteArg<Args>...> remoteArgs;
+
+            // 2. Use std::apply to unpack the tuple elements
+            std::apply([this, &is](auto&... rArgs) {
+
+                // 3. Deserialize: Expand the pack to call Read(is, arg1, arg2...)
+                // rArgs.Get() returns the reference/pointer to the internal storage
+                m_serializer->Read(is, rArgs.Get()...);
+
+                if (!is.bad() && !is.fail()) {
+                    // 4. Invoke: Expand the pack to call operator()(arg1, arg2...)
+                    this->operator()(rArgs.Get()...);
+                }
+                else {
+                    this->RaiseError(m_id, DelegateError::ERR_DESERIALIZE);
+                }
+
+                }, remoteArgs);
+        }
+#else
         try {
             if constexpr (ArgCnt::value == 0) {
                 BaseType::operator()();
@@ -1228,10 +1363,11 @@ public:
 
                     }, remoteArgs);
             }
-        } 
+        }
         catch (std::exception&) {
             RaiseError(m_id, DelegateError::ERR_DESERIALIZE_EXCEPTION);
         }
+#endif
 
         return true;
     }
@@ -1298,8 +1434,13 @@ private:
         m_error = error;
         if (m_errorHandler) {
             m_errorHandler(id, error, auxCode);
-        } else {
+        }
+        else {
+#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
+            // No throw
+#else
             throw std::runtime_error("Delegate remote error.");
+#endif
         }
     }
 

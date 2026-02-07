@@ -37,9 +37,19 @@ public:
         }
     }
 
-    /// @brief Move constructor that transfers ownership of resources.
+    /// Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     UnicastDelegate(UnicastDelegate&& rhs) noexcept : m_delegate(std::move(rhs.m_delegate)) { }
+
+    /// Constructor to initialize from a Delegate (Copy)
+    UnicastDelegate(const DelegateType& d) {
+        *this = d;
+    }
+
+    /// Constructor to initialize from a Delegate (Move)
+    UnicastDelegate(DelegateType&& d) {
+        *this = std::move(d);
+    }
 
     /// Invoke the bound target.
     /// @param[in] args The arguments used when invoking the target function

@@ -42,6 +42,16 @@
 			<locationURI>copy_PARENT/Src/main.cpp</locationURI>
 		</link>
 		<link>
+			<name>Application/User/network_tests.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/network_tests.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/simple_tests.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/simple_tests.cpp</locationURI>
+		</link>
+		<link>
 			<name>Application/User/stm32f4xx_hal_msp.c</name>
 			<type>1</type>
 			<locationURI>copy_PARENT/Src/stm32f4xx_hal_msp.c</locationURI>
@@ -55,6 +65,11 @@
 			<name>Application/User/stress_test.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Src/stress_test.cpp</locationURI>
+		</link>
+		<link>
+			<name>Application/User/stress_tests.cpp</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/stress_tests.cpp</locationURI>
 		</link>
 		<link>
 			<name>Application/User/usbd_conf.c</name>

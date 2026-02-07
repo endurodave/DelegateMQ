@@ -31,28 +31,105 @@
 #include "task.h"
 #include "timers.h"
 #include "DelegateMQ.h"
-#include <memory>
 #include <stdio.h>
-#include <string> // Required for Thread class
 
-// Declare global pointer (safe)
+// ============================================================================
+// TEST SELECTION (Uncomment ONE)
+// ============================================================================
+//#define RUN_SIMPLE_TESTS
+#define RUN_STRESS_TESTS
+// #define RUN_NETWORK_TESTS
+
+// ============================================================================
+// FORWARD DECLARATIONS
+// ============================================================================
+extern void StartSimpleTests();
+extern void StartStressTests();
+extern void StartNetworkTests();
+
+// Global Handles
+UART_HandleTypeDef huart6;
 NetworkEngine* g_netEngine = nullptr;
 
 // ============================================================================
-// MANUAL HARDWARE SETUP (No .ioc file)
+// SYSTEM CONFIGURATION (Clock, GPIO, UART, Timer)
 // ============================================================================
+static void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_USART6_UART_Init(void);
+static void Error_Handler(void);
 
-// 1. Global UART Handle
-UART_HandleTypeDef huart6;
+#if defined(DMQ_THREAD_FREERTOS)
+    #define mainTIMER_FREQUENCY_MS pdMS_TO_TICKS(10UL)
+    static void TimerCallback(TimerHandle_t xTimerHandle) { Timer::ProcessTimers(); }
+#endif
 
-// 2. Forward Declarations (so main can see them)
-extern "C" {
-    void MX_GPIO_Init(void);
-    void MX_USART6_UART_Init(void);
+// ============================================================================
+// MAIN TASK
+// ============================================================================
+void MainTask(void* pvParameters) {
+    BSP_LED_On(LED4); // Green LED ON = Task Started
+    printf("--- MainTask Started ---\n");
+
+    // Initialize DelegateMQ System Timer
+    #if defined(DMQ_THREAD_FREERTOS)
+        TimerHandle_t xSystemTimer = xTimerCreate("SysTimer", mainTIMER_FREQUENCY_MS, pdTRUE, NULL, TimerCallback);
+        if (xSystemTimer) xTimerStart(xSystemTimer, 0);
+    #endif
+
+    // --- RUN SELECTED TEST SUITE ---
+    #if defined(RUN_SIMPLE_TESTS)
+        printf("Mode: SIMPLE TESTS\n");
+        StartSimpleTests();
+    #elif defined(RUN_STRESS_TESTS)
+        printf("Mode: STRESS TESTS\n");
+        StartStressTests();
+    #elif defined(RUN_NETWORK_TESTS)
+        printf("Mode: NETWORK TESTS\n");
+        StartNetworkTests();
+    #else
+        #error "Please select a test mode in main.cpp"
+    #endif
+
+    // Idle Loop
+    for(;;) {
+        BSP_LED_Toggle(LED6); // Blue Heartbeat
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
 }
 
-// 3. UART Initialization Function
-void MX_USART6_UART_Init(void)
+// ============================================================================
+// MAIN ENTRY POINT
+// ============================================================================
+int main(void)
+{
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    MX_USART6_UART_Init();
+    HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+
+    BSP_LED_Init(LED3); BSP_LED_Init(LED4); BSP_LED_Init(LED5); BSP_LED_Init(LED6);
+    BSP_LED_On(LED3); // Orange ON = Init Complete
+
+    // Create Main Task
+    xTaskCreate(MainTask, "MainTask", 2048, NULL, 2, NULL);
+
+    vTaskStartScheduler();
+
+    while (1) { BSP_LED_Toggle(LED5); HAL_Delay(100); } // Error Trap
+}
+
+// ============================================================================
+// PERIPHERAL INITIALIZATION (Restored)
+// ============================================================================
+
+/**
+  * @brief USART6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART6_UART_Init(void)
 {
   huart6.Instance = USART6;
   huart6.Init.BaudRate = 115200;
@@ -62,30 +139,33 @@ void MX_USART6_UART_Init(void)
   huart6.Init.Mode = UART_MODE_TX_RX;
   huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart6.Init.OverSampling = UART_OVERSAMPLING_16;
-
   if (HAL_UART_Init(&huart6) != HAL_OK)
   {
-    // Initialization Error
-    while(1);
+    Error_Handler();
   }
 }
 
-// 4. GPIO Initialization (Enable Clocks)
-void MX_GPIO_Init(void)
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
 {
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE(); // LEDs usually on GPIOD
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 }
 
-// 5. Hardware Low-Level Init (MSP)
-// This configures the Pins (PC6/PC7) and the Clock for USART6
+/**
+  * @brief UART MSP Initialization
+  * This is called implicitly by HAL_UART_Init
+  */
 extern "C" void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-
   if(uartHandle->Instance == USART6)
   {
     /* 1. Enable Peripheral Clocks */
@@ -94,7 +174,7 @@ extern "C" void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
     /* 2. Configure GPIO Pins: PC6 (TX) and PC7 (RX) */
     GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;      // Alternate Function Push-Pull
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF8_USART6; // AF8 is USART6 for F4 series
@@ -114,278 +194,10 @@ extern "C" void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   }
 }
 
-using namespace dmq;
-
-// ============================================================================
-// CONFIGURATION
-// ============================================================================
-
-// Set to 1 to enable printf via SWV/ITM
-#define ENABLE_LOGGING  1
-
-#if ENABLE_LOGGING
-    #include <stdio.h>
-    #define PRINTF(...)  printf(__VA_ARGS__)
-#else
-    #define PRINTF(...)  do {} while (0)
-#endif
-
-// Redirects printf to the SWV Data Console
+// Redirect printf to ITM (SWV)
 extern "C" int __io_putchar(int ch) {
     ITM_SendChar(ch);
     return ch;
-}
-
-// ============================================================================
-// DELEGATEMQ & FREERTOS GLOBALS
-// ============================================================================
-
-#if defined(DMQ_THREAD_FREERTOS)
-    // Defines the frequency for the DelegateMQ timer tick
-    #define mainTIMER_FREQUENCY_MS pdMS_TO_TICKS(10UL)
-
-    static TimerHandle_t xSystemTimer = nullptr;
-
-    // Called by FreeRTOS Timer Task to drive DelegateMQ timers
-    static void TimerCallback(TimerHandle_t xTimerHandle) {
-        Timer::ProcessTimers();
-    }
-#endif
-
-// ============================================================================
-// PROTOTYPES
-// ============================================================================
-static void SystemClock_Config(void);
-static void Error_Handler(void);
-static void ExecuteAllTests(void);
-
-// ============================================================================
-// TEST CALLBACKS & CLASSES
-// ============================================================================
-
-// A simple free function callback
-void FreeFunction(int val) {
-    PRINTF("  [Callback] FreeFunction: %d\n", val);
-}
-
-// A class method callback
-class TestHandler {
-public:
-    void MemberFunc(int val) {
-        PRINTF("  [Callback] MemberFunc: %d\n", val);
-    }
-
-    void OnTimerExpired() {
-        PRINTF("  [Callback] Timer Expired!\n");
-        BSP_LED_Toggle(LED6); // Toggle Blue LED
-    }
-
-    // This will be executed on the worker thread
-    void AsyncMemberFunc(int val) {
-        // Use task name to prove we are on a different thread
-        char* taskName = pcTaskGetName(NULL);
-        PRINTF("  [Callback] AsyncMemberFunc: %d (Running on: %s)\n", val, taskName);
-    }
-};
-
-// ============================================================================
-// FREERTOS TASKS
-// ============================================================================
-
-// The task that runs our C++ tests
-void RunTestsTask(void* pvParameters) {
-    BSP_LED_On(LED4); // Green LED ON = Task Started
-
-    PRINTF("--- RunTestsTask Started ---\n");
-
-    // 1. Sanity Check: Test vTaskDelay
-    PRINTF("Waiting 1 second (Testing SysTick)...\n");
-    vTaskDelay(pdMS_TO_TICKS(1000));
-
-    // 2. Run the actual C++ logic
-    PRINTF("Running DelegateMQ Tests...\n");
-    ExecuteAllTests();
-
-    PRINTF("Tests Complete. Task entering idle loop.\n");
-    BSP_LED_Off(LED4); // Green OFF = Finished
-
-    // Blink Blue LED forever to show system is alive
-    for(;;) {
-        BSP_LED_Toggle(LED6);
-        vTaskDelay(pdMS_TO_TICKS(500));
-    }
-}
-
-// ============================================================================
-// MAIN
-// ============================================================================
-int main(void)
-{
-  // 1. Hardware Initialization
-  HAL_Init();
-  SystemClock_Config();
-
-  // Initialize Peripherals (Manual Init)
-  MX_GPIO_Init();
-  MX_USART6_UART_Init();
-
-#if 0
-   // 2. Instantiate and Initialize AFTER Hardware Init
-    static Stm32UartTransport uartTransport(&huart6);
-
-    // Create Engine on heap (or static inside main)
-    // This ensures the constructor runs NOW, not before main()
-    static NetworkEngine engine;
-    g_netEngine = &engine;
-
-    // Initialize Engine
-    g_netEngine->Initialize(&huart6);
-    g_netEngine->Start();
-
-  // Register a remote function (e.g. ID 100)
-  //g_netEngine.RegisterEndpoint(100, /* Your RemoteEndpoint here */);
-#endif
-
-  // CRITICAL: FreeRTOS requires Priority Group 4 on STM32
-  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-
-  // 2. Initialize LEDs
-  BSP_LED_Init(LED3); // Orange
-  BSP_LED_Init(LED4); // Green
-  BSP_LED_Init(LED5); // Red
-  BSP_LED_Init(LED6); // Blue
-
-  BSP_LED_On(LED3);   // Orange ON = Main Reached
-
-  // 3. Setup DelegateMQ Transport
-  //    Pass the handle initialized above
-  //static Stm32UartTransport uartTransport(&huart6);   TODO
-  //DelegateMQ::SetTransport(&uartTransport);
-
-// Uncomment to run stress tests
-//#define STRESS_TEST
-#ifdef STRESS_TEST
-  extern void StartStressTest();
-  StartStressTest();
-
-#else
-  // 3. Initialize DelegateMQ System Timer (if using FreeRTOS mode)
-  #if defined(DMQ_THREAD_FREERTOS)
-      xSystemTimer = xTimerCreate("SysTimer", mainTIMER_FREQUENCY_MS, pdTRUE, NULL, TimerCallback);
-      if (xSystemTimer) {
-          xTimerStart(xSystemTimer, 0);
-      } else {
-          PRINTF("Error: Failed to create xSystemTimer\n");
-          Error_Handler();
-      }
-  #endif
-
-  // 4. Create the main application task
-  BaseType_t status = xTaskCreate(RunTestsTask, "MainTask", 2048, NULL, 2, NULL);
-  if (status != pdPASS) {
-      PRINTF("Error: Failed to create MainTask (Heap too small?)\n");
-      Error_Handler();
-  }
-#endif
-
-  // 5. Start the Scheduler (Should never return)
-  PRINTF("Starting Scheduler...\n");
-  vTaskStartScheduler();
-
-  // 6. We only get here if the Scheduler failed to start (usually Out of Heap)
-  while (1)
-  {
-      BSP_LED_Toggle(LED5); // Fast Red Blink = Error
-      HAL_Delay(100);
-  }
-}
-
-// ============================================================================
-// TEST LOGIC
-// ============================================================================
-static void ExecuteAllTests(void) {
-    // Disable buffering to ensure printf prints immediately
-    setvbuf(stdout, NULL, _IONBF, 0);
-
-    PRINTF("\n=== STARTING DELEGATE MQ TESTS ===\n");
-
-    // --- Test 1: Unicast ---
-    PRINTF("[1] Unicast Delegate\n");
-    UnicastDelegate<void(int)> unicast;
-    unicast = MakeDelegate(FreeFunction);
-    unicast(100);
-
-    // --- Test 2: Multicast ---
-    PRINTF("[2] Multicast Delegate\n");
-    MulticastDelegate<void(int)> multicast;
-    TestHandler handler;
-    multicast += MakeDelegate(&handler, &TestHandler::MemberFunc);
-    multicast += MakeDelegate(FreeFunction);
-    multicast(200);
-
-    // --- Test 3: Thread-Safe (Only valid if OS is defined) ---
-    #if defined(DMQ_THREAD_FREERTOS)
-    PRINTF("[3] Thread-Safe Delegate\n");
-    MulticastDelegateSafe<void(int)> safeMulticast;
-    safeMulticast += MakeDelegate(FreeFunction);
-    safeMulticast(300);
-
-    // --- Test 4: Timer ---
-    PRINTF("[4] Timer Delegate (Wait 500ms)\n");
-    Timer myTimer;
-    (*myTimer.OnExpired) += MakeDelegate(&handler, &TestHandler::OnTimerExpired);
-
-    myTimer.Start(std::chrono::milliseconds(200));
-
-    // Block this task to let the timer expire
-    vTaskDelay(pdMS_TO_TICKS(500));
-    myTimer.Stop();
-    #endif
-
-    // --- Test 5: Signals & Slots (RAII) ---
-    PRINTF("[5] Signals & Slots (RAII)\n");
-    auto signal = std::make_shared<Signal<void(int)>>();
-    {
-        // Connect a delegate. 'ScopedConnection' manages the lifetime.
-        ScopedConnection conn = signal->Connect(MakeDelegate(FreeFunction));
-
-        PRINTF("  Firing Signal inside scope (Expect Callback: 555)\n");
-        // Invoke the signal
-        (*signal)(555);
-
-        PRINTF("  Exiting scope (Connection will auto-disconnect)...\n");
-    }
-    // 'conn' has been destroyed here.
-    PRINTF("  Firing Signal outside scope (Expect NO Callback)\n");
-    (*signal)(666);
-
-    // --- Test 6: Async Delegate (Cross-Thread Dispatch) ---
-    #if defined(DMQ_THREAD_FREERTOS)
-    PRINTF("[6] Async Delegate (Cross-Thread)\n");
-
-    // 1. Create a worker thread wrapper
-    Thread worker("Worker");
-    worker.CreateThread();
-
-    // 2. Create an asynchronous delegate targeted at the worker thread
-    //    We bind it to 'AsyncMemberFunc' on the 'handler' object.
-    auto asyncDelegate = MakeDelegate(&handler, &TestHandler::AsyncMemberFunc, worker);
-
-    PRINTF("  Invoking Async Delegate (Should run on 'Worker' task)...\n");
-
-    // 3. Invoke it (Non-blocking)
-    //    This posts a message to the worker thread's queue.
-    asyncDelegate(777);
-
-    // 4. Wait a bit to ensure the worker thread has time to process it
-    //    (In a real app, you wouldn't wait here)
-    vTaskDelay(pdMS_TO_TICKS(100));
-
-    // 5. Cleanup
-    worker.ExitThread();
-    #endif
-
-    PRINTF("=== TESTS FINISHED ===\n");
 }
 
 // ============================================================================
@@ -453,6 +265,52 @@ static void Error_Handler(void)
   /* Turn LED5 (Red) on */
   BSP_LED_On(LED5);
   while(1) {}
+}
+
+/* USER CODE BEGIN 4 */
+extern "C" {
+
+// ✅ FIX: Increase Idle Stack to 256 or 512 words (was 128)
+// Small stacks cause crashes during vTaskDelete or Context Switches
+#define IDLE_STACK_SIZE 512
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
+                                    StackType_t **ppxIdleTaskStackBuffer,
+                                    uint32_t *pulIdleTaskStackSize )
+{
+    static StaticTask_t xIdleTaskTCB;
+    static StackType_t uxIdleTaskStack[ IDLE_STACK_SIZE ]; // Increased
+
+    *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
+    *ppxIdleTaskStackBuffer = uxIdleTaskStack;
+    *pulIdleTaskStackSize = IDLE_STACK_SIZE;
+}
+
+// ✅ FIX: Increase Timer Stack to 512 words (was 256)
+// Timer task handles software timers and can be stack-heavy
+#define TIMER_STACK_SIZE 512
+void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer,
+                                     StackType_t **ppxTimerTaskStackBuffer,
+                                     uint32_t *pulTimerTaskStackSize )
+{
+    static StaticTask_t xTimerTaskTCB;
+    static StackType_t uxTimerTaskStack[ TIMER_STACK_SIZE ];
+
+    *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
+    *ppxTimerTaskStackBuffer = uxTimerTaskStack;
+    *pulTimerTaskStackSize = TIMER_STACK_SIZE;
+}
+
+} // extern "C"
+
+extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
+{
+    // TRAP: The system has run out of stack space for a specific task.
+    // Look at pcTaskName to see which thread failed.
+    printf("CRITICAL: Stack Overflow in task: %s\n", pcTaskName);
+
+    // Stop here for debugger
+    taskDISABLE_INTERRUPTS();
+    for(;;);
 }
 
 #ifdef  USE_FULL_ASSERT
