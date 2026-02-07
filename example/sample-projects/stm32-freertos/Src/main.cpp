@@ -36,8 +36,8 @@
 // ============================================================================
 // TEST SELECTION (Uncomment ONE)
 // ============================================================================
-//#define RUN_SIMPLE_TESTS
-#define RUN_STRESS_TESTS
+#define RUN_SIMPLE_TESTS
+//#define RUN_STRESS_TESTS
 // #define RUN_NETWORK_TESTS
 
 // ============================================================================
