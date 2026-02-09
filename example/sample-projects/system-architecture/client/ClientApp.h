@@ -120,13 +120,13 @@ private:
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
-        if (error != dmq::DelegateError::SUCCESS && id == ids::COMMAND_MSG_ID)
+        if (error != dmq::DelegateError::SUCCESS)
             std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
     void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
     {
-        if (status != TransportMonitor::Status::SUCCESS && id == ids::COMMAND_MSG_ID)
+        if (status != TransportMonitor::Status::SUCCESS)
             std::cout << "ClientApp Timeout: " << id << " " << seqNum << std::endl;
     }
 

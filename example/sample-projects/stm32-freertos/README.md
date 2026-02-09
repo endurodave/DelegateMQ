@@ -10,89 +10,110 @@ The application runs a suite of tests in `main.cpp` verifying the following Dele
 * **Signals & Slots:** RAII-based connection management using `ScopedConnection`.
 * **Thread Safety:** Using Mutex-protected delegates.
 * **Async Dispatch:** Dispatching delegates across thread boundaries (if FreeRTOS is enabled).
+* **Remote Messaging:** Serializing and transporting delegates over UART to a PC client.
 
-## Prerequisites
+## 🛠️ Hardware Prerequisites
 
-* **Hardware:** STM32F4 Discovery Board (STM32F407G-DISC1).
+### 1. Core Board (Required)
+* **STM32F4 Discovery Board** (STM32F407G-DISC1)
+    * This is the main MCU board where the FreeRTOS application runs.
+
+### 2. Remote Communication (Required for Network Tests only)
+To run the `RUN_NETWORK_TESTS` mode (Client-Server demo), you need the following additional hardware to provide an RS-232 serial interface:
+
+* **STM32F4DIS-BB (Discovery Base Board)**
+    * Provides the RS-232 DB9 connector connected to **USART6**.
+* **Null Modem Cable** (DB9 Female to Female)
+    * To connect the Base Board to your PC.
+* **USB-to-Serial Adapter** (if your PC lacks a native RS-232 port).
+
+> **Note:** If you only want to run the local `SIMPLE_TESTS` or `STRESS_TESTS` (internal loopback), the Base Board is **not** required.
+
+## 💻 Software Prerequisites
+
 * **IDE:** STM32CubeIDE (Tested on v2.0.0).
 * **Firmware:** STM32Cube FW_F4 V1.28.3 (or compatible).
 * **Library:** [DelegateMQ](https://github.com/endurodave/DelegateMQ) (Source code must be available locally).
+* **PC Client:** The companion `ClientApp` (built via Visual Studio/CMake) running on Windows/Linux is required for Network Tests.
 
-## 🔧 Configuring Build Paths & Variables (Critical)
+## ⚙️ Configuration
 
-This project avoids hardcoded absolute paths by using Eclipse **Build Variables**. If you move this project to a new computer or update your STM32 Firmware version, you **must** update these variables, or the project will not build.
+### 1. Build Paths (`STM32_REPO`)
+This project uses Eclipse **Build Variables** to avoid hardcoded paths. You **must** configure this variable to point to your local STM32 firmware repository.
 
-### Update the STM32 Firmware Path (`STM32_REPO`)
-
-The project expects to find the STM32 HAL drivers via the `STM32_REPO` variable.
-
-1.  Right-click the project in the Project Explorer -> **Properties**.
+1.  Right-click the project -> **Properties**.
 2.  Navigate to **C/C++ Build** > **Build Variables**.
-3.  Find the variable named `STM32_REPO`.
-4.  Click **Edit** and set it to your local STM32Cube repository path.
+3.  Edit `STM32_REPO` to match your installation:
     * *Windows Example:* `C:\Users\YourName\STM32Cube\Repository\STM32Cube_FW_F4_V1.28.3`
     * *Linux/Mac Example:* `/home/yourname/STM32Cube/Repository/STM32Cube_FW_F4_V1.28.3`
-5.  Click **Apply**.
+4.  Click **Apply**.
 
-## 🔨 Building and Flashing
+### 2. Selecting the Test Mode
+Open `server/Src/main.cpp` and uncomment exactly **ONE** of the following lines to choose the operating mode:
 
-1. **Clean the Project:**
-* Right-click the project -> **Clean Project**.
+```cpp
+// ============================================================================
+// TEST SELECTION (Uncomment ONE)
+// ============================================================================
+//#define RUN_SIMPLE_TESTS      // Runs local unit tests (delegates, timers)
+//#define RUN_STRESS_TESTS      // Runs high-load async dispatch tests
+#define RUN_NETWORK_TESTS     // Runs Remote Client-Server Demo (Requires RS-232)
+```
 
+## 🚀 Running Network Tests (Remote Demo)
 
-2. **Build:**
-* Click the **Hammer** icon or press `Ctrl+B`.
-* Ensure the console shows **"Build Finished"**.
+This mode turns the STM32 into a **Server** that streams telemetry to a PC **Client**.
 
+### 1. Hardware Setup
+* Mount the Discovery Board onto the **STM32F4DIS-BB**.
+* Connect the **RS-232 port** on the Base Board to your PC using a **Null Modem Cable**.
+* Power the board (via USB Mini-B).
 
-3. **Flash:**
-* Connect your Discovery board via USB (Mini-B).
-* Click the **Debug** (Bug icon) or **Run** (Play icon).
+### 2. STM32 Setup
+* Select `#define RUN_NETWORK_TESTS` in `main.cpp`.
+* Build and Flash the board.
+* **Verify:** The **Green LED (LD4)** should turn ON.
 
+### 3. PC Client Setup
+* Navigate to the `client` folder in this repository.
+* Build the `ClientApp` using CMake or Visual Studio.
+* Run the client executable.
+* **Verify:** The client should print `Client start!` and begin displaying Sensor Data received from the STM32.
 
+### 4. Success Indicator
+* The **Blue LED (LD6)** on the STM32 will toggle every time a `DataMsg` packet is successfully sent to the PC.
 
 ## 💡 LED Status Indicators
 
 * 🟠 **Orange (LED3):** System Initialization (main entered).
 * 🟢 **Green (LED4):** FreeRTOS Scheduler Started & Test Task Running.
-* 🔵 **Blue (LED6):** **SUCCESS** - Tests passed, application heartbeat blinking.
-* 🔴 **Red (LED5):** **ERROR** - Initialization failed or Heap Exhausted.
+* 🔵 **Blue (LED6):** **Activity Heartbeat** (Toggles on successful data tx or timer tick).
+* 🔴 **Red (LED5):** **ERROR** - Initialization failed, Heap Exhausted, or Assertion triggered.
 
 ## 📝 Configuring printf Output (SWV ITM)
 
-This project redirects `printf` to the **SWV ITM Data Console** (Instrumentation Trace Macrocell). You must configure the debugger to capture this stream.
+This project redirects `printf` to the **SWV ITM Data Console**. To view debug logs:
 
-### 1. Enable SWV in Debug Configurations
-1.  In STM32CubeIDE, click the arrow next to the **Debug** (Bug) icon and select **Debug Configurations...**.
-2.  Select your project configuration on the left.
-3.  Click the **Debugger** tab.
-4.  Scroll down to the **Serial Wire Viewer (SWV)** section.
-5.  **Check the "Enable" box.**
-6.  **Set "Core Clock" to 168.0 MHz.**
-    * *Note:* The STM32F4 Discovery runs at 168 MHz. If this value does not match the actual system clock, the output will be garbage or blank.
-7.  Click **Apply** and then **Debug**.
+1.  **Debug Configurations** > **Debugger** > **Serial Wire Viewer (SWV)**:
+    * Check **Enable**.
+    * Set **Core Clock** to **168.0 MHz**.
+2.  Start Debugging.
+3.  **Window** > **Show View** > **SWV** > **SWV ITM Data Console**.
+4.  Click **Configure Trace** (🔧) -> Enable **Port 0**.
+5.  Click **Start Trace** (🔴).
 
-### 2. Viewing the Output
-Once the debug session starts (and the code is paused at `main`):
-1.  Go to **Window** > **Show View** > **SWV** > **SWV ITM Data Console**.
-2.  Click the **Configure Trace** button (Wrench/Gear icon 🔧) in the console toolbar.
-3.  Under "ITM Stimulus Ports", **check Port 0**.
-4.  Click **OK**.
-5.  Click the **Start Trace** button (Red Circle 🔴) to begin recording.
-6.  Press **Resume** (Play button) to run the code.
 ## Troubleshooting
 
-* **Linker Error:** `undefined reference to xTimerCreate`
-  * Ensure `#define configUSE_TIMERS 1` is set in `FreeRTOSConfig.h` and Rebuild (Clean first).
+### "ClientApp::Start() failed!" (PC Side)
+* Ensure the Null Modem cable is connected.
+* Ensure the STM32 is running `RUN_NETWORK_TESTS`.
+* Check that the PC COM port matches the one configured in `ClientApp`.
 
+### Blue LED never turns on
+* The Scheduler is likely not receiving ticks. Check `stm32f4xx_it.c` to ensure `SysTick_Handler` calls `xPortSysTickHandler`.
 
-* **Blue LED never turns on (Application hangs)**
-  * The Scheduler is likely not receiving ticks. Check `stm32f4xx_it.c` to ensure `SysTick_Handler` is calling `xPortSysTickHandler`.
+### Red LED Blinking Fast
+* Heap Exhaustion. Increase `configTOTAL_HEAP_SIZE` in `FreeRTOSConfig.h`.
 
-
-* **Red LED Blinking Fast**
-  * Heap Exhaustion. Increase `configTOTAL_HEAP_SIZE` in `FreeRTOSConfig.h`.
-
-
-* **Error: exception handling disabled, use '-fexceptions'**
-  * Ensure `DMQ_ASSERTS` is defined in project settings to disable try/catch blocks for embedded targets.
+### Linker Error: `undefined reference to xTimerCreate`
+* Ensure `#define configUSE_TIMERS 1` is set in `FreeRTOSConfig.h`.

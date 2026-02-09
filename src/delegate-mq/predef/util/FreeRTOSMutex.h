@@ -13,7 +13,6 @@ namespace dmq {
     class FreeRTOSMutex {
     public:
         FreeRTOSMutex() {
-            // Standard Mutex: Cannot be taken recursively by the same thread.
             m_handle = xSemaphoreCreateMutex();
             configASSERT(m_handle);
         }
@@ -28,6 +27,14 @@ namespace dmq {
             if (m_handle) {
                 xSemaphoreTake(m_handle, portMAX_DELAY);
             }
+        }
+
+        bool try_lock() {
+            if (m_handle) {
+                // Wait time of 0 ticks = non-blocking attempt
+                return xSemaphoreTake(m_handle, 0) == pdTRUE;
+            }
+            return false;
         }
 
         void unlock() {
@@ -50,7 +57,6 @@ namespace dmq {
     class FreeRTOSRecursiveMutex {
     public:
         FreeRTOSRecursiveMutex() {
-            // Recursive Mutex: Can be taken multiple times by the same thread.
             // Requires configUSE_RECURSIVE_MUTEXES == 1 in FreeRTOSConfig.h
             m_handle = xSemaphoreCreateRecursiveMutex();
             configASSERT(m_handle);
@@ -66,6 +72,15 @@ namespace dmq {
             if (m_handle) {
                 xSemaphoreTakeRecursive(m_handle, portMAX_DELAY);
             }
+        }
+
+        // Added try_lock (Required by std::unique_lock)
+        bool try_lock() {
+            if (m_handle) {
+                // Wait time of 0 ticks = non-blocking attempt
+                return xSemaphoreTakeRecursive(m_handle, 0) == pdTRUE;
+            }
+            return false;
         }
 
         void unlock() {

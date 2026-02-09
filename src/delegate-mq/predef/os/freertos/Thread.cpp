@@ -145,19 +145,28 @@ void Thread::SetThreadPriority(int priority) {
 //----------------------------------------------------------------------------
 void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
-    if (!m_queue) 
+    if (!m_queue) {
+        printf("[Thread] Error: Dispatch called but queue is null (%s)\n", THREAD_NAME.c_str());
         return; 
+    }
 
+    // DEBUG: Print attempt
+    //printf("[Thread] Dispatching to %s...\n", THREAD_NAME.c_str());
+
+    // C++ 'new' uses System Heap (not FreeRTOS heap). 
+    // If this fails, increase Heap_Size in linker script.
     ThreadMsg* threadMsg = new ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
     
-    // Safety check: In case 'new' returns NULL instead of trapping
     if (threadMsg == nullptr) {
-        // OOM detected
+        printf("[Thread] CRITICAL: 'new ThreadMsg' returned NULL! System Heap full? (%s)\n", THREAD_NAME.c_str());
         return;
     }
 
     if (xQueueSend(m_queue, &threadMsg, pdMS_TO_TICKS(10)) != pdPASS) {
+        printf("[Thread] Error: Queue Full (%s)\n", THREAD_NAME.c_str());
         delete threadMsg;
+    } else {
+        //printf("[Thread] Dispatch Success (%s)\n", THREAD_NAME.c_str());
     }
 }
 

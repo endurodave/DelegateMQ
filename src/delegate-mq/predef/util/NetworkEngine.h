@@ -7,7 +7,7 @@
 #define NETWORK_ENGINE_H
 
 // Only define NetworkEngine if a compatible transport is selected
-#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART)
+#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART) || defined(DMQ_TRANSPORT_SERIAL_PORT)
 
 #include "predef/util/RemoteEndpoint.h"
 #include "predef/util/TransportMonitor.h"
@@ -31,6 +31,10 @@
 #include "predef/util/RetryMonitor.h"
 #elif defined(DMQ_TRANSPORT_STM32_UART)
 #include "predef/transport/stm32-uart/Stm32UartTransport.h"
+#include "predef/util/ReliableTransport.h"
+#include "predef/util/RetryMonitor.h"
+#elif defined(DMQ_TRANSPORT_SERIAL_PORT)
+#include "predef/transport/serial/SerialTransport.h"
 #include "predef/util/ReliableTransport.h"
 #include "predef/util/RetryMonitor.h"
 #else
@@ -68,6 +72,9 @@ public:
 #elif defined(DMQ_TRANSPORT_STM32_UART)
     // Initialize with HAL Handle
     int Initialize(UART_HandleTypeDef* huart);
+#elif defined(DMQ_TRANSPORT_SERIAL_PORT)
+    // Initialize with COM Port name and baud rate
+    int Initialize(const std::string& portName, int baudRate);
 #endif
 
     /// @brief Starts the network engine and its receiving thread.
@@ -236,8 +243,24 @@ private:
     ReliableTransport m_reliableTransport;
 
 #elif defined(DMQ_TRANSPORT_STM32_UART)
-    Stm32UartTransport m_sendTransport;
-    Stm32UartTransport m_recvTransport;
+    // Single Shared Transport Instance (Owns the buffers/state)
+    Stm32UartTransport m_transport;
+
+    // References (Aliases used by generic code)
+    Stm32UartTransport& m_sendTransport;
+    Stm32UartTransport& m_recvTransport;
+
+    // Reliability Layers
+    RetryMonitor m_retryMonitor;
+    ReliableTransport m_reliableTransport;
+
+#elif defined(DMQ_TRANSPORT_SERIAL_PORT)
+    // Single Shared Transport Instance
+    SerialTransport m_transport;
+
+    // References required by generic code
+    SerialTransport& m_sendTransport;
+    SerialTransport& m_recvTransport;
 
     // Reliability Layers
     RetryMonitor m_retryMonitor;

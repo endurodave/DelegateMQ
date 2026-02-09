@@ -143,6 +143,7 @@ public:
     typedef RetType(*FreeFunc)(Args...);
     using ClassType = DelegateFreeRemote<RetType(Args...)>;
     using BaseType = DelegateFree<RetType(Args...)>;
+    using BaseType::operator=;
 
     /// @brief Constructor to create a class instance. Typically called by sender. 
     /// @param[in] id The remote delegate identifier.
@@ -572,6 +573,7 @@ public:
     typedef RetType(TClass::* ConstMemberFunc)(Args...) const;
     using ClassType = DelegateMemberRemote<TClass, RetType(Args...)>;
     using BaseType = DelegateMember<TClass, RetType(Args...)>;
+    using BaseType::operator=;
 
     /// @brief Constructor to create a class instance. Typically called by sender. 
     /// @param[in] id The remote delegate identifier.
@@ -1063,6 +1065,7 @@ public:
     using FunctionType = std::function<RetType(Args...)>;
     using ClassType = DelegateFunctionRemote<RetType(Args...)>;
     using BaseType = DelegateFunction<RetType(Args...)>;
+    using BaseType::operator=;
 
     /// @brief Constructor to create a class instance. Typically called by sender. 
     /// @param[in] id The remote delegate identifier.

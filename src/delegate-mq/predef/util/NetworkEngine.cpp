@@ -1,7 +1,7 @@
 #include "NetworkEngine.h"
 
 // Only compile implementation if a compatible transport is selected
-#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART)
+#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART) || defined(DMQ_TRANSPORT_SERIAL_PORT)
 
 using namespace dmq;
 using namespace std;
@@ -12,9 +12,21 @@ const std::chrono::milliseconds NetworkEngine::RECV_TIMEOUT(2000);
 NetworkEngine::NetworkEngine()
     : m_thread("NetworkEngine"),
     m_transportMonitor(RECV_TIMEOUT),
-	m_recvThread("NetworkRecv")
-#if defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART)
-    // Only initialize reliability layers for UDP transports
+    m_recvThread("NetworkRecv")
+#if defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+    , m_retryMonitor(m_sendTransport, m_transportMonitor)
+    , m_reliableTransport(m_sendTransport, m_retryMonitor)
+#elif defined(DMQ_TRANSPORT_STM32_UART)
+    , m_transport()                     // Init the real object
+    , m_sendTransport(m_transport)      // Alias it
+    , m_recvTransport(m_transport)      // Alias it
+    , m_retryMonitor(m_sendTransport, m_transportMonitor)
+    , m_reliableTransport(m_sendTransport, m_retryMonitor)
+#elif defined(DMQ_TRANSPORT_SERIAL_PORT)
+    // Initialize references to point to the single m_transport instance
+    , m_transport()
+    , m_sendTransport(m_transport)
+    , m_recvTransport(m_transport)
     , m_retryMonitor(m_sendTransport, m_transportMonitor)
     , m_reliableTransport(m_sendTransport, m_retryMonitor)
 #endif
@@ -100,19 +112,51 @@ int NetworkEngine::Initialize(UART_HandleTypeDef* huart)
         return MakeDelegate(this, &NetworkEngine::Initialize, m_thread, WAIT_INFINITE)(huart);
 
     int err = 0;
-    err += m_sendTransport.Create(huart);
-    err += m_recvTransport.Create(huart);
+
+    // Call Create ONCE on the shared object
+    err += m_transport.Create(huart);
 
     m_statusConn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
 
-    m_sendTransport.SetTransportMonitor(&m_transportMonitor);
-    m_recvTransport.SetTransportMonitor(&m_transportMonitor);
+    m_transport.SetTransportMonitor(&m_transportMonitor);
 
-    m_sendTransport.SetRecvTransport(&m_recvTransport);
-    m_recvTransport.SetSendTransport(&m_sendTransport);
+    // Point to self for full-duplex logic
+    m_transport.SetRecvTransport(&m_transport);
+    m_transport.SetSendTransport(&m_transport);
 
-    // Use Reliable wrapper for UART
+    // Use Reliable wrapper
     m_dispatcher.SetTransport(&m_reliableTransport);
+
+    return err;
+}
+#elif defined(DMQ_TRANSPORT_SERIAL_PORT)
+
+// --------------------------------------------------------
+// Serial Port Implementation (Shared Send/Recv)
+// --------------------------------------------------------
+int NetworkEngine::Initialize(const std::string& portName, int baudRate)
+{
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkEngine::Initialize, m_thread, WAIT_INFINITE)(portName, baudRate);
+
+    int err = 0;
+
+    // OPEN PORT ONCE via the shared instance
+    err += m_transport.Create(portName.c_str(), baudRate);
+
+    if (err == 0) {
+        // Only hook up monitoring if open succeeded
+        m_statusConn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
+
+        m_transport.SetTransportMonitor(&m_transportMonitor);
+
+        // Serial is full-duplex logic logic on one object
+        m_transport.SetRecvTransport(&m_transport);
+        m_transport.SetSendTransport(&m_transport);
+
+        // Route dispatcher through reliability layer (ACKs/Retries)
+        m_dispatcher.SetTransport(&m_reliableTransport);
+    }
 
     return err;
 }

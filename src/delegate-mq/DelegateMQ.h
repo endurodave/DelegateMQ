@@ -207,8 +207,9 @@
 
 // Only include NetworkEngine if a transport that uses it is active
 #if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || \
-    defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART)
-#include "predef/util/NetworkEngine.h"
+    defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART) || \
+    defined(DMQ_TRANSPORT_SERIAL_PORT)
+    #include "predef/util/NetworkEngine.h"
 #endif
 
 #endif

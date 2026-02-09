@@ -19,6 +19,7 @@ public:
     // Remote delegate type definitions
     using Func = RetType(Args...);
     using BaseType = dmq::DelegateMemberRemote<TClass, RetType(Args...)>;
+    using BaseType::operator=;
 
     // Clients connect to this signal to handle transport or serialization errors.
     dmq::SignalSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> OnError;

@@ -81,6 +81,7 @@
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.definedsymbols.1085727350" name="Define symbols (-D)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.definedsymbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="DEBUG"/>
+									<listOptionValue builtIn="false" value="SERVER_APP"/>
 									<listOptionValue builtIn="false" value="DMQ_ASSERTS"/>
 									<listOptionValue builtIn="false" value="DMQ_TRANSPORT_STM32_UART"/>
 									<listOptionValue builtIn="false" value="DMQ_SERIALIZE_SERIALIZE"/>

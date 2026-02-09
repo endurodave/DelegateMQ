@@ -32,6 +32,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>common</name>
+			<type>2</type>
+			<locationURI>PARENT-2-PROJECT_LOC/common</locationURI>
+		</link>
+		<link>
 			<name>delegate-mq</name>
 			<type>2</type>
 			<location>C:/Projects/DelegateMQWorkspace/DelegateMQ/src/delegate-mq</location>
@@ -39,7 +44,7 @@
 		<link>
 			<name>Application/User/main.cpp</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/Src/main.cpp</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/main.cpp</locationURI>
 		</link>
 		<link>
 			<name>Application/User/network_tests.cpp</name>
@@ -54,12 +59,12 @@
 		<link>
 			<name>Application/User/stm32f4xx_hal_msp.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/Src/stm32f4xx_hal_msp.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/stm32f4xx_hal_msp.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/stm32f4xx_it.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/Src/stm32f4xx_it.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/stm32f4xx_it.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/stress_test.cpp</name>
@@ -72,19 +77,19 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Src/stress_tests.cpp</locationURI>
 		</link>
 		<link>
+			<name>Application/User/system_stm32f4xx.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/system_stm32f4xx.c</locationURI>
+		</link>
+		<link>
 			<name>Application/User/usbd_conf.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/Src/usbd_conf.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/usbd_conf.c</locationURI>
 		</link>
 		<link>
 			<name>Application/User/usbd_desc.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/Src/usbd_desc.c</locationURI>
-		</link>
-		<link>
-			<name>Drivers/CMSIS/system_stm32f4xx.c</name>
-			<type>1</type>
-			<locationURI>copy_PARENT/Src/system_stm32f4xx.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Src/usbd_desc.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/STM32F4xx_HAL_Drivers/stm32f4xx_hal.c</name>

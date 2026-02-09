@@ -39,20 +39,13 @@
 class SerialTransport : public ITransport
 {
 public:
-    SerialTransport() : m_sendTransport(this), m_recvTransport(this)
-    {
-    }
+    SerialTransport() : m_sendTransport(this), m_recvTransport(this) {}
 
-    ~SerialTransport()
-    {
-        Close();
-    }
+    ~SerialTransport() { Close(); }
 
     int Create(const char* portName, int baudRate)
     {
-        // Lock Guard for thread safety
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-
         sp_return ret = sp_get_port_by_name(portName, &m_port);
         if (ret != SP_OK) {
             std::cerr << "SerialTransport: Could not find port " << portName << std::endl;
@@ -72,14 +65,12 @@ public:
         sp_set_parity(m_port, SP_PARITY_NONE);
         sp_set_stopbits(m_port, 1);
         sp_set_flowcontrol(m_port, SP_FLOWCONTROL_NONE);
-
         return 0;
     }
 
     void Close()
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-
         if (m_port) {
             sp_close(m_port);
             sp_free_port(m_port);
@@ -87,202 +78,154 @@ public:
         }
     }
 
+    // Helper: Swap Little Endian <-> Big Endian
+    uint16_t swap16(uint16_t v) { return (v << 8) | (v >> 8); }
+
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
-        // Lock Guard. Note: Serial ports are not full-duplex in the same way 
-        // sockets are; locking ensures we don't interleave write bytes with read operations
-        // if the underlying driver isn't strictly thread-safe.
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-
         if (!m_port) return -1;
 
-        // Prepare Header Copy and Payload
         DmqHeader headerCopy = header;
         std::string payload = os.str();
-
-        // Safety check for 16-bit length limit
-        if (payload.length() > UINT16_MAX) {
-            std::cerr << "SerialTransport: Payload too large." << std::endl;
-            return -1;
-        }
+        if (payload.length() > UINT16_MAX) return -1;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
         xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
-        // Serialize Header
-        auto marker = headerCopy.GetMarker();
-        ss.write(reinterpret_cast<const char*>(&marker), sizeof(marker));
-        auto id = headerCopy.GetId();
-        ss.write(reinterpret_cast<const char*>(&id), sizeof(id));
-        auto seqNum = headerCopy.GetSeqNum();
-        ss.write(reinterpret_cast<const char*>(&seqNum), sizeof(seqNum));
-        auto len = headerCopy.GetLength();
-        ss.write(reinterpret_cast<const char*>(&len), sizeof(len));
+        // SERIALIZE HEADER (Big Endian)
+        uint16_t val;
 
-        // Append Payload
+        val = swap16(headerCopy.GetMarker());
+        ss.write((char*)&val, 2);
+
+        val = swap16(headerCopy.GetId());
+        ss.write((char*)&val, 2);
+
+        val = swap16(headerCopy.GetSeqNum());
+        ss.write((char*)&val, 2);
+
+        val = swap16(headerCopy.GetLength());
+        ss.write((char*)&val, 2);
+
+        // Payload
         ss.write(payload.data(), payload.size());
 
-        // Calculate and Append CRC16
+        // CRC
         std::string packetWithoutCrc = ss.str();
-        uint16_t crc = Crc16CalcBlock((unsigned char*)packetWithoutCrc.c_str(),
-            (int)packetWithoutCrc.length(), 0xFFFF);
+        uint16_t crc = Crc16CalcBlock((unsigned char*)packetWithoutCrc.c_str(), (int)packetWithoutCrc.length(), 0xFFFF);
         ss.write(reinterpret_cast<const char*>(&crc), sizeof(crc));
 
         std::string packetData = ss.str();
 
-        // Monitor Logic 
-        if (id != dmq::ACK_REMOTE_ID && m_transportMonitor) {
-            m_transportMonitor->Add(seqNum, id);
+        if (header.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor) {
+            m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
         }
 
-        // Physical Write
-        // Use a reasonable timeout (e.g., 1000ms) to avoid hanging forever
         int result = sp_blocking_write(m_port, packetData.c_str(), packetData.length(), 1000);
         return (result == (int)packetData.length()) ? 0 : -1;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override
     {
-        // We do NOT lock the mutex for the entire Receive duration if we want full-duplex.
-        // However, libserialport blocking calls might not be thread-safe to mix with writes.
-        // For simplicity/safety, we assume half-duplex or rely on library locking if available.
-        // If libserialport supports concurrent R/W, we can reduce the lock scope.
-        // Here we assume we must lock to protect the m_port pointer.
-        
-        // CAUTION: Locking here prevents Send() from running while we wait for data!
-        // To fix this for full-duplex, we'd need to verify libserialport thread safety.
-        // Assuming single-port handle isn't thread safe:
-        // Ideally, we wait for 1 byte with a short timeout, then lock only when reading.
-        // For now, we will lock but use a short timeout loop to allow Send() to interleave.
-        
-        // *Better Approach*: Don't lock around blocking read. Just lock to check m_port validity.
-        // Note: This assumes sp_blocking_read is thread-safe with sp_blocking_write on same port.
-        // If not, serial communication will require a strict master/slave poll protocol.
-        
         if (!m_port) return -1;
+        if (m_recvTransport != this) return -1;
 
-        if (m_recvTransport != this) {
-            return -1;
-        }
-
-        // 1. Read Fixed-Size Header
         char headerBuf[DmqHeader::HEADER_SIZE];
-        
-        // We use a timeout of 1000ms. If no data, we return to allow thread to check exit flags.
-        // We do NOT hold the lock during blocking read to allow Send() to occur.
-        if (!ReadExact(headerBuf, DmqHeader::HEADER_SIZE, 1000))
-            return -1; 
 
-        // 2. Deserialize Header
-        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
-        headerStream.write(headerBuf, DmqHeader::HEADER_SIZE);
-        headerStream.seekg(0);
+        // 1. Strict Sync Loop
+        char b = 0;
+        while (true) {
+            // Short timeout for Sync, but non-blocking check
+            if (sp_blocking_read(m_port, &b, 1, 10) <= 0) return -1;
 
-        uint16_t marker = 0;
-        headerStream.read(reinterpret_cast<char*>(&marker), sizeof(marker));
-        header.SetMarker(marker);
+            if ((uint8_t)b == 0xAA) {
+                char next_b = 0;
+                if (sp_blocking_read(m_port, &next_b, 1, 100) > 0) {
+                    if ((uint8_t)next_b == 0x55) {
+                        headerBuf[0] = b;
+                        headerBuf[1] = next_b;
+                        break;
+                    }
+                }
+            }
+        }
 
-        if (header.GetMarker() != DmqHeader::MARKER) {
-            std::cerr << "SerialTransport: Invalid sync marker!" << std::endl;
-            // Lock to flush
-            std::lock_guard<std::recursive_mutex> lock(m_mutex);
-            sp_flush(m_port, SP_BUF_INPUT);
+        // 2. Read Rest of Header
+        // INCREASED TIMEOUT: 1000ms (was 100ms) to allow OS latency
+        if (!ReadExact(headerBuf + 2, DmqHeader::HEADER_SIZE - 2, 1000))
             return -1;
+
+        // 3. Deserialize
+        uint16_t val;
+        memcpy(&val, &headerBuf[0], 2); header.SetMarker(swap16(val));
+        memcpy(&val, &headerBuf[2], 2); header.SetId(swap16(val));
+        memcpy(&val, &headerBuf[4], 2); header.SetSeqNum(swap16(val));
+        memcpy(&val, &headerBuf[6], 2); header.SetLength(swap16(val));
+
+        if (header.GetMarker() != DmqHeader::MARKER) return -1;
+
+        // 4. Payload
+        uint16_t len = header.GetLength();
+        if (len > 0) {
+            if (len > BUFFER_SIZE) return -1;
+            // INCREASED TIMEOUT: 1000ms
+            if (!ReadExact(m_buffer, len, 1000)) return -1;
+            is.write(m_buffer, len);
         }
 
-        uint16_t id = 0, seqNum = 0, length = 0;
-        headerStream.read(reinterpret_cast<char*>(&id), sizeof(id));
-        headerStream.read(reinterpret_cast<char*>(&seqNum), sizeof(seqNum));
-        headerStream.read(reinterpret_cast<char*>(&length), sizeof(length));
-        header.SetId(id);
-        header.SetSeqNum(seqNum);
-        header.SetLength(length);
-
-        // 3. Read Payload
-        if (length > 0)
-        {
-            if (length > BUFFER_SIZE) return -1;
-            if (!ReadExact(m_buffer, length, 1000)) return -1;
-            is.write(m_buffer, length);
-        }
-
-        // 4. Read & Verify CRC
+        // 5. CRC Check
         uint16_t receivedCrc = 0;
+        // INCREASED TIMEOUT: 500ms
         if (!ReadExact(reinterpret_cast<char*>(&receivedCrc), sizeof(receivedCrc), 500)) return -1;
 
         uint16_t calcCrc = Crc16CalcBlock((unsigned char*)headerBuf, DmqHeader::HEADER_SIZE, 0xFFFF);
-        if (length > 0) calcCrc = Crc16CalcBlock((unsigned char*)m_buffer, length, calcCrc);
+        if (len > 0) calcCrc = Crc16CalcBlock((unsigned char*)m_buffer, len, calcCrc);
 
         if (receivedCrc != calcCrc) {
-            std::cerr << "SerialTransport: CRC mismatch!" << std::endl;
-            std::lock_guard<std::recursive_mutex> lock(m_mutex);
-            sp_flush(m_port, SP_BUF_INPUT);
+            std::cerr << "CRC Mismatch" << std::endl;
             return -1;
         }
 
-        // 5. Ack Logic
-        if (id == dmq::ACK_REMOTE_ID) {
-            if (m_transportMonitor) m_transportMonitor->Remove(seqNum);
+        // 6. ACKs
+        if (header.GetId() == dmq::ACK_REMOTE_ID) {
+            if (m_transportMonitor) m_transportMonitor->Remove(header.GetSeqNum());
         }
-        else {
-            if (m_sendTransport) {
-                xostringstream ss_ack;
-                DmqHeader ack;
-                ack.SetId(dmq::ACK_REMOTE_ID);
-                ack.SetSeqNum(seqNum);
-                m_sendTransport->Send(ss_ack, ack);
-            }
+        else if (m_sendTransport) {
+            xostringstream ss_ack;
+            DmqHeader ack;
+            ack.SetId(dmq::ACK_REMOTE_ID);
+            ack.SetSeqNum(header.GetSeqNum());
+            m_sendTransport->Send(ss_ack, ack);
         }
         return 0;
     }
 
-    void SetTransportMonitor(ITransportMonitor* transportMonitor)
-    {
-        m_transportMonitor = transportMonitor;
-    }
-
-    void SetSendTransport(ITransport* sendTransport)
-    {
-        m_sendTransport = sendTransport;
-    }
-
-    void SetRecvTransport(ITransport* recvTransport)
-    {
-        m_recvTransport = recvTransport;
-    }
+    void SetTransportMonitor(ITransportMonitor* tm) { m_transportMonitor = tm; }
+    void SetSendTransport(ITransport* st) { m_sendTransport = st; }
+    void SetRecvTransport(ITransport* rt) { m_recvTransport = rt; }
 
 private:
     bool ReadExact(char* dest, size_t size, unsigned int timeoutMs)
     {
         size_t totalRead = 0;
+        // Keep attempting to read until we have 'size' bytes
         while (totalRead < size)
         {
-            // We assume sp_blocking_read is thread-safe regarding internal state,
-            // or that the OS driver handles it. If not, this whole class needs 
-            // a redesign to be strictly half-duplex (Send OR Receive, never both).
-            // For now, we call it without holding m_mutex to allow concurrent Sends.
-            
-            // Check m_port validity safely? 
-            // This is a race condition risk if Close() is called. 
-            // Ideally use a shared_ptr for m_port or similar mechanism.
-            // For this example, we assume Close() waits for threads to join.
-            if (!m_port) return false; 
-
+            if (!m_port) return false;
             int ret = sp_blocking_read(m_port, dest + totalRead, size - totalRead, timeoutMs);
-            if (ret <= 0) return false;
+            if (ret < 0) return false; // Error
+            if (ret == 0) return false; // Timeout
             totalRead += ret;
         }
         return true;
     }
 
     sp_port* m_port = nullptr;
-    // Mutex for serializing access to configuration/creation
     std::recursive_mutex m_mutex;
-    
     ITransport* m_sendTransport = nullptr;
     ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
-
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE] = { 0 };
 };

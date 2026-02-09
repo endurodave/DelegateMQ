@@ -1,0 +1,106 @@
+#ifndef DATA_MGR_H
+#define DATA_MGR_H
+
+/// @file
+/// @see https://github.com/endurodave/DelegateMQ
+/// David Lafreniere, 2025.
+
+#include "DelegateMQ.h"
+#include "DataMsg.h"
+#include "NetworkMgr.h"
+#include <mutex>
+#include <memory> // Required for shared_ptr
+
+// DataMgr collects data from local and remote data sources. 
+class DataMgr
+{
+public:
+    // Register with delegate to receive callbacks when data is received
+    static std::shared_ptr<dmq::SignalSafe<void(DataMsg&)>> DataMsgCb;
+
+    static DataMgr& Instance()
+    {
+        static DataMgr instance;
+        return instance;
+    }
+
+    void SetDataMsg(DataMsg& data)
+    {
+        LocalDataMsgUpdate(data);
+    }
+
+    DataMsg GetDataMsg()
+    {
+        return GetCombindedDataMsg();
+    }
+
+private:
+    DataMgr() : m_thread("DataMgr")
+    {
+        // Create the receiver thread
+        m_thread.CreateThread();
+
+        // Register to receive remote data updates
+        // Use Connect() and store handle in m_networkDataConn
+        m_networkDataConn = NetworkMgr::OnData->Connect(MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread));
+    }
+
+    ~DataMgr()
+    {
+        // No manual unregister needed. ScopedConnection handles it.
+        m_thread.ExitThread();
+    }
+
+    // Get all remote and local data packages
+    DataMsg GetCombindedDataMsg()
+    {
+        std::lock_guard<std::mutex> lk(m_mutex);
+
+        // Combine local and remote data
+        DataMsg totalData;
+        totalData.actuators.insert(totalData.actuators.end(), m_localDataMsg.actuators.begin(), m_localDataMsg.actuators.end());
+        totalData.sensors.insert(totalData.sensors.end(), m_localDataMsg.sensors.begin(), m_localDataMsg.sensors.end());
+        totalData.actuators.insert(totalData.actuators.end(), m_remoteDataMsg.actuators.begin(), m_remoteDataMsg.actuators.end());
+        totalData.sensors.insert(totalData.sensors.end(), m_remoteDataMsg.sensors.begin(), m_remoteDataMsg.sensors.end());
+
+        return totalData;
+    }
+
+    void LocalDataMsgUpdate(DataMsg& dataMsg)
+    {
+        {
+            std::lock_guard<std::mutex> lk(m_mutex);
+            m_localDataMsg = dataMsg;
+        }
+
+        // Notify all subscribers new data arrived
+        // Invoke signal via dereference
+        auto msg = GetCombindedDataMsg();
+        if (DataMsgCb) (*DataMsgCb)(msg);
+    }
+
+    void RemoteDataMsgUpdate(DataMsg& dataMsg)
+    {
+        {
+            std::lock_guard<std::mutex> lk(m_mutex);
+            m_remoteDataMsg = dataMsg;
+        }
+
+        // Notify all subscribers new data arrived
+        // Invoke signal via dereference
+        auto msg = GetCombindedDataMsg();
+        if (DataMsgCb) (*DataMsgCb)(msg);
+    }
+
+    Thread m_thread;
+    Timer m_timer;
+    std::mutex m_mutex;
+
+    // RAII Connection
+    dmq::ScopedConnection m_networkDataConn;
+
+    DataMsg m_localDataMsg;
+    DataMsg m_remoteDataMsg;
+};
+
+#endif

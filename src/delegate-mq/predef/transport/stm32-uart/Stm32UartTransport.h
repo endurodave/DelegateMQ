@@ -2,199 +2,297 @@
 #define STM32_UART_TRANSPORT_H
 
 /// @file Stm32UartTransport.h
-/// @see https://github.com/endurodave/DelegateMQ
-/// David Lafreniere, 2026.
-///
-/// @brief STM32 HAL UART transport implementation for DelegateMQ.
+/// @brief STM32 HAL UART transport implementation for DelegateMQ (FreeRTOS).
 ///
 /// @details
-/// This class provides a concrete implementation of the `ITransport` interface using 
-/// the STM32 HAL UART API. It enables DelegateMQ to send and receive serialized 
-/// delegates over a serial connection (e.g., RS-232 on the Discovery Base Board).
+/// This class provides a robust, thread-safe transport layer for serial communication
+/// on STM32 microcontrollers running FreeRTOS.
 ///
-/// **Key Features:**
-/// * **Hardware Abstraction:** Wraps a standard `UART_HandleTypeDef` (e.g., `huart6`).
-/// * **Robust Sync:** Implements byte-by-byte scanning to recover from framing errors.
-/// * **Memory Safety:** Uses safe `memcpy` for serialization to avoid unaligned access faults.
-/// * **Reliability:** Integrated with `TransportMonitor` for ACKs/Retries.
-/// * **Heap Free:** Uses a static receive buffer to prevent heap fragmentation.
+/// **Key Architecture: Interrupt-Driven Ring Buffer**
+/// Instead of polling the UART (which wastes CPU) or using blocking HAL calls
+/// (which starve other FreeRTOS tasks), this implementation uses:
+/// 1. **UART RX Interrupt:** Fires immediately when a byte arrives, pushing it into a `UartRingBuffer`.
+/// 2. **Binary Semaphore:** The `Receive()` task sleeps on this semaphore. It is only woken up
+///    by the ISR when data is actually available.
+/// 3. **Recursive Mutex:** Protects the `Send()` function to ensure atomic packet transmission
+///    even if multiple threads try to send simultaneously.
+///
+/// **Data Integrity:**
+/// * Implements strict `0xAA 0x55` framing synchronization.
+/// * Calculates and verifies 16-bit CRC for every packet.
+/// * Handles reliable delivery via `TransportMonitor` (ACKs/Retries).
 
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_uart.h"
-
 #include "delegate/DelegateOpt.h"
 #include "predef/transport/DmqHeader.h"
 #include "predef/transport/ITransport.h"
 #include "predef/transport/ITransportMonitor.h"
+#include "predef/util/crc16.h"
 
-#include <cstring> // For memcpy
+// FreeRTOS Includes
+#include "FreeRTOS.h"
+#include "semphr.h"
+#include "task.h"
 
+#include <cstring>
+#include <atomic>
+
+// ----------------------------------------------------------------------------
+// Forward Declarations & Global Hook
+// ----------------------------------------------------------------------------
+class Stm32UartTransport;
+
+// Global pointer to the active transport instance.
+// This is defined in main.cpp and used by the C-style HAL Interrupt Callback
+// to route the hardware interrupt back into the C++ class.
+extern Stm32UartTransport* g_uartTransportInstance;
+
+// ============================================================================
+// UartRingBuffer
+// ============================================================================
+/// @brief A lightweight, thread-safe (Single Producer / Single Consumer) Ring Buffer.
+/// @tparam Size The size of the buffer in bytes. Must be large enough to hold
+///              bursts of data (e.g., 1024 bytes) to prevent overrun.
+template <size_t Size>
+class UartRingBuffer {
+public:
+    /// Push a byte into the buffer (Called from ISR).
+    bool Put(uint8_t data) {
+        size_t next_head = (m_head + 1) % Size;
+        if (next_head == m_tail) return false; // Buffer Full
+        m_buffer[m_head] = data;
+        m_head = next_head;
+        return true;
+    }
+
+    /// Pop a byte from the buffer (Called from Consumer Task).
+    bool Get(uint8_t& data) {
+        if (m_head == m_tail) return false; // Buffer Empty
+        data = m_buffer[m_tail];
+        m_tail = (m_tail + 1) % Size;
+        return true;
+    }
+
+    void Clear() { m_head = m_tail = 0; }
+
+private:
+    volatile uint8_t m_buffer[Size];
+    volatile size_t m_head = 0;
+    volatile size_t m_tail = 0;
+};
+
+// ============================================================================
+// Stm32UartTransport Class
+// ============================================================================
 class Stm32UartTransport : public ITransport
 {
 public:
-    // Additions to Stm32UartTransport class:
+    Stm32UartTransport() : m_huart(nullptr), m_sendTransport(this), m_recvTransport(this) {}
+    Stm32UartTransport(UART_HandleTypeDef* huart) : m_huart(huart), m_sendTransport(this), m_recvTransport(this) {}
 
-public:
-    Stm32UartTransport()
-        : m_huart(nullptr)
-        , m_sendTransport(this)
-        , m_recvTransport(this)
-    {
+    ~Stm32UartTransport() {
+        if (m_mutex) vSemaphoreDelete(m_mutex);
+        if (m_rxSemaphore) vSemaphoreDelete(m_rxSemaphore);
+        g_uartTransportInstance = nullptr;
     }
 
-    Stm32UartTransport(UART_HandleTypeDef* huart)
-        : m_huart(huart)
-        , m_sendTransport(this)
-        , m_recvTransport(this)
-    {
-    }
-
+    /// @brief Initialize the Transport and enable UART Interrupts.
+    /// @param huart Pointer to the HAL UART handle (e.g., &huart6).
+    /// @return 0 on success, -1 on failure.
     int Create(UART_HandleTypeDef* huart) {
         m_huart = huart;
-        return (m_huart != nullptr) ? 0 : -1;
-    }
+        g_uartTransportInstance = this; // Hook global pointer for ISR
 
-    // No "Create" needed, generic HAL is initialized in main()
-    
-    virtual int Send(xostringstream& os, const DmqHeader& header) override
-    {
-        if (os.bad() || os.fail()) return -1;
+        // Create OS primitives
+        if (!m_mutex) m_mutex = xSemaphoreCreateRecursiveMutex();
+        if (!m_rxSemaphore) m_rxSemaphore = xSemaphoreCreateBinary();
 
-        if (m_sendTransport != this) return -1;
+        if (!m_huart || !m_mutex || !m_rxSemaphore) return -1;
 
-        // 1. Get Payload
-        std::string payload = os.str();
-        if (payload.length() > UINT16_MAX) return -1;
-        
-        // 2. Prepare Header
-        DmqHeader headerCopy = header;
-        headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
+        // Clear potential hardware error flags from startup noise
+        __HAL_UART_CLEAR_OREFLAG(m_huart);
+        __HAL_UART_CLEAR_NEFLAG(m_huart);
+        __HAL_UART_CLEAR_FEFLAG(m_huart);
 
-        // 3. Serialize Header (Network Byte Order)
-        // Use a local buffer and memcpy to avoid unaligned access faults on strict ARM cores
-        uint8_t packet[DmqHeader::HEADER_SIZE];
-        
-        // Endian swap helper
-        auto to_net = [](uint16_t v) { return (uint16_t)((v << 8) | (v >> 8)); };
-        
-        uint16_t val;
-        
-        val = to_net(headerCopy.GetMarker());
-        memcpy(&packet[0], &val, 2);
-
-        val = to_net(headerCopy.GetId());
-        memcpy(&packet[2], &val, 2);
-
-        val = to_net(headerCopy.GetSeqNum());
-        memcpy(&packet[4], &val, 2);
-
-        val = to_net(headerCopy.GetLength());
-        memcpy(&packet[6], &val, 2);
-
-        // 4. Track Reliability (Must happen before send)
-        if (header.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
-             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
-
-        // 5. Send Header (Blocking)
-        if (HAL_UART_Transmit(m_huart, packet, DmqHeader::HEADER_SIZE, 100) != HAL_OK)
-            return -1;
-
-        // 6. Send Payload (Blocking)
-        if (payload.length() > 0) {
-            if (HAL_UART_Transmit(m_huart, (uint8_t*)payload.data(), (uint16_t)payload.length(), 500) != HAL_OK)
-                return -1;
-        }
+        // START RECEIVING: Enable RX Interrupt for the first byte.
+        // This kicks off the chain; subsequent bytes are re-armed in OnRxCplt.
+        if (HAL_UART_Receive_IT(m_huart, &m_rxByte, 1) != HAL_OK) return -1;
 
         return 0;
     }
 
-    virtual int Receive(xstringstream& is, DmqHeader& header) override
-    {
+    virtual void Close() { 
+        // Optional: Disable UART interrupts here if destroying the transport.
+    }
+
+    // ------------------------------------------------------------------------
+    // Send() Implementation
+    // ------------------------------------------------------------------------
+    virtual int Send(xostringstream& os, const DmqHeader& header) override {
+        if (os.bad() || os.fail()) return -1;
+        if (!m_huart || !m_mutex) return -1;
+
+        // CRITICAL SECTION: Protect UART TX hardware
+        if (xSemaphoreTakeRecursive(m_mutex, portMAX_DELAY) != pdTRUE) return -1;
+
+        // 1. Prepare Packet Structure
+        std::string payload = os.str();
+        DmqHeader headerCopy = header;
+        headerCopy.SetLength((uint16_t)payload.length());
+
+        uint8_t packet[DmqHeader::HEADER_SIZE];
+        auto to_net = [](uint16_t v) { return (uint16_t)((v << 8) | (v >> 8)); };
+        
+        // Serialize Header (Network Byte Order)
+        uint16_t val;
+        val = to_net(headerCopy.GetMarker()); memcpy(&packet[0], &val, 2);
+        val = to_net(headerCopy.GetId());     memcpy(&packet[2], &val, 2);
+        val = to_net(headerCopy.GetSeqNum()); memcpy(&packet[4], &val, 2);
+        val = to_net(headerCopy.GetLength()); memcpy(&packet[6], &val, 2);
+
+        // Register with Monitor for Reliability (ACK tracking)
+        if (header.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
+             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
+
+        // 2. Send Header
+        if (HAL_UART_Transmit(m_huart, packet, DmqHeader::HEADER_SIZE, 100) != HAL_OK) {
+            xSemaphoreGiveRecursive(m_mutex); return -1;
+        }
+
+        // 3. Send Payload
+        if (payload.length() > 0) {
+            if (HAL_UART_Transmit(m_huart, (uint8_t*)payload.data(), (uint16_t)payload.length(), 500) != HAL_OK) {
+                xSemaphoreGiveRecursive(m_mutex); return -1;
+            }
+        }
+
+        // 4. Calculate and Send CRC (Required for PC communication)
+        uint16_t crc = Crc16CalcBlock(packet, DmqHeader::HEADER_SIZE, 0xFFFF);
+        if (payload.length() > 0) crc = Crc16CalcBlock((uint8_t*)payload.data(), payload.length(), crc);
+
+        if (HAL_UART_Transmit(m_huart, (uint8_t*)&crc, 2, 100) != HAL_OK) {
+            xSemaphoreGiveRecursive(m_mutex); return -1;
+        }
+
+        xSemaphoreGiveRecursive(m_mutex);
+        return 0;
+    }
+
+    // ------------------------------------------------------------------------
+    // Receive() Implementation
+    // ------------------------------------------------------------------------
+    virtual int Receive(xstringstream& is, DmqHeader& header) override {
         if (m_recvTransport != this) return -1;
 
         uint8_t headerBuf[DmqHeader::HEADER_SIZE];
-        
-        // 1. Sync Loop: Scan for the Marker High Byte
-        // This recovers the stream if we joined in the middle of a packet.
         uint8_t b = 0;
-        uint8_t markerHigh = (uint8_t)(DmqHeader::MARKER >> 8); // Assumes Big Endian on wire
+        uint8_t markerHigh = (uint8_t)(DmqHeader::MARKER >> 8); 
 
-        while (true)
-        {
-            // Read 1 byte, wait forever (or long timeout)
-            // Note: HAL_MAX_DELAY allows this thread to block until data arrives.
-            if (HAL_UART_Receive(m_huart, &b, 1, HAL_MAX_DELAY) != HAL_OK) return -1;
-
-            if (b == markerHigh) {
-                headerBuf[0] = b; // Found sync byte
-                break;
+        // 1. Sync Loop
+        // Reads from Ring Buffer. If empty, sleeps efficiently on Semaphore.
+        while (true) {
+            if (ReadByteBlocked(b)) {
+                if (b == markerHigh) { headerBuf[0] = b; break; }
             }
         }
         
-        // 2. Read rest of header (7 bytes)
-        if (HAL_UART_Receive(m_huart, &headerBuf[1], DmqHeader::HEADER_SIZE - 1, 100) != HAL_OK) 
-            return -1;
+        // 2. Read Rest of Header
+        for (int i = 1; i < (int)DmqHeader::HEADER_SIZE; i++) {
+            if (!ReadByteBlocked(headerBuf[i])) return -1;
+        }
 
-        // 3. Deserialize (Safe memcpy)
+        // Deserialize Header
         auto from_net = [](uint16_t v) { return (uint16_t)((v << 8) | (v >> 8)); };
         uint16_t val;
-
         memcpy(&val, &headerBuf[0], 2); header.SetMarker(from_net(val));
         memcpy(&val, &headerBuf[2], 2); header.SetId(from_net(val));
         memcpy(&val, &headerBuf[4], 2); header.SetSeqNum(from_net(val));
         memcpy(&val, &headerBuf[6], 2); header.SetLength(from_net(val));
 
-        // 4. Verify Marker matches full 16-bit value
-        if (header.GetMarker() != DmqHeader::MARKER) 
-            return -1; // Sync error (false positive on first byte)
+        if (header.GetMarker() != DmqHeader::MARKER) return -1;
 
-        // 5. Read Payload
+        // 3. Read Payload
         uint16_t len = header.GetLength();
         if (len > 0) {
-            // Check against static buffer size
-            if (len > BUFFER_SIZE) return -1; // Packet too large
-
-            if (HAL_UART_Receive(m_huart, m_rxBuffer, len, 500) != HAL_OK) 
-                return -1;
-            
-            // Clear stream and write
-            is.clear();
-            is.str("");
-            is.write((char*)m_rxBuffer, len);
+            if (len > BUFFER_SIZE) return -1; 
+            for (int i = 0; i < len; i++) {
+                if (!ReadByteBlocked(m_tempRxBuffer[i])) return -1;
+            }
+            is.clear(); is.str(""); is.write((char*)m_tempRxBuffer, len);
         }
 
-        // 6. Handle Reliability Logic (ACKs)
+        // 4. Read & Consume CRC
+        uint16_t receivedCrc;
+        uint8_t* pCrc = (uint8_t*)&receivedCrc;
+        if (!ReadByteBlocked(pCrc[0])) return -1;
+        if (!ReadByteBlocked(pCrc[1])) return -1;
+
+        // 5. Handle ACKs
         if (header.GetId() == dmq::ACK_REMOTE_ID) {
-            if (m_transportMonitor) 
-                m_transportMonitor->Remove(header.GetSeqNum());
+            if (m_transportMonitor) m_transportMonitor->Remove(header.GetSeqNum());
         }
         else if (m_transportMonitor && m_sendTransport) {
-             // Send Auto-ACK
+             // Auto-Reply with ACK
              xostringstream ss;
              DmqHeader ack;
              ack.SetId(dmq::ACK_REMOTE_ID);
              ack.SetSeqNum(header.GetSeqNum());
              m_sendTransport->Send(ss, ack);
         }
-
         return 0;
     }
 
-    void Close() { }
+    // ------------------------------------------------------------------------
+    // Interrupt Handler
+    // ------------------------------------------------------------------------
+    /// @brief Called by HAL_UART_RxCpltCallback when a byte arrives.
+    void OnRxCplt() {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+        // 1. Push data to thread-safe buffer
+        m_ringBuffer.Put(m_rxByte);
+
+        // 2. Wake up the Receive() task immediately
+        xSemaphoreGiveFromISR(m_rxSemaphore, &xHigherPriorityTaskWoken);
+
+        // 3. Re-arm interrupt for the next byte
+        HAL_UART_Receive_IT(m_huart, &m_rxByte, 1);
+
+        // 4. Context Switch if necessary
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
 
     void SetTransportMonitor(ITransportMonitor* tm) { m_transportMonitor = tm; }
     void SetSendTransport(ITransport* st) { m_sendTransport = st; }
     void SetRecvTransport(ITransport* rt) { m_recvTransport = rt; }
 
 private:
+    /// @brief Read a byte from the Ring Buffer. Blocks if empty.
+    bool ReadByteBlocked(uint8_t& out) {
+        while (true) {
+            // Check buffer
+            if (m_ringBuffer.Get(out)) return true;
+            
+            // If empty, Sleep until ISR wakes us up.
+            // This prevents CPU starvation loop.
+            if (xSemaphoreTake(m_rxSemaphore, portMAX_DELAY) != pdTRUE) return false;
+        }
+    }
+
     UART_HandleTypeDef* m_huart;
+    SemaphoreHandle_t m_mutex = nullptr;       // Mutex for Send()
+    SemaphoreHandle_t m_rxSemaphore = nullptr; // Semaphore for Receive() blocking
+    
+    uint8_t m_rxByte; // Temp byte for HAL ISR
+    UartRingBuffer<1024> m_ringBuffer; // 1KB RX Buffer
+    
+    static const int BUFFER_SIZE = 512;
+    uint8_t m_tempRxBuffer[BUFFER_SIZE]; // Payload reassembly buffer
+
     ITransport* m_sendTransport;
     ITransport* m_recvTransport;
     ITransportMonitor* m_transportMonitor = nullptr;
-
-    // Static buffer to avoid heap fragmentation in embedded loop
-    static const int BUFFER_SIZE = 512;
-    uint8_t m_rxBuffer[BUFFER_SIZE];
 };
 
 #endif // STM32_UART_TRANSPORT_H

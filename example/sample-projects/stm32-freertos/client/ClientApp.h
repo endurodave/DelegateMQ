@@ -23,7 +23,7 @@ public:
         // Send START command
         CommandMsg command;
         command.action = CommandMsg::Action::START;
-        command.pollTime = 250;
+        command.pollTime = 1000;
 
         // Use the blocking "Wait" function. 
         bool sendCommandMsgSuccess = NetworkMgr::Instance().SendCommandMsgWait(command);
@@ -32,8 +32,8 @@ public:
         ActuatorMsg msg;
         msg.actuatorId = 1;
 
-        // This launches an async task that calls SendActuatorMsgWait internally
-        std::future<bool> futureRetVal = NetworkMgr::Instance().SendActuatorMsgFuture(msg);
+        // Sends immediately and returns.
+        NetworkMgr::Instance().SendActuatorMsg(msg);
 
         // Start local data collection
         m_pollTimerConn = m_pollTimer.OnExpired->Connect(MakeDelegate(this, &ClientApp::PollData, m_thread));
@@ -41,13 +41,10 @@ public:
 
         // Start actuator updates
         m_actuatorTimerConn = m_actuatorTimer.OnExpired->Connect(MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
-        m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
-
-        // Wait for the future to complete
-        bool sendActuatorMsgSuccess = futureRetVal.get();
+        m_actuatorTimer.Start(std::chrono::milliseconds(2000), true);
 
         // Return true if both succeeded
-        return (sendCommandMsgSuccess && sendActuatorMsgSuccess);
+        return (sendCommandMsgSuccess);
     }
 
     void Stop()
@@ -114,11 +111,15 @@ private:
         msg.actuatorId = 1;
         NetworkMgr::Instance().SendActuatorMsg(msg);
 
+        // THROTTLE: Give the serial port 50ms to flush the first packet
+        // and receive the ACK before queuing the next one.
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
         msg.actuatorId = 2;
         NetworkMgr::Instance().SendActuatorMsg(msg);
 
         // Explicitly start timer for next time
-        m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
+        m_actuatorTimer.Start(std::chrono::milliseconds(2000), true);
     }
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
