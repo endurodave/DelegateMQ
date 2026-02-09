@@ -9,6 +9,12 @@ using namespace std;
 const std::chrono::milliseconds NetworkEngine::SEND_TIMEOUT(100);
 const std::chrono::milliseconds NetworkEngine::RECV_TIMEOUT(2000);
 
+// [STM32-FreeRTOS] Define Static Stack for Network Thread
+// Increase size to 2048 words (8KB) to handle Debug mode call depths.
+#if defined(DMQ_TRANSPORT_STM32_UART) && defined(DMQ_THREAD_FREERTOS)
+    static StackType_t g_networkThreadStack[2048];
+#endif
+
 NetworkEngine::NetworkEngine()
     : m_thread("NetworkEngine"),
     m_transportMonitor(RECV_TIMEOUT),
@@ -31,6 +37,11 @@ NetworkEngine::NetworkEngine()
     , m_reliableTransport(m_sendTransport, m_retryMonitor)
 #endif
 {
+#if defined(DMQ_TRANSPORT_STM32_UART) && defined(DMQ_THREAD_FREERTOS)
+    // Apply the static stack buffer to prevent overflow
+    m_thread.SetStackMem(g_networkThreadStack, 2048);
+#endif
+
     m_thread.CreateThread();
 }
 

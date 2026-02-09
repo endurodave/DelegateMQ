@@ -7,35 +7,40 @@
 namespace dmq
 {
     /// @brief Production-grade wrapper around ThreadX Semaphore to mimic std::condition_variable
+    /// @details 
+    /// - Uses a Counting Semaphore (initialized to 0).
+    /// - ISR-safe notification logic (tx_semaphore_put).
+    /// - Robust tick overflow handling using elapsed time subtraction.
+    /// 
+    /// @note Limitation: Unlike std::cv, a semaphore retains its signal state.
+    /// If notify() occurs before wait(), the wait will effectively "fall through". 
     class ThreadXConditionVariable
     {
     public:
-        ThreadXConditionVariable() 
-        { 
-            // Create a binary semaphore (initially 0)
-            // TX_NO_INHERIT: Priority inheritance not needed for signaling
-            if (tx_semaphore_create(&m_sem, "DMQ_CondVar", 0) != TX_SUCCESS)
+        ThreadXConditionVariable()
+        {
+            // Create a semaphore with initial count 0.
+            // Cast string literal to (CHAR*) to satisfy strict C++ compilers interfacing with C API.
+            if (tx_semaphore_create(&m_sem, (CHAR*)"DMQ_CondVar", 0) != TX_SUCCESS)
             {
-                // In production, handle error or assert
+                // In a real application, handle allocation failure (e.g., trap or assert)
                 // configASSERT(false); 
             }
         }
 
-        ~ThreadXConditionVariable() 
-        { 
+        ~ThreadXConditionVariable()
+        {
             tx_semaphore_delete(&m_sem);
         }
 
         ThreadXConditionVariable(const ThreadXConditionVariable&) = delete;
         ThreadXConditionVariable& operator=(const ThreadXConditionVariable&) = delete;
 
-        /// @brief Wake up one waiting thread
+        /// @brief Wake up one waiting thread (ISR Safe)
         void notify_one() noexcept
         {
-            // ThreadX tx_semaphore_put is generally ISR-safe.
-            // However, ensuring we don't overflow a "binary" concept logic:
-            // We usually don't check for ceiling in CV logic because spurious 
-            // wakes are handled by the predicate loop.
+            // ThreadX tx_semaphore_put is ISR-safe.
+            // It increments the semaphore count.
             tx_semaphore_put(&m_sem);
         }
 
@@ -56,18 +61,24 @@ namespace dmq
         template <typename Lock, typename Predicate>
         bool wait_for(Lock& lock, std::chrono::milliseconds timeout, Predicate pred)
         {
-            // 1. Convert timeout to ticks
-            // ThreadX usually runs at 100Hz or 1000Hz (TX_TIMER_TICKS_PER_SECOND)
+            // 1. Convert timeout to ticks safely
+            // Use unsigned long long to prevent overflow during multiplication (ms * ticks_per_sec)
             const ULONG ticksPerSec = TX_TIMER_TICKS_PER_SECOND;
-            const ULONG timeoutTicks = (static_cast<ULONG>(timeout.count()) * ticksPerSec) / 1000;
-            
+            unsigned long long totalTicks = (static_cast<unsigned long long>(timeout.count()) * ticksPerSec) / 1000ULL;
+
+            // Ensure at least 1 tick if timeout > 0 to avoid immediate timeout
+            if (totalTicks == 0 && timeout.count() > 0) totalTicks = 1;
+
+            // Cap at ThreadX max wait if necessary, though unlikely for ms ranges
+            const ULONG timeoutTicks = (totalTicks > 0xFFFFFFFF) ? 0xFFFFFFFF : (ULONG)totalTicks;
+
             const ULONG startTick = tx_time_get();
 
             while (!pred())
             {
                 ULONG now = tx_time_get();
-                
-                // ThreadX time is ULONG (usually 32-bit), logic same as FreeRTOS
+
+                // Overflow-safe subtraction (works because ULONG is unsigned)
                 ULONG elapsed = now - startTick;
 
                 if (elapsed >= timeoutTicks)
@@ -76,17 +87,23 @@ namespace dmq
                 ULONG remaining = timeoutTicks - elapsed;
 
                 lock.unlock();
-                
+
                 // Wait for the semaphore or timeout
                 UINT res = tx_semaphore_get(&m_sem, remaining);
-                
+
                 lock.lock();
 
                 if (res != TX_SUCCESS)
                 {
-                    // TX_NO_INSTANCE usually means timeout in this context
-                    return pred(); 
+                    // TX_NO_INSTANCE (0x0D) or TX_WAIT_ABORTED means we didn't get the token.
+                    // Timeout occurred or wait aborted.
+                    return pred();
                 }
+
+                // If res == TX_SUCCESS, we consumed a token. 
+                // Loop around and check pred() again. 
+                // If pred() is false, we consumed a signal intended for state that isn't ready,
+                // effectively acting as a "spurious wakeup" handler.
             }
 
             return true;

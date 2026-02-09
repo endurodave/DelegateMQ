@@ -82,11 +82,22 @@ private:
     NetworkMgr();
     ~NetworkMgr() = default;
 
+    // Helper functions to forward incoming data to the Signals
+    void ForwardAlarm(AlarmMsg& msg, AlarmNote& note) { if (OnAlarm) (*OnAlarm)(msg, note); }
+    void ForwardCommand(CommandMsg& msg) { if (OnCommand) (*OnCommand)(msg); }
+    void ForwardData(DataMsg& msg) { if (OnData) (*OnData)(msg); }
+    void ForwardActuator(ActuatorMsg& msg) { if (OnActuator) (*OnActuator)(msg); }
+
+    // TYPE ALIAS: Unicast, Unsafe, Member Delegate bound to 'NetworkMgr'
+    // This allows exact binding to 'this' in Create()
+    template <typename... Args>
+    using EndpointType = RemoteEndpoint<NetworkMgr, void(Args...)>;
+
     // Specific endpoints
-    RemoteEndpoint<dmq::MulticastDelegateSafe<void(AlarmMsg&, AlarmNote&)>, void(AlarmMsg&, AlarmNote&)> m_alarmMsgDel;
-    RemoteEndpoint<dmq::MulticastDelegateSafe<void(CommandMsg&)>, void(CommandMsg&)> m_commandMsgDel;
-    RemoteEndpoint<dmq::MulticastDelegateSafe<void(DataMsg&)>, void(DataMsg&)> m_dataMsgDel;
-    RemoteEndpoint<dmq::MulticastDelegateSafe<void(ActuatorMsg&)>, void(ActuatorMsg&)> m_actuatorMsgDel;
+    EndpointType<AlarmMsg&, AlarmNote&> m_alarmMsgDel;
+    EndpointType<CommandMsg&>           m_commandMsgDel;
+    EndpointType<DataMsg&>              m_dataMsgDel;
+    EndpointType<ActuatorMsg&>          m_actuatorMsgDel;
 };
 
 #endif

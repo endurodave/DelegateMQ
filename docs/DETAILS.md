@@ -22,6 +22,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [CMake](#cmake)
     - [Generic (Make/IDE)](#generic-makeide)
 - [Porting Guide](#porting-guide)
+  - [Embedded Systems](#embedded-systems)
 - [Quick Start](#quick-start)
   - [Basic Examples](#basic-examples)
   - [Publish/Subscribe Example](#publishsubscribe-example)
@@ -274,6 +275,22 @@ Numerous predefined platforms are already supported such as Windows, Linux, Free
     * Example: `DMQ_ASSERTS` for debug assertions.
     * Example: `DMQ_ALLOCATOR` to switch between standard Heap (new/delete) and the deterministic Fixed Block Allocator.
 7.  **Implement Fault Handling**: Customize `Fault.cpp` to route errors to your system's logger or crash handler. 
+
+## Embedded Systems
+
+Running C++ messaging on embedded targets (like STM32) requires specific attention to resources.
+
+1. **Stack Usage & Debug Mode:**
+
+    **Issue:** In Debug mode (-O0), C++ templates generate deep call stacks, possibly causing stack overflows.  
+    **Fix:** Increase task stack (e.g. 8KB) or in Release mode (-O2), stacks shrink significantly.
+
+2. **Transport Implementation (if using remote delegates):**
+
+    **Issue:** Blocking UART calls (e.g., `HAL_UART_Receive`) starve high-priority tasks.  
+    **Fix:** Use an Interrupt-Driven Ring Buffer. The ISR captures data immediately, and the Receive Task sleeps on a Semaphore until data exists.
+
+See the `stm32-freertos` example `README.md` for a complete implementation of static stacks, interrupt-driven UART, and correct FreeRTOS configuration.
 
 # Quick Start
 

@@ -44,7 +44,14 @@ namespace dmq
         {
             if (!m_sem) return;
 
-            // Check if we are in an ISR to use the correct FreeRTOS API
+#if defined(_WIN32) || defined(WIN32)
+            // Windows Port: 
+            // "Interrupts" are simulated threads. The hardware ISR check 
+            // does not exist. Standard API is safe here.
+            xSemaphoreGive(m_sem);
+#else
+            // Embedded (e.g., ARM Cortex-M): 
+            // Must check if running in ISR context to use FromISR API.
             if (xPortIsInsideInterrupt())
             {
                 BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -55,6 +62,7 @@ namespace dmq
             {
                 xSemaphoreGive(m_sem);
             }
+#endif
         }
 
         /// @brief Wait indefinitely until predicate is true

@@ -14,16 +14,16 @@ NetworkMgr::NetworkMgr()
 int NetworkMgr::Create()
 {
     // Bind signals
-    m_alarmMsgDel.Bind(OnAlarm.get(), &SignalSafe<void(AlarmMsg&, AlarmNote&)>::operator(), ids::ALARM_MSG_ID);
-    m_dataMsgDel.Bind(OnData.get(), &SignalSafe<void(DataMsg&)>::operator(), ids::DATA_MSG_ID);
-    m_commandMsgDel.Bind(OnCommand.get(), &SignalSafe<void(CommandMsg&)>::operator(), ids::COMMAND_MSG_ID);
-    m_actuatorMsgDel.Bind(OnActuator.get(), &SignalSafe<void(ActuatorMsg&)>::operator(), ids::ACTUATOR_MSG_ID);
+    m_alarmMsgDel.Bind(this, &NetworkMgr::ForwardAlarm, ids::ALARM_MSG_ID);
+    m_dataMsgDel.Bind(this, &NetworkMgr::ForwardData, ids::DATA_MSG_ID);
+    m_commandMsgDel.Bind(this, &NetworkMgr::ForwardCommand, ids::COMMAND_MSG_ID);
+    m_actuatorMsgDel.Bind(this, &NetworkMgr::ForwardActuator, ids::ACTUATOR_MSG_ID);
 
-    // Register for error callbacks
-    m_alarmMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
-    m_dataMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
-    m_commandMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
-    m_actuatorMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
+    // Register for error callbacks using single assignment (=)
+    m_alarmMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
+    m_dataMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
+    m_commandMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
+    m_actuatorMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
 
     // Register endpoints with the Base Engine (So Incoming() can find them)
     RegisterEndpoint(ids::ALARM_MSG_ID, &m_alarmMsgDel);
