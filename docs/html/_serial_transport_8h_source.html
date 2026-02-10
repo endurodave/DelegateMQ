@@ -102,340 +102,263 @@ $(function(){initNavTree('_serial_transport_8h_source.html',''); initResizable(t
 <a href="_serial_transport_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef SERIAL_TRANSPORT_H</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define SERIAL_TRANSPORT_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;libserialport.h&quot;</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_8h.html">predef/transport/ITransport.h</a>&quot;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_monitor_8h.html">predef/transport/ITransportMonitor.h</a>&quot;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="_dmq_header_8h.html">predef/transport/DmqHeader.h</a>&quot;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_m_q_8h.html">DelegateMQ.h</a>&quot;</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="class_serial_transport.html">   23</a></span><span class="keyword">class </span><a class="code hl_class" href="class_serial_transport.html">SerialTransport</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_i_transport.html">ITransport</a></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
-<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a6edc5a0b9ec733f204edd1a16b8950b3">   26</a></span>    <a class="code hl_function" href="class_serial_transport.html#a6edc5a0b9ec733f204edd1a16b8950b3">SerialTransport</a>() : m_thread(<span class="stringliteral">&quot;SerialTransport&quot;</span>), m_sendTransport(this), m_recvTransport(this)</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        m_thread.<a class="code hl_function" href="class_thread.html#a7ac27cb95d8af8be6dd6f8e7c24e24ee">CreateThread</a>(std::chrono::milliseconds(5000));</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;libserialport.h&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_opt_8h.html">delegate/DelegateOpt.h</a>&quot;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_8h.html">predef/transport/ITransport.h</a>&quot;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &quot;<a class="code" href="_dmq_header_8h.html">predef/transport/DmqHeader.h</a>&quot;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_monitor_8h.html">predef/transport/ITransportMonitor.h</a>&quot;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &quot;<a class="code" href="crc16_8h.html">predef/util/crc16.h</a>&quot;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="class_serial_transport.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="class_serial_transport.html">SerialTransport</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_i_transport.html">ITransport</a></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a6edc5a0b9ec733f204edd1a16b8950b3">   44</a></span>    <a class="code hl_function" href="class_serial_transport.html#a6edc5a0b9ec733f204edd1a16b8950b3">SerialTransport</a>() : m_sendTransport(this), m_recvTransport(this) {}</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a9eece747cea9fed944ca10fb62b6d30a">   46</a></span>    <a class="code hl_function" href="class_serial_transport.html#a9eece747cea9fed944ca10fb62b6d30a">~SerialTransport</a>() { <a class="code hl_function" href="class_serial_transport.html#a81e8678e3e74eb106151a70425aa32e5">Close</a>(); }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a7755d5ee8c2dda11b7eb11904f0116e9">   48</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_serial_transport.html#a7755d5ee8c2dda11b7eb11904f0116e9">Create</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* portName, <span class="keywordtype">int</span> baudRate)</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        std::lock_guard&lt;std::recursive_mutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        sp_return ret = sp_get_port_by_name(portName, &amp;m_port);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">if</span> (ret != SP_OK) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;SerialTransport: Could not find port &quot;</span> &lt;&lt; portName &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        ret = sp_open(m_port, SP_MODE_READ_WRITE);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (ret != SP_OK) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;SerialTransport: Could not open port &quot;</span> &lt;&lt; portName &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            sp_free_port(m_port);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            m_port = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        sp_set_baudrate(m_port, baudRate);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        sp_set_bits(m_port, 8);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        sp_set_parity(m_port, SP_PARITY_NONE);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        sp_set_stopbits(m_port, 1);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        sp_set_flowcontrol(m_port, SP_FLOWCONTROL_NONE);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    }</div>
 </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a9eece747cea9fed944ca10fb62b6d30a">   31</a></span>    <a class="code hl_function" href="class_serial_transport.html#a9eece747cea9fed944ca10fb62b6d30a">~SerialTransport</a>()</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    {</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_function" href="class_serial_transport.html#a81e8678e3e74eb106151a70425aa32e5">Close</a>();</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        m_thread.<a class="code hl_function" href="class_thread.html#aabf05b92a7bc081a464b8adcb916f321">ExitThread</a>();</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="}">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a81e8678e3e74eb106151a70425aa32e5">   73</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_serial_transport.html#a81e8678e3e74eb106151a70425aa32e5">Close</a>()</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        std::lock_guard&lt;std::recursive_mutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">if</span> (m_port) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            sp_close(m_port);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            sp_free_port(m_port);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            m_port = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
 </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="foldopen" id="foldopen00037" data-start="{" data-end="}">
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a7755d5ee8c2dda11b7eb11904f0116e9">   37</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="class_serial_transport.html#a7755d5ee8c2dda11b7eb11904f0116e9">Create</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* portName, <span class="keywordtype">int</span> baudRate)</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>() != m_thread.<a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>())</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;<a class="code hl_function" href="class_serial_transport.html#a7755d5ee8c2dda11b7eb11904f0116e9">SerialTransport::Create</a>, m_thread, <a class="code hl_variable" href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a>)(portName, baudRate);</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        sp_return ret = sp_get_port_by_name(portName, &amp;m_port);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">if</span> (ret != SP_OK)</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;SerialTransport: Could not find port &quot;</span> &lt;&lt; portName &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        }</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        ret = sp_open(m_port, SP_MODE_READ_WRITE);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">if</span> (ret != SP_OK)</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        {</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;SerialTransport: Could not open port &quot;</span> &lt;&lt; portName &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            sp_free_port(m_port);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            m_port = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        }</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        sp_set_baudrate(m_port, baudRate);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        sp_set_bits(m_port, 8);</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        sp_set_parity(m_port, SP_PARITY_NONE);</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        sp_set_stopbits(m_port, 1);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        sp_set_flowcontrol(m_port, SP_FLOWCONTROL_NONE);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
-</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a81e8678e3e74eb106151a70425aa32e5">   67</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_serial_transport.html#a81e8678e3e74eb106151a70425aa32e5">Close</a>()</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>() != m_thread.<a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>())</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;<a class="code hl_function" href="class_serial_transport.html#a81e8678e3e74eb106151a70425aa32e5">SerialTransport::Close</a>, m_thread, <a class="code hl_variable" href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a>)();</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">if</span> (m_port)</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        {</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            sp_close(m_port);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            sp_free_port(m_port);</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            m_port = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        }</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
-</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="comment">// We create a local copy to modify the length field.</span></div>
-<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="class_serial_transport.html#ac77c778772a43f7e72d86f36cb9ba3a3">   81</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_serial_transport.html#ac77c778772a43f7e72d86f36cb9ba3a3">Send</a>(<a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>&amp; os, <span class="keyword">const</span> <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a>&amp; header)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>() != m_thread.<a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>())</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;<a class="code hl_function" href="class_serial_transport.html#ac77c778772a43f7e72d86f36cb9ba3a3">SerialTransport::Send</a>, m_thread, <a class="code hl_variable" href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a>)(os, header);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="comment">// Helper: Swap Little Endian &lt;-&gt; Big Endian</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">   84</a></span>    uint16_t <a class="code hl_function" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a>(uint16_t v) { <span class="keywordflow">return</span> (v &lt;&lt; 8) | (v &gt;&gt; 8); }</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">if</span> (!m_port) <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">if</span> (os.bad() || os.fail()) <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">if</span> (m_sendTransport != <span class="keyword">this</span>) {</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Error: This transport used for receive only!&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        }</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="comment">// 1. Create a local copy to modify the length</span></div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a> headerCopy = header;</div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="class_serial_transport.html#ac77c778772a43f7e72d86f36cb9ba3a3">   86</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_serial_transport.html#ac77c778772a43f7e72d86f36cb9ba3a3">Send</a>(<a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>&amp; os, <span class="keyword">const</span> <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a>&amp; header)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        std::lock_guard&lt;std::recursive_mutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">if</span> (!m_port) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a> headerCopy = header;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a> payload = os.str();</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">if</span> (payload.length() &gt; UINT16_MAX) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        headerCopy.<a class="code hl_function" href="class_dmq_header.html#ad1bba8bd03e90673a58cd7bebdbb4488">SetLength</a>(<span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(payload.length()));</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> ss(std::ios::in | std::ios::out | std::ios::binary);</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="comment">// 2. Get Payload and Set Length on the COPY</span></div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        std::string payload = os.str();</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">if</span> (payload.length() &gt; UINT16_MAX) {</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Error: Payload exceeds 64KB limit for 16-bit length field.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        }</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        headerCopy.<a class="code hl_function" href="class_dmq_header.html#ad1bba8bd03e90673a58cd7bebdbb4488">SetLength</a>(<span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(payload.length()));</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="comment">// 3. Serialize Header (using the modified copy)</span></div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> ss(std::ios::in | std::ios::out | std::ios::binary);</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keyword">auto</span> marker = headerCopy.<a class="code hl_function" href="class_dmq_header.html#a21812fc54a4d21b163200ce3e67ec4cf">GetMarker</a>();</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        ss.write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;marker), <span class="keyword">sizeof</span>(marker));</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">auto</span> <span class="keywordtype">id</span> = headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>();</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        ss.write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;<span class="keywordtype">id</span>), <span class="keyword">sizeof</span>(<span class="keywordtype">id</span>));</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keyword">auto</span> seqNum = headerCopy.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>();</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        ss.write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;seqNum), <span class="keyword">sizeof</span>(seqNum));</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keyword">auto</span> len = headerCopy.<a class="code hl_function" href="class_dmq_header.html#a34ffb53a7d4920170c0b1ffc996ccc33">GetLength</a>();</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        ss.write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;len), <span class="keyword">sizeof</span>(len));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="comment">// SERIALIZE HEADER (Big Endian)</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        uint16_t val;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        val = <a class="code hl_function" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a>(headerCopy.<a class="code hl_function" href="class_dmq_header.html#a21812fc54a4d21b163200ce3e67ec4cf">GetMarker</a>());</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        ss.write((<span class="keywordtype">char</span>*)&amp;val, 2);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        val = <a class="code hl_function" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a>(headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>());</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        ss.write((<span class="keywordtype">char</span>*)&amp;val, 2);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        val = <a class="code hl_function" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a>(headerCopy.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>());</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        ss.write((<span class="keywordtype">char</span>*)&amp;val, 2);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        val = <a class="code hl_function" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a>(headerCopy.<a class="code hl_function" href="class_dmq_header.html#a34ffb53a7d4920170c0b1ffc996ccc33">GetLength</a>());</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        ss.write((<span class="keywordtype">char</span>*)&amp;val, 2);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="comment">// Payload</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        ss.write(payload.data(), payload.size());</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="comment">// CRC</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a> packetWithoutCrc = ss.str();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        uint16_t crc = <a class="code hl_function" href="crc16_8h.html#a94217223af71df1943831091db8c12c7">Crc16CalcBlock</a>((<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>*)packetWithoutCrc.c_str(), (<span class="keywordtype">int</span>)packetWithoutCrc.length(), 0xFFFF);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        ss.write(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;crc), <span class="keyword">sizeof</span>(crc));</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="comment">// 4. Append Payload</span></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        ss &lt;&lt; payload;</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        std::string packetData = ss.str();</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="comment">// 5. Monitor Logic (Using ID/Seq from the copy)</span></div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordflow">if</span> (<span class="keywordtype">id</span> != <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a>)</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        {</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            <span class="keywordflow">if</span> (m_transportMonitor)</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a457ff7ca9a3ba3be3ff1cf2a34b63972">Add</a>(seqNum, <span class="keywordtype">id</span>);</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        }</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="comment">// 6. Blocking Write</span></div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="comment">// Write the entire [Header + Payload] buffer in one go.</span></div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordtype">int</span> result = sp_blocking_write(m_port, packetData.c_str(), packetData.length(), 1000);</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordflow">if</span> (result &lt; 0 || (<span class="keywordtype">size_t</span>)result != packetData.length())</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        {</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;SerialTransport: Write failed or incomplete.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        }</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a> packetData = ss.str();</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">if</span> (header.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>() != <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a> &amp;&amp; m_transportMonitor) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a457ff7ca9a3ba3be3ff1cf2a34b63972">Add</a>(headerCopy.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>(), headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>());</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keywordtype">int</span> result = sp_blocking_write(m_port, packetData.c_str(), packetData.length(), 1000);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">return</span> (result == (<span class="keywordtype">int</span>)packetData.length()) ? 0 : -1;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    }</div>
 </div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
-<div class="foldopen" id="foldopen00146" data-start="{" data-end="}">
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="class_serial_transport.html#aa48644f6dd5517d8476c2b5cf64e54a2">  146</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_serial_transport.html#aa48644f6dd5517d8476c2b5cf64e54a2">Receive</a>(<a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>&amp; is, <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a>&amp; header)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>() != m_thread.<a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>())</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;<a class="code hl_function" href="class_serial_transport.html#aa48644f6dd5517d8476c2b5cf64e54a2">SerialTransport::Receive</a>, m_thread, <a class="code hl_variable" href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a>)(is, header);</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keywordflow">if</span> (!m_port) <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordflow">if</span> (m_recvTransport != <span class="keyword">this</span>) {</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;Error: This transport used for send only!&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        }</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="comment">// 1. Read Fixed-Size Header (8 bytes)</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="comment">// We read exactly DmqHeader::HEADER_SIZE to get framing info.</span></div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordtype">char</span> headerBuf[<a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>];</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordflow">if</span> (!ReadExact(headerBuf, <a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>, 2000)) <span class="comment">// 2s timeout waiting for start of msg</span></div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        {</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        }</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="comment">// 2. Deserialize Header</span></div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> headerStream(std::ios::in | std::ios::out | std::ios::binary);</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        headerStream.write(headerBuf, <a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>);</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        headerStream.seekg(0);</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        uint16_t marker = 0;</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        headerStream.read(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;marker), <span class="keyword">sizeof</span>(marker));</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        header.<a class="code hl_function" href="class_dmq_header.html#acc1ac5a791de0d5e28ef5c1e7e74e865">SetMarker</a>(marker);</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">if</span> (header.<a class="code hl_function" href="class_dmq_header.html#a21812fc54a4d21b163200ce3e67ec4cf">GetMarker</a>() != <a class="code hl_variable" href="class_dmq_header.html#a8f1df2f501e483dc7e6490eae1085a58">DmqHeader::MARKER</a>) {</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;SerialTransport: Invalid sync marker!&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            <span class="comment">// Ideally flush buffer here to re-sync</span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            sp_flush(m_port, SP_BUF_INPUT);</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        }</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        uint16_t <span class="keywordtype">id</span> = 0;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        headerStream.read(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;<span class="keywordtype">id</span>), <span class="keyword">sizeof</span>(<span class="keywordtype">id</span>));</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        header.<a class="code hl_function" href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">SetId</a>(<span class="keywordtype">id</span>);</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        uint16_t seqNum = 0;</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        headerStream.read(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;seqNum), <span class="keyword">sizeof</span>(seqNum));</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        header.<a class="code hl_function" href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">SetSeqNum</a>(seqNum);</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        uint16_t length = 0;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        headerStream.read(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;length), <span class="keyword">sizeof</span>(length));</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        header.<a class="code hl_function" href="class_dmq_header.html#ad1bba8bd03e90673a58cd7bebdbb4488">SetLength</a>(length);</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="comment">// 3. Read Payload (Based on Header Length)</span></div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="keywordflow">if</span> (length &gt; 0)</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        {</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            <span class="keywordflow">if</span> (length &gt; BUFFER_SIZE) {</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>                std::cerr &lt;&lt; <span class="stringliteral">&quot;SerialTransport: Payload too large for buffer.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            }</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            <span class="keywordflow">if</span> (!ReadExact(m_buffer, length, 1000)) <span class="comment">// 1s timeout for body</span></div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            {</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>                std::cerr &lt;&lt; <span class="stringliteral">&quot;SerialTransport: Failed to read full payload.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>                <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            }</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            <span class="comment">// Write payload to output stream</span></div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            is.write(m_buffer, length);</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        }</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="comment">// 4. Ack Logic</span></div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keywordflow">if</span> (<span class="keywordtype">id</span> == <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a>)</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        {</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keywordflow">if</span> (m_transportMonitor)</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>                m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a64b5f2d1c3688410e3d084a8d67b7669">Remove</a>(seqNum);</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        }</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        {</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            <span class="keywordflow">if</span> (m_transportMonitor &amp;&amp; m_sendTransport)</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            {</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>                <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> ss_ack;</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>                <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a> ack;</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>                ack.<a class="code hl_function" href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">SetId</a>(<a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a>);</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>                ack.<a class="code hl_function" href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">SetSeqNum</a>(seqNum);</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                <span class="comment">// Send() will automatically set length to 0 for empty payload</span></div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                m_sendTransport-&gt;<a class="code hl_function" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">Send</a>(ss_ack, ack);</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>            }</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        }</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="foldopen" id="foldopen00131" data-start="{" data-end="}">
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="class_serial_transport.html#aa48644f6dd5517d8476c2b5cf64e54a2">  131</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_serial_transport.html#aa48644f6dd5517d8476c2b5cf64e54a2">Receive</a>(<a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>&amp; is, <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a>&amp; header)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keywordflow">if</span> (!m_port) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">if</span> (m_recvTransport != <span class="keyword">this</span>) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordtype">char</span> headerBuf[<a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>];</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="comment">// 1. Strict Sync Loop</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keywordtype">char</span> b = 0;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>            <span class="comment">// Short timeout for Sync, but non-blocking check</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            <span class="keywordflow">if</span> (sp_blocking_read(m_port, &amp;b, 1, 10) &lt;= 0) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            <span class="keywordflow">if</span> ((uint8_t)b == 0xAA) {</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                <span class="keywordtype">char</span> next_b = 0;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>                <span class="keywordflow">if</span> (sp_blocking_read(m_port, &amp;next_b, 1, 100) &gt; 0) {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                    <span class="keywordflow">if</span> ((uint8_t)next_b == 0x55) {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                        headerBuf[0] = b;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                        headerBuf[1] = next_b;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                    }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        }</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="comment">// 2. Read Rest of Header</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="comment">// INCREASED TIMEOUT: 1000ms (was 100ms) to allow OS latency</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keywordflow">if</span> (!ReadExact(headerBuf + 2, <a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a> - 2, 1000))</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="comment">// 3. Deserialize</span></div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        uint16_t val;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        memcpy(&amp;val, &amp;headerBuf[0], 2); header.<a class="code hl_function" href="class_dmq_header.html#acc1ac5a791de0d5e28ef5c1e7e74e865">SetMarker</a>(<a class="code hl_function" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a>(val));</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        memcpy(&amp;val, &amp;headerBuf[2], 2); header.<a class="code hl_function" href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">SetId</a>(<a class="code hl_function" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a>(val));</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        memcpy(&amp;val, &amp;headerBuf[4], 2); header.<a class="code hl_function" href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">SetSeqNum</a>(<a class="code hl_function" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a>(val));</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        memcpy(&amp;val, &amp;headerBuf[6], 2); header.<a class="code hl_function" href="class_dmq_header.html#ad1bba8bd03e90673a58cd7bebdbb4488">SetLength</a>(<a class="code hl_function" href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a>(val));</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordflow">if</span> (header.<a class="code hl_function" href="class_dmq_header.html#a21812fc54a4d21b163200ce3e67ec4cf">GetMarker</a>() != <a class="code hl_variable" href="class_dmq_header.html#a8f1df2f501e483dc7e6490eae1085a58">DmqHeader::MARKER</a>) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="comment">// 4. Payload</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        uint16_t len = header.<a class="code hl_function" href="class_dmq_header.html#a34ffb53a7d4920170c0b1ffc996ccc33">GetLength</a>();</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordflow">if</span> (len &gt; 0) {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            <span class="keywordflow">if</span> (len &gt; BUFFER_SIZE) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            <span class="comment">// INCREASED TIMEOUT: 1000ms</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            <span class="keywordflow">if</span> (!ReadExact(m_buffer, len, 1000)) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            is.write(m_buffer, len);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        }</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="comment">// 5. CRC Check</span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        uint16_t receivedCrc = 0;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="comment">// INCREASED TIMEOUT: 500ms</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">if</span> (!ReadExact(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span>*<span class="keyword">&gt;</span>(&amp;receivedCrc), <span class="keyword">sizeof</span>(receivedCrc), 500)) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        uint16_t calcCrc = <a class="code hl_function" href="crc16_8h.html#a94217223af71df1943831091db8c12c7">Crc16CalcBlock</a>((<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>*)headerBuf, <a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>, 0xFFFF);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">if</span> (len &gt; 0) calcCrc = <a class="code hl_function" href="crc16_8h.html#a94217223af71df1943831091db8c12c7">Crc16CalcBlock</a>((<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>*)m_buffer, len, calcCrc);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">if</span> (receivedCrc != calcCrc) {</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;CRC Mismatch&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="comment">// 6. ACKs</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="keywordflow">if</span> (header.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>() == <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a>) {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            <span class="keywordflow">if</span> (m_transportMonitor) m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a64b5f2d1c3688410e3d084a8d67b7669">Remove</a>(header.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>());</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (m_sendTransport) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> ss_ack;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a> ack;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            ack.<a class="code hl_function" href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">SetId</a>(<a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a>);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            ack.<a class="code hl_function" href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">SetSeqNum</a>(header.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>());</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            m_sendTransport-&gt;<a class="code hl_function" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">Send</a>(ss_ack, ack);</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        }</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    }</div>
 </div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
-<div class="foldopen" id="foldopen00234" data-start="{" data-end="}">
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a6b312ac5a26ed6e02a4513dfbfb05af4">  234</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_serial_transport.html#a6b312ac5a26ed6e02a4513dfbfb05af4">SetTransportMonitor</a>(<a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a>* transportMonitor)</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    {</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>() != m_thread.<a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>())</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;<a class="code hl_function" href="class_serial_transport.html#a6b312ac5a26ed6e02a4513dfbfb05af4">SerialTransport::SetTransportMonitor</a>, m_thread, <a class="code hl_variable" href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a>)(transportMonitor);</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        m_transportMonitor = transportMonitor;</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a487c81f55bda76fb5c32d36c269d0c38">  206</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_serial_transport.html#a487c81f55bda76fb5c32d36c269d0c38">SetTransportMonitor</a>(<a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a>* tm) { m_transportMonitor = tm; }</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a37cc5bdde58876bf6d5e11ee3eb4632b">  207</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_serial_transport.html#a37cc5bdde58876bf6d5e11ee3eb4632b">SetSendTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* st) { m_sendTransport = st; }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a81d208584aeb126553c9bc243ea82642">  208</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_serial_transport.html#a81d208584aeb126553c9bc243ea82642">SetRecvTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* rt) { m_recvTransport = rt; }</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordtype">bool</span> ReadExact(<span class="keywordtype">char</span>* dest, <span class="keywordtype">size_t</span> size, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> timeoutMs)</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keywordtype">size_t</span> totalRead = 0;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="comment">// Keep attempting to read until we have &#39;size&#39; bytes</span></div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="keywordflow">while</span> (totalRead &lt; size)</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        {</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            <span class="keywordflow">if</span> (!m_port) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keywordtype">int</span> ret = sp_blocking_read(m_port, dest + totalRead, size - totalRead, timeoutMs);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            <span class="keywordflow">if</span> (ret &lt; 0) <span class="keywordflow">return</span> <span class="keyword">false</span>; <span class="comment">// Error</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            <span class="keywordflow">if</span> (ret == 0) <span class="keywordflow">return</span> <span class="keyword">false</span>; <span class="comment">// Timeout</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            totalRead += ret;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        }</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    }</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    sp_port* m_port = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    std::recursive_mutex m_mutex;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <a class="code hl_class" href="class_i_transport.html">ITransport</a>* m_sendTransport = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <a class="code hl_class" href="class_i_transport.html">ITransport</a>* m_recvTransport = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a>* m_transportMonitor = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> BUFFER_SIZE = 4096;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordtype">char</span> m_buffer[BUFFER_SIZE] = { 0 };</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>};</div>
 </div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
-<div class="foldopen" id="foldopen00241" data-start="{" data-end="}">
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a3cb0db9ac07742570a380f90f34e7577">  241</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_serial_transport.html#a3cb0db9ac07742570a380f90f34e7577">SetSendTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* sendTransport)</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    {</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>() != m_thread.<a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>())</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;<a class="code hl_function" href="class_serial_transport.html#a3cb0db9ac07742570a380f90f34e7577">SerialTransport::SetSendTransport</a>, m_thread, <a class="code hl_variable" href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a>)(sendTransport);</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        m_sendTransport = sendTransport;</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    }</div>
-</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
-<div class="foldopen" id="foldopen00248" data-start="{" data-end="}">
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno"><a class="line" href="class_serial_transport.html#a55da2863e782a69ec9a2e1add0781abb">  248</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_serial_transport.html#a55da2863e782a69ec9a2e1add0781abb">SetRecvTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* recvTransport)</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    {</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a>() != m_thread.<a class="code hl_function" href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">GetThreadId</a>())</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(<span class="keyword">this</span>, &amp;<a class="code hl_function" href="class_serial_transport.html#a55da2863e782a69ec9a2e1add0781abb">SerialTransport::SetRecvTransport</a>, m_thread, <a class="code hl_variable" href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a>)(recvTransport);</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        m_recvTransport = recvTransport;</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    }</div>
-</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keywordtype">bool</span> ReadExact(<span class="keywordtype">char</span>* dest, <span class="keywordtype">size_t</span> size, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> timeoutMs)</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    {</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordtype">size_t</span> totalRead = 0;</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <span class="comment">// Simple retry loop. In production, you might want a more sophisticated timeout </span></div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="comment">// that decreases with each iteration.</span></div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keywordflow">while</span> (totalRead &lt; size)</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        {</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <span class="keywordtype">int</span> ret = sp_blocking_read(m_port, dest + totalRead, size - totalRead, timeoutMs);</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            <span class="keywordflow">if</span> (ret &lt; 0) <span class="keywordflow">return</span> <span class="keyword">false</span>; <span class="comment">// Error</span></div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            <span class="keywordflow">if</span> (ret == 0) <span class="keywordflow">return</span> <span class="keyword">false</span>; <span class="comment">// Timeout (incomplete data)</span></div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            totalRead += ret;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        }</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    }</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    sp_port* m_port = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <a class="code hl_class" href="class_thread.html">Thread</a> m_thread;</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <a class="code hl_class" href="class_i_transport.html">ITransport</a>* m_sendTransport = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    <a class="code hl_class" href="class_i_transport.html">ITransport</a>* m_recvTransport = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a>* m_transportMonitor = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span> </div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="comment">// @TODO Update buffer size if necessary. Max 64KB for 16-bit length.</span></div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> BUFFER_SIZE = 4096;</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keywordtype">char</span> m_buffer[BUFFER_SIZE] = { 0 };</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>};</div>
-</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span> </div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span><span class="preprocessor">#endif </span><span class="comment">// SERIAL_TRANSPORT_H</span></div>
-<div class="ttc" id="a_delegate_m_q_8h_html"><div class="ttname"><a href="_delegate_m_q_8h.html">DelegateMQ.h</a></div><div class="ttdoc">A single-include header for the complete DelegateMQ library functionality.</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:101</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:102</div></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="a_delegate_opt_8h_html"><div class="ttname"><a href="_delegate_opt_8h.html">DelegateOpt.h</a></div><div class="ttdoc">Delegate library options header file.</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:147</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a8e4b2760271c0d353bc1e58de15aeb44"><div class="ttname"><a href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a></div><div class="ttdeci">std::string xstring</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:150</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:148</div></div>
 <div class="ttc" id="a_dmq_header_8h_html"><div class="ttname"><a href="_dmq_header_8h.html">DmqHeader.h</a></div></div>
 <div class="ttc" id="a_i_transport_8h_html"><div class="ttname"><a href="_i_transport_8h.html">ITransport.h</a></div></div>
 <div class="ttc" id="a_i_transport_monitor_8h_html"><div class="ttname"><a href="_i_transport_monitor_8h.html">ITransportMonitor.h</a></div></div>
-<div class="ttc" id="aclass_dmq_header_html"><div class="ttname"><a href="class_dmq_header.html">DmqHeader</a></div><div class="ttdoc">Header for remote delegate messages. Handles endinesses byte swaps as necessary.</div><div class="ttdef"><b>Definition</b> DmqHeader.h:14</div></div>
-<div class="ttc" id="aclass_dmq_header_html_a11ab4032850ac8ad22cf172e965c9070"><div class="ttname"><a href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">DmqHeader::SetId</a></div><div class="ttdeci">void SetId(uint16_t id)</div><div class="ttdef"><b>Definition</b> DmqHeader.h:45</div></div>
-<div class="ttc" id="aclass_dmq_header_html_a21812fc54a4d21b163200ce3e67ec4cf"><div class="ttname"><a href="class_dmq_header.html#a21812fc54a4d21b163200ce3e67ec4cf">DmqHeader::GetMarker</a></div><div class="ttdeci">uint16_t GetMarker() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:27</div></div>
-<div class="ttc" id="aclass_dmq_header_html_a265f36cb0b508e8cf75744ff4730a6cf"><div class="ttname"><a href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">DmqHeader::SetSeqNum</a></div><div class="ttdeci">void SetSeqNum(uint16_t seqNum)</div><div class="ttdef"><b>Definition</b> DmqHeader.h:46</div></div>
-<div class="ttc" id="aclass_dmq_header_html_a2c57d61c9846d221cf3734c1247c651c"><div class="ttname"><a href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">DmqHeader::GetId</a></div><div class="ttdeci">uint16_t GetId() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:30</div></div>
-<div class="ttc" id="aclass_dmq_header_html_a34ffb53a7d4920170c0b1ffc996ccc33"><div class="ttname"><a href="class_dmq_header.html#a34ffb53a7d4920170c0b1ffc996ccc33">DmqHeader::GetLength</a></div><div class="ttdeci">uint16_t GetLength() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:42</div></div>
-<div class="ttc" id="aclass_dmq_header_html_a8f1df2f501e483dc7e6490eae1085a58"><div class="ttname"><a href="class_dmq_header.html#a8f1df2f501e483dc7e6490eae1085a58">DmqHeader::MARKER</a></div><div class="ttdeci">static const uint16_t MARKER</div><div class="ttdef"><b>Definition</b> DmqHeader.h:16</div></div>
-<div class="ttc" id="aclass_dmq_header_html_a9778607b12e1127d472e63cb7b56c978"><div class="ttname"><a href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">DmqHeader::GetSeqNum</a></div><div class="ttdeci">uint16_t GetSeqNum() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:33</div></div>
-<div class="ttc" id="aclass_dmq_header_html_acc1ac5a791de0d5e28ef5c1e7e74e865"><div class="ttname"><a href="class_dmq_header.html#acc1ac5a791de0d5e28ef5c1e7e74e865">DmqHeader::SetMarker</a></div><div class="ttdeci">void SetMarker(uint16_t marker)</div><div class="ttdef"><b>Definition</b> DmqHeader.h:47</div></div>
-<div class="ttc" id="aclass_dmq_header_html_ad1bba8bd03e90673a58cd7bebdbb4488"><div class="ttname"><a href="class_dmq_header.html#ad1bba8bd03e90673a58cd7bebdbb4488">DmqHeader::SetLength</a></div><div class="ttdeci">void SetLength(uint16_t length)</div><div class="ttdef"><b>Definition</b> DmqHeader.h:48</div></div>
-<div class="ttc" id="aclass_dmq_header_html_ae749177d98fed705191cd55541cbf3ae"><div class="ttname"><a href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a></div><div class="ttdeci">static const size_t HEADER_SIZE</div><div class="ttdef"><b>Definition</b> DmqHeader.h:18</div></div>
+<div class="ttc" id="aclass_dmq_header_html"><div class="ttname"><a href="class_dmq_header.html">DmqHeader</a></div><div class="ttdoc">Header for remote delegate messages.</div><div class="ttdef"><b>Definition</b> DmqHeader.h:16</div></div>
+<div class="ttc" id="aclass_dmq_header_html_a11ab4032850ac8ad22cf172e965c9070"><div class="ttname"><a href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">DmqHeader::SetId</a></div><div class="ttdeci">void SetId(uint16_t id)</div><div class="ttdef"><b>Definition</b> DmqHeader.h:39</div></div>
+<div class="ttc" id="aclass_dmq_header_html_a21812fc54a4d21b163200ce3e67ec4cf"><div class="ttname"><a href="class_dmq_header.html#a21812fc54a4d21b163200ce3e67ec4cf">DmqHeader::GetMarker</a></div><div class="ttdeci">uint16_t GetMarker() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:32</div></div>
+<div class="ttc" id="aclass_dmq_header_html_a265f36cb0b508e8cf75744ff4730a6cf"><div class="ttname"><a href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">DmqHeader::SetSeqNum</a></div><div class="ttdeci">void SetSeqNum(uint16_t seqNum)</div><div class="ttdef"><b>Definition</b> DmqHeader.h:40</div></div>
+<div class="ttc" id="aclass_dmq_header_html_a2c57d61c9846d221cf3734c1247c651c"><div class="ttname"><a href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">DmqHeader::GetId</a></div><div class="ttdeci">uint16_t GetId() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:33</div></div>
+<div class="ttc" id="aclass_dmq_header_html_a34ffb53a7d4920170c0b1ffc996ccc33"><div class="ttname"><a href="class_dmq_header.html#a34ffb53a7d4920170c0b1ffc996ccc33">DmqHeader::GetLength</a></div><div class="ttdeci">uint16_t GetLength() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:35</div></div>
+<div class="ttc" id="aclass_dmq_header_html_a8f1df2f501e483dc7e6490eae1085a58"><div class="ttname"><a href="class_dmq_header.html#a8f1df2f501e483dc7e6490eae1085a58">DmqHeader::MARKER</a></div><div class="ttdeci">static const uint16_t MARKER</div><div class="ttdef"><b>Definition</b> DmqHeader.h:19</div></div>
+<div class="ttc" id="aclass_dmq_header_html_a9778607b12e1127d472e63cb7b56c978"><div class="ttname"><a href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">DmqHeader::GetSeqNum</a></div><div class="ttdeci">uint16_t GetSeqNum() const</div><div class="ttdef"><b>Definition</b> DmqHeader.h:34</div></div>
+<div class="ttc" id="aclass_dmq_header_html_acc1ac5a791de0d5e28ef5c1e7e74e865"><div class="ttname"><a href="class_dmq_header.html#acc1ac5a791de0d5e28ef5c1e7e74e865">DmqHeader::SetMarker</a></div><div class="ttdeci">void SetMarker(uint16_t marker)</div><div class="ttdef"><b>Definition</b> DmqHeader.h:41</div></div>
+<div class="ttc" id="aclass_dmq_header_html_ad1bba8bd03e90673a58cd7bebdbb4488"><div class="ttname"><a href="class_dmq_header.html#ad1bba8bd03e90673a58cd7bebdbb4488">DmqHeader::SetLength</a></div><div class="ttdeci">void SetLength(uint16_t length)</div><div class="ttdef"><b>Definition</b> DmqHeader.h:42</div></div>
+<div class="ttc" id="aclass_dmq_header_html_ae749177d98fed705191cd55541cbf3ae"><div class="ttname"><a href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a></div><div class="ttdeci">static const size_t HEADER_SIZE</div><div class="ttdef"><b>Definition</b> DmqHeader.h:22</div></div>
 <div class="ttc" id="aclass_i_transport_html"><div class="ttname"><a href="class_i_transport.html">ITransport</a></div><div class="ttdoc">DelegateMQ transport interface.</div><div class="ttdef"><b>Definition</b> ITransport.h:10</div></div>
 <div class="ttc" id="aclass_i_transport_html_a5d901674c5ff4e1c52ac651280adde71"><div class="ttname"><a href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">ITransport::Send</a></div><div class="ttdeci">virtual int Send(xostringstream &amp;os, const DmqHeader &amp;header)=0</div></div>
 <div class="ttc" id="aclass_i_transport_monitor_html"><div class="ttname"><a href="class_i_transport_monitor.html">ITransportMonitor</a></div><div class="ttdoc">DelegateMQ transport monitor interface.</div><div class="ttdef"><b>Definition</b> ITransportMonitor.h:10</div></div>
 <div class="ttc" id="aclass_i_transport_monitor_html_a457ff7ca9a3ba3be3ff1cf2a34b63972"><div class="ttname"><a href="class_i_transport_monitor.html#a457ff7ca9a3ba3be3ff1cf2a34b63972">ITransportMonitor::Add</a></div><div class="ttdeci">virtual void Add(uint16_t seqNum, dmq::DelegateRemoteId remoteId)=0</div></div>
 <div class="ttc" id="aclass_i_transport_monitor_html_a64b5f2d1c3688410e3d084a8d67b7669"><div class="ttname"><a href="class_i_transport_monitor.html#a64b5f2d1c3688410e3d084a8d67b7669">ITransportMonitor::Remove</a></div><div class="ttdeci">virtual void Remove(uint16_t seqNum)=0</div></div>
-<div class="ttc" id="aclass_serial_transport_html"><div class="ttname"><a href="class_serial_transport.html">SerialTransport</a></div><div class="ttdoc">Libserialport transport example for DelegateMQ.</div><div class="ttdef"><b>Definition</b> SerialTransport.h:24</div></div>
-<div class="ttc" id="aclass_serial_transport_html_a3cb0db9ac07742570a380f90f34e7577"><div class="ttname"><a href="class_serial_transport.html#a3cb0db9ac07742570a380f90f34e7577">SerialTransport::SetSendTransport</a></div><div class="ttdeci">void SetSendTransport(ITransport *sendTransport)</div><div class="ttdef"><b>Definition</b> SerialTransport.h:241</div></div>
-<div class="ttc" id="aclass_serial_transport_html_a55da2863e782a69ec9a2e1add0781abb"><div class="ttname"><a href="class_serial_transport.html#a55da2863e782a69ec9a2e1add0781abb">SerialTransport::SetRecvTransport</a></div><div class="ttdeci">void SetRecvTransport(ITransport *recvTransport)</div><div class="ttdef"><b>Definition</b> SerialTransport.h:248</div></div>
-<div class="ttc" id="aclass_serial_transport_html_a6b312ac5a26ed6e02a4513dfbfb05af4"><div class="ttname"><a href="class_serial_transport.html#a6b312ac5a26ed6e02a4513dfbfb05af4">SerialTransport::SetTransportMonitor</a></div><div class="ttdeci">void SetTransportMonitor(ITransportMonitor *transportMonitor)</div><div class="ttdef"><b>Definition</b> SerialTransport.h:234</div></div>
-<div class="ttc" id="aclass_serial_transport_html_a6edc5a0b9ec733f204edd1a16b8950b3"><div class="ttname"><a href="class_serial_transport.html#a6edc5a0b9ec733f204edd1a16b8950b3">SerialTransport::SerialTransport</a></div><div class="ttdeci">SerialTransport()</div><div class="ttdef"><b>Definition</b> SerialTransport.h:26</div></div>
-<div class="ttc" id="aclass_serial_transport_html_a7755d5ee8c2dda11b7eb11904f0116e9"><div class="ttname"><a href="class_serial_transport.html#a7755d5ee8c2dda11b7eb11904f0116e9">SerialTransport::Create</a></div><div class="ttdeci">int Create(const char *portName, int baudRate)</div><div class="ttdef"><b>Definition</b> SerialTransport.h:37</div></div>
-<div class="ttc" id="aclass_serial_transport_html_a81e8678e3e74eb106151a70425aa32e5"><div class="ttname"><a href="class_serial_transport.html#a81e8678e3e74eb106151a70425aa32e5">SerialTransport::Close</a></div><div class="ttdeci">void Close()</div><div class="ttdef"><b>Definition</b> SerialTransport.h:67</div></div>
-<div class="ttc" id="aclass_serial_transport_html_a9eece747cea9fed944ca10fb62b6d30a"><div class="ttname"><a href="class_serial_transport.html#a9eece747cea9fed944ca10fb62b6d30a">SerialTransport::~SerialTransport</a></div><div class="ttdeci">~SerialTransport()</div><div class="ttdef"><b>Definition</b> SerialTransport.h:31</div></div>
-<div class="ttc" id="aclass_serial_transport_html_aa48644f6dd5517d8476c2b5cf64e54a2"><div class="ttname"><a href="class_serial_transport.html#aa48644f6dd5517d8476c2b5cf64e54a2">SerialTransport::Receive</a></div><div class="ttdeci">virtual int Receive(xstringstream &amp;is, DmqHeader &amp;header) override</div><div class="ttdef"><b>Definition</b> SerialTransport.h:146</div></div>
-<div class="ttc" id="aclass_serial_transport_html_ac77c778772a43f7e72d86f36cb9ba3a3"><div class="ttname"><a href="class_serial_transport.html#ac77c778772a43f7e72d86f36cb9ba3a3">SerialTransport::Send</a></div><div class="ttdeci">virtual int Send(xostringstream &amp;os, const DmqHeader &amp;header) override</div><div class="ttdef"><b>Definition</b> SerialTransport.h:81</div></div>
-<div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdoc">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).</div><div class="ttdef"><b>Definition</b> freertos/Thread.h:14</div></div>
-<div class="ttc" id="aclass_thread_html_a2294b75a90c36b4f14e32ae8d975a0fb"><div class="ttname"><a href="class_thread.html#a2294b75a90c36b4f14e32ae8d975a0fb">Thread::GetThreadId</a></div><div class="ttdeci">TaskHandle_t GetThreadId()</div><div class="ttdoc">Get the ID of this thread instance.</div><div class="ttdef"><b>Definition</b> freertos/Thread.cpp:73</div></div>
-<div class="ttc" id="aclass_thread_html_a7ac27cb95d8af8be6dd6f8e7c24e24ee"><div class="ttname"><a href="class_thread.html#a7ac27cb95d8af8be6dd6f8e7c24e24ee">Thread::CreateThread</a></div><div class="ttdeci">bool CreateThread()</div><div class="ttdef"><b>Definition</b> freertos/Thread.cpp:30</div></div>
-<div class="ttc" id="aclass_thread_html_aabf05b92a7bc081a464b8adcb916f321"><div class="ttname"><a href="class_thread.html#aabf05b92a7bc081a464b8adcb916f321">Thread::ExitThread</a></div><div class="ttdeci">void ExitThread()</div><div class="ttdoc">Terminate the thread gracefully.</div><div class="ttdef"><b>Definition</b> freertos/Thread.cpp:56</div></div>
-<div class="ttc" id="aclass_thread_html_aafe48fc7ef98b9e6adcf7b188a30e35a"><div class="ttname"><a href="class_thread.html#aafe48fc7ef98b9e6adcf7b188a30e35a">Thread::GetCurrentThreadId</a></div><div class="ttdeci">static TaskHandle_t GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div><div class="ttdef"><b>Definition</b> freertos/Thread.cpp:81</div></div>
-<div class="ttc" id="anamespacedmq_html_a13a5bc30242a3c91cf0cc744e863ffca"><div class="ttname"><a href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a></div><div class="ttdeci">constexpr auto WAIT_INFINITE</div><div class="ttdef"><b>Definition</b> DelegateAsyncWait.h:70</div></div>
+<div class="ttc" id="aclass_serial_transport_html"><div class="ttname"><a href="class_serial_transport.html">SerialTransport</a></div><div class="ttdef"><b>Definition</b> SerialTransport.h:42</div></div>
+<div class="ttc" id="aclass_serial_transport_html_a37cc5bdde58876bf6d5e11ee3eb4632b"><div class="ttname"><a href="class_serial_transport.html#a37cc5bdde58876bf6d5e11ee3eb4632b">SerialTransport::SetSendTransport</a></div><div class="ttdeci">void SetSendTransport(ITransport *st)</div><div class="ttdef"><b>Definition</b> SerialTransport.h:207</div></div>
+<div class="ttc" id="aclass_serial_transport_html_a487c81f55bda76fb5c32d36c269d0c38"><div class="ttname"><a href="class_serial_transport.html#a487c81f55bda76fb5c32d36c269d0c38">SerialTransport::SetTransportMonitor</a></div><div class="ttdeci">void SetTransportMonitor(ITransportMonitor *tm)</div><div class="ttdef"><b>Definition</b> SerialTransport.h:206</div></div>
+<div class="ttc" id="aclass_serial_transport_html_a6b0f9ea8508d36440ae0469c565d4b5c"><div class="ttname"><a href="class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c">SerialTransport::swap16</a></div><div class="ttdeci">uint16_t swap16(uint16_t v)</div><div class="ttdef"><b>Definition</b> SerialTransport.h:84</div></div>
+<div class="ttc" id="aclass_serial_transport_html_a6edc5a0b9ec733f204edd1a16b8950b3"><div class="ttname"><a href="class_serial_transport.html#a6edc5a0b9ec733f204edd1a16b8950b3">SerialTransport::SerialTransport</a></div><div class="ttdeci">SerialTransport()</div><div class="ttdef"><b>Definition</b> SerialTransport.h:44</div></div>
+<div class="ttc" id="aclass_serial_transport_html_a7755d5ee8c2dda11b7eb11904f0116e9"><div class="ttname"><a href="class_serial_transport.html#a7755d5ee8c2dda11b7eb11904f0116e9">SerialTransport::Create</a></div><div class="ttdeci">int Create(const char *portName, int baudRate)</div><div class="ttdef"><b>Definition</b> SerialTransport.h:48</div></div>
+<div class="ttc" id="aclass_serial_transport_html_a81d208584aeb126553c9bc243ea82642"><div class="ttname"><a href="class_serial_transport.html#a81d208584aeb126553c9bc243ea82642">SerialTransport::SetRecvTransport</a></div><div class="ttdeci">void SetRecvTransport(ITransport *rt)</div><div class="ttdef"><b>Definition</b> SerialTransport.h:208</div></div>
+<div class="ttc" id="aclass_serial_transport_html_a81e8678e3e74eb106151a70425aa32e5"><div class="ttname"><a href="class_serial_transport.html#a81e8678e3e74eb106151a70425aa32e5">SerialTransport::Close</a></div><div class="ttdeci">void Close()</div><div class="ttdef"><b>Definition</b> SerialTransport.h:73</div></div>
+<div class="ttc" id="aclass_serial_transport_html_a9eece747cea9fed944ca10fb62b6d30a"><div class="ttname"><a href="class_serial_transport.html#a9eece747cea9fed944ca10fb62b6d30a">SerialTransport::~SerialTransport</a></div><div class="ttdeci">~SerialTransport()</div><div class="ttdef"><b>Definition</b> SerialTransport.h:46</div></div>
+<div class="ttc" id="aclass_serial_transport_html_aa48644f6dd5517d8476c2b5cf64e54a2"><div class="ttname"><a href="class_serial_transport.html#aa48644f6dd5517d8476c2b5cf64e54a2">SerialTransport::Receive</a></div><div class="ttdeci">virtual int Receive(xstringstream &amp;is, DmqHeader &amp;header) override</div><div class="ttdef"><b>Definition</b> SerialTransport.h:131</div></div>
+<div class="ttc" id="aclass_serial_transport_html_ac77c778772a43f7e72d86f36cb9ba3a3"><div class="ttname"><a href="class_serial_transport.html#ac77c778772a43f7e72d86f36cb9ba3a3">SerialTransport::Send</a></div><div class="ttdeci">virtual int Send(xostringstream &amp;os, const DmqHeader &amp;header) override</div><div class="ttdef"><b>Definition</b> SerialTransport.h:86</div></div>
+<div class="ttc" id="acrc16_8h_html"><div class="ttname"><a href="crc16_8h.html">crc16.h</a></div><div class="ttdoc">Header-only 16-bit CRC-CCITT implementation (Polynomial 0x1021).</div></div>
+<div class="ttc" id="acrc16_8h_html_a94217223af71df1943831091db8c12c7"><div class="ttname"><a href="crc16_8h.html#a94217223af71df1943831091db8c12c7">Crc16CalcBlock</a></div><div class="ttdeci">unsigned short Crc16CalcBlock(unsigned char *crc_msg, int len, unsigned short crc=0xFFFF)</div><div class="ttdoc">Calculates a 16-bit CRC using the table-based method.</div><div class="ttdef"><b>Definition</b> crc16.h:54</div></div>
 <div class="ttc" id="anamespacedmq_html_a621e40ea0fde57bf5426750dab582f0b"><div class="ttname"><a href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a></div><div class="ttdeci">const uint16_t ACK_REMOTE_ID</div><div class="ttdef"><b>Definition</b> IDispatcher.h:14</div></div>
-<div class="ttc" id="anamespacedmq_html_a65e308cc5f3e37d2f7f89c72b9744ae2"><div class="ttname"><a href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:848</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

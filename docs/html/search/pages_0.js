@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['delegatemq_0',['DelegateMQ',['../index.html',1,'']]]
+  ['dispatcher_20layer_0',['Dispatcher Layer',['../index.html',1,'']]]
 ];

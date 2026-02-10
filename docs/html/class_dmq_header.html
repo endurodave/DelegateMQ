@@ -105,8 +105,7 @@ $(function(){initNavTree('class_dmq_header.html',''); initResizable(true); });
 </div><!--header-->
 <div class="contents">
 
-<p>Header for remote delegate messages. Handles endinesses byte swaps as necessary. <br  />
-  
+<p>Header for remote delegate messages.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_dmq_header_8h_source.html">DmqHeader.h</a>&gt;</code></p>
@@ -141,14 +140,14 @@ Static Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a8f1df2f501e483dc7e6490eae1085a58" id="r_a8f1df2f501e483dc7e6490eae1085a58"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f1df2f501e483dc7e6490eae1085a58">MARKER</a> = 0x55AA</td></tr>
+<tr class="memitem:a8f1df2f501e483dc7e6490eae1085a58" id="r_a8f1df2f501e483dc7e6490eae1085a58"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f1df2f501e483dc7e6490eae1085a58">MARKER</a> = 0xAA55</td></tr>
 <tr class="separator:a8f1df2f501e483dc7e6490eae1085a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae749177d98fed705191cd55541cbf3ae" id="r_ae749177d98fed705191cd55541cbf3ae"><td class="memItemLeft" align="right" valign="top">static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae749177d98fed705191cd55541cbf3ae">HEADER_SIZE</a> = 8</td></tr>
 <tr class="separator:ae749177d98fed705191cd55541cbf3ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Header for remote delegate messages. Handles endinesses byte swaps as necessary. <br  />
- </p>
+<div class="textblock"><p>Header for remote delegate messages. </p>
+<p>This class is a Plain Old Data (POD) container. It stores values in Host Byte Order. The Transport layer is responsible for converting to/from Network Byte Order (Big Endian) during transmission. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a5ea151fe4df7cf03129c01ff7d74534f" name="a5ea151fe4df7cf03129c01ff7d74534f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5ea151fe4df7cf03129c01ff7d74534f">&#9670;&#160;</a></span>DmqHeader() <span class="overload">[1/2]</span></h2>
@@ -468,7 +467,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint16_t DmqHeader::MARKER = 0x55AA</td>
+          <td class="memname">const uint16_t DmqHeader::MARKER = 0xAA55</td>
         </tr>
       </table>
   </td>

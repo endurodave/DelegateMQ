@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['networkengine_2ecpp_0',['NetworkEngine.cpp',['../_network_engine_8cpp.html',1,'']]],
-  ['networkengine_2eh_1',['NetworkEngine.h',['../_network_engine_8h.html',1,'']]],
-  ['nexthigher_2',['nexthigher',['../xallocator_8cpp.html#a229bdfd69b1fe7d0ad297e789824019e',1,'xallocator.cpp']]],
-  ['nngtransport_3',['NngTransport',['../class_nng_transport.html',1,'NngTransport'],['../class_nng_transport.html#a0c020810f1995d55cae5f614b52d6bea',1,'NngTransport::NngTransport()']]],
-  ['nngtransport_2eh_4',['NngTransport.h',['../_nng_transport_8h.html',1,'']]],
-  ['none_5',['NONE',['../classserialize.html#acfb1afef8776c22530f83bec54ea89b0ab50339a10e1de285ac99d4c3990b8693',1,'serialize']]],
-  ['normal_6',['NORMAL',['../namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051',1,'dmq']]],
-  ['now_7',['now',['../structdmq_1_1_bare_metal_clock.html#a092271fdfa7137dd4dbf9a95f1e71d20',1,'dmq::BareMetalClock::now()'],['../structdmq_1_1_free_r_t_o_s_clock.html#a23c351112ab5d42be323591130e7b78c',1,'dmq::FreeRTOSClock::now()']]]
+  ['header_0',['header',['../struct_retry_monitor_1_1_retry_entry.html#a4c5a10f81d79198d9a3dbba8c925ec20',1,'RetryMonitor::RetryEntry']]],
+  ['header_5fsize_1',['HEADER_SIZE',['../class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae',1,'DmqHeader']]],
+  ['heap_5farg_5fdeleter_2',['heap_arg_deleter',['../classdmq_1_1heap__arg__deleter.html',1,'dmq::heap_arg_deleter&lt; T &gt;'],['../classdmq_1_1heap__arg__deleter.html#ad04b633e20b555dc6e359b75cb5d8288',1,'dmq::heap_arg_deleter::heap_arg_deleter()'],['../classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html#ab8c1e7384bd0dcadd7aeae4583fcce59',1,'dmq::heap_arg_deleter&lt; T * &gt;::heap_arg_deleter()'],['../classdmq_1_1heap__arg__deleter_3_01_t_01_5_5_01_4.html#a0f557e8740ca78241da4a10032f8f20f',1,'dmq::heap_arg_deleter&lt; T ** &gt;::heap_arg_deleter()']]],
+  ['heap_5farg_5fdeleter_3c_20t_20_2a_20_3e_3',['heap_arg_deleter&lt; T * &gt;',['../classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html',1,'dmq']]],
+  ['heap_5farg_5fdeleter_3c_20t_20_2a_2a_20_3e_4',['heap_arg_deleter&lt; T ** &gt;',['../classdmq_1_1heap__arg__deleter_3_01_t_01_5_5_01_4.html',1,'dmq']]],
+  ['heap_5farg_5fdeleter_5fbase_5',['heap_arg_deleter_base',['../classdmq_1_1heap__arg__deleter__base.html',1,'dmq']]],
+  ['helpers_6',['1. Asynchronous Helpers',['../C:/Projects/DelegateMQWorkspace/DelegateMQ/src/delegate-mq/predef/util/README.md#autotoc_md18',1,'']]],
+  ['high_7',['HIGH',['../namespacedmq.html#a6364022151f2bf1802343322638e8f25ab89de3b4b81c4facfac906edf29aec8c',1,'dmq']]]
 ];

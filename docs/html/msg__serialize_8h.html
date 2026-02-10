@@ -103,6 +103,9 @@ $(function(){initNavTree('msg__serialize_8h.html',''); initResizable(true); });
   <div class="headertitle"><div class="title">msg_serialize.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>A robust, header-only C++ binary serialization library.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
@@ -169,7 +172,21 @@ Macros</h2></td></tr>
 <tr class="separator:a1c0d638f340ef4731257a0d0bd01284d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/MessageSerialize">https://github.com/endurodave/MessageSerialize</a> David Lafreniere, 2024. </dd></dl>
+<div class="textblock"><p>A robust, header-only C++ binary serialization library. </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/MessageSerialize">https://github.com/endurodave/MessageSerialize</a> </dd></dl>
+<dl class="section author"><dt>Author</dt><dd>David Lafreniere </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>2024</dd></dl>
+<p>This library provides a framework for marshaling C++ objects, primitives, and STL containers into binary streams (std::ostream) and demarshaling them back (std::istream). It is designed for network communication and data persistence where binary compatibility and protocol evolution are required.</p>
+<p><b>Key Features:</b></p><ul>
+<li><b>Single Header:</b> A self-contained, header-only library with no external dependencies beyond the standard C++ library (STL).</li>
+<li><b>Endianness Handling:</b> Automatic endianness detection and byte-swapping to ensure compatibility between Big-Endian and Little-Endian architectures.</li>
+<li><b>STL Container Support:</b> Native serialization for std::vector, std::list, std::map, std::set, std::string, and std::wstring.</li>
+<li><b>Protocol Versioning:</b> Supports "Forward/Backward Compatibility" by handling size mismatches. If a received user-defined object is larger than expected (newer version), the parser safely discards the extra data.</li>
+<li><b>Type Safety:</b> Uses SFINAE and compile-time static assertions to prevent serialization of unsupported types or unsafe pointers.</li>
+<li><b>Deep Copying:</b> Supports serializing containers of pointers, automatically allocating memory upon deserialization.</li>
+<li><b>Error Handling:</b> Includes a callback-based error reporting mechanism for stream errors, type mismatches, and boundary violations.</li>
+</ul>
+<p><b>Usage:</b> User-defined classes must inherit from <code><a class="el" href="classserialize_1_1_i.html" title="Abstract interface that all serialized user defined classes inherit.">serialize::I</a></code> and implement the <code>read()</code> and <code>write()</code> methods. </p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a1c0d638f340ef4731257a0d0bd01284d" name="a1c0d638f340ef4731257a0d0bd01284d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1c0d638f340ef4731257a0d0bd01284d">&#9670;&#160;</a></span>CHECK_UNSUPPORTED_CONTAINER</h2>

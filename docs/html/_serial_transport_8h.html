@@ -101,29 +101,40 @@ $(function(){initNavTree('_serial_transport_8h.html',''); initResizable(true); }
   <div class="headertitle"><div class="title">SerialTransport.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Libserialport-based transport implementation for DelegateMQ.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;libserialport.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="_delegate_opt_8h_source.html">delegate/DelegateOpt.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_i_transport_8h_source.html">predef/transport/ITransport.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_i_transport_monitor_8h_source.html">predef/transport/ITransportMonitor.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_dmq_header_8h_source.html">predef/transport/DmqHeader.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_delegate_m_q_8h_source.html">DelegateMQ.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_transport_monitor_8h_source.html">predef/transport/ITransportMonitor.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="crc16_8h_source.html">predef/util/crc16.h</a>&quot;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;cstring&gt;</code><br />
+<code>#include &lt;mutex&gt;</code><br />
 </div>
 <p><a href="_serial_transport_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_serial_transport.html">SerialTransport</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Libserialport transport example for DelegateMQ.  <a href="class_serial_transport.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> </dd>
-<dd>
-<a href="https://sigrok.org/wiki/Libserialport">https://sigrok.org/wiki/Libserialport</a> or <a href="https://github.com/sigrokproject/libserialport">https://github.com/sigrokproject/libserialport</a></dd></dl>
-<p>Transport callable argument data to/from a remote using libserialport. Uses DmqHeader::m_length for stream framing. </p>
+<div class="textblock"><p>Libserialport-based transport implementation for DelegateMQ. </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
+<p>This class implements the <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a> interface using the cross-platform <code>libserialport</code> library. It provides a reliable, packet-based communication layer over RS-232/UART serial links.</p>
+<p>Key Features:</p><ol type="1">
+<li><b>Thread-Safe Access</b>: Uses a recursive mutex to serialize access to the underlying serial port, allowing concurrent Send/Receive calls from different threads.</li>
+<li><b>Data Framing</b>: Encapsulates delegate arguments in a binary-safe frame structure: <code>[Header (8 bytes)] + [Payload (N bytes)] + [CRC16 (2 bytes)]</code>.</li>
+<li><b>Data Integrity</b>: Automatically calculates and verifies a 16-bit CRC for every packet to detect transmission errors common in serial communication.</li>
+<li><b>Reliability</b>: Integrates with <code><a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a></code> to track sequence numbers and support ACK-based reliability when paired with the <code><a class="el" href="class_retry_monitor.html">RetryMonitor</a></code>.</li>
+</ol>
+<dl class="section note"><dt>Note</dt><dd>This class requires <code>libserialport</code> to be linked. </dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['sendstatuscb_0',['SendStatusCb',['../class_transport_monitor.html#acf8c23c39cbb7240f75043a27cf3aa65',1,'TransportMonitor']]]
+  ['onerror_0',['OnError',['../class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a8f58e0c3fd9f3a05a7007926247a736d',1,'RemoteEndpoint&lt; TClass, RetType(Args...)&gt;']]],
+  ['onexpired_1',['OnExpired',['../class_timer.html#ade47cb225cae140fc5ec2ceea3beba8b',1,'Timer']]],
+  ['onsendstatus_2',['OnSendStatus',['../class_transport_monitor.html#add81131c7328add7a09c8b3269028e2c',1,'TransportMonitor']]]
 ];

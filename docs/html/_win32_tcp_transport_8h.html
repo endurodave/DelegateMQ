@@ -102,8 +102,7 @@ $(function(){initNavTree('_win32_tcp_transport_8h.html',''); initResizable(true)
 </div><!--header-->
 <div class="contents">
 
-<p>Win32 TCP transport (Non-blocking Create). <br  />
-  
+<p>Win32 TCP transport implementation for DelegateMQ.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;winsock2.h&gt;</code><br />
 <code>#include &lt;ws2tcpip.h&gt;</code><br />
@@ -120,11 +119,19 @@ $(function(){initNavTree('_win32_tcp_transport_8h.html',''); initResizable(true)
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tcp_transport.html">TcpTransport</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linux TCP transport implementation for DelegateMQ.  <a href="class_tcp_transport.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Win32 TCP transport (Non-blocking Create). <br  />
- </p>
+<div class="textblock"><p>Win32 TCP transport implementation for DelegateMQ. </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
+<p>This class implements the <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a> interface using Windows Sockets (Winsock2). It supports both CLIENT and SERVER modes for transmitting serialized delegate data.</p>
+<p>Key Features:</p><ol type="1">
+<li><b>Direct I/O</b>: Executes socket operations directly on the calling thread, relying on OS-level thread safety to avoid deadlocks.</li>
+<li><b>Reliability Support</b>: Integrates with <code><a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a></code> to track sequence numbers and acknowledge (ACK) receipts.</li>
+<li><b>Non-Blocking I/O</b>: Utilizes <code>select()</code> in the receive loop to prevent thread blocking when no data is available, facilitating clean shutdowns.</li>
+<li><b>Socket Management</b>: Use WinsockConnect class in main() for <code>WSAStartup</code> and socket creation/cleanup. </li>
+</ol>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -1,12 +1,21 @@
 var searchData=
 [
-  ['le_0',['LE',['../classserialize.html#a1789bd444322bdd9154bd1b0f5bbb3fa',1,'serialize']]],
-  ['linuxudptransport_2eh_1',['LinuxUdpTransport.h',['../_linux_udp_transport_8h.html',1,'']]],
-  ['list_2',['LIST',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a298cb25408234de02baf2085803a464a',1,'serialize']]],
-  ['literal_3',['LITERAL',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4aa0000d7769148184776f1d17656921b0',1,'serialize']]],
-  ['lock_4',['lock',['../classdmq_1_1_free_r_t_o_s_mutex.html#ad348b4ca68b0c62de76cfc1a5ffbb0a8',1,'dmq::FreeRTOSMutex::lock()'],['../classdmq_1_1_free_r_t_o_s_recursive_mutex.html#ad4d8d58e1eadbd422c91a66300dc5e27',1,'dmq::FreeRTOSRecursiveMutex::lock()']]],
-  ['log_5fdebug_5',['LOG_DEBUG',['../_delegate_opt_8h.html#a754b3d074e0af4ad3c7b918dd77ecb2d',1,'DelegateOpt.h']]],
-  ['log_5ferror_6',['LOG_ERROR',['../_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63',1,'DelegateOpt.h']]],
-  ['log_5finfo_7',['LOG_INFO',['../_delegate_opt_8h.html#a378e28bfcb78d17285210d6bbb70a083',1,'DelegateOpt.h']]],
-  ['low_8',['LOW',['../namespacedmq.html#a6364022151f2bf1802343322638e8f25a41bc94cbd8eebea13ce0491b2ac11b88',1,'dmq']]]
+  ['fault_2ecpp_0',['Fault.cpp',['../_fault_8cpp.html',1,'']]],
+  ['fault_2eh_1',['Fault.h',['../_fault_8h.html',1,'']]],
+  ['faulthandler_2',['FaultHandler',['../_fault_8cpp.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4',1,'FaultHandler(const char *file, unsigned short line):&#160;Fault.cpp'],['../_fault_8h.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4',1,'FaultHandler(const char *file, unsigned short line):&#160;Fault.cpp']]],
+  ['features_3',['Features',['../C:/Projects/DelegateMQWorkspace/DelegateMQ/README.md#autotoc_md40',1,'']]],
+  ['freefunc_4',['FreeFunc',['../classdmq_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html#a66a528283c487613b6f664ce5d7b33e9',1,'dmq::DelegateFree&lt; RetType(Args...)&gt;::FreeFunc'],['../classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#acca49436572ec82078f497667955aaeb',1,'dmq::DelegateFreeAsync&lt; RetType(Args...)&gt;::FreeFunc'],['../classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#acbda3703fb9c2970f66cf1349a7bb8f8',1,'dmq::DelegateFreeAsyncWait&lt; RetType(Args...)&gt;::FreeFunc'],['../classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a07e5a1d55c485eae4c3baaa2d4ae4167',1,'dmq::DelegateFreeRemote&lt; RetType(Args...)&gt;::FreeFunc']]],
+  ['freertos_2fthread_2ecpp_5',['Thread.cpp',['../freertos_2_thread_8cpp.html',1,'']]],
+  ['freertos_2fthread_2eh_6',['Thread.h',['../freertos_2_thread_8h.html',1,'']]],
+  ['freertos_2fthreadmsg_2eh_7',['ThreadMsg.h',['../freertos_2_thread_msg_8h.html',1,'']]],
+  ['freertosclock_8',['FreeRTOSClock',['../structdmq_1_1_free_r_t_o_s_clock.html',1,'dmq']]],
+  ['freertosclock_2eh_9',['FreeRTOSClock.h',['../_free_r_t_o_s_clock_8h.html',1,'']]],
+  ['freertosconditionvariable_10',['FreeRTOSConditionVariable',['../classdmq_1_1_free_r_t_o_s_condition_variable.html',1,'dmq::FreeRTOSConditionVariable'],['../classdmq_1_1_free_r_t_o_s_condition_variable.html#ab472478d3be4bc1520d34ca993aa29e6',1,'dmq::FreeRTOSConditionVariable::FreeRTOSConditionVariable()'],['../classdmq_1_1_free_r_t_o_s_condition_variable.html#a03eaa836a958793ee5e5c761e9b19a28',1,'dmq::FreeRTOSConditionVariable::FreeRTOSConditionVariable(const FreeRTOSConditionVariable &amp;)=delete']]],
+  ['freertosconditionvariable_2eh_11',['FreeRTOSConditionVariable.h',['../_free_r_t_o_s_condition_variable_8h.html',1,'']]],
+  ['freertosmutex_12',['FreeRTOSMutex',['../classdmq_1_1_free_r_t_o_s_mutex.html',1,'dmq::FreeRTOSMutex'],['../classdmq_1_1_free_r_t_o_s_mutex.html#a6564b18eacb3f11f341fbb2e617725c2',1,'dmq::FreeRTOSMutex::FreeRTOSMutex()'],['../classdmq_1_1_free_r_t_o_s_mutex.html#a9f47ff61d730e8952b84f9d58da28f0e',1,'dmq::FreeRTOSMutex::FreeRTOSMutex(const FreeRTOSMutex &amp;)=delete']]],
+  ['freertosmutex_2eh_13',['FreeRTOSMutex.h',['../_free_r_t_o_s_mutex_8h.html',1,'']]],
+  ['freertosrecursivemutex_14',['FreeRTOSRecursiveMutex',['../classdmq_1_1_free_r_t_o_s_recursive_mutex.html',1,'dmq::FreeRTOSRecursiveMutex'],['../classdmq_1_1_free_r_t_o_s_recursive_mutex.html#a4360e1b5d8fa55f70d939da6c9f032ef',1,'dmq::FreeRTOSRecursiveMutex::FreeRTOSRecursiveMutex()'],['../classdmq_1_1_free_r_t_o_s_recursive_mutex.html#afc1cf7fcaaca9a88be8037bdf7c80446',1,'dmq::FreeRTOSRecursiveMutex::FreeRTOSRecursiveMutex(const FreeRTOSRecursiveMutex &amp;)=delete']]],
+  ['func_15',['Func',['../class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a5b9917f13bc32c169f5511450fbc6121',1,'RemoteEndpoint&lt; TClass, RetType(Args...)&gt;']]],
+  ['functional_20modules_16',['Functional Modules',['../C:/Projects/DelegateMQWorkspace/DelegateMQ/src/delegate-mq/predef/util/README.md#autotoc_md17',1,'']]],
+  ['functiontype_17',['FunctionType',['../classdmq_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html#a5d4361481e7b8dfe44a54ffab0c17b28',1,'dmq::DelegateFunction&lt; RetType(Args...)&gt;::FunctionType'],['../classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#abbc7608efd82dcd7a3a52033d9c2a39a',1,'dmq::DelegateFunctionAsync&lt; RetType(Args...)&gt;::FunctionType'],['../classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a3f9d3ef3272d90cdb28221a56e942e29',1,'dmq::DelegateFunctionAsyncWait&lt; RetType(Args...)&gt;::FunctionType'],['../classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a58b4c1acd894a461e0fd0da384e39c60',1,'dmq::DelegateFunctionRemote&lt; RetType(Args...)&gt;::FunctionType']]]
 ];

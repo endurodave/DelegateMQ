@@ -9,5 +9,5 @@ var class_transport_monitor =
     [ "Add", "class_transport_monitor.html#aa5dcc7c093c4649f3e1b01f1c64b0399", null ],
     [ "Process", "class_transport_monitor.html#ac4dd814fb686a053c4505829c8c21b40", null ],
     [ "Remove", "class_transport_monitor.html#a87b33e2d501022bd697b8b68719d9b06", null ],
-    [ "SendStatusCb", "class_transport_monitor.html#acf8c23c39cbb7240f75043a27cf3aa65", null ]
+    [ "OnSendStatus", "class_transport_monitor.html#add81131c7328add7a09c8b3269028e2c", null ]
 ];

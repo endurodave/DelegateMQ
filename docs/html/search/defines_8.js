@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['true_0',['TRUE',['../_data_types_8h.html#aa8cecfc5c5c054d2875c03e77b7be15d',1,'DataTypes.h']]]
+  ['use_5fcrc_5ftable_0',['USE_CRC_TABLE',['../crc16_8h.html#a3010df5660a7bb91381b279881d7ce40',1,'crc16.h']]]
 ];

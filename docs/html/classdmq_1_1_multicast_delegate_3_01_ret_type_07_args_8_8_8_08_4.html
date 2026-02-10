@@ -138,6 +138,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a06f1e92313771fc8543973fa10f0ebb2" id="r_a06f1e92313771fc8543973fa10f0ebb2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06f1e92313771fc8543973fa10f0ebb2">MulticastDelegate</a> (<a class="el" href="structdmq_1_1_multicast_delegate.html">MulticastDelegate</a> &amp;&amp;rhs) noexcept</td></tr>
 <tr class="memdesc:a06f1e92313771fc8543973fa10f0ebb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor that transfers ownership of resources.  <br /></td></tr>
 <tr class="separator:a06f1e92313771fc8543973fa10f0ebb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8973de03db7110237623189b27962a2f" id="r_a8973de03db7110237623189b27962a2f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8973de03db7110237623189b27962a2f">MulticastDelegate</a> (const <a class="el" href="#afc2d436e07c0e49c030f486ce29ec40c">DelegateType</a> &amp;d)</td></tr>
+<tr class="memdesc:a8973de03db7110237623189b27962a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to initialize from a single <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> (Copy)  <br /></td></tr>
+<tr class="separator:a8973de03db7110237623189b27962a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a158a4cbc069d1f08d11913237462e964" id="r_a158a4cbc069d1f08d11913237462e964"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a158a4cbc069d1f08d11913237462e964">MulticastDelegate</a> (<a class="el" href="#afc2d436e07c0e49c030f486ce29ec40c">DelegateType</a> &amp;&amp;d)</td></tr>
+<tr class="memdesc:a158a4cbc069d1f08d11913237462e964"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to initialize from a single <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> (Move)  <br /></td></tr>
+<tr class="separator:a158a4cbc069d1f08d11913237462e964"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6604fa50cab8ea91d874f37e0be80de" id="r_ae6604fa50cab8ea91d874f37e0be80de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6604fa50cab8ea91d874f37e0be80de">operator()</a> (Args... args)</td></tr>
 <tr class="separator:ae6604fa50cab8ea91d874f37e0be80de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6106b3917b58f9156003d6fd69556f5f" id="r_a6106b3917b58f9156003d6fd69556f5f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6106b3917b58f9156003d6fd69556f5f">Broadcast</a> (Args... args)</td></tr>
@@ -197,7 +203,7 @@ template&lt;class RetType , class... Args&gt; </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="adcfbdb7aef0c4d02fef306f854398e70" name="adcfbdb7aef0c4d02fef306f854398e70"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adcfbdb7aef0c4d02fef306f854398e70">&#9670;&#160;</a></span>MulticastDelegate() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#adcfbdb7aef0c4d02fef306f854398e70">&#9670;&#160;</a></span>MulticastDelegate() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -251,7 +257,7 @@ template&lt;class RetType , class... Args&gt; </div>
 </div>
 </div>
 <a id="a2e946d9d5f3046c55f8ce7af3ec4ef98" name="a2e946d9d5f3046c55f8ce7af3ec4ef98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e946d9d5f3046c55f8ce7af3ec4ef98">&#9670;&#160;</a></span>MulticastDelegate() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e946d9d5f3046c55f8ce7af3ec4ef98">&#9670;&#160;</a></span>MulticastDelegate() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -286,7 +292,7 @@ template&lt;class RetType , class... Args&gt; </div>
 </div>
 </div>
 <a id="a06f1e92313771fc8543973fa10f0ebb2" name="a06f1e92313771fc8543973fa10f0ebb2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06f1e92313771fc8543973fa10f0ebb2">&#9670;&#160;</a></span>MulticastDelegate() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a06f1e92313771fc8543973fa10f0ebb2">&#9670;&#160;</a></span>MulticastDelegate() <span class="overload">[3/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -317,6 +323,64 @@ template&lt;class RetType , class... Args&gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a8973de03db7110237623189b27962a2f" name="a8973de03db7110237623189b27962a2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8973de03db7110237623189b27962a2f">&#9670;&#160;</a></span>MulticastDelegate() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structdmq_1_1_multicast_delegate.html">dmq::MulticastDelegate</a>&lt; RetType(Args...)&gt;::MulticastDelegate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#afc2d436e07c0e49c030f486ce29ec40c">DelegateType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>d</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor to initialize from a single <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> (Copy) </p>
+
+</div>
+</div>
+<a id="a158a4cbc069d1f08d11913237462e964" name="a158a4cbc069d1f08d11913237462e964"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a158a4cbc069d1f08d11913237462e964">&#9670;&#160;</a></span>MulticastDelegate() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structdmq_1_1_multicast_delegate.html">dmq::MulticastDelegate</a>&lt; RetType(Args...)&gt;::MulticastDelegate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#afc2d436e07c0e49c030f486ce29ec40c">DelegateType</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>d</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor to initialize from a single <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> (Move) </p>
 
 </div>
 </div>

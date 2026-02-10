@@ -103,9 +103,6 @@ $(function(){initNavTree('class_serial_transport.html',''); initResizable(true);
 </div><!--header-->
 <div class="contents">
 
-<p>Libserialport transport example for DelegateMQ.  
- <a href="#details">More...</a></p>
-
 <p><code>#include &lt;<a class="el" href="_serial_transport_8h_source.html">SerialTransport.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for SerialTransport:</div>
@@ -127,21 +124,21 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7755d5ee8c2dda11b7eb11904f0116e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81e8678e3e74eb106151a70425aa32e5" id="r_a81e8678e3e74eb106151a70425aa32e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81e8678e3e74eb106151a70425aa32e5">Close</a> ()</td></tr>
 <tr class="separator:a81e8678e3e74eb106151a70425aa32e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b0f9ea8508d36440ae0469c565d4b5c" id="r_a6b0f9ea8508d36440ae0469c565d4b5c"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6b0f9ea8508d36440ae0469c565d4b5c">swap16</a> (uint16_t v)</td></tr>
+<tr class="separator:a6b0f9ea8508d36440ae0469c565d4b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac77c778772a43f7e72d86f36cb9ba3a3" id="r_ac77c778772a43f7e72d86f36cb9ba3a3"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac77c778772a43f7e72d86f36cb9ba3a3">Send</a> (<a class="el" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
 <tr class="separator:ac77c778772a43f7e72d86f36cb9ba3a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa48644f6dd5517d8476c2b5cf64e54a2" id="r_aa48644f6dd5517d8476c2b5cf64e54a2"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa48644f6dd5517d8476c2b5cf64e54a2">Receive</a> (<a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> &amp;is, <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
 <tr class="separator:aa48644f6dd5517d8476c2b5cf64e54a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b312ac5a26ed6e02a4513dfbfb05af4" id="r_a6b312ac5a26ed6e02a4513dfbfb05af4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6b312ac5a26ed6e02a4513dfbfb05af4">SetTransportMonitor</a> (<a class="el" href="class_i_transport_monitor.html">ITransportMonitor</a> *transportMonitor)</td></tr>
-<tr class="separator:a6b312ac5a26ed6e02a4513dfbfb05af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cb0db9ac07742570a380f90f34e7577" id="r_a3cb0db9ac07742570a380f90f34e7577"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3cb0db9ac07742570a380f90f34e7577">SetSendTransport</a> (<a class="el" href="class_i_transport.html">ITransport</a> *sendTransport)</td></tr>
-<tr class="separator:a3cb0db9ac07742570a380f90f34e7577"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55da2863e782a69ec9a2e1add0781abb" id="r_a55da2863e782a69ec9a2e1add0781abb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a55da2863e782a69ec9a2e1add0781abb">SetRecvTransport</a> (<a class="el" href="class_i_transport.html">ITransport</a> *recvTransport)</td></tr>
-<tr class="separator:a55da2863e782a69ec9a2e1add0781abb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a487c81f55bda76fb5c32d36c269d0c38" id="r_a487c81f55bda76fb5c32d36c269d0c38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a487c81f55bda76fb5c32d36c269d0c38">SetTransportMonitor</a> (<a class="el" href="class_i_transport_monitor.html">ITransportMonitor</a> *tm)</td></tr>
+<tr class="separator:a487c81f55bda76fb5c32d36c269d0c38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37cc5bdde58876bf6d5e11ee3eb4632b" id="r_a37cc5bdde58876bf6d5e11ee3eb4632b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37cc5bdde58876bf6d5e11ee3eb4632b">SetSendTransport</a> (<a class="el" href="class_i_transport.html">ITransport</a> *st)</td></tr>
+<tr class="separator:a37cc5bdde58876bf6d5e11ee3eb4632b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81d208584aeb126553c9bc243ea82642" id="r_a81d208584aeb126553c9bc243ea82642"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81d208584aeb126553c9bc243ea82642">SetRecvTransport</a> (<a class="el" href="class_i_transport.html">ITransport</a> *rt)</td></tr>
+<tr class="separator:a81d208584aeb126553c9bc243ea82642"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_i_transport"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_i_transport')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_i_transport.html">ITransport</a></td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Libserialport transport example for DelegateMQ. </p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6edc5a0b9ec733f204edd1a16b8950b3" name="a6edc5a0b9ec733f204edd1a16b8950b3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6edc5a0b9ec733f204edd1a16b8950b3">&#9670;&#160;</a></span>SerialTransport()</h2>
 
@@ -325,8 +322,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a55da2863e782a69ec9a2e1add0781abb" name="a55da2863e782a69ec9a2e1add0781abb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a55da2863e782a69ec9a2e1add0781abb">&#9670;&#160;</a></span>SetRecvTransport()</h2>
+<a id="a81d208584aeb126553c9bc243ea82642" name="a81d208584aeb126553c9bc243ea82642"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81d208584aeb126553c9bc243ea82642">&#9670;&#160;</a></span>SetRecvTransport()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -337,7 +334,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void SerialTransport::SetRecvTransport </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_i_transport.html">ITransport</a> *</td>          <td class="paramname"><span class="paramname"><em>recvTransport</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="class_i_transport.html">ITransport</a> *</td>          <td class="paramname"><span class="paramname"><em>rt</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -350,8 +347,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a3cb0db9ac07742570a380f90f34e7577" name="a3cb0db9ac07742570a380f90f34e7577"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3cb0db9ac07742570a380f90f34e7577">&#9670;&#160;</a></span>SetSendTransport()</h2>
+<a id="a37cc5bdde58876bf6d5e11ee3eb4632b" name="a37cc5bdde58876bf6d5e11ee3eb4632b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37cc5bdde58876bf6d5e11ee3eb4632b">&#9670;&#160;</a></span>SetSendTransport()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -362,7 +359,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void SerialTransport::SetSendTransport </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_i_transport.html">ITransport</a> *</td>          <td class="paramname"><span class="paramname"><em>sendTransport</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="class_i_transport.html">ITransport</a> *</td>          <td class="paramname"><span class="paramname"><em>st</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -375,8 +372,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6b312ac5a26ed6e02a4513dfbfb05af4" name="a6b312ac5a26ed6e02a4513dfbfb05af4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6b312ac5a26ed6e02a4513dfbfb05af4">&#9670;&#160;</a></span>SetTransportMonitor()</h2>
+<a id="a487c81f55bda76fb5c32d36c269d0c38" name="a487c81f55bda76fb5c32d36c269d0c38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a487c81f55bda76fb5c32d36c269d0c38">&#9670;&#160;</a></span>SetTransportMonitor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -387,7 +384,32 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void SerialTransport::SetTransportMonitor </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_i_transport_monitor.html">ITransportMonitor</a> *</td>          <td class="paramname"><span class="paramname"><em>transportMonitor</em></span></td><td>)</td>
+          <td class="paramtype"><a class="el" href="class_i_transport_monitor.html">ITransportMonitor</a> *</td>          <td class="paramname"><span class="paramname"><em>tm</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6b0f9ea8508d36440ae0469c565d4b5c" name="a6b0f9ea8508d36440ae0469c565d4b5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b0f9ea8508d36440ae0469c565d4b5c">&#9670;&#160;</a></span>swap16()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t SerialTransport::swap16 </td>
+          <td>(</td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>v</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

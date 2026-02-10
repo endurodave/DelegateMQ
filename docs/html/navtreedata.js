@@ -25,22 +25,7 @@
 var NAVTREE =
 [
   [ "DelegateMQ", "index.html", [
-    [ "Delegates in C++", "index.html#autotoc_md0", null ],
-    [ "Key Concepts", "index.html#autotoc_md1", null ],
-    [ "Examples", "index.html#autotoc_md2", null ],
-    [ "Overview", "index.html#autotoc_md3", [
-      [ "Synchronous Delegates", "index.html#autotoc_md4", null ],
-      [ "Asynchronous Delegates", "index.html#autotoc_md5", null ],
-      [ "Remote Delegates", "index.html#autotoc_md6", null ],
-      [ "Delegate Semantics", "index.html#autotoc_md7", null ]
-    ] ],
-    [ "Modular Architecture", "index.html#autotoc_md8", null ],
-    [ "Getting Started", "index.html#autotoc_md9", null ],
-    [ "Documentation", "index.html#autotoc_md10", null ],
-    [ "Motivation", "index.html#autotoc_md11", null ],
-    [ "Features", "index.html#autotoc_md12", null ],
-    [ "Alternative Implementations", "index.html#autotoc_md13", null ],
-    [ "Other Projects Using DelegateMQ", "index.html#autotoc_md14", null ],
+    [ "Dispatcher Layer", "index.html", "index" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -80,14 +65,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#afcdb8d3800db2da7f659c47dc8a1986d",
-"classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a065a054f85a5679f0ce5ba9c2fe2962f",
-"classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a7db36fdc7961dad4243a8548cab63b86",
-"classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534",
-"classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a15564bb2d1db56ece2e535c1f575365e",
-"classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a31c7a2d64528e2d60e3abc159e5c11e2",
-"classserialize.html#ab404cbfd9d4728d8f90e82b2c9f72da6",
-"structdmq_1_1_bare_metal_clock.html#aa130534971f2dd3cbf1649c6a5765f6d"
+"class_net_x_udp_transport.html#a198c12124c0d84412d09c647f9135b98",
+"class_udp_transport.html#aa2a77870b370f1dd87c7a61e31e767d5a241dd841abade20fcb27b8a9f494e1eb",
+"classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a53f76c19cba9e2ef42bbcd8a036879ee",
+"classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#abbc7608efd82dcd7a3a52033d9c2a39a",
+"classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a98bd97965713710643ef491e42d83a7b",
+"classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a2355f4be220c01ab92bd88260ee731a7",
+"classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#af1835a0e980f8cab2953655edc1c7e38",
+"classdmq_1_1_zephyr_mutex.html",
+"namespacedmq.html#a0ceca83a90727c8bdbca0bcda518a54f",
+"structstl__allocator_3_01void_01_4_1_1rebind.html#a0a0ec8e21e51f7035ed0b9dc6c053b53"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

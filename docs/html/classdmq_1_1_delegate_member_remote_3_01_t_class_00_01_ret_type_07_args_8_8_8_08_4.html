@@ -245,6 +245,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a04c1a18619d8684ad6544145ba89b046" id="r_a04c1a18619d8684ad6544145ba89b046"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacedmq.html#a62ea8a73887af62d409322557b4e757d">DelegateError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04c1a18619d8684ad6544145ba89b046">GetError</a> ()</td></tr>
 <tr class="memdesc:a04c1a18619d8684ad6544145ba89b046"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the last error code.  <br /></td></tr>
 <tr class="separator:a04c1a18619d8684ad6544145ba89b046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f1aded7c9f3421271255516bc2f97eb" id="r_a2f1aded7c9f3421271255516bc2f97eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a4da34092bff15f9692d41376a9aa1578">ClassType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f1aded7c9f3421271255516bc2f97eb">operator=</a> (const <a class="el" href="#a4da34092bff15f9692d41376a9aa1578">ClassType</a> &amp;rhs)</td></tr>
+<tr class="memdesc:a2f1aded7c9f3421271255516bc2f97eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment operator that assigns the state of one object to another.  <br /></td></tr>
+<tr class="separator:a2f1aded7c9f3421271255516bc2f97eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dfce0c28347959468e6c16aab29ec45" id="r_a8dfce0c28347959468e6c16aab29ec45"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a4da34092bff15f9692d41376a9aa1578">ClassType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8dfce0c28347959468e6c16aab29ec45">operator=</a> (<a class="el" href="#a4da34092bff15f9692d41376a9aa1578">ClassType</a> &amp;&amp;rhs) noexcept</td></tr>
+<tr class="memdesc:a8dfce0c28347959468e6c16aab29ec45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move assignment operator that transfers ownership of resources.  <br /></td></tr>
+<tr class="separator:a8dfce0c28347959468e6c16aab29ec45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html">dmq::DelegateMember&lt; TClass, RetType(Args...)&gt;</a></td></tr>
 <tr class="memitem:a65f892bfa9d6c5e6cbfd326f57f3eff1 inherit pub_methods_classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" id="r_a65f892bfa9d6c5e6cbfd326f57f3eff1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a65f892bfa9d6c5e6cbfd326f57f3eff1">DelegateMember</a> (<a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a9691eff49499fb9ba2f2f981daf5e084">SharedPtr</a> object, <a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ac4b8ca4068b0fdeeb8c7c5623c67ff02">MemberFunc</a> func)</td></tr>
 <tr class="memdesc:a65f892bfa9d6c5e6cbfd326f57f3eff1 inherit pub_methods_classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to create a class instance.  <br /></td></tr>
@@ -1291,8 +1297,44 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 
 </div>
 </div>
+<a id="a8dfce0c28347959468e6c16aab29ec45" name="a8dfce0c28347959468e6c16aab29ec45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dfce0c28347959468e6c16aab29ec45">&#9670;&#160;</a></span>operator=() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class TClass , class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a4da34092bff15f9692d41376a9aa1578">ClassType</a> &amp; <a class="el" href="structdmq_1_1_delegate_member.html">dmq::DelegateMember</a>&lt; TClass, RetType(Args...)&gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a4da34092bff15f9692d41376a9aa1578">ClassType</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Move assignment operator that transfers ownership of resources. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td>The object to move from. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to the current object. </dd></dl>
+
+</div>
+</div>
 <a id="a838480dd8f8f3488357dd33afb3b0237" name="a838480dd8f8f3488357dd33afb3b0237"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a838480dd8f8f3488357dd33afb3b0237">&#9670;&#160;</a></span>operator=() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a838480dd8f8f3488357dd33afb3b0237">&#9670;&#160;</a></span>operator=() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1327,8 +1369,44 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 
 </div>
 </div>
+<a id="a2f1aded7c9f3421271255516bc2f97eb" name="a2f1aded7c9f3421271255516bc2f97eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f1aded7c9f3421271255516bc2f97eb">&#9670;&#160;</a></span>operator=() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class TClass , class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a4da34092bff15f9692d41376a9aa1578">ClassType</a> &amp; <a class="el" href="structdmq_1_1_delegate_member.html">dmq::DelegateMember</a>&lt; TClass, RetType(Args...)&gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a4da34092bff15f9692d41376a9aa1578">ClassType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Assignment operator that assigns the state of one object to another. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td>The object whose state is to be assigned to the current object. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to the current object. </dd></dl>
+
+</div>
+</div>
 <a id="a87baad547a67d1670a03b9ff58bf8cab" name="a87baad547a67d1670a03b9ff58bf8cab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a87baad547a67d1670a03b9ff58bf8cab">&#9670;&#160;</a></span>operator=() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a87baad547a67d1670a03b9ff58bf8cab">&#9670;&#160;</a></span>operator=() <span class="overload">[4/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1364,7 +1442,7 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 </div>
 </div>
 <a id="a1ef6a18a21c84af44e5a1aab894b4bca" name="a1ef6a18a21c84af44e5a1aab894b4bca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ef6a18a21c84af44e5a1aab894b4bca">&#9670;&#160;</a></span>operator=() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ef6a18a21c84af44e5a1aab894b4bca">&#9670;&#160;</a></span>operator=() <span class="overload">[5/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1391,6 +1469,8 @@ template&lt;class TClass , class RetType , class... Args&gt; </div>
 <p>Clear the target function. </p>
 
 <p>Reimplemented from <a class="el" href="classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#aec5155386f4ba34bd909f6a1651197d0">dmq::DelegateMember&lt; TClass, RetType(Args...)&gt;</a>.</p>
+
+<p>Reimplemented in <a class="el" href="class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a1ef6a18a21c84af44e5a1aab894b4bca">RemoteEndpoint&lt; TClass, RetType(Args...)&gt;</a>.</p>
 
 </div>
 </div>

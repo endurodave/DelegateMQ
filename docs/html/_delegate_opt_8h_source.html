@@ -109,133 +109,206 @@ $(function(){initNavTree('_delegate_opt_8h_source.html',''); initResizable(true)
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#if defined(DMQ_THREAD_FREERTOS)</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">    #include &quot;<a class="code" href="_free_r_t_o_s_clock_8h.html">predef/util/FreeRTOSClock.h</a>&quot;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">    #include &quot;<a class="code" href="_free_r_t_o_s_mutex_8h.html">predef/util/FreeRTOSMutex.h</a>&quot;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#elif defined(DMQ_THREAD_NONE)</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">    #include &quot;<a class="code" href="_bare_metal_clock_8h.html">predef/util/BareMetalClock.h</a>&quot;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedmq.html">dmq</a></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="comment">// @TODO: Change aliases to switch clock type globally if necessary</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="comment">// --- CLOCK SELECTION ---</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#if defined(DMQ_THREAD_FREERTOS)</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="comment">// Use the custom FreeRTOS wrapper</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a> = <a class="code hl_struct" href="structdmq_1_1_free_r_t_o_s_clock.html">dmq::FreeRTOSClock</a>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#elif defined(DMQ_THREAD_NONE)</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="comment">// Assuming implemented the &#39;g_ticks&#39; variable</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a> = <a class="code hl_struct" href="structdmq_1_1_bare_metal_clock.html">dmq::BareMetalClock</a>;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// Windows / Linux / macOS (Standard)</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">   32</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a> = std::chrono::steady_clock;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">    #include &quot;<a class="code" href="_free_r_t_o_s_condition_variable_8h.html">predef/util/FreeRTOSConditionVariable.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#elif defined(DMQ_THREAD_THREADX)</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">    #include &quot;<a class="code" href="_thread_x_clock_8h.html">predef/util/ThreadXClock.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">    #include &quot;<a class="code" href="_thread_x_mutex_8h.html">predef/util/ThreadXMutex.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">    #include &quot;<a class="code" href="_thread_x_condition_variable_8h.html">predef/util/ThreadXConditionVariable.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#elif defined(DMQ_THREAD_ZEPHYR)</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">    #include &quot;<a class="code" href="_zephyr_clock_8h.html">predef/util/ZephyrClock.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">    #include &quot;<a class="code" href="_zephyr_mutex_8h.html">predef/util/ZephyrMutex.h</a>&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#elif defined(DMQ_THREAD_CMSIS_RTOS2)</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">    #include &quot;<a class="code" href="_cmsis_rtos2_clock_8h.html">predef/util/CmsisRtos2Clock.h</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">    #include &quot;<a class="code" href="_cmsis_rtos2_mutex_8h.html">predef/util/CmsisRtos2Mutex.h</a>&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#elif defined(DMQ_THREAD_NONE)</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">    #include &quot;<a class="code" href="_bare_metal_clock_8h.html">predef/util/BareMetalClock.h</a>&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="comment">// Windows / Linux / macOS (Standard Library)</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">    #include &lt;condition_variable&gt;</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedmq.html">dmq</a></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>{</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="comment">// @TODO: Change aliases to switch clock type globally if necessary</span></div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="comment">// --- GENERIC TYPES ---</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="comment">// Automatically adapt to the underlying Clock&#39;s traits</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">   37</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> = <span class="keyword">typename</span> Clock::duration;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">   38</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">TimePoint</a> = <span class="keyword">typename</span> Clock::time_point;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="comment">// --- CLOCK SELECTION ---</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#if defined(DMQ_THREAD_FREERTOS)</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="comment">// Use the custom FreeRTOS wrapper</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a> = <a class="code hl_struct" href="structdmq_1_1_free_r_t_o_s_clock.html">dmq::FreeRTOSClock</a>;</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">// --- MUTEX / LOCK SELECTION ---</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#if defined(DMQ_THREAD_FREERTOS)</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="comment">// Use the custom FreeRTOS wrapper</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">Mutex</a> = <a class="code hl_class" href="classdmq_1_1_free_r_t_o_s_mutex.html">dmq::FreeRTOSMutex</a>;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">RecursiveMutex</a> = <a class="code hl_class" href="classdmq_1_1_free_r_t_o_s_recursive_mutex.html">dmq::FreeRTOSRecursiveMutex</a>;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#elif defined(DMQ_THREAD_NONE)</span></div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="comment">// Bare metal has no threads, so no locking is required.</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="comment">// We define a dummy &quot;No-Op&quot; mutex.</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">struct </span>NullMutex {</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordtype">void</span> lock() {}</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordtype">void</span> unlock() {}</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    };</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">Mutex</a> = NullMutex;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">RecursiveMutex</a> = NullMutex;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// Windows / Linux / macOS</span></div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">   58</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">Mutex</a> = std::mutex;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">   59</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">RecursiveMutex</a> = std::recursive_mutex;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment">// @TODO: Select the desired software fault handling (see Predef.cmake).</span></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="preprocessor">#ifdef DMQ_ASSERTS</span></div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">    #include &lt;cassert&gt;</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="comment">// Use assert error handling. Change assert to a different error </span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="comment">// handler as required by the target application.</span></div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="preprocessor">    #define BAD_ALLOC() assert(false &amp;&amp; &quot;Memory allocation failed!&quot;)</span></div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="preprocessor">    #include &lt;new&gt;</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="comment">// Use exception error handling</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#abe89b46e296c7421855410a08d6d31fe">   72</a></span><span class="preprocessor">    #define BAD_ALLOC() throw std::bad_alloc()</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="comment">// @TODO: Select the desired heap allocation (see Predef.cmake).</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="comment">// If DMQ_ASSERTS defined above, consider defining DMQ_ALLOCATOR to prevent </span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="comment">// std::list usage within delegate library from throwing a std::bad_alloc </span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="comment">// exception. The std_allocator calls assert if out of memory. </span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment">// See master CMakeLists.txt for info on enabling the fixed-block allocator.</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#ifdef DMQ_ALLOCATOR</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="comment">// Use stl_allocator fixed-block allocator for dynamic storage allocation</span></div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">    #include &quot;<a class="code" href="xlist_8h.html">predef/allocator/xlist.h</a>&quot;</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="preprocessor">    #include &quot;<a class="code" href="xsstream_8h.html">predef/allocator/xsstream.h</a>&quot;</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">    #include &quot;<a class="code" href="stl__allocator_8h.html">predef/allocator/stl_allocator.h</a>&quot;</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">    #include &lt;list&gt;</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="preprocessor">    #include &lt;sstream&gt;</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="comment">// Not using xallocator; define as nothing</span></div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="preprocessor">    #undef XALLOCATOR</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">   91</a></span><span class="preprocessor">    #define XALLOCATOR</span></div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="comment">// Use default std::allocator for dynamic storage allocation</span></div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Alloc = std::allocator&lt;T&gt;&gt;</div>
-<div class="foldopen" id="foldopen00095" data-start="{" data-end="};">
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classxlist.html">   95</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classxlist.html">xlist</a> : <span class="keyword">public</span> std::list&lt;T, Alloc&gt; {</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keyword">using </span>std::list&lt;T, Alloc&gt;::list; <span class="comment">// Inherit constructors</span></div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keyword">using </span>std::list&lt;T, Alloc&gt;::operator=;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    };</div>
-</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">  101</a></span>    <span class="keyword">typedef</span> std::basic_ostringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">  102</a></span>    <span class="keyword">typedef</span> std::basic_stringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#elif defined(DMQ_THREAD_THREADX)</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// Use the custom ThreadX wrapper</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a> = <a class="code hl_struct" href="structdmq_1_1_thread_x_clock.html">dmq::ThreadXClock</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="preprocessor">#elif defined(DMQ_THREAD_ZEPHYR)</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="comment">// Use the custom Zephyr wrapper</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a> = <a class="code hl_struct" href="structdmq_1_1_zephyr_clock.html">dmq::ZephyrClock</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#elif defined(DMQ_THREAD_NONE)</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="comment">// Assuming implemented the &#39;g_ticks&#39; variable</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a> = <a class="code hl_struct" href="structdmq_1_1_bare_metal_clock.html">dmq::BareMetalClock</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="preprocessor"> #elif defined(DMQ_THREAD_CMSIS_RTOS2)</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a> = <a class="code hl_struct" href="structdmq_1_1_cmsis_rtos2_clock.html">dmq::CmsisRtos2Clock</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="comment">// Windows / Linux / macOS / Qt</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">   57</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">Clock</a> = std::chrono::steady_clock;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="comment">// --- GENERIC TYPES ---</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="comment">// Automatically adapt to the underlying Clock&#39;s traits</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">   62</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> = <span class="keyword">typename</span> Clock::duration;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">   63</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">TimePoint</a> = <span class="keyword">typename</span> Clock::time_point;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="comment">// --- MUTEX / LOCK SELECTION ---</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#if defined(DMQ_THREAD_FREERTOS)</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="comment">// Use the custom FreeRTOS wrapper</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">Mutex</a> = <a class="code hl_class" href="classdmq_1_1_free_r_t_o_s_mutex.html">dmq::FreeRTOSMutex</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">RecursiveMutex</a> = <a class="code hl_class" href="classdmq_1_1_free_r_t_o_s_recursive_mutex.html">dmq::FreeRTOSRecursiveMutex</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a59fb023a44633e003bb7ab8ec2fd07b7">ConditionVariable</a> = <a class="code hl_class" href="classdmq_1_1_free_r_t_o_s_condition_variable.html">dmq::FreeRTOSConditionVariable</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">#elif defined(DMQ_THREAD_THREADX)</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">// Use the custom ThreadX wrapper</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">Mutex</a> = <a class="code hl_class" href="classdmq_1_1_thread_x_mutex.html">dmq::ThreadXMutex</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">RecursiveMutex</a> = <a class="code hl_typedef" href="namespacedmq.html#af378814214518ea53c793f20aa299668">dmq::ThreadXRecursiveMutex</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a59fb023a44633e003bb7ab8ec2fd07b7">ConditionVariable</a> = <a class="code hl_class" href="classdmq_1_1_thread_x_condition_variable.html">dmq::ThreadXConditionVariable</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#elif defined(DMQ_THREAD_ZEPHYR)</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">// Use the custom Zephyr wrapper</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">Mutex</a> = <a class="code hl_class" href="classdmq_1_1_zephyr_mutex.html">dmq::ZephyrMutex</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">RecursiveMutex</a> = <a class="code hl_typedef" href="namespacedmq.html#a6d0244bb590c4fcfacf4250bd04a04a2">dmq::ZephyrRecursiveMutex</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="preprocessor">#elif defined(DMQ_THREAD_CMSIS_RTOS2)</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">Mutex</a> = <a class="code hl_class" href="classdmq_1_1_cmsis_rtos2_mutex.html">dmq::CmsisRtos2Mutex</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">RecursiveMutex</a> = <a class="code hl_class" href="classdmq_1_1_cmsis_rtos2_recursive_mutex.html">dmq::CmsisRtos2RecursiveMutex</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="preprocessor">#elif defined(DMQ_THREAD_NONE)</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="comment">// Bare metal has no threads, so no locking is required.</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="comment">// We define a dummy &quot;No-Op&quot; mutex.</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">struct </span>NullMutex {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordtype">void</span> lock() {}</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordtype">void</span> unlock() {}</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    };</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">Mutex</a> = NullMutex;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">RecursiveMutex</a> = NullMutex;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="comment">// Windows / Linux / macOS / Qt</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">   99</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">Mutex</a> = std::mutex;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">  100</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">RecursiveMutex</a> = std::recursive_mutex;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="namespacedmq.html#a59fb023a44633e003bb7ab8ec2fd07b7">  101</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq.html#a59fb023a44633e003bb7ab8ec2fd07b7">ConditionVariable</a> = std::condition_variable;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="comment">// @TODO: Select the desired logging (see Predef.cmake).</span></div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="preprocessor">#ifdef DMQ_LOG</span></div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="preprocessor">    #include &lt;spdlog/spdlog.h&gt;</span></div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="preprocessor">    #define LOG_INFO(...)    spdlog::info(__VA_ARGS__)</span></div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="preprocessor">    #define LOG_DEBUG(...)   spdlog::debug(__VA_ARGS__)</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="preprocessor">    #define LOG_ERROR(...)   spdlog::error(__VA_ARGS__)</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="comment">// No-op macros when logging disabled</span></div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a378e28bfcb78d17285210d6bbb70a083">  113</a></span><span class="preprocessor">    #define LOG_INFO(...)    do {} while(0)</span></div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a754b3d074e0af4ad3c7b918dd77ecb2d">  114</a></span><span class="preprocessor">    #define LOG_DEBUG(...)   do {} while(0)</span></div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63">  115</a></span><span class="preprocessor">    #define LOG_ERROR(...)   do {} while(0)</span></div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="comment">// @TODO: Select the desired software fault handling (see Predef.cmake).</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="preprocessor">#ifdef DMQ_ASSERTS</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="preprocessor">    #include &quot;<a class="code" href="_fault_8h.html">predef/util/Fault.h</a>&quot;</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="preprocessor">    #include &lt;cassert&gt;</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="comment">// Use assert error handling. Change assert to a different error </span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="comment">// handler as required by the target application.</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="preprocessor">    #define BAD_ALLOC() assert(false &amp;&amp; &quot;Memory allocation failed!&quot;)</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">    #include &quot;<a class="code" href="_fault_8h.html">predef/util/Fault.h</a>&quot;</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">    #include &lt;new&gt;</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="comment">// Use exception error handling</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#abe89b46e296c7421855410a08d6d31fe">  116</a></span><span class="preprocessor">    #define BAD_ALLOC() throw std::bad_alloc()</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="comment">// @TODO: Select the desired heap allocation (see Predef.cmake).</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="comment">// If DMQ_ASSERTS defined above, consider defining DMQ_ALLOCATOR to prevent </span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span><span class="comment">// std::list usage within delegate library from throwing a std::bad_alloc </span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="comment">// exception. The std_allocator calls assert if out of memory. </span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="comment">// See master CMakeLists.txt for info on enabling the fixed-block allocator.</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="preprocessor">#ifdef DMQ_ALLOCATOR</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="comment">// Use stl_allocator fixed-block allocator for dynamic storage allocation</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="preprocessor">    #include &quot;<a class="code" href="xstring_8h.html">predef/allocator/xstring.h</a>&quot;</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="preprocessor">    #include &quot;<a class="code" href="xlist_8h.html">predef/allocator/xlist.h</a>&quot;</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="preprocessor">    #include &quot;<a class="code" href="xsstream_8h.html">predef/allocator/xsstream.h</a>&quot;</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="preprocessor">    #include &quot;<a class="code" href="stl__allocator_8h.html">predef/allocator/stl_allocator.h</a>&quot;</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="preprocessor">    #include &lt;string&gt;</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="preprocessor">    #include &lt;list&gt;</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="preprocessor">    #include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="comment">// Not using xallocator; define as nothing</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="preprocessor">    #undef XALLOCATOR</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">  137</a></span><span class="preprocessor">    #define XALLOCATOR</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="comment">// Use default std::allocator for dynamic storage allocation</span></div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Alloc = std::allocator&lt;T&gt;&gt;</div>
+<div class="foldopen" id="foldopen00141" data-start="{" data-end="};">
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classxlist.html">  141</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classxlist.html">xlist</a> : <span class="keyword">public</span> std::list&lt;T, Alloc&gt; {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keyword">using </span>std::list&lt;T, Alloc&gt;::list; <span class="comment">// Inherit constructors</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keyword">using </span>std::list&lt;T, Alloc&gt;::operator=;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    };</div>
+</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">  147</a></span>    <span class="keyword">typedef</span> std::basic_ostringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">  148</a></span>    <span class="keyword">typedef</span> std::basic_stringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">  150</a></span>    <span class="keyword">typedef</span> std::string <a class="code hl_typedef" href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a3c297a25ec1e3808b17f63f488fb2046">  151</a></span>    <span class="keyword">typedef</span> std::wstring <a class="code hl_typedef" href="_delegate_opt_8h.html#a3c297a25ec1e3808b17f63f488fb2046">xwstring</a>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="comment">// @TODO: Select the desired logging (see Predef.cmake).</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="preprocessor">#ifdef DMQ_LOG</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="preprocessor">    #include &lt;spdlog/spdlog.h&gt;</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="preprocessor">    #define LOG_INFO(...)    spdlog::info(__VA_ARGS__)</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="preprocessor">    #define LOG_DEBUG(...)   spdlog::debug(__VA_ARGS__)</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><span class="preprocessor">    #define LOG_ERROR(...)   spdlog::error(__VA_ARGS__)</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="comment">// No-op macros when logging disabled</span></div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a378e28bfcb78d17285210d6bbb70a083">  162</a></span><span class="preprocessor">    #define LOG_INFO(...)    do {} while(0)</span></div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a754b3d074e0af4ad3c7b918dd77ecb2d">  163</a></span><span class="preprocessor">    #define LOG_DEBUG(...)   do {} while(0)</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63">  164</a></span><span class="preprocessor">    #define LOG_ERROR(...)   do {} while(0)</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="preprocessor">#endif </span><span class="comment">// _DELEGATE_OPT_H</span></div>
 <div class="ttc" id="a_bare_metal_clock_8h_html"><div class="ttname"><a href="_bare_metal_clock_8h.html">BareMetalClock.h</a></div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:101</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:102</div></div>
+<div class="ttc" id="a_cmsis_rtos2_clock_8h_html"><div class="ttname"><a href="_cmsis_rtos2_clock_8h.html">CmsisRtos2Clock.h</a></div></div>
+<div class="ttc" id="a_cmsis_rtos2_mutex_8h_html"><div class="ttname"><a href="_cmsis_rtos2_mutex_8h.html">CmsisRtos2Mutex.h</a></div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a3c297a25ec1e3808b17f63f488fb2046"><div class="ttname"><a href="_delegate_opt_8h.html#a3c297a25ec1e3808b17f63f488fb2046">xwstring</a></div><div class="ttdeci">std::wstring xwstring</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:151</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:147</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a8e4b2760271c0d353bc1e58de15aeb44"><div class="ttname"><a href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a></div><div class="ttdeci">std::string xstring</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:150</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:148</div></div>
+<div class="ttc" id="a_fault_8h_html"><div class="ttname"><a href="_fault_8h.html">Fault.h</a></div></div>
 <div class="ttc" id="a_free_r_t_o_s_clock_8h_html"><div class="ttname"><a href="_free_r_t_o_s_clock_8h.html">FreeRTOSClock.h</a></div></div>
+<div class="ttc" id="a_free_r_t_o_s_condition_variable_8h_html"><div class="ttname"><a href="_free_r_t_o_s_condition_variable_8h.html">FreeRTOSConditionVariable.h</a></div></div>
 <div class="ttc" id="a_free_r_t_o_s_mutex_8h_html"><div class="ttname"><a href="_free_r_t_o_s_mutex_8h.html">FreeRTOSMutex.h</a></div></div>
+<div class="ttc" id="a_thread_x_clock_8h_html"><div class="ttname"><a href="_thread_x_clock_8h.html">ThreadXClock.h</a></div></div>
+<div class="ttc" id="a_thread_x_condition_variable_8h_html"><div class="ttname"><a href="_thread_x_condition_variable_8h.html">ThreadXConditionVariable.h</a></div></div>
+<div class="ttc" id="a_thread_x_mutex_8h_html"><div class="ttname"><a href="_thread_x_mutex_8h.html">ThreadXMutex.h</a></div></div>
+<div class="ttc" id="a_zephyr_clock_8h_html"><div class="ttname"><a href="_zephyr_clock_8h.html">ZephyrClock.h</a></div></div>
+<div class="ttc" id="a_zephyr_mutex_8h_html"><div class="ttname"><a href="_zephyr_mutex_8h.html">ZephyrMutex.h</a></div></div>
+<div class="ttc" id="aclassdmq_1_1_cmsis_rtos2_mutex_html"><div class="ttname"><a href="classdmq_1_1_cmsis_rtos2_mutex.html">dmq::CmsisRtos2Mutex</a></div><div class="ttdef"><b>Definition</b> CmsisRtos2Mutex.h:12</div></div>
+<div class="ttc" id="aclassdmq_1_1_cmsis_rtos2_recursive_mutex_html"><div class="ttname"><a href="classdmq_1_1_cmsis_rtos2_recursive_mutex.html">dmq::CmsisRtos2RecursiveMutex</a></div><div class="ttdef"><b>Definition</b> CmsisRtos2Mutex.h:52</div></div>
+<div class="ttc" id="aclassdmq_1_1_free_r_t_o_s_condition_variable_html"><div class="ttname"><a href="classdmq_1_1_free_r_t_o_s_condition_variable.html">dmq::FreeRTOSConditionVariable</a></div><div class="ttdoc">Production-grade wrapper around FreeRTOS Semaphore to mimic std::condition_variable.</div><div class="ttdef"><b>Definition</b> FreeRTOSConditionVariable.h:21</div></div>
 <div class="ttc" id="aclassdmq_1_1_free_r_t_o_s_mutex_html"><div class="ttname"><a href="classdmq_1_1_free_r_t_o_s_mutex.html">dmq::FreeRTOSMutex</a></div><div class="ttdef"><b>Definition</b> FreeRTOSMutex.h:13</div></div>
-<div class="ttc" id="aclassdmq_1_1_free_r_t_o_s_recursive_mutex_html"><div class="ttname"><a href="classdmq_1_1_free_r_t_o_s_recursive_mutex.html">dmq::FreeRTOSRecursiveMutex</a></div><div class="ttdef"><b>Definition</b> FreeRTOSMutex.h:50</div></div>
-<div class="ttc" id="aclassxlist_html"><div class="ttname"><a href="classxlist.html">xlist</a></div><div class="ttdef"><b>Definition</b> DelegateOpt.h:95</div></div>
+<div class="ttc" id="aclassdmq_1_1_free_r_t_o_s_recursive_mutex_html"><div class="ttname"><a href="classdmq_1_1_free_r_t_o_s_recursive_mutex.html">dmq::FreeRTOSRecursiveMutex</a></div><div class="ttdef"><b>Definition</b> FreeRTOSMutex.h:57</div></div>
+<div class="ttc" id="aclassdmq_1_1_thread_x_condition_variable_html"><div class="ttname"><a href="classdmq_1_1_thread_x_condition_variable.html">dmq::ThreadXConditionVariable</a></div><div class="ttdoc">Production-grade wrapper around ThreadX Semaphore to mimic std::condition_variable.</div><div class="ttdef"><b>Definition</b> ThreadXConditionVariable.h:18</div></div>
+<div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html">dmq::ThreadXMutex</a></div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:12</div></div>
+<div class="ttc" id="aclassdmq_1_1_zephyr_mutex_html"><div class="ttname"><a href="classdmq_1_1_zephyr_mutex.html">dmq::ZephyrMutex</a></div><div class="ttdef"><b>Definition</b> ZephyrMutex.h:12</div></div>
+<div class="ttc" id="aclassxlist_html"><div class="ttname"><a href="classxlist.html">xlist</a></div><div class="ttdef"><b>Definition</b> DelegateOpt.h:141</div></div>
 <div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
-<div class="ttc" id="anamespacedmq_html_a8ff86233aa2d05f03cada0b63ebf8aef"><div class="ttname"><a href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a></div><div class="ttdeci">typename Clock::time_point TimePoint</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:38</div></div>
-<div class="ttc" id="anamespacedmq_html_a9b8f2ad24a4b0df29243c60121e10b7f"><div class="ttname"><a href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a></div><div class="ttdeci">typename Clock::duration Duration</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:37</div></div>
-<div class="ttc" id="anamespacedmq_html_a9e5da5445898b2f9bb6183dca9d0a0de"><div class="ttname"><a href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">dmq::RecursiveMutex</a></div><div class="ttdeci">std::recursive_mutex RecursiveMutex</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:59</div></div>
-<div class="ttc" id="anamespacedmq_html_ac36289d69f1e57cb1792a4516718c4f2"><div class="ttname"><a href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">dmq::Clock</a></div><div class="ttdeci">std::chrono::steady_clock Clock</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:32</div></div>
-<div class="ttc" id="anamespacedmq_html_af6e832c3de0a9e8c5bae757052bd0f07"><div class="ttname"><a href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">dmq::Mutex</a></div><div class="ttdeci">std::mutex Mutex</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:58</div></div>
+<div class="ttc" id="anamespacedmq_html_a59fb023a44633e003bb7ab8ec2fd07b7"><div class="ttname"><a href="namespacedmq.html#a59fb023a44633e003bb7ab8ec2fd07b7">dmq::ConditionVariable</a></div><div class="ttdeci">std::condition_variable ConditionVariable</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:101</div></div>
+<div class="ttc" id="anamespacedmq_html_a6d0244bb590c4fcfacf4250bd04a04a2"><div class="ttname"><a href="namespacedmq.html#a6d0244bb590c4fcfacf4250bd04a04a2">dmq::ZephyrRecursiveMutex</a></div><div class="ttdeci">ZephyrMutex ZephyrRecursiveMutex</div><div class="ttdef"><b>Definition</b> ZephyrMutex.h:40</div></div>
+<div class="ttc" id="anamespacedmq_html_a8ff86233aa2d05f03cada0b63ebf8aef"><div class="ttname"><a href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a></div><div class="ttdeci">typename Clock::time_point TimePoint</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:63</div></div>
+<div class="ttc" id="anamespacedmq_html_a9b8f2ad24a4b0df29243c60121e10b7f"><div class="ttname"><a href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a></div><div class="ttdeci">typename Clock::duration Duration</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:62</div></div>
+<div class="ttc" id="anamespacedmq_html_a9e5da5445898b2f9bb6183dca9d0a0de"><div class="ttname"><a href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">dmq::RecursiveMutex</a></div><div class="ttdeci">std::recursive_mutex RecursiveMutex</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:100</div></div>
+<div class="ttc" id="anamespacedmq_html_ac36289d69f1e57cb1792a4516718c4f2"><div class="ttname"><a href="namespacedmq.html#ac36289d69f1e57cb1792a4516718c4f2">dmq::Clock</a></div><div class="ttdeci">std::chrono::steady_clock Clock</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:57</div></div>
+<div class="ttc" id="anamespacedmq_html_af378814214518ea53c793f20aa299668"><div class="ttname"><a href="namespacedmq.html#af378814214518ea53c793f20aa299668">dmq::ThreadXRecursiveMutex</a></div><div class="ttdeci">ThreadXMutex ThreadXRecursiveMutex</div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:45</div></div>
+<div class="ttc" id="anamespacedmq_html_af6e832c3de0a9e8c5bae757052bd0f07"><div class="ttname"><a href="namespacedmq.html#af6e832c3de0a9e8c5bae757052bd0f07">dmq::Mutex</a></div><div class="ttdeci">std::mutex Mutex</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:99</div></div>
 <div class="ttc" id="astl__allocator_8h_html"><div class="ttname"><a href="stl__allocator_8h.html">stl_allocator.h</a></div></div>
 <div class="ttc" id="astructdmq_1_1_bare_metal_clock_html"><div class="ttname"><a href="structdmq_1_1_bare_metal_clock.html">dmq::BareMetalClock</a></div><div class="ttdef"><b>Definition</b> BareMetalClock.h:14</div></div>
+<div class="ttc" id="astructdmq_1_1_cmsis_rtos2_clock_html"><div class="ttname"><a href="structdmq_1_1_cmsis_rtos2_clock.html">dmq::CmsisRtos2Clock</a></div><div class="ttdef"><b>Definition</b> CmsisRtos2Clock.h:8</div></div>
 <div class="ttc" id="astructdmq_1_1_free_r_t_o_s_clock_html"><div class="ttname"><a href="structdmq_1_1_free_r_t_o_s_clock.html">dmq::FreeRTOSClock</a></div><div class="ttdef"><b>Definition</b> FreeRTOSClock.h:9</div></div>
+<div class="ttc" id="astructdmq_1_1_thread_x_clock_html"><div class="ttname"><a href="structdmq_1_1_thread_x_clock.html">dmq::ThreadXClock</a></div><div class="ttdef"><b>Definition</b> ThreadXClock.h:8</div></div>
+<div class="ttc" id="astructdmq_1_1_zephyr_clock_html"><div class="ttname"><a href="structdmq_1_1_zephyr_clock.html">dmq::ZephyrClock</a></div><div class="ttdef"><b>Definition</b> ZephyrClock.h:8</div></div>
 <div class="ttc" id="axlist_8h_html"><div class="ttname"><a href="xlist_8h.html">xlist.h</a></div></div>
 <div class="ttc" id="axsstream_8h_html"><div class="ttname"><a href="xsstream_8h.html">xsstream.h</a></div></div>
+<div class="ttc" id="axstring_8h_html"><div class="ttname"><a href="xstring_8h.html">xstring.h</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

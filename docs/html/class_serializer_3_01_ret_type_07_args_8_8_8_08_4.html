@@ -128,9 +128,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:afcdb8d3800db2da7f659c47dc8a1986d" id="r_afcdb8d3800db2da7f659c47dc8a1986d"><td class="memItemLeft" align="right" valign="top">virtual std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afcdb8d3800db2da7f659c47dc8a1986d">Write</a> (std::ostream &amp;os, Args... args) override</td></tr>
-<tr class="memdesc:afcdb8d3800db2da7f659c47dc8a1986d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes function arguments into the output stream.  <br /></td></tr>
-<tr class="separator:afcdb8d3800db2da7f659c47dc8a1986d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5dce1a619e6b77d3cb7c172b6dc20a7" id="r_aa5dce1a619e6b77d3cb7c172b6dc20a7"><td class="memItemLeft" align="right" valign="top">virtual std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5dce1a619e6b77d3cb7c172b6dc20a7">Write</a> (std::ostream &amp;os, const Args &amp;... args) override</td></tr>
+<tr class="separator:aa5dce1a619e6b77d3cb7c172b6dc20a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00e80821a799ccab63c59accfdbecd49" id="r_a00e80821a799ccab63c59accfdbecd49"><td class="memItemLeft" align="right" valign="top">virtual std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00e80821a799ccab63c59accfdbecd49">Read</a> (std::istream &amp;is, Args &amp;... args) override</td></tr>
 <tr class="memdesc:a00e80821a799ccab63c59accfdbecd49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserializes data from the input stream into function arguments.  <br /></td></tr>
 <tr class="separator:a00e80821a799ccab63c59accfdbecd49"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -590,8 +589,8 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="afcdb8d3800db2da7f659c47dc8a1986d" name="afcdb8d3800db2da7f659c47dc8a1986d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afcdb8d3800db2da7f659c47dc8a1986d">&#9670;&#160;</a></span>Write() <span class="overload">[5/5]</span></h2>
+<a id="aa5dce1a619e6b77d3cb7c172b6dc20a7" name="aa5dce1a619e6b77d3cb7c172b6dc20a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5dce1a619e6b77d3cb7c172b6dc20a7">&#9670;&#160;</a></span>Write() <span class="overload">[5/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -609,7 +608,7 @@ template&lt;class RetType , class... Args&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Args...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
+          <td class="paramtype">const Args &amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -618,19 +617,6 @@ template&lt;class RetType , class... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Serializes function arguments into the output stream. </p>
-<p>Called by the <code>DelegateRemote</code> when the user invokes a remote delegate. The implementation must write every argument in <code>args</code> into <code>os</code>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">os</td><td>The output stream (buffer) to write data to. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td>The actual arguments passed to the delegate invocation. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Reference to the output stream. </dd></dl>
-
-<p>Implements <a class="el" href="classdmq_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html#a606b14272f36e9ff38e579e2974ebdcf">dmq::ISerializer&lt; RetType(Args...)&gt;</a>.</p>
 
 </div>
 </div>

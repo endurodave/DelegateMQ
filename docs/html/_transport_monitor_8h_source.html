@@ -102,120 +102,148 @@ $(function(){initNavTree('_transport_monitor_8h_source.html',''); initResizable(
 <a href="_transport_monitor_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef _TRANSPORT_MONITOR_HH</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define _TRANSPORT_MONITOR_HH</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_m_q_8h.html">DelegateMQ.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_opt_8h.html">delegate/DelegateOpt.h</a>&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_monitor_8h.html">../transport/ITransportMonitor.h</a>&quot;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;map&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;chrono&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="class_transport_monitor.html">   28</a></span><span class="keyword">class </span><a class="code hl_class" href="class_transport_monitor.html">TransportMonitor</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>{</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
-<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86e">   31</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86e">Status</a></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    {</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_enumvalue" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ead0749aaba8b833466dfcbb0428e4f89c">SUCCESS</a>,  <span class="comment">// Message received by remote</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <a class="code hl_enumvalue" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ea070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>   <span class="comment">// Message timeout</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    };</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="class_transport_monitor.html">   29</a></span><span class="keyword">class </span><a class="code hl_class" href="class_transport_monitor.html">TransportMonitor</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>{</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86e">   32</a></span>    <span class="keyword">enum class</span> <a class="code hl_enumeration" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86e">Status</a></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <a class="code hl_enumvalue" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ead0749aaba8b833466dfcbb0428e4f89c">SUCCESS</a>,  <span class="comment">// Message received by remote</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <a class="code hl_enumvalue" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ea070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>   <span class="comment">// Message timeout</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    };</div>
 </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="comment">// Delegate callback to monitor message send status. Callback invoked by </span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// either the Remove() caller&#39;s thread or the Process() caller&#39;s thread.</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#acf8c23c39cbb7240f75043a27cf3aa65">   39</a></span>    <a class="code hl_struct" href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a>&lt;void(<a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> <span class="keywordtype">id</span>, uint16_t seqNum, <a class="code hl_enumeration" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86e">Status</a> status)&gt; <a class="code hl_variable" href="class_transport_monitor.html#acf8c23c39cbb7240f75043a27cf3aa65">SendStatusCb</a>;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a4a16d0eaff72cafb2258a24537e9d510">   41</a></span>    <a class="code hl_function" href="class_transport_monitor.html#a4a16d0eaff72cafb2258a24537e9d510">TransportMonitor</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> timeout) : TRANSPORT_TIMEOUT(timeout) {}</div>
-<div class="foldopen" id="foldopen00042" data-start="{" data-end="}">
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6">   42</a></span>    <a class="code hl_function" href="class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6">~TransportMonitor</a>() </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    { </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keyword">const</span> std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_lock);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        m_pending.clear(); </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#add81131c7328add7a09c8b3269028e2c">   41</a></span>    std::shared_ptr&lt;<a class="code hl_class" href="classdmq_1_1_signal_safe.html">dmq::SignalSafe</a>&lt;void(<a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a>, uint16_t, <a class="code hl_enumeration" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86e">Status</a>)&gt;&gt; <a class="code hl_variable" href="class_transport_monitor.html#add81131c7328add7a09c8b3269028e2c">OnSendStatus</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a4a16d0eaff72cafb2258a24537e9d510">   43</a></span>    <a class="code hl_function" href="class_transport_monitor.html#a4a16d0eaff72cafb2258a24537e9d510">TransportMonitor</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> timeout) : TRANSPORT_TIMEOUT(timeout)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <a class="code hl_variable" href="class_transport_monitor.html#add81131c7328add7a09c8b3269028e2c">OnSendStatus</a> = <a class="code hl_function" href="namespacedmq.html#ae43a0114148f1ea5c12b98ea09471054">dmq::MakeSignal&lt;void(dmq::DelegateRemoteId, uint16_t, Status)&gt;</a>();</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
 </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="foldopen" id="foldopen00051" data-start="{" data-end="}">
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#aa5dcc7c093c4649f3e1b01f1c64b0399">   51</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_transport_monitor.html#aa5dcc7c093c4649f3e1b01f1c64b0399">Add</a>(uint16_t seqNum, <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">const</span> std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_lock);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        TimeoutData d;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        d.timeStamp = std::chrono::steady_clock::now();</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        d.remoteId = remoteId;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        m_pending[seqNum] = d;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    }</div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6">   48</a></span>    <a class="code hl_function" href="class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6">~TransportMonitor</a>()</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">const</span> std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_lock);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        m_pending.clear();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
 </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a87b33e2d501022bd697b8b68719d9b06">   63</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_transport_monitor.html#a87b33e2d501022bd697b8b68719d9b06">Remove</a>(uint16_t seqNum)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">const</span> std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_lock);</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keyword">auto</span> it = m_pending.find(seqNum);</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">if</span> (it != m_pending.end())</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            TimeoutData d = it-&gt;second;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            m_pending.erase(it);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <a class="code hl_variable" href="class_transport_monitor.html#acf8c23c39cbb7240f75043a27cf3aa65">SendStatusCb</a>(d.remoteId, seqNum, <a class="code hl_enumvalue" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ead0749aaba8b833466dfcbb0428e4f89c">Status::SUCCESS</a>);</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#aa5dcc7c093c4649f3e1b01f1c64b0399">   57</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_transport_monitor.html#aa5dcc7c093c4649f3e1b01f1c64b0399">Add</a>(uint16_t seqNum, <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">const</span> std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_lock);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        TimeoutData d;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        d.timeStamp = dmq::Clock::now();</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        d.remoteId = remoteId;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        m_pending[seqNum] = d;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
 </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#ac4dd814fb686a053c4505829c8c21b40">   76</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_transport_monitor.html#ac4dd814fb686a053c4505829c8c21b40">Process</a>()</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">const</span> std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_lock);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keyword">auto</span> now = std::chrono::steady_clock::now();</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">auto</span> it = m_pending.begin();</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">while</span> (it != m_pending.end()) </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        {</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="comment">// Calculate the elapsed time as a duration</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keyword">auto</span> elapsed = std::chrono::duration_cast&lt;dmq::Duration&gt;(now - (*it).second.timeStamp);</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="comment">// Has message timeout expired?</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordflow">if</span> (elapsed &gt; TRANSPORT_TIMEOUT)</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            {</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                <a class="code hl_variable" href="class_transport_monitor.html#acf8c23c39cbb7240f75043a27cf3aa65">SendStatusCb</a>((*it).second.remoteId, (*it).first, <a class="code hl_enumvalue" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ea070a0fb40f6c308ab544b227660aadff">Status::TIMEOUT</a>);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                <a class="code hl_define" href="_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63">LOG_ERROR</a>(<span class="stringliteral">&quot;TransportMonitor::Process TIMEOUT {} {}&quot;</span>, (*it).second.remoteId, (*it).first);</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                it = m_pending.erase(it);                </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            }</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordflow">else</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            {</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                ++it;</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            }</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        }</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#a87b33e2d501022bd697b8b68719d9b06">   69</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_transport_monitor.html#a87b33e2d501022bd697b8b68719d9b06">Remove</a>(uint16_t seqNum)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">const</span> std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_lock);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">auto</span> it = m_pending.find(seqNum);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (it != m_pending.end())</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            TimeoutData d = it-&gt;second;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            m_pending.erase(it);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="class_transport_monitor.html#add81131c7328add7a09c8b3269028e2c">OnSendStatus</a>)</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                (*OnSendStatus)(d.remoteId, seqNum, <a class="code hl_enumvalue" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ead0749aaba8b833466dfcbb0428e4f89c">Status::SUCCESS</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
 </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">struct </span>TimeoutData</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId = 0;</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        std::chrono::steady_clock::time_point timeStamp;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    };</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    std::map&lt;uint16_t, TimeoutData&gt; m_pending;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> TRANSPORT_TIMEOUT;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">dmq::RecursiveMutex</a> m_lock;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>};</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="}">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="class_transport_monitor.html#ac4dd814fb686a053c4505829c8c21b40">   83</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_transport_monitor.html#ac4dd814fb686a053c4505829c8c21b40">Process</a>()</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="comment">// 1. Collect expired items into a local list</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keyword">struct </span>ExpiredItem { uint16_t seq; TimeoutData data; };</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        std::vector&lt;ExpiredItem&gt; expiredItems;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <span class="comment">// Lock ONLY while reading/modifying the map</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keyword">const</span> std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_lock);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keyword">auto</span> now = dmq::Clock::now();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keyword">auto</span> it = m_pending.begin();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">while</span> (it != m_pending.end())</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <span class="comment">// Ensure consistent duration types</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                <span class="keyword">auto</span> elapsed = std::chrono::duration_cast&lt;dmq::Duration&gt;(now - (*it).second.timeStamp);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="keywordflow">if</span> (elapsed &gt; TRANSPORT_TIMEOUT)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                    expiredItems.push_back({ (*it).first, (*it).second });</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                    it = m_pending.erase(it);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                    ++it;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        } <span class="comment">// Lock is RELEASED here</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="comment">// 2. Fire callbacks without holding the lock</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="comment">// This prevents the deadlock: Process(Lock A) -&gt; Callback -&gt; Send -&gt; Transport(Wait for Thread B)</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="comment">// Meanwhile Thread B -&gt; Send -&gt; Add(Wait for Lock A)</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="class_transport_monitor.html#add81131c7328add7a09c8b3269028e2c">OnSendStatus</a> &amp;&amp; !expiredItems.empty())</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; item : expiredItems)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                <span class="comment">// Simple logging to console</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                <span class="comment">// Note: std::cerr is generally safe, but on embedded might be redirected or empty.</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                std::cerr &lt;&lt; <span class="stringliteral">&quot;TransportMonitor::Process TIMEOUT RemoteID: &quot;</span> &lt;&lt; item.data.remoteId &lt;&lt; <span class="stringliteral">&quot; Seq: &quot;</span> &lt;&lt; item.seq &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                (*OnSendStatus)(item.data.remoteId, item.seq, <a class="code hl_enumvalue" href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ea070a0fb40f6c308ab544b227660aadff">Status::TIMEOUT</a>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    }</div>
 </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="a_delegate_m_q_8h_html"><div class="ttname"><a href="_delegate_m_q_8h.html">DelegateMQ.h</a></div><div class="ttdoc">A single-include header for the complete DelegateMQ library functionality.</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_ad4a9117ce894e3319e903142347a0f63"><div class="ttname"><a href="_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63">LOG_ERROR</a></div><div class="ttdeci">#define LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:115</div></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keyword">struct </span>TimeoutData</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId = 0;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <a class="code hl_typedef" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> timeStamp;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    };</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    std::map&lt;uint16_t, TimeoutData&gt; m_pending;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> TRANSPORT_TIMEOUT;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <a class="code hl_typedef" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">dmq::RecursiveMutex</a> m_lock;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>};</div>
+</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="a_delegate_opt_8h_html"><div class="ttname"><a href="_delegate_opt_8h.html">DelegateOpt.h</a></div><div class="ttdoc">Delegate library options header file.</div></div>
 <div class="ttc" id="a_i_transport_monitor_8h_html"><div class="ttname"><a href="_i_transport_monitor_8h.html">ITransportMonitor.h</a></div></div>
 <div class="ttc" id="aclass_i_transport_monitor_html"><div class="ttname"><a href="class_i_transport_monitor.html">ITransportMonitor</a></div><div class="ttdoc">DelegateMQ transport monitor interface.</div><div class="ttdef"><b>Definition</b> ITransportMonitor.h:10</div></div>
-<div class="ttc" id="aclass_transport_monitor_html"><div class="ttname"><a href="class_transport_monitor.html">TransportMonitor</a></div><div class="ttdoc">A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:29</div></div>
-<div class="ttc" id="aclass_transport_monitor_html_a4a16d0eaff72cafb2258a24537e9d510"><div class="ttname"><a href="class_transport_monitor.html#a4a16d0eaff72cafb2258a24537e9d510">TransportMonitor::TransportMonitor</a></div><div class="ttdeci">TransportMonitor(const dmq::Duration timeout)</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:41</div></div>
-<div class="ttc" id="aclass_transport_monitor_html_a7ceea7674a94dc7fafbd9136f3af83b6"><div class="ttname"><a href="class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6">TransportMonitor::~TransportMonitor</a></div><div class="ttdeci">~TransportMonitor()</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:42</div></div>
-<div class="ttc" id="aclass_transport_monitor_html_a87b33e2d501022bd697b8b68719d9b06"><div class="ttname"><a href="class_transport_monitor.html#a87b33e2d501022bd697b8b68719d9b06">TransportMonitor::Remove</a></div><div class="ttdeci">virtual void Remove(uint16_t seqNum) override</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:63</div></div>
-<div class="ttc" id="aclass_transport_monitor_html_aa5dcc7c093c4649f3e1b01f1c64b0399"><div class="ttname"><a href="class_transport_monitor.html#aa5dcc7c093c4649f3e1b01f1c64b0399">TransportMonitor::Add</a></div><div class="ttdeci">virtual void Add(uint16_t seqNum, dmq::DelegateRemoteId remoteId) override</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:51</div></div>
-<div class="ttc" id="aclass_transport_monitor_html_ac4dd814fb686a053c4505829c8c21b40"><div class="ttname"><a href="class_transport_monitor.html#ac4dd814fb686a053c4505829c8c21b40">TransportMonitor::Process</a></div><div class="ttdeci">void Process()</div><div class="ttdoc">Call periodically to process message timeouts.</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:76</div></div>
-<div class="ttc" id="aclass_transport_monitor_html_ac815afe1a228c0cd92dc294278aea86e"><div class="ttname"><a href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86e">TransportMonitor::Status</a></div><div class="ttdeci">Status</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:32</div></div>
+<div class="ttc" id="aclass_transport_monitor_html"><div class="ttname"><a href="class_transport_monitor.html">TransportMonitor</a></div><div class="ttdoc">A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:30</div></div>
+<div class="ttc" id="aclass_transport_monitor_html_a4a16d0eaff72cafb2258a24537e9d510"><div class="ttname"><a href="class_transport_monitor.html#a4a16d0eaff72cafb2258a24537e9d510">TransportMonitor::TransportMonitor</a></div><div class="ttdeci">TransportMonitor(const dmq::Duration timeout)</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:43</div></div>
+<div class="ttc" id="aclass_transport_monitor_html_a7ceea7674a94dc7fafbd9136f3af83b6"><div class="ttname"><a href="class_transport_monitor.html#a7ceea7674a94dc7fafbd9136f3af83b6">TransportMonitor::~TransportMonitor</a></div><div class="ttdeci">~TransportMonitor()</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:48</div></div>
+<div class="ttc" id="aclass_transport_monitor_html_a87b33e2d501022bd697b8b68719d9b06"><div class="ttname"><a href="class_transport_monitor.html#a87b33e2d501022bd697b8b68719d9b06">TransportMonitor::Remove</a></div><div class="ttdeci">virtual void Remove(uint16_t seqNum) override</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:69</div></div>
+<div class="ttc" id="aclass_transport_monitor_html_aa5dcc7c093c4649f3e1b01f1c64b0399"><div class="ttname"><a href="class_transport_monitor.html#aa5dcc7c093c4649f3e1b01f1c64b0399">TransportMonitor::Add</a></div><div class="ttdeci">virtual void Add(uint16_t seqNum, dmq::DelegateRemoteId remoteId) override</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:57</div></div>
+<div class="ttc" id="aclass_transport_monitor_html_ac4dd814fb686a053c4505829c8c21b40"><div class="ttname"><a href="class_transport_monitor.html#ac4dd814fb686a053c4505829c8c21b40">TransportMonitor::Process</a></div><div class="ttdeci">void Process()</div><div class="ttdoc">Call periodically to process message timeouts.</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:83</div></div>
+<div class="ttc" id="aclass_transport_monitor_html_ac815afe1a228c0cd92dc294278aea86e"><div class="ttname"><a href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86e">TransportMonitor::Status</a></div><div class="ttdeci">Status</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:33</div></div>
 <div class="ttc" id="aclass_transport_monitor_html_ac815afe1a228c0cd92dc294278aea86ea070a0fb40f6c308ab544b227660aadff"><div class="ttname"><a href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ea070a0fb40f6c308ab544b227660aadff">TransportMonitor::Status::TIMEOUT</a></div><div class="ttdeci">@ TIMEOUT</div></div>
 <div class="ttc" id="aclass_transport_monitor_html_ac815afe1a228c0cd92dc294278aea86ead0749aaba8b833466dfcbb0428e4f89c"><div class="ttname"><a href="class_transport_monitor.html#ac815afe1a228c0cd92dc294278aea86ead0749aaba8b833466dfcbb0428e4f89c">TransportMonitor::Status::SUCCESS</a></div><div class="ttdeci">@ SUCCESS</div></div>
-<div class="ttc" id="aclass_transport_monitor_html_acf8c23c39cbb7240f75043a27cf3aa65"><div class="ttname"><a href="class_transport_monitor.html#acf8c23c39cbb7240f75043a27cf3aa65">TransportMonitor::SendStatusCb</a></div><div class="ttdeci">dmq::MulticastDelegateSafe&lt; void(dmq::DelegateRemoteId id, uint16_t seqNum, Status status)&gt; SendStatusCb</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:39</div></div>
+<div class="ttc" id="aclass_transport_monitor_html_add81131c7328add7a09c8b3269028e2c"><div class="ttname"><a href="class_transport_monitor.html#add81131c7328add7a09c8b3269028e2c">TransportMonitor::OnSendStatus</a></div><div class="ttdeci">std::shared_ptr&lt; dmq::SignalSafe&lt; void(dmq::DelegateRemoteId, uint16_t, Status)&gt; &gt; OnSendStatus</div><div class="ttdef"><b>Definition</b> TransportMonitor.h:41</div></div>
+<div class="ttc" id="aclassdmq_1_1_signal_safe_html"><div class="ttname"><a href="classdmq_1_1_signal_safe.html">dmq::SignalSafe</a></div><div class="ttdef"><b>Definition</b> SignalSafe.h:23</div></div>
 <div class="ttc" id="anamespacedmq_html_a5c5e55328ae2cd1d800dfb6c83a21bda"><div class="ttname"><a href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a></div><div class="ttdeci">uint16_t DelegateRemoteId</div><div class="ttdef"><b>Definition</b> IDispatcher.h:12</div></div>
-<div class="ttc" id="anamespacedmq_html_a9b8f2ad24a4b0df29243c60121e10b7f"><div class="ttname"><a href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a></div><div class="ttdeci">typename Clock::duration Duration</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:37</div></div>
-<div class="ttc" id="anamespacedmq_html_a9e5da5445898b2f9bb6183dca9d0a0de"><div class="ttname"><a href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">dmq::RecursiveMutex</a></div><div class="ttdeci">std::recursive_mutex RecursiveMutex</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:59</div></div>
-<div class="ttc" id="astructdmq_1_1_multicast_delegate_safe_html"><div class="ttname"><a href="structdmq_1_1_multicast_delegate_safe.html">dmq::MulticastDelegateSafe</a></div><div class="ttdef"><b>Definition</b> MulticastDelegateSafe.h:13</div></div>
+<div class="ttc" id="anamespacedmq_html_a8ff86233aa2d05f03cada0b63ebf8aef"><div class="ttname"><a href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a></div><div class="ttdeci">typename Clock::time_point TimePoint</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:63</div></div>
+<div class="ttc" id="anamespacedmq_html_a9b8f2ad24a4b0df29243c60121e10b7f"><div class="ttname"><a href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a></div><div class="ttdeci">typename Clock::duration Duration</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:62</div></div>
+<div class="ttc" id="anamespacedmq_html_a9e5da5445898b2f9bb6183dca9d0a0de"><div class="ttname"><a href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">dmq::RecursiveMutex</a></div><div class="ttdeci">std::recursive_mutex RecursiveMutex</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:100</div></div>
+<div class="ttc" id="anamespacedmq_html_ae43a0114148f1ea5c12b98ea09471054"><div class="ttname"><a href="namespacedmq.html#ae43a0114148f1ea5c12b98ea09471054">dmq::MakeSignal</a></div><div class="ttdeci">SignalPtr&lt; Signature &gt; MakeSignal()</div><div class="ttdef"><b>Definition</b> SignalSafe.h:87</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

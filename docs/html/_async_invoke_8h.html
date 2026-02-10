@@ -102,7 +102,7 @@ $(function(){initNavTree('_async_invoke_8h.html',''); initResizable(true); });
 </div><!--header-->
 <div class="contents">
 
-<p>Helper functions to simplify invoking a free or member function on the user-specified thread of control using a single line of code.  
+<p>Helper functions for simplified, one-line asynchronous function invocation.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_delegate_m_q_8h_source.html">DelegateMQ.h</a>&quot;</code><br />
 <code>#include &lt;functional&gt;</code><br />
@@ -126,7 +126,18 @@ Functions</h2></td></tr>
 <tr class="separator:af1eec4208f133862da13befa8be48405"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Helper functions to simplify invoking a free or member function on the user-specified thread of control using a single line of code. </p>
+<div class="textblock"><p>Helper functions for simplified, one-line asynchronous function invocation. </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
+<p>The <code>AsyncInvoke</code> helper functions provide a convenient wrapper around the DelegateMQ library to execute any callable (free function, lambda, or member function) on a specific target thread.</p>
+<p><b>Key Features:</b></p><ul>
+<li><b>Automatic Context Switching:</b> Automatically detects if the caller is already executing on the target thread.<ul>
+<li>If <b>Yes</b>: It executes the function synchronously (immediately) to avoid overhead.</li>
+<li>If <b>No</b>: It creates a temporary asynchronous delegate, marshals the arguments, and executes the function on the target thread.</li>
+</ul>
+</li>
+<li><b>Blocking Wait:</b> Supports a timeout parameter to wait for the asynchronous execution to complete and return a value.</li>
+<li><b>Return Value Handling:</b> Safely retrieves the return value from the target function across thread boundaries. </li>
+</ul>
 </div><h2 class="groupheader">Function Documentation</h2>
 <a id="a99ebea3e2f28d5c5650539df12e588e7" name="a99ebea3e2f28d5c5650539df12e588e7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a99ebea3e2f28d5c5650539df12e588e7">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[1/3]</span></h2>

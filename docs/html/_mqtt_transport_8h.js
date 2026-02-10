@@ -1,6 +1,5 @@
 var _mqtt_transport_8h =
 [
-    [ "IMqttReceiveHandler", "class_i_mqtt_receive_handler.html", "class_i_mqtt_receive_handler" ],
     [ "MqttTransport", "class_mqtt_transport.html", "class_mqtt_transport" ],
     [ "MQTT_ADDRESS", "_mqtt_transport_8h.html#ab67b4c1c55ff8ba1793720539c9de3d8", null ],
     [ "MQTT_PUB_CLIENTID", "_mqtt_transport_8h.html#a8d65a1aa547e38e8fbb68fecb76504be", null ],

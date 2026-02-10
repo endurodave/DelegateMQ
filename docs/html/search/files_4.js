@@ -6,5 +6,6 @@ var searchData=
   ['freertos_2fthread_2eh_3',['Thread.h',['../freertos_2_thread_8h.html',1,'']]],
   ['freertos_2fthreadmsg_2eh_4',['ThreadMsg.h',['../freertos_2_thread_msg_8h.html',1,'']]],
   ['freertosclock_2eh_5',['FreeRTOSClock.h',['../_free_r_t_o_s_clock_8h.html',1,'']]],
-  ['freertosmutex_2eh_6',['FreeRTOSMutex.h',['../_free_r_t_o_s_mutex_8h.html',1,'']]]
+  ['freertosconditionvariable_2eh_6',['FreeRTOSConditionVariable.h',['../_free_r_t_o_s_condition_variable_8h.html',1,'']]],
+  ['freertosmutex_2eh_7',['FreeRTOSMutex.h',['../_free_r_t_o_s_mutex_8h.html',1,'']]]
 ];

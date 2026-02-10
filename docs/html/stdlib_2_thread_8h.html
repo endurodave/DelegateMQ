@@ -101,6 +101,9 @@ $(function(){initNavTree('stdlib_2_thread_8h.html',''); initResizable(true); });
   <div class="headertitle"><div class="title">Thread.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Standard C++ implementation of the DelegateMQ IThread interface.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_i_thread_8h_source.html">delegate/IThread.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_timer_8h_source.html">./predef/util/Timer.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="stdlib_2_thread_msg_8h_source.html">ThreadMsg.h</a>&quot;</code><br />
@@ -121,7 +124,18 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).  <a href="class_thread.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Standard C++ implementation of the DelegateMQ IThread interface. </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
+<p>This class provides a cross-platform implementation of the <code>IThread</code> interface using standard C++11 primitives (<code>std::thread</code>, <code>std::mutex</code>, <code>std::condition_variable</code>). It creates a dedicated worker thread with an event loop capable of processing asynchronous delegates and system messages.</p>
+<p><b>Key Features:</b></p><ul>
+<li><b>Priority Queue:</b> Uses <code>std::priority_queue</code> to ensure high-priority delegate messages (e.g., system signals) are processed before lower-priority ones.</li>
+<li><b>Back Pressure:</b> Supports a configurable <code>maxQueueSize</code>. If the queue is full, <code>DispatchDelegate()</code> blocks the caller until space is available, preventing memory exhaustion.</li>
+<li><b>Watchdog Integration:</b> Includes a built-in heartbeat mechanism. If the thread loop stalls (deadlock or infinite loop), the watchdog timer detects the failure.</li>
+<li><b>Synchronized Start:</b> Uses <code>std::promise</code> and <code>std::future</code> to ensure the thread is fully initialized and running before <code>CreateThread()</code> returns.</li>
+<li><b>Debug Support:</b> Sets the native thread name (on supported OSs like Windows) to aid debugging in IDEs. </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

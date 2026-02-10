@@ -135,8 +135,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a92bb3773eed2b1a2f2d5c7450295be45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor that creates a copy of the given instance.  <br /></td></tr>
 <tr class="separator:a92bb3773eed2b1a2f2d5c7450295be45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac233ff64038a87f84a5b279893fa7697" id="r_ac233ff64038a87f84a5b279893fa7697"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac233ff64038a87f84a5b279893fa7697">UnicastDelegate</a> (<a class="el" href="structdmq_1_1_unicast_delegate.html">UnicastDelegate</a> &amp;&amp;rhs) noexcept</td></tr>
-<tr class="memdesc:ac233ff64038a87f84a5b279893fa7697"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move constructor that transfers ownership of resources.  <br /></td></tr>
 <tr class="separator:ac233ff64038a87f84a5b279893fa7697"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63951d93847b6e19a550c0a15e6bc27a" id="r_a63951d93847b6e19a550c0a15e6bc27a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63951d93847b6e19a550c0a15e6bc27a">UnicastDelegate</a> (const <a class="el" href="#a7d937240da661cd560c0a93dc859c543">DelegateType</a> &amp;d)</td></tr>
+<tr class="memdesc:a63951d93847b6e19a550c0a15e6bc27a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to initialize from a <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> (Copy)  <br /></td></tr>
+<tr class="separator:a63951d93847b6e19a550c0a15e6bc27a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88f26d20dc25d2959bfa748d1a7b9f4d" id="r_a88f26d20dc25d2959bfa748d1a7b9f4d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88f26d20dc25d2959bfa748d1a7b9f4d">UnicastDelegate</a> (<a class="el" href="#a7d937240da661cd560c0a93dc859c543">DelegateType</a> &amp;&amp;d)</td></tr>
+<tr class="memdesc:a88f26d20dc25d2959bfa748d1a7b9f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to initialize from a <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> (Move)  <br /></td></tr>
+<tr class="separator:a88f26d20dc25d2959bfa748d1a7b9f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a906abd8eee715dbacd11ffa5551aa0" id="r_a4a906abd8eee715dbacd11ffa5551aa0"><td class="memItemLeft" align="right" valign="top">RetType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a906abd8eee715dbacd11ffa5551aa0">operator()</a> (Args... args)</td></tr>
 <tr class="separator:a4a906abd8eee715dbacd11ffa5551aa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68aef086e5eb0919377d3cfe5627bd00" id="r_a68aef086e5eb0919377d3cfe5627bd00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a68aef086e5eb0919377d3cfe5627bd00">Broadcast</a> (Args... args)</td></tr>
@@ -189,7 +194,7 @@ template&lt;class RetType , class... Args&gt; </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a3cf1539a6fa9b2e06bdcb3ad7618950b" name="a3cf1539a6fa9b2e06bdcb3ad7618950b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3cf1539a6fa9b2e06bdcb3ad7618950b">&#9670;&#160;</a></span>UnicastDelegate() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cf1539a6fa9b2e06bdcb3ad7618950b">&#9670;&#160;</a></span>UnicastDelegate() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -243,7 +248,7 @@ template&lt;class RetType , class... Args&gt; </div>
 </div>
 </div>
 <a id="a92bb3773eed2b1a2f2d5c7450295be45" name="a92bb3773eed2b1a2f2d5c7450295be45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92bb3773eed2b1a2f2d5c7450295be45">&#9670;&#160;</a></span>UnicastDelegate() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a92bb3773eed2b1a2f2d5c7450295be45">&#9670;&#160;</a></span>UnicastDelegate() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -278,7 +283,7 @@ template&lt;class RetType , class... Args&gt; </div>
 </div>
 </div>
 <a id="ac233ff64038a87f84a5b279893fa7697" name="ac233ff64038a87f84a5b279893fa7697"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac233ff64038a87f84a5b279893fa7697">&#9670;&#160;</a></span>UnicastDelegate() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac233ff64038a87f84a5b279893fa7697">&#9670;&#160;</a></span>UnicastDelegate() <span class="overload">[3/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -301,14 +306,70 @@ template&lt;class RetType , class... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
-<p>Move constructor that transfers ownership of resources. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Move constructor that transfers ownership of resources. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td>The object to move from. </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a63951d93847b6e19a550c0a15e6bc27a" name="a63951d93847b6e19a550c0a15e6bc27a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63951d93847b6e19a550c0a15e6bc27a">&#9670;&#160;</a></span>UnicastDelegate() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structdmq_1_1_unicast_delegate.html">dmq::UnicastDelegate</a>&lt; RetType(Args...)&gt;::UnicastDelegate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a7d937240da661cd560c0a93dc859c543">DelegateType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>d</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor to initialize from a <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> (Copy) </p>
+
+</div>
+</div>
+<a id="a88f26d20dc25d2959bfa748d1a7b9f4d" name="a88f26d20dc25d2959bfa748d1a7b9f4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88f26d20dc25d2959bfa748d1a7b9f4d">&#9670;&#160;</a></span>UnicastDelegate() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structdmq_1_1_unicast_delegate.html">dmq::UnicastDelegate</a>&lt; RetType(Args...)&gt;::UnicastDelegate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a7d937240da661cd560c0a93dc859c543">DelegateType</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>d</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor to initialize from a <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> (Move) </p>
 
 </div>
 </div>

@@ -109,7 +109,10 @@ $(function(){initNavTree('_delegate_opt_8h.html',''); initResizable(true); });
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;chrono&gt;</code><br />
 <code>#include &lt;mutex&gt;</code><br />
+<code>#include &lt;condition_variable&gt;</code><br />
+<code>#include &quot;<a class="el" href="_fault_8h_source.html">predef/util/Fault.h</a>&quot;</code><br />
 <code>#include &lt;new&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &lt;list&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
 </div>
@@ -151,10 +154,16 @@ Typedefs</h2></td></tr>
 <tr class="separator:af6e832c3de0a9e8c5bae757052bd0f07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e5da5445898b2f9bb6183dca9d0a0de" id="r_a9e5da5445898b2f9bb6183dca9d0a0de"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a9e5da5445898b2f9bb6183dca9d0a0de">dmq::RecursiveMutex</a> = std::recursive_mutex</td></tr>
 <tr class="separator:a9e5da5445898b2f9bb6183dca9d0a0de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59fb023a44633e003bb7ab8ec2fd07b7" id="r_a59fb023a44633e003bb7ab8ec2fd07b7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a59fb023a44633e003bb7ab8ec2fd07b7">dmq::ConditionVariable</a> = std::condition_variable</td></tr>
+<tr class="separator:a59fb023a44633e003bb7ab8ec2fd07b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54ea4f69408adaa1bb31d8d0de42c2bc" id="r_a54ea4f69408adaa1bb31d8d0de42c2bc"><td class="memItemLeft" align="right" valign="top">typedef std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></td></tr>
 <tr class="separator:a54ea4f69408adaa1bb31d8d0de42c2bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada87f2b80dc83f6d2f182655488948ae" id="r_ada87f2b80dc83f6d2f182655488948ae"><td class="memItemLeft" align="right" valign="top">typedef std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></td></tr>
 <tr class="separator:ada87f2b80dc83f6d2f182655488948ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e4b2760271c0d353bc1e58de15aeb44" id="r_a8e4b2760271c0d353bc1e58de15aeb44"><td class="memItemLeft" align="right" valign="top">typedef std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a></td></tr>
+<tr class="separator:a8e4b2760271c0d353bc1e58de15aeb44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c297a25ec1e3808b17f63f488fb2046" id="r_a3c297a25ec1e3808b17f63f488fb2046"><td class="memItemLeft" align="right" valign="top">typedef std::wstring&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c297a25ec1e3808b17f63f488fb2046">xwstring</a></td></tr>
+<tr class="separator:a3c297a25ec1e3808b17f63f488fb2046"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Delegate library options header file. </p>
@@ -260,6 +269,20 @@ Typedefs</h2></td></tr>
 
 </div>
 </div>
+<a id="a8e4b2760271c0d353bc1e58de15aeb44" name="a8e4b2760271c0d353bc1e58de15aeb44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e4b2760271c0d353bc1e58de15aeb44">&#9670;&#160;</a></span>xstring</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::string <a class="el" href="#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="ada87f2b80dc83f6d2f182655488948ae" name="ada87f2b80dc83f6d2f182655488948ae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ada87f2b80dc83f6d2f182655488948ae">&#9670;&#160;</a></span>xstringstream</h2>
 
@@ -268,6 +291,20 @@ Typedefs</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">typedef std::basic_stringstream&lt;char, std::char_traits&lt;char&gt; &gt; <a class="el" href="#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3c297a25ec1e3808b17f63f488fb2046" name="a3c297a25ec1e3808b17f63f488fb2046"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c297a25ec1e3808b17f63f488fb2046">&#9670;&#160;</a></span>xwstring</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::wstring <a class="el" href="#a3c297a25ec1e3808b17f63f488fb2046">xwstring</a></td>
         </tr>
       </table>
 </div><div class="memdoc">

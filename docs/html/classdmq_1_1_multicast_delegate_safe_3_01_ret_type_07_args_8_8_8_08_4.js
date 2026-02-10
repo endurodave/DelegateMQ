@@ -6,6 +6,8 @@ var classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "~MulticastDelegateSafe", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#ad8c5f17c107ba0a21a94b387468a2cf8", null ],
     [ "MulticastDelegateSafe", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#acdd5580cd958a841685c84dfb7ed1b8f", null ],
     [ "MulticastDelegateSafe", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a65ade6ed6c9b2b7b1e846cce4281825a", null ],
+    [ "MulticastDelegateSafe", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a063f128f44a3f7d7799d96c877e0d22d", null ],
+    [ "MulticastDelegateSafe", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#abf1a538a3688811c7b612bee95f093ca", null ],
     [ "Broadcast", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#ad6df0cc5ca432a325373e11e442ac06b", null ],
     [ "Clear", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a2c16be7f70e7d7908d4559748be6e373", null ],
     [ "Empty", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a228b237920b3e25aa76c942e7fc631bb", null ],

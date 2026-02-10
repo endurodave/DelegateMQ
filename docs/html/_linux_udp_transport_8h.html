@@ -101,9 +101,13 @@ $(function(){initNavTree('_linux_udp_transport_8h.html',''); initResizable(true)
   <div class="headertitle"><div class="title">LinuxUdpTransport.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="_i_transport_8h_source.html">predef/transport/ITransport.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_i_transport_monitor_8h_source.html">predef/transport/ITransportMonitor.h</a>&quot;</code><br />
+
+<p>Linux UDP transport implementation for DelegateMQ.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_opt_8h_source.html">delegate/DelegateOpt.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_transport_8h_source.html">predef/transport/ITransport.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_dmq_header_8h_source.html">predef/transport/DmqHeader.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_transport_monitor_8h_source.html">predef/transport/ITransportMonitor.h</a>&quot;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
 <code>#include &lt;cstring&gt;</code><br />
@@ -119,12 +123,20 @@ $(function(){initNavTree('_linux_udp_transport_8h.html',''); initResizable(true)
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_udp_transport.html">UdpTransport</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Win32 UDP transport example.  <a href="class_udp_transport.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Win32 UDP transport implementation for DelegateMQ.  <a href="class_udp_transport.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
-<p>Transport callable argument data to/from a remote using Linux UDP socket. </p>
+<div class="textblock"><p>Linux UDP transport implementation for DelegateMQ. </p>
+<dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
+<p>This class implements the <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a> interface using standard Linux BSD sockets for connectionless UDP communication. It supports both PUB (Publisher/Sender) and SUB (Subscriber/Receiver) modes.</p>
+<p>Key Features:</p><ol type="1">
+<li><b>Direct Execution</b>: Executes socket operations directly on the calling thread, relying on OS-level thread safety to avoid deadlocks.</li>
+<li><b>Reliability Support</b>: Integrates with <code><a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a></code> to track outgoing sequence numbers and process incoming ACKs to detect packet loss.</li>
+<li><b>Non-Blocking I/O</b>: Configures socket receive timeouts (<code>SO_RCVTIMEO</code>) to prevent indefinite blocking during polling loops.</li>
+<li><b>Address Management</b>: Automatically updates the target address on the receiver side to support reliable bidirectional ACKs.</li>
+</ol>
+<dl class="section note"><dt>Note</dt><dd>This class is specific to Linux and uses POSIX socket APIs. </dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

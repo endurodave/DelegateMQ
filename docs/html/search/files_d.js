@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['win32pipetransport_2eh_0',['Win32PipeTransport.h',['../_win32_pipe_transport_8h.html',1,'']]],
-  ['win32tcptransport_2eh_1',['Win32TcpTransport.h',['../_win32_tcp_transport_8h.html',1,'']]],
-  ['win32udptransport_2eh_2',['Win32UdpTransport.h',['../_win32_udp_transport_8h.html',1,'']]]
+  ['unicastdelegate_2eh_0',['UnicastDelegate.h',['../_unicast_delegate_8h.html',1,'']]],
+  ['unicastdelegatesafe_2eh_1',['UnicastDelegateSafe.h',['../_unicast_delegate_safe_8h.html',1,'']]]
 ];
