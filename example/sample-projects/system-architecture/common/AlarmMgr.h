@@ -39,14 +39,14 @@ private:
         m_thread.CreateThread();
 
         // Use Connect() and store handle
-        m_errorConn = NetworkMgr::OnNetworkError->Connect(MakeDelegate(this, &AlarmMgr::ErrorHandler, m_thread));
+        m_errorConn = NetworkMgr::Instance().OnNetworkError->Connect(MakeDelegate(this, &AlarmMgr::ErrorHandler, m_thread));
 
         // Create delegate, set priority, then connect
         auto alarmDel = MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
         alarmDel.SetPriority(dmq::Priority::HIGH);  // Alarm messages high priority
 
         // Use Connect() and store handle
-        m_alarmConn = NetworkMgr::OnAlarm->Connect(alarmDel);
+        m_alarmConn = NetworkMgr::Instance().OnAlarm->Connect(alarmDel);
     }
 
     ~AlarmMgr()

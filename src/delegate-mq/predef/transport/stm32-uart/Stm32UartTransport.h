@@ -137,7 +137,7 @@ public:
         if (xSemaphoreTakeRecursive(m_mutex, portMAX_DELAY) != pdTRUE) return -1;
 
         // 1. Prepare Packet Structure
-        std::string payload = os.str();
+        xstring payload = os.str();
         DmqHeader headerCopy = header;
         headerCopy.SetLength((uint16_t)payload.length());
 

@@ -30,7 +30,9 @@
 #include "DelegateMQ.h"
 #include "SafeTimer.h"
 #include "AsyncCallback.h"
+#include "AsyncWorker.h"
 #include "SignalSlot.h"
+#include "SignalSlotNoHeap.h"
 #include "ProducerConsumer.h"
 #include "CountdownLatch.h"
 #include "ActiveObject.h"
@@ -342,6 +344,9 @@ void RunAllExamples()
     // Run signal-slot example
     RunSignalSlotExamples();
 
+    // Signal slot usage without heap
+    SignalSlotNoHeapExample();
+
     // Run asynchronous API using delegates example 
     AsyncAPIExample();
 
@@ -350,6 +355,9 @@ void RunAllExamples()
 
     // Run the std::async and std::future example with delegates
     AsyncFutureExample();
+
+    // Run async worker thread example
+    AsyncWorkerExample();
 
     // Run the active object pattern example
     ActiveObjectExample();

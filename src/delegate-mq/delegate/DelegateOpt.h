@@ -110,6 +110,7 @@ namespace dmq
     // handler as required by the target application.
     #define BAD_ALLOC() assert(false && "Memory allocation failed!")
 #else
+    #include "predef/util/Fault.h"
     #include <new>
     // Use exception error handling
     #define BAD_ALLOC() throw std::bad_alloc()
@@ -122,10 +123,12 @@ namespace dmq
 // See master CMakeLists.txt for info on enabling the fixed-block allocator.
 #ifdef DMQ_ALLOCATOR
     // Use stl_allocator fixed-block allocator for dynamic storage allocation
+    #include "predef/allocator/xstring.h"
     #include "predef/allocator/xlist.h"
     #include "predef/allocator/xsstream.h"
     #include "predef/allocator/stl_allocator.h"
 #else
+    #include <string>
     #include <list>
     #include <sstream>
 
@@ -143,6 +146,9 @@ namespace dmq
 
     typedef std::basic_ostringstream<char, std::char_traits<char>> xostringstream;
     typedef std::basic_stringstream<char, std::char_traits<char>> xstringstream;
+
+    typedef std::string xstring;
+    typedef std::wstring xwstring;
 #endif
 
 // @TODO: Select the desired logging (see Predef.cmake).

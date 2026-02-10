@@ -1,7 +1,7 @@
 #include "Fault.h"
 #include <assert.h>
 #include <iostream>
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
 
 #if WIN32
 	#include "windows.h"

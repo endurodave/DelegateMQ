@@ -25,9 +25,11 @@
 /// @note This class requires `libserialport` to be linked.
 
 #include "libserialport.h"
-#include "DelegateMQ.h" 
-#include "predef/util/crc16.h"
+#include "delegate/DelegateOpt.h"
+#include "predef/transport/ITransport.h"
+#include "predef/transport/DmqHeader.h"
 #include "predef/transport/ITransportMonitor.h"
+#include "predef/util/crc16.h"
 
 #include <sstream>
 #include <iostream>
@@ -87,7 +89,7 @@ public:
         if (!m_port) return -1;
 
         DmqHeader headerCopy = header;
-        std::string payload = os.str();
+        xstring payload = os.str();
         if (payload.length() > UINT16_MAX) return -1;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
@@ -112,11 +114,11 @@ public:
         ss.write(payload.data(), payload.size());
 
         // CRC
-        std::string packetWithoutCrc = ss.str();
+        xstring packetWithoutCrc = ss.str();
         uint16_t crc = Crc16CalcBlock((unsigned char*)packetWithoutCrc.c_str(), (int)packetWithoutCrc.length(), 0xFFFF);
         ss.write(reinterpret_cast<const char*>(&crc), sizeof(crc));
 
-        std::string packetData = ss.str();
+        xstring packetData = ss.str();
 
         if (header.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor) {
             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());

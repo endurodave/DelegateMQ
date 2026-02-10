@@ -32,7 +32,9 @@
 #include <errno.h>
 #include <vector>
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
+#include "predef/transport/ITransport.h"
+#include "predef/transport/DmqHeader.h"
 #include "predef/transport/ITransportMonitor.h"
 
 class TcpTransport : public ITransport

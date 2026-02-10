@@ -1,6 +1,6 @@
 #include "Allocator.h"
 #include "xallocator.h"
-#include "predef/util/Fault.h"
+#include "delegate/DelegateOpt.h"
 #include <cstring>
 #include <iostream>
 #include <mutex>
@@ -100,9 +100,9 @@ T nexthigher(T k)
     return k+1;
 }
 
-static std::mutex& get_mutex()
+static dmq::Mutex& get_mutex()
 {
-	static std::mutex _mutex;
+	static dmq::Mutex _mutex;
 	return _mutex;
 }
 

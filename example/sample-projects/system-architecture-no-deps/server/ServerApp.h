@@ -61,10 +61,10 @@ private:
 
         // Register for incoming client commands
         // Use Connect() and store handles
-        m_onCommandConn = NetworkMgr::OnCommand->Connect(MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread));
-        m_onActuatorConn = NetworkMgr::OnActuator->Connect(MakeDelegate(this, &ServerApp::ActuatorMsgRecv, m_thread));
-        m_onNetworkErrorConn = NetworkMgr::OnNetworkError->Connect(MakeDelegate(this, &ServerApp::ErrorHandler, m_thread));
-        m_onSendStatusConn = NetworkMgr::OnSendStatus->Connect(MakeDelegate(this, &ServerApp::SendStatusHandler, m_thread));
+        m_onCommandConn = NetworkMgr::Instance().OnCommand->Connect(MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread));
+        m_onActuatorConn = NetworkMgr::Instance().OnActuator->Connect(MakeDelegate(this, &ServerApp::ActuatorMsgRecv, m_thread));
+        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError->Connect(MakeDelegate(this, &ServerApp::ErrorHandler, m_thread));
+        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus->Connect(MakeDelegate(this, &ServerApp::SendStatusHandler, m_thread));
     }
 
     ~ServerApp()

@@ -3,8 +3,9 @@
 /// David Lafreniere, 2025.
 /// 
 /// ClientApp and ServerApp communicate using Win32 UDP socket transport, msg_serialize
-/// serialization, and DelegateMQ dispatching. Application runs on Windows. No external
-/// 3rd party libraries are required.
+/// serialization, and DelegateMQ dispatching. Application runs on Windows. Uses the 
+/// libserialport library (https://github.com/sigrokproject/libserialport).
+/// See Examples Setup in DETAILS.md for more information about external library setup.
 /// 
 /// The ServerApp collects data locally and remotely from sensors and 
 /// actuators. Start both applications to run sample. 

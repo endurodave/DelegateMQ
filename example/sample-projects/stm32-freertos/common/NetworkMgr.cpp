@@ -23,7 +23,7 @@ int NetworkMgr::Create()
     m_commandMsgDel.Bind(this, &NetworkMgr::ForwardCommand, ids::COMMAND_MSG_ID);
     m_actuatorMsgDel.Bind(this, &NetworkMgr::ForwardActuator, ids::ACTUATOR_MSG_ID);
 
-    // Register for error callbacks using single assignment (=)
+    // Register for error callbacks using single  signment (=)
     m_alarmMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
     m_dataMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
     m_commandMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
@@ -42,6 +42,7 @@ int NetworkMgr::Create()
     #endif
 #else
     // Connects to STM32 UART @ 115200 baud
+    // @TODO Change PC COM port if necessary.
     return Initialize("COM3", 115200);
 #endif
 }

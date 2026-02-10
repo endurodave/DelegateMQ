@@ -7,7 +7,7 @@ namespace dmq {
 
     // =========================================================================
     // ZephyrMutex
-    // Wraps k_mutex. Zephyr mutexes are recursive by default.
+    // Wraps k_mutex. 
     // =========================================================================
     class ZephyrMutex {
     public:
@@ -15,12 +15,15 @@ namespace dmq {
             k_mutex_init(&m_mutex);
         }
 
-        ~ZephyrMutex() {
-            // Zephyr does not have a k_mutex_destroy/delete API
-        }
+        ~ZephyrMutex() { }
 
         void lock() {
             k_mutex_lock(&m_mutex, K_FOREVER);
+        }
+
+        // REQUIRED for std::unique_lock compatibility
+        bool try_lock() {
+            return k_mutex_lock(&m_mutex, K_NO_WAIT) == 0;
         }
 
         void unlock() {
@@ -34,7 +37,6 @@ namespace dmq {
         struct k_mutex m_mutex;
     };
 
-    // Alias for RecursiveMutex since k_mutex supports it natively
     using ZephyrRecursiveMutex = ZephyrMutex;
 }
 

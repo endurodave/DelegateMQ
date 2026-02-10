@@ -1,7 +1,7 @@
 #ifndef _TRANSPORT_MONITOR_HH
 #define _TRANSPORT_MONITOR_HH
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
 #include "../transport/ITransportMonitor.h"
 #include <map>
 #include <cstdint>

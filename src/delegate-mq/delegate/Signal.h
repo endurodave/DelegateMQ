@@ -82,6 +82,7 @@ namespace dmq {
         std::weak_ptr<void> m_watcher;
         std::function<void()> m_disconnect;
         bool m_connected = false;
+        XALLOCATOR
     };
 
     /// @brief RAII wrapper for Connection. Automatically disconnects when it goes out of scope.
@@ -108,6 +109,7 @@ namespace dmq {
 
     private:
         Connection m_connection;
+        XALLOCATOR
     };
 
     // --- Signal Containers ---
@@ -168,6 +170,7 @@ namespace dmq {
         void operator+=(const DelegateType& delegate) {
             this->PushBack(delegate);
         }
+        XALLOCATOR
     };
 
 } // namespace dmq

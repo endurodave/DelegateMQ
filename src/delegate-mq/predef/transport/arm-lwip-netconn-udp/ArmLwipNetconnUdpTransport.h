@@ -16,7 +16,7 @@
 /// - lwIP must be compiled with `LWIP_NETCONN=1`
 /// - FreeRTOS must be running (Netconn relies on OS primitives)
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
 #include "predef/transport/ITransportMonitor.h"
 
 // lwIP Netconn Includes

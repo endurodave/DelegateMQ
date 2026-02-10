@@ -23,7 +23,9 @@
 /// 3. **Reliability**: Fully integrated with `TransportMonitor` for ACKs/Retries.
 /// 4. **Endianness**: Uses `htons`/`ntohs` for standard network byte order compatibility.
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
+#include "predef/transport/ITransport.h"
+#include "predef/transport/DmqHeader.h"
 #include "predef/transport/ITransportMonitor.h"
 
 #include <zephyr/kernel.h>

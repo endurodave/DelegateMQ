@@ -41,7 +41,7 @@ public:
 
         // Start actuator updates
         m_actuatorTimerConn = m_actuatorTimer.OnExpired->Connect(MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
-        m_actuatorTimer.Start(std::chrono::milliseconds(2000), true);
+        m_actuatorTimer.Start(std::chrono::milliseconds(500), true);
 
         // Return true if both succeeded
         return (sendCommandMsgSuccess);
@@ -70,8 +70,8 @@ private:
     {
         m_thread.CreateThread();
 
-        m_onNetworkErrorConn = NetworkMgr::OnNetworkError->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
-        m_onSendStatusConn = NetworkMgr::OnSendStatus->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
+        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
+        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
     }
 
     ~ClientApp()

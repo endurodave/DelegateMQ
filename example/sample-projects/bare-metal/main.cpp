@@ -29,9 +29,18 @@ public:
         std::lock_guard<std::mutex> lk(m_mutex);
         m_ss << os.str();
     }
-    static std::stringstream& Receive() {
+    static std::stringstream Receive() {
         std::lock_guard<std::mutex> lk(m_mutex);
-        return m_ss;
+
+        std::stringstream temp;
+        // Move all current data to the temp stream
+        temp << m_ss.rdbuf();
+
+        // Clear the shared stream so we don't re-read data
+        m_ss.str("");
+        m_ss.clear();
+
+        return temp; // Return isolated copy
     }
 private:
     // Simulate send/recv data using a stream
@@ -230,7 +239,7 @@ public:
     void Poll()
     {
         // Get incoming data
-        auto& arg_data = Transport::Receive();
+        auto arg_data = Transport::Receive();
 
         // Incoming remote delegate data arrived?
         if (!arg_data.str().empty())

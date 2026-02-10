@@ -1,7 +1,7 @@
 #ifndef _THREAD_MSG_H
 #define _THREAD_MSG_H
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
 #include <memory>
 
 // Message IDs

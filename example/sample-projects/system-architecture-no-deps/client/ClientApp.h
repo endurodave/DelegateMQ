@@ -73,8 +73,8 @@ private:
     {
         m_thread.CreateThread();
 
-        m_onNetworkErrorConn = NetworkMgr::OnNetworkError->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
-        m_onSendStatusConn = NetworkMgr::OnSendStatus->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
+        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError->Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
+        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus->Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
     }
 
     ~ClientApp()

@@ -22,7 +22,9 @@
 /// 3.  **Reliability**: Integrated with `TransportMonitor` for ACKs/Retries.
 /// 4.  **Robustness**: Validates packet allocation and append results to prevent corruption.
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
+#include "predef/transport/ITransport.h"
+#include "predef/transport/DmqHeader.h"
 #include "predef/transport/ITransportMonitor.h"
 #include "nx_api.h"
 

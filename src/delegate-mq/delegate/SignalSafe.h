@@ -75,6 +75,7 @@ namespace dmq {
         void operator+=(const DelegateType& delegate) {
             this->PushBack(delegate);
         }
+        XALLOCATOR
     };
 
     // Alias for the shared_ptr type
@@ -84,9 +85,18 @@ namespace dmq {
     // Helper to create it easily
     template<typename Signature>
     SignalPtr<Signature> MakeSignal() {
-        // If DMQ_ALLOCATOR is defined, DelegateBase::operator new is used.
-        // We must use 'new' explicitly. std::make_shared would use the system heap.
-        return std::shared_ptr<SignalSafe<Signature>>(new SignalSafe<Signature>());
+#ifdef DMQ_ALLOCATOR
+        // ALLOCATE_SHARED:
+        // Uses 'stl_allocator' to allocate the memory for BOTH the 
+        // SignalSafe object AND the shared_ptr Control Block.
+        // This ensures EVERYTHING lives in your Fixed-Block Pool.
+        return std::allocate_shared<SignalSafe<Signature>>(
+            stl_allocator<SignalSafe<Signature>>()
+        );
+#else
+        // Fallback for standard builds
+        return std::make_shared<SignalSafe<Signature>>();
+#endif
     }
 
 } // namespace dmq

@@ -48,17 +48,15 @@ public:
     using CommandSignal = dmq::SignalSafe<void(CommandMsg&)>;
     using DataSignal = dmq::SignalSafe<void(DataMsg&)>;
     using ActuatorSignal = dmq::SignalSafe<void(ActuatorMsg&)>;
-
     using ErrorSignal = dmq::SignalSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>;
     using SendStatusSignal = dmq::SignalSafe<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>;
 
-    static inline std::shared_ptr<ErrorSignal>      OnNetworkError = std::make_shared<ErrorSignal>();
-    static inline std::shared_ptr<SendStatusSignal> OnSendStatus = std::make_shared<SendStatusSignal>();
-
-    static inline std::shared_ptr<AlarmSignal>      OnAlarm = std::make_shared<AlarmSignal>();
-    static inline std::shared_ptr<CommandSignal>    OnCommand = std::make_shared<CommandSignal>();
-    static inline std::shared_ptr<DataSignal>       OnData = std::make_shared<DataSignal>();
-    static inline std::shared_ptr<ActuatorSignal>   OnActuator = std::make_shared<ActuatorSignal>();
+	std::shared_ptr<AlarmSignal>      OnAlarm        = dmq::MakeSignal<void(AlarmMsg&, AlarmNote&)>();
+	std::shared_ptr<CommandSignal>    OnCommand      = dmq::MakeSignal<void(CommandMsg&)>();
+	std::shared_ptr<DataSignal>       OnData         = dmq::MakeSignal<void(DataMsg&)>();
+	std::shared_ptr<ActuatorSignal>   OnActuator     = dmq::MakeSignal<void(ActuatorMsg&)>();
+    std::shared_ptr<ErrorSignal>      OnNetworkError = dmq::MakeSignal<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>();
+    std::shared_ptr<SendStatusSignal> OnSendStatus   = dmq::MakeSignal<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>();
 
     static NetworkMgr& Instance() { static NetworkMgr instance; return instance; }
 

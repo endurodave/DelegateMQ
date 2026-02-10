@@ -33,7 +33,7 @@
     #include <arpa/inet.h>
 #endif
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
 #include "predef/transport/ITransport.h"
 #include "predef/transport/ITransportMonitor.h"
 #include "predef/transport/DmqHeader.h"

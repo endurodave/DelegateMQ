@@ -83,6 +83,7 @@
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="SERVER_APP"/>
 									<listOptionValue builtIn="false" value="DMQ_ASSERTS"/>
+									<listOptionValue builtIn="false" value="DMQ_ALLOCATOR"/>
 									<listOptionValue builtIn="false" value="DMQ_TRANSPORT_STM32_UART"/>
 									<listOptionValue builtIn="false" value="DMQ_SERIALIZE_SERIALIZE"/>
 									<listOptionValue builtIn="false" value="DMQ_THREAD_FREERTOS"/>
@@ -120,7 +121,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="delegate-mq/predef/allocator|delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -222,7 +223,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="delegate-mq/predef/allocator|delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
