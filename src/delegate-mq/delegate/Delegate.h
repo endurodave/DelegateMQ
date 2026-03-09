@@ -99,7 +99,7 @@ public:
 };
 
 template <class R>
-struct Delegate; // Not defined
+class Delegate; // Not defined
 
 /// @brief Template base class for all delegates.
 /// @tparam RetType The return type of the bound delegate function.
@@ -116,11 +116,11 @@ public:
     /// @brief Clone an instance of a Delegate instance.
     /// @return A new Delegate instance created on the heap. 
     /// @post The caller is responsible for deleting the instance.
-    virtual Delegate* Clone() const = 0;
+    virtual Delegate* Clone() const override = 0;
 };
 
 template <class R>
-struct DelegateFree; // Not defined
+class DelegateFree; // Not defined
 
 /// @brief `DelegateFree<>` class synchronously invokes a free target function.
 /// @tparam RetType The return type of the bound delegate function.
@@ -150,7 +150,7 @@ public:
     DelegateFree() = default;
 
     /// @brief Destructor ensures empty when destroyed.
-    ~DelegateFree() { Clear(); }
+    ~DelegateFree() override { Clear(); }
 
     /// @brief Bind a free function to the delegate.
     /// @details This method associates a free function (`func`) with the delegate. 
@@ -276,7 +276,7 @@ private:
 };
 
 template <class C, class R>
-struct DelegateMember; // Not defined
+class DelegateMember; // Not defined
 
 /// @brief `DelegateMember<>` class synchronously invokes a class member target 
 /// function using a class object pointer or shared pointer.
@@ -327,7 +327,7 @@ public:
     DelegateMember() = default;
 
     /// @brief Destructor ensures empty when destroyed.
-    ~DelegateMember() { Clear(); }
+    ~DelegateMember() override { Clear(); }
 
     /// @brief Bind a member function to the delegate.
     /// @details This method associates a member function (`func`) with the delegate. 
@@ -506,7 +506,7 @@ private:
 };
 
 template <class C, class R>
-struct DelegateMemberSp; // Not defined
+class DelegateMemberSp; // Not defined
 
 /// @brief `DelegateMemberSp<>` class synchronously invokes a class member target 
 /// function using a weak pointer.
@@ -545,7 +545,7 @@ public:
     DelegateMemberSp() = default;
 
     /// @brief Destructor.
-    ~DelegateMemberSp() { Clear(); }
+    ~DelegateMemberSp() override { Clear(); }
 
     /// @brief Bind a member function to the delegate.
     void Bind(SharedPtr object, MemberFunc func) {
@@ -697,7 +697,7 @@ public:
     DelegateFunction() = default;
 
     /// @brief Destructor ensures empty when destroyed.
-    ~DelegateFunction() { Clear(); }
+    ~DelegateFunction() override { Clear(); }
 
     /// @brief Bind a member function to the delegate.
     /// @details This method associates a member function (`func`) with the delegate. 

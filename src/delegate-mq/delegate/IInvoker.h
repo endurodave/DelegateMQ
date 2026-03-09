@@ -16,6 +16,8 @@ class DelegateMsg;
 class IThreadInvoker
 {
 public:
+    virtual ~IThreadInvoker() = default;
+
 	/// Called to invoke the bound target function by the destination thread of control.
 	/// @param[in] msg The incoming delegate message.
 	/// @return `true` if function was invoked; `false` if failed. 
@@ -28,6 +30,8 @@ public:
 class IRemoteInvoker
 {
 public: 
+    virtual ~IRemoteInvoker() = default;
+
     /// Called to invoke the bound target function by the remote system. 
     /// @param[in] is The incoming remote message stream. 
     /// @return `true` if function was invoked; `false` if failed. 

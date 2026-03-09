@@ -75,8 +75,7 @@
     defined(DMQ_THREAD_THREADX) || \
     defined(DMQ_THREAD_ZEPHYR) || \
     defined(DMQ_THREAD_CMSIS_RTOS2) || \
-    defined(DMQ_THREAD_QT) || \
-    defined(DMQ_THREAD_NONE)
+    defined(DMQ_THREAD_QT)
     #include "delegate/MulticastDelegateSafe.h"
     #include "delegate/UnicastDelegateSafe.h"
     #include "delegate/SignalSafe.h"
@@ -94,8 +93,7 @@
     defined(DMQ_THREAD_THREADX) || \
     defined(DMQ_THREAD_ZEPHYR) || \
     defined(DMQ_THREAD_CMSIS_RTOS2) || \
-    defined(DMQ_THREAD_QT) || \
-    defined(DMQ_THREAD_NONE)
+    defined(DMQ_THREAD_QT)
     #include "delegate/DelegateAsync.h"
 #endif
 
@@ -130,6 +128,7 @@
     // Bare metal: User must implement their own polling/interrupt logic
 #else
     #warning "Thread implementation not found."
+    #define DMQ_THREAD_NONE
 #endif
 
 #if defined(DMQ_SERIALIZE_MSGPACK)

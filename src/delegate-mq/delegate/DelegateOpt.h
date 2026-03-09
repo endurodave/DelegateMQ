@@ -7,7 +7,15 @@
 #include <chrono>
 #include <mutex>
 
-#if defined(DMQ_THREAD_FREERTOS)
+// RTTI Detection Check
+#if !defined(__cpp_rtti) && !defined(__GXX_RTTI) && !defined(_CPPRTTI)
+    #error "RTTI compiler option is disabled but required by the DelegateMQ library."
+#endif
+
+#if defined(DMQ_THREAD_STDLIB)
+    // Windows / Linux / macOS (Standard Library)
+    #include <condition_variable> 
+#elif defined(DMQ_THREAD_FREERTOS)
     #include "predef/util/FreeRTOSClock.h"
     #include "predef/util/FreeRTOSMutex.h"
     #include "predef/util/FreeRTOSConditionVariable.h"
@@ -21,11 +29,8 @@
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
     #include "predef/util/CmsisRtos2Clock.h"
     #include "predef/util/CmsisRtos2Mutex.h"
-#elif defined(DMQ_THREAD_NONE)
-    #include "predef/util/BareMetalClock.h"
 #else
-    // Windows / Linux / macOS (Standard Library)
-    #include <condition_variable> 
+    #include "predef/util/BareMetalClock.h"
 #endif
 
 namespace dmq
@@ -33,7 +38,11 @@ namespace dmq
     // @TODO: Change aliases to switch clock type globally if necessary
 
     // --- CLOCK SELECTION ---
-#if defined(DMQ_THREAD_FREERTOS)
+#if defined(DMQ_THREAD_STDLIB)
+    // Windows / Linux / macOS / Qt
+    using Clock = std::chrono::steady_clock;
+
+#elif defined(DMQ_THREAD_FREERTOS)
     // Use the custom FreeRTOS wrapper
     using Clock = dmq::FreeRTOSClock;
 
@@ -45,16 +54,12 @@ namespace dmq
     // Use the custom Zephyr wrapper
     using Clock = dmq::ZephyrClock;
 
-#elif defined(DMQ_THREAD_NONE)
-    // Assuming implemented the 'g_ticks' variable
-    using Clock = dmq::BareMetalClock;
-
- #elif defined(DMQ_THREAD_CMSIS_RTOS2)
+#elif defined(DMQ_THREAD_CMSIS_RTOS2)
     using Clock = dmq::CmsisRtos2Clock;
 
 #else
-    // Windows / Linux / macOS / Qt
-    using Clock = std::chrono::steady_clock;
+    // Assuming implemented the 'g_ticks' variable
+    using Clock = dmq::BareMetalClock;
 #endif
 
     // --- GENERIC TYPES ---
@@ -63,7 +68,13 @@ namespace dmq
     using TimePoint = typename Clock::time_point;
 
     // --- MUTEX / LOCK SELECTION ---
-#if defined(DMQ_THREAD_FREERTOS)
+#if defined(DMQ_THREAD_STDLIB)
+    // Windows / Linux / macOS / Qt
+    using Mutex = std::mutex;
+    using RecursiveMutex = std::recursive_mutex;
+    using ConditionVariable = std::condition_variable;
+
+#elif defined(DMQ_THREAD_FREERTOS)
     // Use the custom FreeRTOS wrapper
     using Mutex = dmq::FreeRTOSMutex;
     using RecursiveMutex = dmq::FreeRTOSRecursiveMutex;
@@ -84,7 +95,7 @@ namespace dmq
     using Mutex = dmq::CmsisRtos2Mutex;
     using RecursiveMutex = dmq::CmsisRtos2RecursiveMutex;
 
-#elif defined(DMQ_THREAD_NONE)
+#else
     // Bare metal has no threads, so no locking is required.
     // We define a dummy "No-Op" mutex.
     struct NullMutex {
@@ -93,14 +104,15 @@ namespace dmq
     };
     using Mutex = NullMutex;
     using RecursiveMutex = NullMutex;
-
-#else
-    // Windows / Linux / macOS / Qt
-    using Mutex = std::mutex;
-    using RecursiveMutex = std::recursive_mutex;
-    using ConditionVariable = std::condition_variable;
 #endif
 }
+
+// Detect if exceptions are disabled at the compiler level
+#if !defined(__cpp_exceptions)
+    #ifndef DMQ_ASSERTS
+        #define DMQ_ASSERTS  // Force asserts if exceptions are off
+    #endif
+#endif
 
 // @TODO: Select the desired software fault handling (see Predef.cmake).
 #ifdef DMQ_ASSERTS

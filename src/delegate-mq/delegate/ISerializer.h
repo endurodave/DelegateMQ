@@ -11,7 +11,7 @@
 namespace dmq {
 
     template <class R>
-    struct ISerializer; // Not defined
+    class ISerializer; // Not defined
 
     /// @TODO Implement the ISerializer interface if necessary.
     /// @brief Interface definition for serializing remote function arguments.

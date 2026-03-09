@@ -10,7 +10,7 @@
 namespace dmq {
 
 template <class R>
-struct UnicastDelegateSafe; // Not defined
+class UnicastDelegateSafe; // Not defined
 
 /// @brief A thread-safe delegate container storing one delegate. Void and  
 /// non-void return values supported. 
@@ -22,7 +22,7 @@ public:
     using BaseType = UnicastDelegate<RetType(Args...)>;
 
     UnicastDelegateSafe() = default;
-    ~UnicastDelegateSafe() = default;
+    virtual ~UnicastDelegateSafe() = default;
 
     UnicastDelegateSafe(const UnicastDelegateSafe& rhs) : BaseType() {
         std::lock_guard<RecursiveMutex> lock(rhs.m_lock);

@@ -10,7 +10,7 @@
 namespace dmq {
 
 template <class R>
-struct MulticastDelegateSafe; // Not defined
+class MulticastDelegateSafe; // Not defined
 
 /// @brief Thread-safe multicast delegate container class. 
 template<class RetType, class... Args>
@@ -21,7 +21,7 @@ public:
     using BaseType = MulticastDelegate<RetType(Args...)>;
 
     MulticastDelegateSafe() = default;
-    ~MulticastDelegateSafe() = default; 
+    virtual ~MulticastDelegateSafe() = default; 
 
     MulticastDelegateSafe(const MulticastDelegateSafe& rhs) : BaseType() {
         std::scoped_lock lock(m_lock, rhs.m_lock);

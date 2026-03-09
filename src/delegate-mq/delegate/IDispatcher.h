@@ -10,7 +10,7 @@ namespace dmq {
 
 // Remote identifier shared between sender and receiver remotes.
 typedef uint16_t DelegateRemoteId;
-const uint16_t INVALID_REMOTE_ID = -1;
+const uint16_t INVALID_REMOTE_ID = static_cast<uint16_t>(-1);
 const uint16_t ACK_REMOTE_ID = 0;
 
 /// @TODO Implement the IDispatcher interface if necessary.
@@ -26,6 +26,8 @@ const uint16_t ACK_REMOTE_ID = 0;
 class IDispatcher
 {
 public:
+    virtual ~IDispatcher() = default;
+
     /// Dispatch a stream of bytes to a remote system. The implementer is responsible
     /// for sending the bytes over a communication transport (UDP, TCP, shared memory, 
     /// serial, ...). 

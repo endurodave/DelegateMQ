@@ -131,7 +131,7 @@ private:
 };
 
 template <class R>
-struct DelegateFreeRemote; // Not defined
+class DelegateFreeRemote; // Not defined
 
 /// @brief `DelegateFreeRemote<>` class asynchronously invokes a free target function.
 /// @tparam RetType The return type of the bound delegate function.
@@ -557,7 +557,7 @@ private:
 };
 
 template <class C, class R>
-struct DelegateMemberRemote; // Not defined
+class DelegateMemberRemote; // Not defined
 
 /// @brief `DelegateMemberRemote<>` class asynchronously invokes a class member target function.
 /// @tparam TClass The class type that contains the member function.
@@ -1048,7 +1048,7 @@ private:
 };
 
 template <class R>
-struct DelegateFunctionRemote; // Not defined
+class DelegateFunctionRemote; // Not defined
 
 /// @brief `DelegateFunctionRemote<>` class asynchronously invokes a `std::function` target function.
 /// @details Caution when binding to a `std::function` using this class. `std::function` cannot be 

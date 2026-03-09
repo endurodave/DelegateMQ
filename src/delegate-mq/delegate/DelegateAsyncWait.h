@@ -140,7 +140,7 @@ private:
 };
 
 template <class R>
-struct DelegateFreeAsyncWait; // Not defined
+class DelegateFreeAsyncWait; // Not defined
 
 /// @brief `DelegateFreeAsyncWait<>` class asynchronously block invokes a free target function.
 /// @tparam RetType The return type of the bound delegate function.
@@ -492,7 +492,7 @@ private:
 };
 
 template <class C, class R>
-struct DelegateMemberAsyncWait; // Not defined
+class DelegateMemberAsyncWait; // Not defined
 
 /// @brief `DelegateMemberAsyncWait<>` class asynchronously block invokes a class member target function.
 /// @tparam TClass The class type that contains the member function.
@@ -928,7 +928,7 @@ private:
 };
 
 template <class C, class R>
-struct DelegateMemberAsyncWaitSp; // Not defined
+class DelegateMemberAsyncWaitSp; // Not defined
 
 /// @brief `DelegateMemberAsyncWaitSp<>` class asynchronously block invokes a class member target function
 /// using a weak/shared pointer semantics.
@@ -1281,7 +1281,7 @@ private:
 };
 
 template <class R>
-struct DelegateFunctionAsyncWait; // Not defined
+class DelegateFunctionAsyncWait; // Not defined
 
 /// @brief `DelegateFunctionAsyncWait<>` class asynchronously block invokes a std::function target function.
 /// 
