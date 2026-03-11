@@ -104,9 +104,13 @@ void Thread::ExitThread()
             k_sem_take(&m_exitSem, K_FOREVER);
         }
 
-        // Now safe to let unique_ptr destructors run (freeing stack/msgq)
-        
-        // Note: k_thread_abort is not needed because the thread will 
+        // Reset buffers to mark as exited. This prevents a double-entry deadlock:
+        // ~Thread() calls ExitThread() unconditionally, so if ExitThread() was already
+        // called explicitly, the second call must be a no-op (m_stackMemory is null).
+        m_stackMemory.reset();
+        m_msgqBuffer.reset();
+
+        // Note: k_thread_abort is not needed because the thread will
         // return from Run() and terminate naturally.
     }
 }

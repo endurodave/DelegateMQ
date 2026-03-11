@@ -6,6 +6,12 @@ if (DMQ_THREAD STREQUAL "DMQ_THREAD_STDLIB")
         "${DMQ_ROOT_DIR}/predef/os/stdlib/*.c*" 
         "${DMQ_ROOT_DIR}/predef/os/stdlib/*.h" 
     )
+elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_WIN32")
+    add_compile_definitions(DMQ_THREAD_WIN32)
+    file(GLOB THREAD_SOURCES 
+        "${DMQ_ROOT_DIR}/predef/os/win32/*.c*" 
+        "${DMQ_ROOT_DIR}/predef/os/win32/*.h" 
+    )
 elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_FREERTOS")
     add_compile_definitions(DMQ_THREAD_FREERTOS)
     file(GLOB THREAD_SOURCES 

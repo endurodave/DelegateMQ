@@ -71,6 +71,7 @@
 // - StdLib: Uses std::recursive_mutex
 // Valid for any platform where a Mutex is defined in DelegateOpt.h
 #if defined(DMQ_THREAD_STDLIB) || \
+    defined(DMQ_THREAD_WIN32) || \
     defined(DMQ_THREAD_FREERTOS) || \
     defined(DMQ_THREAD_THREADX) || \
     defined(DMQ_THREAD_ZEPHYR) || \
@@ -86,9 +87,10 @@
 // -----------------------------------------------------------------------------
 // - FreeRTOS: OK 
 // - Bare Metal: OK (Requires you to implement IThread wrapper for Event Loop)
-// - StdLib: OK
+// - StdLib / Win32: OK
 // Valid for any platform that implements the IThread interface
 #if defined(DMQ_THREAD_STDLIB) || \
+    defined(DMQ_THREAD_WIN32) || \
     defined(DMQ_THREAD_FREERTOS) || \
     defined(DMQ_THREAD_THREADX) || \
     defined(DMQ_THREAD_ZEPHYR) || \
@@ -101,14 +103,17 @@
 // 4. Asynchronous "Blocking" Delegates (Wait for Result)
 // -----------------------------------------------------------------------------
 // Depends on Semaphore/Mutex and C++17 (std::any, std::optional).
-// Valid for StdLib (Windows/Linux), Qt, ThreadX, and FreeRTOS (if C++17 enabled).
-#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_QT) || defined(DMQ_THREAD_FREERTOS) || defined(DMQ_THREAD_THREADX)
+// Valid for StdLib/Win32 (Windows/Linux), Qt, ThreadX, and FreeRTOS (if C++17 enabled).
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT) || defined(DMQ_THREAD_FREERTOS) || defined(DMQ_THREAD_THREADX)
     #include "delegate/DelegateAsyncWait.h"
 #endif
 
 #if defined(DMQ_THREAD_STDLIB)
     #include "predef/os/stdlib/Thread.h"
     #include "predef/os/stdlib/ThreadMsg.h"
+#elif defined(DMQ_THREAD_WIN32)
+    #include "predef/os/win32/Thread.h"
+    #include "predef/os/win32/ThreadMsg.h"
 #elif defined(DMQ_THREAD_FREERTOS)
     #include "predef/os/freertos/Thread.h"
     #include "predef/os/freertos/ThreadMsg.h"

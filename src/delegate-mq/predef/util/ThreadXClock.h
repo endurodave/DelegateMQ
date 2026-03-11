@@ -3,6 +3,7 @@
 
 #include "tx_api.h"
 #include <chrono>
+#include <cstdint>
 
 namespace dmq {
     struct ThreadXClock {

@@ -14,7 +14,7 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread Constructor
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName, size_t maxQueueSize) 
+Thread::Thread(const std::string& threadName, size_t maxQueueSize)
     : THREAD_NAME(threadName)
 {
     // If 0 is passed, use the default size
@@ -23,7 +23,7 @@ Thread::Thread(const std::string& threadName, size_t maxQueueSize)
     // Zero out control blocks for safety
     memset(&m_thread, 0, sizeof(m_thread));
     memset(&m_queue, 0, sizeof(m_queue));
-    
+
     // Initialize exit semaphore (Count 0)
     tx_semaphore_create(&m_exitSem, (CHAR*)"ExitSem", 0);
 
@@ -53,9 +53,9 @@ bool Thread::CreateThread()
     if (m_thread.tx_thread_id == 0)
     {
         // --- 1. Create Queue ---
-        // ThreadX queues store "words" (ULONGs). 
+        // ThreadX queues store "words" (ULONGs).
         // We are passing a pointer (ThreadMsg*), so we need enough words to hold a pointer.
-        
+
         // Round Up Logic (Ceiling division)
         // Ensures we allocate enough words even if pointer size isn't a perfect multiple of ULONG
         UINT msgSizeWords = (sizeof(ThreadMsg*) + sizeof(ULONG) - 1) / sizeof(ULONG);
@@ -65,19 +65,19 @@ bool Thread::CreateThread()
         m_queueMemory.reset(new (std::nothrow) ULONG[queueMemSizeWords]);
         ASSERT_TRUE(m_queueMemory != nullptr);
 
-        UINT ret = tx_queue_create(&m_queue, 
-                                   (CHAR*)THREAD_NAME.c_str(), 
-                                   msgSizeWords, 
-                                   m_queueMemory.get(), 
+        UINT ret = tx_queue_create(&m_queue,
+                                   (CHAR*)THREAD_NAME.c_str(),
+                                   msgSizeWords,
+                                   m_queueMemory.get(),
                                    queueMemSizeWords * sizeof(ULONG));
         ASSERT_TRUE(ret == TX_SUCCESS);
 
         // --- 2. Create Thread ---
         // Stack must be ULONG aligned.
-        
+
         // Stack Size Rounding
         ULONG stackSizeWords = (STACK_SIZE + sizeof(ULONG) - 1) / sizeof(ULONG);
-        
+
         m_stackMemory.reset(new (std::nothrow) ULONG[stackSizeWords]);
         ASSERT_TRUE(m_stackMemory != nullptr);
 
@@ -87,11 +87,11 @@ bool Thread::CreateThread()
                                (ULONG)this, // Pass 'this' as entry input
                                m_stackMemory.get(),
                                stackSizeWords * sizeof(ULONG),
-                               m_priority,     
+                               m_priority,
                                m_priority,
                                TX_NO_TIME_SLICE,
                                TX_AUTO_START);
-        
+
         ASSERT_TRUE(ret == TX_SUCCESS);
     }
     return true;
@@ -124,14 +124,14 @@ UINT Thread::GetThreadPriority()
 //----------------------------------------------------------------------------
 void Thread::ExitThread()
 {
-    if (m_queue.tx_queue_id != 0) 
+    if (m_queue.tx_queue_id != 0)
     {
         // Send exit message
         ThreadMsg* msg = new (std::nothrow) ThreadMsg(MSG_EXIT_THREAD);
         if (msg)
         {
             // Timeout 100 ticks
-            if (tx_queue_send(&m_queue, &msg, 100) != TX_SUCCESS) 
+            if (tx_queue_send(&m_queue, &msg, 100) != TX_SUCCESS)
             {
                 delete msg; // Failed to send, prevent leak
             }
@@ -150,7 +150,7 @@ void Thread::ExitThread()
         // tx_thread_terminate returns TX_SUCCESS if terminated or TX_THREAD_ERROR if already terminated
         tx_thread_terminate(&m_thread);
         tx_thread_delete(&m_thread);
-        
+
         // Delete queue
         tx_queue_delete(&m_queue);
 
@@ -184,18 +184,75 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     // Safety check if queue is valid
     if (m_queue.tx_queue_id == 0) return;
 
-    // 1. Allocate message container
+    // Allocate message container
     ThreadMsg* threadMsg = new (std::nothrow) ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
     if (!threadMsg)
     {
-        // OOM Handling
+        // OOM: drop the message
         return;
     }
 
-    // 2. Send pointer to queue
-    // Wait 10 ticks if full. 
+    // Send pointer to queue. Wait 10 ticks if full.
     UINT ret = tx_queue_send(&m_queue, &threadMsg, 10);
-    
+
     if (ret != TX_SUCCESS)
     {
-        //
+        delete threadMsg; // Failed to enqueue, prevent leak
+        // Optional: printf("Error: Thread '%s' queue full!\n", THREAD_NAME.c_str());
+    }
+}
+
+//----------------------------------------------------------------------------
+// Process (Static Entry Point)
+//----------------------------------------------------------------------------
+void Thread::Process(ULONG instance)
+{
+    Thread* thread = reinterpret_cast<Thread*>(instance);
+    ASSERT_TRUE(thread != nullptr);
+    thread->Run();
+    // ThreadX thread enters "completed" state when this function returns.
+    // ExitThread() calls tx_thread_terminate() + tx_thread_delete() for cleanup.
+}
+
+//----------------------------------------------------------------------------
+// Run (Member Function Loop)
+//----------------------------------------------------------------------------
+void Thread::Run()
+{
+    ThreadMsg* msg = nullptr;
+    while (true)
+    {
+        // Block forever waiting for a message
+        UINT ret = tx_queue_receive(&m_queue, &msg, TX_WAIT_FOREVER);
+        if (ret != TX_SUCCESS) continue;
+        if (!msg) continue;
+
+        switch (msg->GetId())
+        {
+        case MSG_DISPATCH_DELEGATE:
+        {
+            auto delegateMsg = msg->GetData();
+            if (delegateMsg) {
+                auto invoker = delegateMsg->GetInvoker();
+                if (invoker) {
+                    invoker->Invoke(delegateMsg);
+                }
+            }
+            break;
+        }
+
+        case MSG_EXIT_THREAD:
+        {
+            delete msg;
+            // Signal ExitThread() that the loop has exited
+            tx_semaphore_put(&m_exitSem);
+            return;
+        }
+
+        default:
+            break;
+        }
+
+        delete msg;
+    }
+}

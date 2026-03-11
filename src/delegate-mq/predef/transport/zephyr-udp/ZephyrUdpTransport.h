@@ -77,6 +77,7 @@ public:
             if (inet_pton(AF_INET, addr, &m_addr.sin_addr) != 1)
             {
                 // printk("Invalid IP address format.\n");
+                Close();
                 return -1;
             }
 
@@ -89,6 +90,7 @@ public:
             if (setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
             {
                 // printk("setsockopt(SO_RCVTIMEO) failed\n");
+                Close();
                 return -1;
             }
         }
@@ -99,6 +101,7 @@ public:
             if (bind(m_socket, (struct sockaddr*)&m_addr, sizeof(m_addr)) < 0)
             {
                 // printk("Bind failed: %d\n", errno);
+                Close();
                 return -1;
             }
 
@@ -110,6 +113,7 @@ public:
             if (setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
             {
                 // printk("setsockopt(SO_RCVTIMEO) failed\n");
+                Close();
                 return -1;
             }
         }
@@ -234,7 +238,12 @@ public:
         headerStream.read(reinterpret_cast<char*>(&val), sizeof(val));
         header.SetLength(ntohs(val));
 
-        is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
+        if (size < (ssize_t)(DmqHeader::HEADER_SIZE + header.GetLength()))
+            return -1;
+
+        is.clear();
+        is.str("");
+        is.write(m_buffer + DmqHeader::HEADER_SIZE, header.GetLength());
 
         // Logic check using Host values
         uint16_t id = header.GetId();

@@ -180,7 +180,8 @@ private:
     /// Copy all delegate container objects.
     /// @param[in] other The container to copy from
     void CopyFrom(const MulticastDelegate& other) {
-        for (auto delegate : other.m_delegates) {
+        for (auto& delegate : other.m_delegates) {
+            if (!delegate) continue;  // Skip soft-deleted entries (mid-broadcast nulls)
             auto delegateClone = delegate->Clone();
             if (!delegateClone)
                 BAD_ALLOC();

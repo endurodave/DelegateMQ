@@ -109,9 +109,9 @@ bool Thread::CreateThread()
 void Thread::ExitThread()
 {
     if (m_queue) {
-        ThreadMsg* msg = new ThreadMsg(MSG_EXIT_THREAD);
+        ThreadMsg* msg = new (std::nothrow) ThreadMsg(MSG_EXIT_THREAD);
 
-        if (xQueueSend(m_queue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
+        if (msg && xQueueSend(m_queue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
             delete msg;
         }
 

@@ -238,10 +238,11 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
-            m_priority = rhs.m_priority;    
-            m_timeout = rhs.m_timeout;    
+            m_priority = rhs.m_priority;
+            m_timeout = rhs.m_timeout;
             m_success = rhs.m_success;
             m_retVal = rhs.m_retVal;
+            rhs.Clear();
         }
         return *this;
     }
@@ -674,10 +675,11 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
-            m_priority = rhs.m_priority;    
-            m_timeout = rhs.m_timeout;    
+            m_priority = rhs.m_priority;
+            m_timeout = rhs.m_timeout;
             m_success = rhs.m_success;
             m_retVal = rhs.m_retVal;
+            rhs.Clear();
         }
         return *this;
     }
@@ -1027,10 +1029,11 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
-            m_priority = rhs.m_priority;    
-            m_timeout = rhs.m_timeout;    
+            m_priority = rhs.m_priority;
+            m_timeout = rhs.m_timeout;
             m_success = rhs.m_success;
             m_retVal = rhs.m_retVal;
+            rhs.Clear();
         }
         return *this;
     }
@@ -1382,10 +1385,11 @@ public:
         if (&rhs != this) {
             BaseType::operator=(std::move(rhs));
             m_thread = rhs.m_thread;    // Use the resource
-            m_priority = rhs.m_priority;    
-            m_timeout = rhs.m_timeout;    
+            m_priority = rhs.m_priority;
+            m_timeout = rhs.m_timeout;
             m_success = rhs.m_success;
             m_retVal = rhs.m_retVal;
+            rhs.Clear();
         }
         return *this;
     }

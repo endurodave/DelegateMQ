@@ -17,7 +17,11 @@
 /// - FreeRTOS must be running (Netconn relies on OS primitives)
 
 #include "delegate/DelegateOpt.h"
+#include "predef/transport/ITransport.h"
+#include "predef/transport/DmqHeader.h"
 #include "predef/transport/ITransportMonitor.h"
+
+#include <vector>
 
 // lwIP Netconn Includes
 #include "lwip/api.h"
@@ -237,7 +241,7 @@ public:
 
 private:
     struct netconn* m_conn = nullptr;
-    ip_addr_t m_remoteIp;
+    ip_addr_t m_remoteIp{};
     uint16_t  m_remotePort = 0;
     Type m_type = Type::PUB;
 

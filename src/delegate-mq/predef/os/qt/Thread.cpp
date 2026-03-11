@@ -1,4 +1,4 @@
-#include "QtThread.h"
+#include "Thread.h"
 #include <QDebug>
 
 // Register the metatype ID once
