@@ -72,14 +72,12 @@ void StartSimpleTests() {
     // 5. Signals & Slots
     // --------------------------------------------------------
     printf("\n[5] Signals & Slots\n");
-    // Allocating Signal on stack to avoid heap smart pointers if desired,
-    // but Signals are usually shared_ptr by design in this library.
-    auto signal = std::make_shared<Signal<void(int)>>();
+    Signal<void(int)> signal;
     {
-        ScopedConnection conn = signal->Connect(MakeDelegate(FreeFunction));
-        (*signal)(555);
+        ScopedConnection conn = signal.Connect(MakeDelegate(FreeFunction));
+        signal(555);
     }
-    (*signal)(666); // Should NOT fire
+    signal(666); // Should NOT fire
 
     // --------------------------------------------------------
     // 6. ASYNC DELEGATES (Cross-Thread Dispatch)

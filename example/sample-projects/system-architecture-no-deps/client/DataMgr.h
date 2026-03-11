@@ -16,7 +16,7 @@ class DataMgr
 {
 public:
     // Register with delegate to receive callbacks when data is received
-    static std::shared_ptr<dmq::SignalSafe<void(DataMsg&)>> DataMsgCb;
+    static dmq::SignalPtr<void(DataMsg&)> DataMsgCb;
 
     static DataMgr& Instance()
     {

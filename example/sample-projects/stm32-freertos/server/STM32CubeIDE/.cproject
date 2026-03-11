@@ -5,6 +5,7 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.732200582" moduleId="org.eclipse.cdt.core.settings" name="Debug">
 				<macros>
 					<stringMacro name="STM32_REPO" type="VALUE_TEXT" value="C:\Users\endur\STM32Cube\Repository\STM32Cube_FW_F4_V1.28.3"/>
+					<stringMacro name="DMQ_THREAD_FREERTOS" type="VALUE_TEXT" value=""/>
 				</macros>
 				<externalSettings/>
 				<extensions>
@@ -121,7 +122,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="delegate-mq/predef/os/win32|delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -223,7 +224,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="delegate-mq/predef/os/win32|delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

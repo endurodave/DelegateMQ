@@ -469,7 +469,7 @@ Unlike many other C++ signal/slot libraries which are strictly synchronous, Dele
 
 Define a `Signal` (or `SignalSafe` for thread-safe usage).
 
-> **Note:** Signals **must** be instantiated using `dmq::MakeSignal` (or `std::make_shared`) because the `Connect()` method internally uses `shared_from_this()` to manage the signal's lifetime safely.
+> **Note:** `Signal` can be declared as a plain local variable or class member — no `shared_ptr` needed. Use `SignalSafe` (via `dmq::MakeSignal`) when connections may be disconnected from a thread other than the one owning the signal.
 
 ```cpp
 class Publisher
@@ -690,7 +690,7 @@ MulticastDelegate<>
 
 `MulticastDelegateSafe<>` is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.
 
-`Signal<>` and `SignalSafe<>` extend the multicast containers to support RAII connection management. Unlike the standard delegates, `Connect()` returns a `Connection` handle. This handle can be managed by a `ScopedConnection` to automatically unsubscribe the delegate when the handle goes out of scope, preventing callbacks to destroyed objects. `SignalSafe<>` must be instantiated via `std::make_shared` to ensure thread-safe disconnection.
+`Signal<>` and `SignalSafe<>` extend the multicast containers to support RAII connection management. Unlike the standard delegates, `Connect()` returns a `Connection` handle. This handle can be managed by a `ScopedConnection` to automatically unsubscribe the delegate when the handle goes out of scope, preventing callbacks to destroyed objects. `Signal<>` can be used as a plain stack variable or class member. `SignalSafe<>` must be managed via `std::shared_ptr` (use `dmq::MakeSignal<>()`) to ensure thread-safe disconnection from other threads.
 
 ## Synchronous Delegates
 

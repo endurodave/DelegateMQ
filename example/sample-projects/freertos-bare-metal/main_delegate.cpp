@@ -94,19 +94,19 @@ void ExecuteAllTests() {
 
     // --- TEST 5: Signals & Connections (RAII) ---
     printf("\n[Test 5] Signals & Scoped Connections:\n");
-    auto signal = std::make_shared<Signal<void(int)>>();
+    Signal<void(int)> signal;
 
     {
         printf("  -> Creating ScopedConnection inside block...\n");
-        ScopedConnection conn = signal->Connect(MakeDelegate(FreeFunction));
+        ScopedConnection conn = signal.Connect(MakeDelegate(FreeFunction));
 
         printf("  -> Firing Signal (Expect Callback):\n");
-        (*signal)(500);
+        signal(500);
 
         printf("  -> Exiting block (ScopedConnection will destruct)...\n");
     }
     printf("  -> Firing Signal outside block (Expect NO Callback):\n");
-    (*signal)(600);
+    signal(600);
 
     // --- TEST 6: Thread-Safe Delegates ---
     printf("\n[Test 6] Thread-Safe Multicast (Mutex Protected):\n");

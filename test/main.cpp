@@ -13,7 +13,7 @@
 /// **Core Functionality:**
 /// * Synchronous vs. Asynchronous delegate invocation.
 /// * Remote function calls (IPC/RPC) via `RemoteCommunication`.
-/// * Thread-safe signaling using `SignalSafe`.
+/// * Signaling using `Signal` (single-threaded) and `SignalSafe` (multi-threaded).
 /// * Asynchronous Futures and Lambdas.
 ///
 /// **Design Patterns:**
@@ -193,16 +193,15 @@ void RunSimpleExamples()
     remote("Invoke MsgOut remote!");
 }
 
-// Use SignalSafe for the RAII pattern
+// Use SignalSafe for cross-thread RAII signal/slot: subscribers dispatch onto their own
+// threads, so Disconnect() may be called from a thread other than the Publisher's.
 class Publisher
 {
 public:
-    // 1. Define a thread-safe OnMessage signal
-    using MessageSignal = dmq::SignalSafe<void(const std::string&)>;
-    std::shared_ptr<MessageSignal> OnMessage = std::make_shared<MessageSignal>();
-
-    // Alternate syntax
-    // SignalPtr<void(const std::string&)> OnMessage = MakeSignal<void(const std::string&)>();
+    // 1. Define a thread-safe OnMessage signal.
+    // MakeSignal() creates a SignalSafe managed by shared_ptr, required for
+    // concurrent cross-thread disconnect safety.
+    dmq::SignalPtr<void(const std::string&)> OnMessage = dmq::MakeSignal<void(const std::string&)>();
 
     void Publish(const std::string& msg)
     {
@@ -343,6 +342,9 @@ void RunAllExamples()
 
     // Run signal-slot example
     RunSignalSlotExamples();
+
+    // Signal as a plain member variable (single-threaded, minimal heap)
+    SignalSlotMemberExample();
 
     // Signal slot usage without heap
     SignalSlotNoHeapExample();
@@ -719,27 +721,27 @@ void RunMiscExamples()
     client->Term();
 
     // RAII Connection Management Example (Signal/ScopedConnection)
-    // See SignalSlot.cpp for more examples. 
+    // Signal is a plain local variable — no shared_ptr required.
+    // See SignalSlot.cpp for more examples.
     {
-        // Must use make_shared for Signal to support Connection/shared_from_this
-        auto OnSignal = dmq::MakeSignal<void(int)>();
+        dmq::Signal<void(int)> OnSignal;
 
         {
             // Create a scoped connection handle
             dmq::ScopedConnection conn;
 
             // Connect a lambda to the "OnSignal" event
-            conn = OnSignal->Connect(MakeDelegate(+[](int v) {
+            conn = OnSignal.Connect(MakeDelegate(+[](int v) {
                 cout << "ScopedConnection received: " << v << endl;
                 }));
 
             // Signal is connected
             cout << "Signal firing (Observer is alive):" << endl;
-            (*OnSignal)(100);
+            OnSignal(100);
         } // conn goes out of scope here -> Automatically disconnects!
 
         // Signal is disconnected
         cout << "Signal firing (Observer is dead):" << endl;
-        (*OnSignal)(200); // No output expected
+        OnSignal(200); // No output expected
     }
 }

@@ -2,11 +2,18 @@
 /// @brief Examples of the Signal-Slot pattern in DelegateMQ.
 ///
 /// @details This file demonstrates:
-/// 1. Basic Signal creation and lambda connection using the '+' operator.
+/// 1. Basic Signal creation as a local variable (stack allocation, no shared_ptr needed).
 /// 2. RAII Connection Management using `ScopedConnection`.
-/// 3. The Publisher-Subscriber pattern where subscribers are automatically 
+/// 3. The Publisher-Subscriber pattern where subscribers are automatically
 ///    disconnected when they go out of scope.
-/// 4. Thread-safe communication between a Publisher and multiple Subscribers.
+/// 4. Thread-safe communication between a Publisher and multiple Subscribers
+///    using `SignalSafe`.
+///
+/// **Choosing Signal vs SignalSafe:**
+/// - `Signal`     — single-threaded. Can be a local variable, class member, or heap object.
+///                  Disconnect() after Signal destruction is always a safe no-op.
+/// - `SignalSafe` — thread-safe. Must be managed by `std::shared_ptr` (use `MakeSignal()`).
+///                  Required when connections may be disconnected from a different thread.
 ///
 /// @see https://github.com/endurodave/DelegateMQ
 
@@ -21,57 +28,54 @@ namespace Example {
 
     // ----------------------------------------------------------------------------
     // Example 1: Basic Signal and Slot (Lambda)
+    // Signal is a plain local variable — no shared_ptr required.
     // ----------------------------------------------------------------------------
     void RunBasicSignalExample()
     {
         std::cout << "--- Basic Signal Example ---\n";
 
-        // 1. Create the Signal
-        //    Naming: "OnMessage" clearly indicates an event source.
-        auto OnMessage = dmq::MakeSignal<void(std::string)>();
+        // Signal can be declared directly as a local variable or class member.
+        // No shared_ptr management required.
+        Signal<void(std::string)> OnMessage;
 
-        // 2. Create a connection handle
+        // Create a scoped connection handle
         ScopedConnection conn;
 
         {
-            // 3. Connect a lambda
-            conn = OnMessage->Connect(MakeDelegate(+[](std::string msg) {
+            // Connect a lambda
+            conn = OnMessage.Connect(MakeDelegate(+[](std::string msg) {
                 std::cout << "Lambda received: " << msg << std::endl;
                 }));
 
             // Fire the signal
-            (*OnMessage)("Hello from Signal!");
+            OnMessage("Hello from Signal!");
         }
-        // 'conn' is still valid here
-        (*OnMessage)("Second message");
+        // 'conn' is still valid here — Signal is still in scope
+        OnMessage("Second message");
 
         // Manually disconnect
         conn.Disconnect();
-        (*OnMessage)("This will not be heard");
+        OnMessage("This will not be heard");
     }
 
     // ----------------------------------------------------------------------------
     // Example 2: Publisher / Subscriber (RAII Lifetime Management)
+    // Uses SignalSafe because subscribers dispatch onto their own threads —
+    // ScopedConnection::~ScopedConnection() may be called from a different thread
+    // than the one owning the Publisher, so the thread-safe variant is required.
     // ----------------------------------------------------------------------------
 
     class NewsPublisher
     {
     public:
-        // Method 1: Use the dmq::SignalPtr alias (Cleanest)
-        // Reduces "std::shared_ptr<SignalSafe<...>>" to just "dmq::SignalPtr<...>"
-        // Naming: "OnBreakingNews"
+        // SignalPtr<> is an alias for std::shared_ptr<SignalSafe<>>
+        // Use MakeSignal() to construct it correctly.
         dmq::SignalPtr<void(const std::string&)> OnBreakingNews
             = dmq::MakeSignal<void(const std::string&)>();
-
-        // Method 2: Use a signature alias (Best for complex signatures)
-        // using NewsSig = void(const std::string&);
-        // dmq::SignalPtr<NewsSig> OnBreakingNews = dmq::MakeSignal<NewsSig>();
 
         void Broadcast(const std::string& news)
         {
             std::cout << "[Publisher] Broadcasting: " << news << std::endl;
-
-            // SAFE: Check if the shared_ptr points to a valid Signal instance
             if (OnBreakingNews) {
                 (*OnBreakingNews)(news);
             }
@@ -87,8 +91,6 @@ namespace Example {
         {
             m_thread.CreateThread();
 
-            // Connect to the publisher.
-            // Reads naturally: "Connect to pub.OnBreakingNews"
             m_connection = pub.OnBreakingNews->Connect(
                 MakeDelegate(this, &NewsSubscriber::OnNews, m_thread)
             );
@@ -115,7 +117,7 @@ namespace Example {
         std::string m_name;
         Thread m_thread;
 
-        // The "Magic" Link: Holds the connection alive.
+        // Holds the connection alive. Auto-disconnects on destructor.
         ScopedConnection m_connection;
     };
 
@@ -126,22 +128,18 @@ namespace Example {
         NewsPublisher cnn;
 
         {
-            // Create a subscriber
             NewsSubscriber alice("Alice", cnn);
-
-            // Broadcast - Alice should hear it
             cnn.Broadcast("Market is up!");
 
             {
-                // Create a short-lived subscriber
                 NewsSubscriber bob("Bob", cnn);
                 cnn.Broadcast("Breaking: Aliens found!"); // Alice and Bob hear it
             }
-            // Bob goes out of scope here. His ScopedConnection destructor runs.
+            // Bob goes out of scope — ScopedConnection destructor disconnects him.
 
             cnn.Broadcast("Market is down!"); // Only Alice hears it
         }
-        // Alice goes out of scope. She is removed.
+        // Alice goes out of scope — auto-disconnected.
 
         cnn.Broadcast("Hello? Is this thing on?"); // No one hears it. Safe.
     }

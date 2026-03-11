@@ -85,18 +85,18 @@ int main() {
     // --- TEST 5: Signals & Connections (RAII) ---
     printf("\n[Test 5] Signals & Scoped Connections:\n");
     
-    // 1. Create a Signal (MUST be a shared_ptr for connection tracking)
-    auto signal = std::make_shared<Signal<void(int)>>();
+    // 1. Create a Signal as a plain local variable
+    Signal<void(int)> signal;
 
     {
         // 2. Create a Scoped Connection
         // This connection is only valid inside this block scope {}
         printf("  -> Creating ScopedConnection inside block...\n");
-        ScopedConnection conn = signal->Connect(MakeDelegate(FreeFunction));
-        
+        ScopedConnection conn = signal.Connect(MakeDelegate(FreeFunction));
+
         // Fire signal - Should call FreeFunction
         printf("  -> Firing Signal (Expect Callback):\n");
-        (*signal)(500);
+        signal(500);
 
         printf("  -> Exiting block (ScopedConnection will destruct)...\n");
     }
@@ -104,7 +104,7 @@ int main() {
     // 3. Fire again outside scope
     // The connection should have automatically disconnected!
     printf("  -> Firing Signal outside block (Expect NO Callback):\n");
-    (*signal)(600);
+    signal(600);
 
     printf("\n=========================================\n");
     printf("           ALL TESTS PASSED              \n");

@@ -485,17 +485,15 @@ static void SignalTests()
 {
     // Test 1: Manual Disconnect
     {
-        // Must use make_shared because Signal uses shared_from_this() internally
-        auto sig = std::make_shared<Signal<void(int*)>>();
+        Signal<void(int*)> sig;
         int callCount = 0;
 
         // Connect returns r-value, moved into 'conn'
-        Connection conn = sig->Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; }));
+        Connection conn = sig.Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; }));
 
         ASSERT_TRUE(conn.IsConnected());
 
-        // Fire (dereference shared_ptr)
-        (*sig)(&callCount);
+        sig(&callCount);
         ASSERT_TRUE(callCount == 1);
 
         // Disconnect
@@ -503,33 +501,33 @@ static void SignalTests()
         ASSERT_TRUE(!conn.IsConnected());
 
         // Fire again
-        (*sig)(&callCount);
+        sig(&callCount);
         ASSERT_TRUE(callCount == 1);
     }
 
     // Test 2: RAII Scoped Disconnect
     {
-        auto sig = std::make_shared<Signal<void(int*)>>();
+        Signal<void(int*)> sig;
         int callCount = 0;
         {
             // Connect directly into ScopedConnection (Move)
-            ScopedConnection scopedConn(sig->Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; })));
+            ScopedConnection scopedConn(sig.Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; })));
 
             ASSERT_TRUE(scopedConn.IsConnected());
-            (*sig)(&callCount);
+            sig(&callCount);
             ASSERT_TRUE(callCount == 1);
 
         } // Destructor runs
 
-        ASSERT_TRUE(sig->Size() == 0);
-        (*sig)(&callCount);
+        ASSERT_TRUE(sig.Size() == 0);
+        sig(&callCount);
         ASSERT_TRUE(callCount == 1);
     }
 
     // Test 3: Move Semantics
     {
-        auto sig = std::make_shared<Signal<void(int*)>>();
-        Connection conn1 = sig->Connect(MakeDelegate(+[](int*) {}));
+        Signal<void(int*)> sig;
+        Connection conn1 = sig.Connect(MakeDelegate(+[](int*) {}));
 
         ASSERT_TRUE(conn1.IsConnected());
 
@@ -538,10 +536,10 @@ static void SignalTests()
 
         ASSERT_TRUE(conn2.IsConnected());
         ASSERT_TRUE(!conn1.IsConnected()); // conn1 is now empty
-        ASSERT_TRUE(sig->Size() == 1);
+        ASSERT_TRUE(sig.Size() == 1);
 
         conn2.Disconnect();
-        ASSERT_TRUE(sig->Size() == 0);
+        ASSERT_TRUE(sig.Size() == 0);
     }
 }
 
@@ -549,7 +547,7 @@ static void SignalSafeTests()
 {
     // Test 5: Thread Safe Signal
     {
-        // Must use make_shared
+        // SignalSafe requires shared_ptr for thread-safe disconnect
         auto sig = dmq::MakeSignal<void(int*)>();
         int callCount = 0;
 

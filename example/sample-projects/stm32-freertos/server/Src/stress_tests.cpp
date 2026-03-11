@@ -42,10 +42,7 @@ struct Payload {
 class SimplePublisher
 {
 public:
-    // FIX 1: Renamed member to 'm_signal' to avoid conflict with class 'Signal'.
-    // FIX 2: Used std::make_shared to explicitly create a non-safe Signal (no mutex).
-    std::shared_ptr<dmq::Signal<void(const Payload&)>> m_signal = 
-        std::make_shared<dmq::Signal<void(const Payload&)>>();
+    dmq::Signal<void(const Payload&)> m_signal;
     
     Thread m_thread;
 
@@ -73,8 +70,7 @@ public:
                 Payload p(msgId++, 123);
                 g_signalsFired++;
                 
-                // Invoke via the renamed member
-                (*m_signal)(p); 
+                m_signal(p);
             }
             vTaskDelay(LOOP_DELAY_TICKS);
         }
@@ -126,11 +122,11 @@ void StartStressTests() {
         auto sub = std::make_shared<SimpleSubscriber>();
 
         // Sync Connection
-        ScopedConnection conn1 = pub->m_signal->Connect(
+        ScopedConnection conn1 = pub->m_signal.Connect(
             MakeDelegate(sub.get(), &SimpleSubscriber::OnSync));
         
         // Async Connection
-        ScopedConnection conn2 = pub->m_signal->Connect(
+        ScopedConnection conn2 = pub->m_signal.Connect(
             MakeDelegate(sub.get(), &SimpleSubscriber::OnAsync, sub->m_thread));
 
         printf("Threads Active. Stabilizing (200ms)...\n");

@@ -8,9 +8,13 @@
 /// multicast delegates to return `Connection` handles upon subscription. These handles can be
 /// wrapped in `ScopedConnection` to automatically unsubscribe when the handle goes out of scope.
 ///
-/// @note Signals **MUST** be instantiated via `std::make_shared` (or `dmq::MakeSignal`). 
-/// Instantiating them on the stack will cause a runtime crash (std::bad_weak_ptr) when 
-/// `Connect()` is called.
+/// @note `SignalSafe` **MUST** be managed by `std::shared_ptr` (use `dmq::MakeSignal()`).
+/// This is required for thread safety: when `Disconnect()` is called from another thread,
+/// `weak_ptr::lock()` keeps the SignalSafe object alive for the duration of `Remove()`,
+/// preventing a race between disconnect and destruction. A plain lifetime token cannot
+/// guarantee this because it cannot extend the lifetime of the SignalSafe object itself.
+/// For a signal that does not require concurrent cross-thread disconnect, use `Signal`
+/// (see Signal.h), which has no allocation requirement.
 
 #include "Signal.h"
 #include "MulticastDelegateSafe.h"
@@ -22,8 +26,10 @@ namespace dmq {
     template <class R>
     class SignalSafe;
 
-    /// @brief A Thread-Safe Multicast Delegate that returns a 'Connection' handle.
-    /// @note Should be managed by std::shared_ptr to ensure thread-safe Disconnect.
+    /// @brief A thread-safe Multicast Delegate that returns a `Connection` handle.
+    /// @note MUST be managed by `std::shared_ptr` (use `dmq::MakeSignal()`). Required so that
+    /// `weak_ptr::lock()` in the disconnect lambda keeps the object alive across threads during
+    /// `Remove()`. See Signal.h for a stack-safe non-thread-safe alternative.
     template<class RetType, class... Args>
     class SignalSafe<RetType(Args...)>
         : public MulticastDelegateSafe<RetType(Args...)>
@@ -41,7 +47,8 @@ namespace dmq {
         SignalSafe& operator=(SignalSafe&&) = delete;
 
         /// @brief Connect a delegate and return a unique handle.
-        /// @details PRECONDITION: This SignalSafe instance MUST be managed by a std::shared_ptr.
+        /// @details PRECONDITION: This SignalSafe instance MUST be managed by a std::shared_ptr
+        /// (use `dmq::MakeSignal()`). This ensures thread-safe lifetime during concurrent disconnect.
         [[nodiscard]] Connection Connect(const DelegateType& delegate) {
             std::weak_ptr<SignalSafe> weakSelf;
 

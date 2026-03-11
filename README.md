@@ -30,7 +30,8 @@ It serves as a messaging layer for C++ applications, providing thread-safe async
 
 - `MakeDelegate` – Creates a delegate instance bound to a callable (lambda, function, or method).
 - `MulticastDelegateSafe` – A thread-safe container of delegates, allowing broadcast-style invocation.
-- `SignalSafe` - A thread-safe Signal implementation that returns a connection handle upon subscription (Signal/Slot pattern).
+- `Signal` - A Signal implementation that returns a connection handle upon subscription (Signal/Slot pattern). Can be used as a stack variable or class member with no heap management required.
+- `SignalSafe` - A thread-safe `Signal` variant. Must be managed by `std::shared_ptr` (use `MakeSignal()`) to support safe concurrent disconnect from other threads.
 - `Thread` – A cross-platform thread class capable of asynchronous delegate invocation.
 
 # Examples
@@ -83,17 +84,15 @@ int main(void)
 class Publisher
 {
 public:
-    // 1. Define a thread-safe OnMessage signal
-    using MessageSignal = dmq::SignalSafe<void(const std::string&)>;
-    std::shared_ptr<MessageSignal> OnMessage = std::make_shared<MessageSignal>();
-    
-    // Alternate syntax
-    // SignalPtr<void(const std::string&)> OnMessage = MakeSignal<void(const std::string&)>();
+    // 1. Define a thread-safe OnMessage signal.
+    // MakeSignal() creates a SignalSafe managed by shared_ptr, required for
+    // concurrent cross-thread disconnect safety.
+    dmq::SignalPtr<void(const std::string&)> OnMessage = dmq::MakeSignal<void(const std::string&)>();
 
-    void Publish(const std::string& msg) 
+    void Publish(const std::string& msg)
     {
         // 3. Emit signal to all connected slots (dereference the shared_ptr)
-        (*OnMessage)(msg); 
+        (*OnMessage)(msg);
     }
 };
 

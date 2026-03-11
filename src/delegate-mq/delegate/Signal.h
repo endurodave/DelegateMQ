@@ -8,21 +8,20 @@
 /// multicast delegates to return `Connection` handles upon subscription. These handles can be
 /// wrapped in `ScopedConnection` to automatically unsubscribe when the handle goes out of scope.
 ///
-/// @note Signals **MUST** be instantiated via `std::make_shared` (or `dmq::MakeSignal`). 
-/// Instantiating them on the stack will cause a runtime crash (std::bad_weak_ptr) when 
-/// `Connect()` is called.
+/// @note `Signal` may be instantiated on the stack, as a class member, or on the heap.
+/// A `Disconnect()` call after the `Signal` is destroyed is always a safe no-op.
+/// For thread-safe signals where connections may be disconnected from other threads,
+/// use `SignalSafe` managed by `std::shared_ptr` (see SignalSafe.h).
 
 #include "MulticastDelegate.h"
 #include <functional>
 #include <memory>
-#include <cassert>
 
 namespace dmq {
 
     // --- Connection Handle Classes ---
-    // (Connection and ScopedConnection classes remain unchanged)
 
-    /// @brief Represents a unique handle to a delegate connection. 
+    /// @brief Represents a unique handle to a delegate connection.
     /// Move-only to prevent double-disconnection bugs.
     class Connection {
     public:
@@ -112,17 +111,18 @@ namespace dmq {
         XALLOCATOR
     };
 
-    // --- Signal Containers ---
+    // --- Signal Container ---
 
     template <class R>
     class Signal;
 
-    /// @brief A Multicast Delegate that returns a 'Connection' handle.
-    /// @note Should be managed by std::shared_ptr to ensure thread-safe Disconnect.
+    /// @brief A non-thread-safe Multicast Delegate that returns a `Connection` handle.
+    /// @details May be instantiated on the stack, as a class member, or on the heap.
+    /// `Disconnect()` is always a safe no-op even if called after the Signal is destroyed.
+    /// For concurrent multi-threaded disconnect, use `SignalSafe` instead.
     template<class RetType, class... Args>
     class Signal<RetType(Args...)>
         : public MulticastDelegate<RetType(Args...)>
-        , public std::enable_shared_from_this<Signal<RetType(Args...)>>
     {
     public:
         using BaseType = MulticastDelegate<RetType(Args...)>;
@@ -136,41 +136,36 @@ namespace dmq {
         Signal& operator=(Signal&&) = delete;
 
         /// @brief Connect a delegate and return a unique handle.
-        /// @details PRECONDITION: This Signal instance MUST be managed by a std::shared_ptr.
+        /// @details The returned `Connection` (or `ScopedConnection`) automatically
+        /// removes the delegate when it goes out of scope or `Disconnect()` is called.
+        /// Safe to call regardless of how the Signal was allocated.
+        /// @return A `Connection` handle. Store in a `ScopedConnection` for automatic
+        /// disconnect, or call `Disconnect()` manually.
         [[nodiscard]] Connection Connect(const DelegateType& delegate) {
-            std::weak_ptr<Signal> weakSelf;
-
-            // Handle Assert vs Exception environments
-#if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
-            // No exceptions: We simply assume the object is managed by shared_ptr.
-            // If this object is on the stack, shared_from_this() will likely cause 
-            // a strict abort/terminate depending on the STL implementation.
-            weakSelf = this->shared_from_this();
-#else
-            try {
-                weakSelf = this->shared_from_this();
-            }
-            catch (const std::bad_weak_ptr&) {
-                assert(false && "Signal::Connect() requires the Signal instance to be managed by a std::shared_ptr. Use std::make_shared.");
-                throw;
-            }
-#endif
+            std::weak_ptr<void> weakLifetime = m_lifetime;
 
             this->PushBack(delegate);
 
             std::shared_ptr<DelegateType> delegateCopy(delegate.Clone());
 
-            return Connection(weakSelf, [weakSelf, delegateCopy]() {
-                if (auto self = weakSelf.lock()) {
-                    self->Remove(*delegateCopy);
+            return Connection(weakLifetime, [this, weakLifetime, delegateCopy]() {
+                // m_lifetime expires when Signal is destroyed, making this a safe no-op.
+                if (!weakLifetime.expired()) {
+                    this->Remove(*delegateCopy);
                 }
-                });
+            });
         }
 
         void operator+=(const DelegateType& delegate) {
             this->PushBack(delegate);
         }
         XALLOCATOR
+
+    private:
+        /// Lifetime sentinel: a heap-allocated token owned exclusively by this Signal.
+        /// When Signal is destroyed, m_lifetime is destroyed and all weak_ptr copies
+        /// held by disconnect lambdas expire, making subsequent Disconnect() calls no-ops.
+        std::shared_ptr<void> m_lifetime{std::make_shared<bool>(true)};
     };
 
 } // namespace dmq

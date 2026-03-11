@@ -97,7 +97,7 @@ public:
     XALLOCATOR
     using StressSig = void(const Payload&);
 
-    std::shared_ptr<SignalSafe<StressSig>> Signal = std::make_shared<SignalSafe<StressSig>>();
+    dmq::SignalPtr<StressSig> Signal = dmq::MakeSignal<StressSig>();
     TaskHandle_t m_taskHandle = nullptr;
     int m_id = 0;
 
