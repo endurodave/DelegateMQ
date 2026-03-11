@@ -200,6 +200,19 @@
     #warning "Transport implementation not found."
 #endif
 
+// Include RemoteChannel when any real transport is configured (Dispatcher.h was included).
+// RemoteChannel aggregates dispatcher, serializer, and stream into one object,
+// mirroring how Thread aggregates async delegate wiring behind a single IThread.
+#if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_NNG) || \
+    defined(DMQ_TRANSPORT_WIN32_PIPE) || defined(DMQ_TRANSPORT_WIN32_UDP) || \
+    defined(DMQ_TRANSPORT_WIN32_TCP) || defined(DMQ_TRANSPORT_LINUX_UDP) || \
+    defined(DMQ_TRANSPORT_LINUX_TCP) || defined(DMQ_TRANSPORT_MQTT) || \
+    defined(DMQ_TRANSPORT_SERIAL_PORT) || defined(DMQ_TRANSPORT_ARM_LWIP_UDP) || \
+    defined(DMQ_TRANSPORT_ARM_LWIP_NETCONN_UDP) || defined(DMQ_TRANSPORT_THREADX_UDP) || \
+    defined(DMQ_TRANSPORT_STM32_UART) || defined(DMQ_TRANSPORT_ZEPHYR_UDP)
+    #include "predef/dispatcher/RemoteChannel.h"
+#endif
+
 #include "predef/util/Fault.h"
 
 // Only include Timer and AsyncInvoke if threads exist

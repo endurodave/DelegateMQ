@@ -24,7 +24,7 @@ These classes provide transport-layer reliability (ACKs and Retries) over unreli
 
 ### 4. Networking Logic
 * **`NetworkEngine.h`**: A high-level manager that coordinates the `Dispatcher` and `Transport` to simplify sending messages to remote endpoints.
-* **`RemoteEndpoint.h`**: Represents a remote peer (IP address/Port).
+* **`RemoteEndpoint.h`**: Base class for `DelegateMemberRemote` used to register receive-side endpoints with `NetworkEngine`.
 
 ### 5. System Utilities
 * **`Fault.h`**: Assertions and fault trapping macros (`ASSERT_TRUE`, `FAULT_Handler`) used throughout the library examples.

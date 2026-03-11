@@ -169,9 +169,11 @@ public:
 
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
-    DelegateFreeRemote(ClassType&& rhs) noexcept : 
-        BaseType(std::move(rhs)), m_id(rhs.m_id) {
+    DelegateFreeRemote(ClassType&& rhs) noexcept :
+        BaseType(std::move(rhs)), m_id(rhs.m_id),
+        m_dispatcher(rhs.m_dispatcher), m_serializer(rhs.m_serializer), m_stream(rhs.m_stream) {
         rhs.Clear();
+        rhs.m_dispatcher = nullptr; rhs.m_serializer = nullptr; rhs.m_stream = nullptr;
     }
 
     DelegateFreeRemote() = default;
@@ -624,8 +626,10 @@ public:
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateMemberRemote(ClassType&& rhs) noexcept :
-        BaseType(std::move(rhs)), m_id(rhs.m_id) {
+        BaseType(std::move(rhs)), m_id(rhs.m_id),
+        m_dispatcher(rhs.m_dispatcher), m_serializer(rhs.m_serializer), m_stream(rhs.m_stream) {
         rhs.Clear();
+        rhs.m_dispatcher = nullptr; rhs.m_serializer = nullptr; rhs.m_stream = nullptr;
     }
 
     DelegateMemberRemote() = default;
@@ -1092,8 +1096,10 @@ public:
     /// @brief Move constructor that transfers ownership of resources.
     /// @param[in] rhs The object to move from.
     DelegateFunctionRemote(ClassType&& rhs) noexcept :
-        BaseType(std::move(rhs)), m_id(rhs.m_id) {
+        BaseType(std::move(rhs)), m_id(rhs.m_id),
+        m_dispatcher(rhs.m_dispatcher), m_serializer(rhs.m_serializer), m_stream(rhs.m_stream) {
         rhs.Clear();
+        rhs.m_dispatcher = nullptr; rhs.m_serializer = nullptr; rhs.m_stream = nullptr;
     }
 
     DelegateFunctionRemote() = default;

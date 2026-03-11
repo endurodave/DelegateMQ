@@ -6,12 +6,13 @@
 #ifndef NETWORK_MGR_H
 #define NETWORK_MGR_H
 
-#include "DelegateMQ.h" 
+#include "DelegateMQ.h"
 #include "RemoteIds.h"
 #include "AlarmMsg.h"
 #include "DataMsg.h"
 #include "CommandMsg.h"
 #include "ActuatorMsg.h"
+#include <optional>
 
 /// @brief NetworkMgr sends and receives data using a DelegateMQ transport implemented
 /// with the ZeroMQ library. Class is thread safe. All public APIs are 
@@ -41,21 +42,15 @@
 class NetworkMgr : public NetworkEngine
 {
 public:
-    // Public Signal Types
-    // Clients Connect() to these safely using RAII.
-    using AlarmSignal = dmq::SignalSafe<void(AlarmMsg&, AlarmNote&)>;
-    using CommandSignal = dmq::SignalSafe<void(CommandMsg&)>;
-    using DataSignal = dmq::SignalSafe<void(DataMsg&)>;
-    using ActuatorSignal = dmq::SignalSafe<void(ActuatorMsg&)>;
-    using ErrorSignal = dmq::SignalSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>;
-    using SendStatusSignal = dmq::SignalSafe<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>;
-
-    std::shared_ptr<AlarmSignal>      OnAlarm = dmq::MakeSignal<void(AlarmMsg&, AlarmNote&)>();
-    std::shared_ptr<CommandSignal>    OnCommand = dmq::MakeSignal<void(CommandMsg&)>();
-    std::shared_ptr<DataSignal>       OnData = dmq::MakeSignal<void(DataMsg&)>();
-    std::shared_ptr<ActuatorSignal>   OnActuator = dmq::MakeSignal<void(ActuatorMsg&)>();
-    std::shared_ptr<ErrorSignal>      OnNetworkError = dmq::MakeSignal<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>();
-    std::shared_ptr<SendStatusSignal> OnSendStatus = dmq::MakeSignal<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>();
+    // Public Signals — clients Connect() to these safely using RAII ScopedConnection.
+    // SignalPtr<Sig> == std::shared_ptr<SignalSafe<Sig>>; shared_ptr management is
+    // required so that concurrent Disconnect() from another thread is safe.
+    dmq::SignalPtr<void(AlarmMsg&, AlarmNote&)>                                            OnAlarm        = dmq::MakeSignal<void(AlarmMsg&, AlarmNote&)>();
+    dmq::SignalPtr<void(CommandMsg&)>                                                      OnCommand      = dmq::MakeSignal<void(CommandMsg&)>();
+    dmq::SignalPtr<void(DataMsg&)>                                                         OnData         = dmq::MakeSignal<void(DataMsg&)>();
+    dmq::SignalPtr<void(ActuatorMsg&)>                                                     OnActuator     = dmq::MakeSignal<void(ActuatorMsg&)>();
+    dmq::SignalPtr<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> OnNetworkError = dmq::MakeSignal<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>();
+    dmq::SignalPtr<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>        OnSendStatus   = dmq::MakeSignal<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>();
 
     static NetworkMgr& Instance() { static NetworkMgr instance; return instance; }
 
@@ -81,21 +76,29 @@ private:
     ~NetworkMgr() = default;
 
     // Helper functions to forward incoming data to the Signals
-    void ForwardAlarm(AlarmMsg& msg, AlarmNote& note) { if (OnAlarm) (*OnAlarm)(msg, note); }
-    void ForwardCommand(CommandMsg& msg) { if (OnCommand) (*OnCommand)(msg); }
-    void ForwardData(DataMsg& msg) { if (OnData) (*OnData)(msg); }
-    void ForwardActuator(ActuatorMsg& msg) { if (OnActuator) (*OnActuator)(msg); }
+    void ForwardAlarm(AlarmMsg& msg, AlarmNote& note) { (*OnAlarm)(msg, note); }
+    void ForwardCommand(CommandMsg& msg) { (*OnCommand)(msg); }
+    void ForwardData(DataMsg& msg) { (*OnData)(msg); }
+    void ForwardActuator(ActuatorMsg& msg) { (*OnActuator)(msg); }
 
-    // TYPE ALIAS: Unicast, Unsafe, Member Delegate bound to 'NetworkMgr'
-    // This allows exact binding to 'this' in Create()
-    template <typename... Args>
-    using EndpointType = RemoteEndpoint<NetworkMgr, void(Args...)>;
+    // Per-signature serializers (one per message type)
+    Serializer<void(AlarmMsg&, AlarmNote&)> m_alarmSer;
+    Serializer<void(CommandMsg&)>           m_commandSer;
+    Serializer<void(DataMsg&)>              m_dataSer;
+    Serializer<void(ActuatorMsg&)>          m_actuatorSer;
 
-    // Specific endpoints
-    EndpointType<AlarmMsg&, AlarmNote&> m_alarmMsgDel;
-    EndpointType<CommandMsg&>           m_commandMsgDel;
-    EndpointType<DataMsg&>              m_dataMsgDel;
-    EndpointType<ActuatorMsg&>          m_actuatorMsgDel;
+    // Channels aggregate the dispatcher, stream, and serializer for each signature.
+    // Initialized in Create() once the send transport is available.
+    std::optional<dmq::RemoteChannel<void(AlarmMsg&, AlarmNote&)>> m_alarmChannel;
+    std::optional<dmq::RemoteChannel<void(CommandMsg&)>>           m_commandChannel;
+    std::optional<dmq::RemoteChannel<void(DataMsg&)>>              m_dataChannel;
+    std::optional<dmq::RemoteChannel<void(ActuatorMsg&)>>          m_actuatorChannel;
+
+    // Remote delegates — configured via channel accessors in Create()
+    dmq::DelegateMemberRemote<NetworkMgr, void(AlarmMsg&, AlarmNote&)> m_alarmMsgDel;
+    dmq::DelegateMemberRemote<NetworkMgr, void(CommandMsg&)>           m_commandMsgDel;
+    dmq::DelegateMemberRemote<NetworkMgr, void(DataMsg&)>              m_dataMsgDel;
+    dmq::DelegateMemberRemote<NetworkMgr, void(ActuatorMsg&)>          m_actuatorMsgDel;
 };
 
 #endif

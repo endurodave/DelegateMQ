@@ -4,31 +4,53 @@ using namespace dmq;
 using namespace std;
 
 NetworkMgr::NetworkMgr()
-    : m_alarmMsgDel(ids::ALARM_MSG_ID, &m_dispatcher),
-    m_commandMsgDel(ids::COMMAND_MSG_ID, &m_dispatcher),
-    m_dataMsgDel(ids::DATA_MSG_ID, &m_dispatcher),
-    m_actuatorMsgDel(ids::ACTUATOR_MSG_ID, &m_dispatcher)
 {
 }
 
 int NetworkMgr::Create()
 {
-    // Bind signals
+    // Initialize one RemoteChannel per message signature.
+    // Each channel owns its Dispatcher (wired to the shared send transport)
+    // and its serialization stream, and borrows the per-type serializer.
+    m_alarmChannel.emplace(GetSendTransport(), m_alarmSer);
+    m_commandChannel.emplace(GetSendTransport(), m_commandSer);
+    m_dataChannel.emplace(GetSendTransport(), m_dataSer);
+    m_actuatorChannel.emplace(GetSendTransport(), m_actuatorSer);
+
+    // Bind and wire each delegate through its channel.
+    // Bind() sets the target function; the Set* calls wire in the channel's
+    // dispatcher, serializer, and stream — mirroring how MakeDelegate() works
+    // for async delegates.
     m_alarmMsgDel.Bind(this, &NetworkMgr::ForwardAlarm, ids::ALARM_MSG_ID);
-    m_dataMsgDel.Bind(this, &NetworkMgr::ForwardData, ids::DATA_MSG_ID);
+    m_alarmMsgDel.SetDispatcher(m_alarmChannel->GetDispatcher());
+    m_alarmMsgDel.SetSerializer(m_alarmChannel->GetSerializer());
+    m_alarmMsgDel.SetStream(&m_alarmChannel->GetStream());
+
     m_commandMsgDel.Bind(this, &NetworkMgr::ForwardCommand, ids::COMMAND_MSG_ID);
+    m_commandMsgDel.SetDispatcher(m_commandChannel->GetDispatcher());
+    m_commandMsgDel.SetSerializer(m_commandChannel->GetSerializer());
+    m_commandMsgDel.SetStream(&m_commandChannel->GetStream());
+
+    m_dataMsgDel.Bind(this, &NetworkMgr::ForwardData, ids::DATA_MSG_ID);
+    m_dataMsgDel.SetDispatcher(m_dataChannel->GetDispatcher());
+    m_dataMsgDel.SetSerializer(m_dataChannel->GetSerializer());
+    m_dataMsgDel.SetStream(&m_dataChannel->GetStream());
+
     m_actuatorMsgDel.Bind(this, &NetworkMgr::ForwardActuator, ids::ACTUATOR_MSG_ID);
+    m_actuatorMsgDel.SetDispatcher(m_actuatorChannel->GetDispatcher());
+    m_actuatorMsgDel.SetSerializer(m_actuatorChannel->GetSerializer());
+    m_actuatorMsgDel.SetStream(&m_actuatorChannel->GetStream());
 
-    // Register for error callbacks using single assignment (=)
-    m_alarmMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
-    m_dataMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
-    m_commandMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
-    m_actuatorMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
+    // Register error handlers
+    m_alarmMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+    m_commandMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+    m_dataMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+    m_actuatorMsgDel.SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
 
-    // Register endpoints with the Base Engine (So Incoming() can find them)
+    // Register endpoints with the Base Engine (so Incoming() can route by ID)
     RegisterEndpoint(ids::ALARM_MSG_ID, &m_alarmMsgDel);
-    RegisterEndpoint(ids::DATA_MSG_ID, &m_dataMsgDel);
     RegisterEndpoint(ids::COMMAND_MSG_ID, &m_commandMsgDel);
+    RegisterEndpoint(ids::DATA_MSG_ID, &m_dataMsgDel);
     RegisterEndpoint(ids::ACTUATOR_MSG_ID, &m_actuatorMsgDel);
 
     // Initialize Base Engine
@@ -41,11 +63,11 @@ int NetworkMgr::Create()
 
 // Override hooks to fire signals
 void NetworkMgr::OnError(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux) {
-    if (OnNetworkError) (*OnNetworkError)(id, error, aux);
+    (*OnNetworkError)(id, error, aux);
 }
 
 void NetworkMgr::OnStatus(DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
-    if (OnSendStatus) (*OnSendStatus)(id, seq, status);
+    (*OnSendStatus)(id, seq, status);
 }
 
 void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note) {

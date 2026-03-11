@@ -2132,7 +2132,7 @@ Follow the steps below to execute the first two projects. See `README.txt` withi
 | `AlarmMgr` | Client<br>Server | Handles system alarms. Server sends alarms to client for processing. |
 | `Sensor` | Client<br>Server | Reads sensor data |
 | `Actuator` | Client<br>Server | Controls actuator |
-| `RemoteEndpoint` | Client<br>Server | Delegate endpoint for bidirectional remote communication. |
+| `RemoteChannel` | Client<br>Server | Aggregates a `Dispatcher`, serialization stream, and `Serializer` for a single message signature; used to configure `DelegateMemberRemote` endpoints. |
 
 Interface implementation details. 
 

@@ -51,7 +51,7 @@
 /// * **Lifecycle Management:** Controls the startup and shutdown of transport sockets and receiver threads.
 /// * **Thread Synchronization:** Marshals all outgoing network calls to a dedicated network thread to ensure 
 ///   thread safety and prevent blocking the caller's UI or logic threads.
-/// * **Message Routing:** Maps incoming data (by ID) to specific `RemoteEndpoint` instances via `RegisterEndpoint`.
+/// * **Message Routing:** Maps incoming data (by ID) to specific `DelegateMemberRemote` instances via `RegisterEndpoint`.
 /// * **Reliability:** Integrates with `TransportMonitor` to handle Acknowledgments (ACKs) and retransmissions/timeouts.
 class NetworkEngine
 {
@@ -98,9 +98,9 @@ public:
 
     /// @brief Registers a remote endpoint with the network engine.
     /// 
-    /// @details This function maps a unique `DelegateRemoteId` to a specific `RemoteEndpoint` 
-    /// instance (via the `IRemoteInvoker` interface). When the `NetworkEngine` receives 
-    /// data from the transport layer, it uses the message ID to look up the registered 
+    /// @details This function maps a unique `DelegateRemoteId` to a specific `DelegateMemberRemote`
+    /// instance (via the `IRemoteInvoker` interface). When the `NetworkEngine` receives
+    /// data from the transport layer, it uses the message ID to look up the registered
     /// endpoint in this map and invokes it to deserialize and handle the payload.
     /// 
     /// @param[in] id The unique identifier for the remote message type.
@@ -129,7 +129,7 @@ public:
     /// @param[in] args The arguments to forward to the remote function.
     /// @return `true` if the remote acknowledged the message; `false` on timeout or transport failure.
     template <class TClass, class RetType, class... Args>
-    bool RemoteInvokeWait(RemoteEndpoint<TClass, RetType(Args...)>& endpoint, Args&&... args)
+    bool RemoteInvokeWait(dmq::DelegateMemberRemote<TClass, RetType(Args...)>& endpoint, Args&&... args)
     {
         // 1. [Caller Thread] Check if we are on the Network Thread.
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
@@ -200,6 +200,17 @@ public:
     }
 
 protected:
+    /// @brief Returns the send-side transport for use by RemoteChannel instances.
+    /// @details Derived classes can pass this to RemoteChannel constructors so each
+    /// channel owns its own Dispatcher while sharing the same physical transport.
+    ITransport& GetSendTransport() {
+#if defined(DMQ_TRANSPORT_ZEROMQ)
+        return m_sendTransport;
+#else
+        return m_reliableTransport;
+#endif
+    }
+
     Thread m_thread;
     Dispatcher m_dispatcher;
     TransportMonitor m_transportMonitor;
