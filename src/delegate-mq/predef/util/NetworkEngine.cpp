@@ -69,7 +69,7 @@ int NetworkEngine::Initialize(const std::string& sendAddr, const std::string& re
     err += m_sendTransport.Create(type, sendAddr.c_str());
     err += m_recvTransport.Create(type, recvAddr.c_str());
 
-    m_statusConn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
+    m_statusConn = m_transportMonitor.OnSendStatus.Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
 
     m_sendTransport.SetTransportMonitor(&m_transportMonitor);
     m_recvTransport.SetTransportMonitor(&m_transportMonitor);
@@ -98,7 +98,7 @@ int NetworkEngine::Initialize(const std::string& sendIp, int sendPort, const std
     err += m_sendTransport.Create(UdpTransport::Type::PUB, sendIp.c_str(), sendPort);
     err += m_recvTransport.Create(UdpTransport::Type::SUB, recvIp.c_str(), recvPort);
 
-    m_statusConn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
+    m_statusConn = m_transportMonitor.OnSendStatus.Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
 
     m_sendTransport.SetTransportMonitor(&m_transportMonitor);
     m_recvTransport.SetTransportMonitor(&m_transportMonitor);
@@ -127,7 +127,7 @@ int NetworkEngine::Initialize(UART_HandleTypeDef* huart)
     // Call Create ONCE on the shared object
     err += m_transport.Create(huart);
 
-    m_statusConn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
+    m_statusConn = m_transportMonitor.OnSendStatus.Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
 
     m_transport.SetTransportMonitor(&m_transportMonitor);
 
@@ -157,7 +157,7 @@ int NetworkEngine::Initialize(const std::string& portName, int baudRate)
 
     if (err == 0) {
         // Only hook up monitoring if open succeeded
-        m_statusConn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
+        m_statusConn = m_transportMonitor.OnSendStatus.Connect(dmq::MakeDelegate(this, &NetworkEngine::InternalStatusHandler));
 
         m_transport.SetTransportMonitor(&m_transportMonitor);
 
@@ -189,7 +189,7 @@ void NetworkEngine::Start()
         MakeDelegate(this, &NetworkEngine::RecvThread, m_recvThread).AsyncInvoke();
     }
 
-    m_timeoutTimerConn = m_timeoutTimer.OnExpired->Connect(MakeDelegate(this, &NetworkEngine::Timeout, m_thread));
+    m_timeoutTimerConn = m_timeoutTimer.OnExpired.Connect(MakeDelegate(this, &NetworkEngine::Timeout, m_thread));
     m_timeoutTimer.Start(std::chrono::milliseconds(100));
 }
 

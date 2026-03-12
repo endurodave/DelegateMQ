@@ -79,7 +79,6 @@
     defined(DMQ_THREAD_QT)
     #include "delegate/MulticastDelegateSafe.h"
     #include "delegate/UnicastDelegateSafe.h"
-    #include "delegate/SignalSafe.h"
 #endif
 
 // -----------------------------------------------------------------------------

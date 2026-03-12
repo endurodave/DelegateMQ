@@ -64,7 +64,7 @@ void StartSimpleTests() {
     // --------------------------------------------------------
     printf("\n[4] Timer (Wait 200ms)\n");
     Timer myTimer;
-    (*myTimer.OnExpired) += MakeDelegate(&handler, &SimpleHandler::OnTimerExpired);
+    myTimer.OnExpired += MakeDelegate(&handler, &SimpleHandler::OnTimerExpired);
     myTimer.Start(std::chrono::milliseconds(200));
     vTaskDelay(pdMS_TO_TICKS(250));
 

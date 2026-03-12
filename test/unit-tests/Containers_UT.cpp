@@ -488,8 +488,8 @@ static void SignalTests()
         Signal<void(int*)> sig;
         int callCount = 0;
 
-        // Connect returns r-value, moved into 'conn'
-        Connection conn = sig.Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; }));
+        // Connect returns ScopedConnection — moved into 'conn'
+        ScopedConnection conn = sig.Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; }));
 
         ASSERT_TRUE(conn.IsConnected());
 
@@ -527,12 +527,12 @@ static void SignalTests()
     // Test 3: Move Semantics
     {
         Signal<void(int*)> sig;
-        Connection conn1 = sig.Connect(MakeDelegate(+[](int*) {}));
+        ScopedConnection conn1 = sig.Connect(MakeDelegate(+[](int*) {}));
 
         ASSERT_TRUE(conn1.IsConnected());
 
         // Explicit move
-        Connection conn2 = std::move(conn1);
+        ScopedConnection conn2 = std::move(conn1);
 
         ASSERT_TRUE(conn2.IsConnected());
         ASSERT_TRUE(!conn1.IsConnected()); // conn1 is now empty
@@ -543,22 +543,21 @@ static void SignalTests()
     }
 }
 
-static void SignalSafeTests()
+static void SignalThreadSafeTests()
 {
-    // Test 5: Thread Safe Signal
+    // Test 5: Thread Safe Signal (Signal<> is inherently thread-safe)
     {
-        // SignalSafe requires shared_ptr for thread-safe disconnect
-        auto sig = dmq::MakeSignal<void(int*)>();
+        dmq::Signal<void(int*)> sig;
         int callCount = 0;
 
         {
-            ScopedConnection conn = sig->Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; }));
-            ASSERT_TRUE(sig->Size() == 1);
-            (*sig)(&callCount);
+            ScopedConnection conn = sig.Connect(MakeDelegate(+[](int* cnt) { (*cnt)++; }));
+            ASSERT_TRUE(sig.Size() == 1);
+            sig(&callCount);
             ASSERT_TRUE(callCount == 1);
         } // Disconnect
 
-        ASSERT_TRUE(sig->Size() == 0);
+        ASSERT_TRUE(sig.Size() == 0);
     }
 }
 
@@ -573,5 +572,5 @@ void Containers_UT()
     MulticastDelegateSafeReentrantTests();
 
     SignalTests();
-    SignalSafeTests();
+    SignalThreadSafeTests();
 }

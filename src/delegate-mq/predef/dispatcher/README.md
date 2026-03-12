@@ -19,22 +19,35 @@ The `Dispatcher` is responsible for taking the serialized payload (function argu
 3. **Transport Handoff**: It forwards the framed message (Header + Payload) to the registered `ITransport` instance for physical transmission.
 
 #### RemoteChannel
-`RemoteChannel<Sig>` bundles the three objects a `DelegateMemberRemote` needs to send a message and exposes accessors so callers can wire them in one place:
+`RemoteChannel<Sig>` owns a `DelegateFunctionRemote` internally and handles all wiring automatically. Call `Bind()` once to configure the channel, then invoke it with `operator()`.
 
 ```cpp
 // Create one channel per message signature
 RemoteChannel<void(AlarmMsg&, AlarmNote&)> alarmChannel(transport, alarmSerializer);
 
-// Wire a delegate through the channel
-myDelegate.Bind(this, &MyClass::Handler, ALARM_MSG_ID);
-myDelegate.SetDispatcher(alarmChannel.GetDispatcher());
-myDelegate.SetSerializer(alarmChannel.GetSerializer());
-myDelegate.SetStream(&alarmChannel.GetStream());
+// Bind a member function and remote ID — channel owns the delegate internally
+alarmChannel.Bind(this, &MyClass::ForwardAlarm, ALARM_MSG_ID);
+
+// Optionally register an error handler
+alarmChannel.SetErrorHandler(MakeDelegate(this, &MyClass::OnError));
+
+// Register the receive endpoint with NetworkEngine
+RegisterEndpoint(ALARM_MSG_ID, alarmChannel.GetEndpoint());
+
+// Invoke (fire-and-forget)
+AlarmMsg msg; AlarmNote note;
+alarmChannel(msg, note);
+
+// Or invoke with blocking wait (via NetworkEngine::RemoteInvokeWait)
+bool ok = RemoteInvokeWait(alarmChannel, msg, note);
 ```
 
-The `MakeDelegate` overloads in `DelegateRemote.h` accept a `RemoteChannel` directly, making the wiring even more concise:
+Key accessors:
+- `Bind(obj, func, id)` — binds a member function and configures all internal plumbing.
+- `operator()(args...)` — invokes (sends) the remote message.
+- `GetEndpoint()` — returns `IRemoteInvoker*` for `RegisterEndpoint()`.
+- `GetError()` / `GetRemoteId()` — query last error and remote ID.
+- `SetErrorHandler(delegate)` — register an error notification callback.
 
-```cpp
-auto d = MakeDelegate(this, &MyClass::Handler, ALARM_MSG_ID, alarmChannel);
-```
+> **Legacy accessors** (`GetDispatcher()`, `GetSerializer()`, `GetStream()`) remain available for code that manually wires a `DelegateMemberRemote`.
 

@@ -37,12 +37,10 @@ public:
 
     /// Signal emitted when a message status is determined.
     /// Subscribers receive: (remoteId, seqNum, status)
-    /// Use a shared_ptr for the signal as required by SignalSafe
-    std::shared_ptr<dmq::SignalSafe<void(dmq::DelegateRemoteId, uint16_t, Status)>> OnSendStatus;
+    dmq::Signal<void(dmq::DelegateRemoteId, uint16_t, Status)> OnSendStatus;
 
     TransportMonitor(const dmq::Duration timeout) : TRANSPORT_TIMEOUT(timeout)
     {
-        OnSendStatus = dmq::MakeSignal<void(dmq::DelegateRemoteId, uint16_t, Status)>();
     }
 
     ~TransportMonitor()
@@ -74,8 +72,7 @@ public:
         {
             TimeoutData d = it->second;
             m_pending.erase(it);
-            if (OnSendStatus)
-                (*OnSendStatus)(d.remoteId, seqNum, Status::SUCCESS);
+            OnSendStatus(d.remoteId, seqNum, Status::SUCCESS);
         }
     }
 
@@ -113,15 +110,12 @@ public:
         // 2. Fire callbacks without holding the lock
         // This prevents the deadlock: Process(Lock A) -> Callback -> Send -> Transport(Wait for Thread B)
         // Meanwhile Thread B -> Send -> Add(Wait for Lock A)
-        if (OnSendStatus && !expiredItems.empty())
+        for (const auto& item : expiredItems)
         {
-            for (const auto& item : expiredItems)
-            {
-                // Simple logging to console
-                // Note: std::cerr is generally safe, but on embedded might be redirected or empty.
-                std::cerr << "TransportMonitor::Process TIMEOUT RemoteID: " << item.data.remoteId << " Seq: " << item.seq << std::endl;
-                (*OnSendStatus)(item.data.remoteId, item.seq, Status::TIMEOUT);
-            }
+            // Simple logging to console
+            // Note: std::cerr is generally safe, but on embedded might be redirected or empty.
+            std::cerr << "TransportMonitor::Process TIMEOUT RemoteID: " << item.data.remoteId << " Seq: " << item.seq << std::endl;
+            OnSendStatus(item.data.remoteId, item.seq, Status::TIMEOUT);
         }
     }
 

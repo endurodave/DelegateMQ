@@ -13,7 +13,7 @@
 /// **Core Functionality:**
 /// * Synchronous vs. Asynchronous delegate invocation.
 /// * Remote function calls (IPC/RPC) via `RemoteCommunication`.
-/// * Signaling using `Signal` (single-threaded) and `SignalSafe` (multi-threaded).
+/// * Signaling using `Signal` (thread-safe, direct member).
 /// * Asynchronous Futures and Lambdas.
 ///
 /// **Design Patterns:**
@@ -105,8 +105,7 @@ int main(void)
 
     // Create a timer that expires every 1S and calls 
     // TimerExpiredCb on workerThread1 upon expiration
-    // Dereference shared_ptr and use +=
-    (*GetTimer().OnExpired) += MakeDelegate(&TimerExpiredCb, workerThread1);
+    GetTimer().OnExpired += MakeDelegate(&TimerExpiredCb, workerThread1);
     GetTimer().Start(std::chrono::seconds(1));
 
     // Start the thread that will run ProcessTimers
@@ -129,7 +128,7 @@ int main(void)
         timerThread.join();
 
     GetTimer().Stop();
-    GetTimer().OnExpired->Clear();
+    GetTimer().OnExpired.Clear();
 
     workerThread1.ExitThread();
 
@@ -193,20 +192,18 @@ void RunSimpleExamples()
     remote("Invoke MsgOut remote!");
 }
 
-// Use SignalSafe for cross-thread RAII signal/slot: subscribers dispatch onto their own
-// threads, so Disconnect() may be called from a thread other than the Publisher's.
+// Signal<> is inherently thread-safe: subscribers dispatch onto their own
+// threads, and Disconnect() may be called safely from any thread.
 class Publisher
 {
 public:
-    // 1. Define a thread-safe OnMessage signal.
-    // MakeSignal() creates a SignalSafe managed by shared_ptr, required for
-    // concurrent cross-thread disconnect safety.
-    dmq::SignalPtr<void(const std::string&)> OnMessage = dmq::MakeSignal<void(const std::string&)>();
+    // 1. Define a thread-safe OnMessage signal as a direct member.
+    dmq::Signal<void(const std::string&)> OnMessage;
 
     void Publish(const std::string& msg)
     {
-        // 3. Emit signal to all connected slots (dereference the shared_ptr)
-        (*OnMessage)(msg);
+        // 3. Emit signal to all connected slots
+        OnMessage(msg);
     }
 };
 
@@ -218,7 +215,7 @@ public:
         m_thread.CreateThread();
 
         // 2. Connect to the publisher's signal
-        m_connection = pub.OnMessage->Connect(
+        m_connection = pub.OnMessage.Connect(
             dmq::MakeDelegate(this, &Subscriber::HandleMsg, m_thread)
         );
     }

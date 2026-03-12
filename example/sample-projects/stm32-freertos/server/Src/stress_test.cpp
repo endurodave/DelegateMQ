@@ -97,7 +97,7 @@ public:
     XALLOCATOR
     using StressSig = void(const Payload&);
 
-    dmq::SignalPtr<StressSig> Signal = dmq::MakeSignal<StressSig>();
+    dmq::Signal<StressSig> OnMessage;
     TaskHandle_t m_taskHandle = nullptr;
     int m_id = 0;
 
@@ -123,7 +123,7 @@ public:
                     g_expectedAsync += asyncSubs;
                     g_signalsFired++;
 
-                    (*self->Signal)(p); 
+                    self->OnMessage(p); 
                 }
             }
             // Throttle to prevent starvation
@@ -182,10 +182,10 @@ void StressTestTask(void* pvParameters)
 
         for (auto& pub : publishers) {
             if (i % 2 == 0) {
-                connections.push_back(pub->Signal->Connect(
+                connections.push_back(pub->OnMessage.Connect(
                     MakeDelegate(sub.get(), &StressSubscriber::OnSyncEvent)));
             } else {
-                connections.push_back(pub->Signal->Connect(
+                connections.push_back(pub->OnMessage.Connect(
                     MakeDelegate(sub.get(), &StressSubscriber::OnAsyncEvent, sub->m_thread)));
             }
         }

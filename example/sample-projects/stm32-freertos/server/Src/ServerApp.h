@@ -22,7 +22,7 @@ public:
         if (command.action == CommandMsg::Action::START)
         {
             // Connect and store handle
-            m_pollTimerConn = m_pollTimer.OnExpired->Connect(MakeDelegate(this, &ServerApp::PollData, m_thread));
+            m_pollTimerConn = m_pollTimer.OnExpired.Connect(MakeDelegate(this, &ServerApp::PollData, m_thread));
             m_pollTimer.Start(std::chrono::milliseconds(command.pollTime));
         }
         else if (command.action == CommandMsg::Action::STOP)
@@ -61,10 +61,10 @@ private:
 
         // Register for incoming client commands
         // Use Connect() and store handles
-        m_onCommandConn = NetworkMgr::OnCommand->Connect(MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread));
-        m_onActuatorConn = NetworkMgr::OnActuator->Connect(MakeDelegate(this, &ServerApp::ActuatorMsgRecv, m_thread));
-        m_onNetworkErrorConn = NetworkMgr::OnNetworkError->Connect(MakeDelegate(this, &ServerApp::ErrorHandler, m_thread));
-        m_onSendStatusConn = NetworkMgr::OnSendStatus->Connect(MakeDelegate(this, &ServerApp::SendStatusHandler, m_thread));
+        m_onCommandConn = NetworkMgr::Instance().OnCommand.Connect(MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread));
+        m_onActuatorConn = NetworkMgr::Instance().OnActuator.Connect(MakeDelegate(this, &ServerApp::ActuatorMsgRecv, m_thread));
+        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError.Connect(MakeDelegate(this, &ServerApp::ErrorHandler, m_thread));
+        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus.Connect(MakeDelegate(this, &ServerApp::SendStatusHandler, m_thread));
     }
 
     ~ServerApp()

@@ -88,12 +88,12 @@ private:
         m_thread.CreateThread();
 
         // Register for incoming client commands
-        m_onCommandConn = NetworkMgr::Instance().OnCommand->Connect(MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread));
-        m_onActuatorConn = NetworkMgr::Instance().OnActuator->Connect(MakeDelegate(this, &ServerApp::ActuatorMsgRecv, m_thread));
-        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError->Connect(MakeDelegate(this, &ServerApp::ErrorHandler, m_thread));
+        m_onCommandConn = NetworkMgr::Instance().OnCommand.Connect(MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread));
+        m_onActuatorConn = NetworkMgr::Instance().OnActuator.Connect(MakeDelegate(this, &ServerApp::ActuatorMsgRecv, m_thread));
+        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError.Connect(MakeDelegate(this, &ServerApp::ErrorHandler, m_thread));
 
         // Critical: Handle Status updates to detect disconnection
-        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus->Connect(MakeDelegate(this, &ServerApp::SendStatusHandler, m_thread));
+        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus.Connect(MakeDelegate(this, &ServerApp::SendStatusHandler, m_thread));
     }
 
     ~ServerApp()
@@ -108,7 +108,7 @@ private:
         m_consecutiveErrors = 0;
 
         if (!m_pollTimerConn.IsConnected()) {
-            m_pollTimerConn = m_pollTimer.OnExpired->Connect(MakeDelegate(this, &ServerApp::PollData, m_thread));
+            m_pollTimerConn = m_pollTimer.OnExpired.Connect(MakeDelegate(this, &ServerApp::PollData, m_thread));
             m_pollTimer.Start(std::chrono::milliseconds(pollTime));
             BSP_LED_On(LED4); // Green LED ON = Polling
             printf("[ServerApp] Polling Started (%lu ms)\n", pollTime);

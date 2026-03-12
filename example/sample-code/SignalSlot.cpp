@@ -7,13 +7,11 @@
 /// 3. The Publisher-Subscriber pattern where subscribers are automatically
 ///    disconnected when they go out of scope.
 /// 4. Thread-safe communication between a Publisher and multiple Subscribers
-///    using `SignalSafe`.
+///    using `Signal<>` (inherently thread-safe).
 ///
-/// **Choosing Signal vs SignalSafe:**
-/// - `Signal`     — single-threaded. Can be a local variable, class member, or heap object.
-///                  Disconnect() after Signal destruction is always a safe no-op.
-/// - `SignalSafe` — thread-safe. Must be managed by `std::shared_ptr` (use `MakeSignal()`).
-///                  Required when connections may be disconnected from a different thread.
+/// **Signal<Sig>** is the single thread-safe signal type. It can be used as a local
+/// variable, class member, or static member. No shared_ptr management required.
+/// Disconnect() from any thread is always safe.
 ///
 /// @see https://github.com/endurodave/DelegateMQ
 
@@ -60,25 +58,20 @@ namespace Example {
 
     // ----------------------------------------------------------------------------
     // Example 2: Publisher / Subscriber (RAII Lifetime Management)
-    // Uses SignalSafe because subscribers dispatch onto their own threads —
-    // ScopedConnection::~ScopedConnection() may be called from a different thread
-    // than the one owning the Publisher, so the thread-safe variant is required.
+    // Signal<> is thread-safe: ScopedConnection::~ScopedConnection() may be
+    // called safely from a different thread than the one owning the Publisher.
     // ----------------------------------------------------------------------------
 
     class NewsPublisher
     {
     public:
-        // SignalPtr<> is an alias for std::shared_ptr<SignalSafe<>>
-        // Use MakeSignal() to construct it correctly.
-        dmq::SignalPtr<void(const std::string&)> OnBreakingNews
-            = dmq::MakeSignal<void(const std::string&)>();
+        // Signal<> is a direct member — no shared_ptr required.
+        dmq::Signal<void(const std::string&)> OnBreakingNews;
 
         void Broadcast(const std::string& news)
         {
             std::cout << "[Publisher] Broadcasting: " << news << std::endl;
-            if (OnBreakingNews) {
-                (*OnBreakingNews)(news);
-            }
+            OnBreakingNews(news);
         }
     };
 
@@ -91,7 +84,7 @@ namespace Example {
         {
             m_thread.CreateThread();
 
-            m_connection = pub.OnBreakingNews->Connect(
+            m_connection = pub.OnBreakingNews.Connect(
                 MakeDelegate(this, &NewsSubscriber::OnNews, m_thread)
             );
         }

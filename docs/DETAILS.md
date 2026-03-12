@@ -32,7 +32,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Signal](#signal)
     - [Slot (Subscriber)](#slot-subscriber)
     - [Lambda Slots](#lambda-slots)
-    - [`SignalSafe` vs. `MulticastDelegateSafe`](#signalsafe-vs-multicastdelegatesafe)
+    - [`Signal` vs. `MulticastDelegateSafe`](#signal-vs-multicastdelegatesafe)
   - [Asynchronous API Example](#asynchronous-api-example)
   - [Delegate Invocation Semantics](#delegate-invocation-semantics)
 - [Background](#background)
@@ -467,27 +467,23 @@ Unlike many other C++ signal/slot libraries which are strictly synchronous, Dele
 
 ### Signal
 
-Define a `Signal` (or `SignalSafe` for thread-safe usage).
-
-> **Note:** `Signal` can be declared as a plain local variable or class member — no `shared_ptr` needed. Use `SignalSafe` (via `dmq::MakeSignal`) when connections may be disconnected from a thread other than the one owning the signal.
+`Signal<Sig>` is a thread-safe multicast signal. It can be declared as a plain class member or local variable — no `shared_ptr` management required.
 
 ```cpp
 class Publisher
 {
 public:
-    // Define a thread-safe Signal that accepts void(string)
-    // Use the dmq::SignalPtr alias for cleaner syntax
-    dmq::SignalPtr<void(const std::string&)> MsgSig 
-        = dmq::MakeSignal<void(const std::string&)>();
+    // Signal<> is thread-safe by default — declare as a plain member.
+    dmq::Signal<void(const std::string&)> MsgSig;
 
     void Publish(const std::string& msg)
     {
         // Emit signal to all connected slots
-        // Note: Dereference (*) the shared_ptr to invoke
-        (*MsgSig)(msg);
+        MsgSig(msg);
     }
 };
 ```
+
 ### Slot (Subscriber)
 
 The subscriber connects to the signal using `Connect()`. This returns a `dmq::ScopedConnection` handle. When this handle is destroyed (e.g., when the `Subscriber` class is destroyed), the connection is automatically removed.
@@ -496,14 +492,14 @@ The subscriber connects to the signal using `Connect()`. This returns a `dmq::Sc
 class Subscriber
 {
 public:
-    Subscriber(Publisher& pub) : m_thread("SubscriberThread") 
+    Subscriber(Publisher& pub) : m_thread("SubscriberThread")
     {
         m_thread.CreateThread();
 
         // Connect to the publisher's signal.
         // We use 'MakeDelegate' to bind the member function to our thread.
         // We store the result in 'm_connection'.
-        m_connection = pub.MsgSig->Connect(
+        m_connection = pub.MsgSig.Connect(
             MakeDelegate(this, &Subscriber::HandleMsg, m_thread)
         );
     }
@@ -519,10 +515,10 @@ private:
     }
 
     Thread m_thread;
-    
+
     // The "Magic" Link: Holds the connection alive.
     // If this object dies, the link is broken automatically.
-    dmq::ScopedConnection m_connection; 
+    dmq::ScopedConnection m_connection;
 };
 ```
 
@@ -533,11 +529,11 @@ You can also connect lambdas directly to signals.
 **Stateless Lambdas**: Use the unary `+` operator to convert the lambda to a function pointer for easy deduction.
 
 ```cpp
-auto mySignal = dmq::MakeSignal<void(int)>();
+dmq::Signal<void(int)> mySignal;
 dmq::ScopedConnection conn;
 
 // Use '+' for simple lambdas
-conn = mySignal->Connect(MakeDelegate(+[](int val) {
+conn = mySignal.Connect(MakeDelegate(+[](int val) {
     std::cout << "Lambda received: " << val << std::endl;
 }));
 ```
@@ -546,27 +542,28 @@ conn = mySignal->Connect(MakeDelegate(+[](int val) {
 
 ```cpp
 int x = 42;
-conn = mySignal->Connect(MakeDelegate(std::function<void(int)>([x](int val) {
+conn = mySignal.Connect(MakeDelegate(std::function<void(int)>([x](int val) {
     std::cout << "Captured x + val: " << (x + val) << std::endl;
 })));
 ```
 
-### `SignalSafe` vs. `MulticastDelegateSafe`
+### `Signal` vs. `MulticastDelegateSafe`
 
-`SignalSafe` is essentially a wrapper around the `MulticastDelegateSafe` delegate container that adds automatic connection management (RAII). Think of `SignalSafe` as a "Smart Multicast Delegate."
+`Signal` adds automatic connection management (RAII) on top of `MulticastDelegateSafe`. Think of `Signal` as a "Smart Multicast Delegate."
 
 **The Core Difference: Lifetime Safety**
 
 `MulticastDelegateSafe`: You must manually unsubscribe (`-=`). If a subscriber object is destroyed but forgets to unsubscribe, the delegate container holds a dangling pointer. Next time it invokes, the program crashes.
 
-`SignalSafe`: Returns a Connection handle when you subscribe (`Connect()`). If that handle goes out of scope (or the subscriber is destroyed), it automatically unsubscribes.
+`Signal`: Returns a `ScopedConnection` handle when you subscribe (`Connect()`). If that handle goes out of scope (or the subscriber is destroyed), it automatically unsubscribes. Thread-safe disconnection is always safe — even if `Disconnect()` races with the `Signal` destructor.
 
-| Feature | MulticastDelegateSafe | SignalSafe |
+| Feature | MulticastDelegateSafe | Signal |
 | --- | --- | --- |
-| Subscription | `+= MakeDelegate(...)` | `->Connect(MakeDelegate(...))` | 
+| Subscription | `+= MakeDelegate(...)` | `.Connect(MakeDelegate(...))` |
 | Unsubscription | **Manual**: `-= MakeDelegate(...)` | **Automatic**: via `ScopedConnection` destructor |
-| Safety Risk | **High**: Risk of dangling pointers if `-=` is forgotten. | **Low**: Connection is severed automatically when subscriber dies. | 
-| Storage Requirement | Can be on Stack or Heap. | Must be on Heap (`std::shared_ptr`) to track connections. |
+| Safety Risk | **High**: Risk of dangling pointers if `-=` is forgotten. | **Low**: Connection is severed automatically when subscriber dies. |
+| Storage Requirement | Stack or heap. | Stack, class member, or heap — no `shared_ptr` needed. |
+
 
 
 ## Asynchronous API Example
@@ -679,18 +676,17 @@ A delegate container stores one or more delegates. A delegate container is calla
 UnicastDelegate<>
     UnicastDelegateSafe<>
 MulticastDelegate<>
-    Signal<>
     MulticastDelegateSafe<>
-        SignalSafe<>
-``` 
+Signal<>          // thread-safe multicast with RAII ScopedConnection
+```
 
-`UnicastDelegate<>` is a delegate container accepting a single delegate. 
+`UnicastDelegate<>` is a delegate container accepting a single delegate.
 
 `MulticastDelegate<>` is a delegate container accepting multiple delegates.
 
 `MulticastDelegateSafe<>` is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.
 
-`Signal<>` and `SignalSafe<>` extend the multicast containers to support RAII connection management. Unlike the standard delegates, `Connect()` returns a `Connection` handle. This handle can be managed by a `ScopedConnection` to automatically unsubscribe the delegate when the handle goes out of scope, preventing callbacks to destroyed objects. `Signal<>` can be used as a plain stack variable or class member. `SignalSafe<>` must be managed via `std::shared_ptr` (use `dmq::MakeSignal<>()`) to ensure thread-safe disconnection from other threads.
+`Signal<>` is a thread-safe multicast container with RAII connection management. `Connect()` returns a `ScopedConnection` handle that automatically unsubscribes the delegate when it goes out of scope, preventing callbacks to destroyed objects. `Signal<>` may be used as a plain stack variable or class member — no `shared_ptr` required.
 
 ## Synchronous Delegates
 
@@ -1052,7 +1048,7 @@ safeObj.reset();
 
 When using `std::shared_ptr` and `std::enable_shared_from_this`, you must follow a specific pattern to manually register and unregister delegates.
 
-Critical Rule: You cannot call `shared_from_this()` inside a destructor. Doing so causes a `std::bad_weak_ptr` crash because the ownership of the object has already expired. Therefore, if you require manual unregistration (to stop receiving events immediately), you must use an explicit `Init`/`Term` or RAII pattern. Alternatively, use `dmq::SignalSafe` (with `dmq::ScopedConnection`) for automatic RAII connection management.
+Critical Rule: You cannot call `shared_from_this()` inside a destructor. Doing so causes a `std::bad_weak_ptr` crash because the ownership of the object has already expired. Therefore, if you require manual unregistration (to stop receiving events immediately), you must use an explicit `Init`/`Term` or RAII pattern. Alternatively, use `dmq::Signal` (with `dmq::ScopedConnection`) for automatic RAII connection management.
 
 ### Init/Term Pattern
 
@@ -1398,10 +1394,9 @@ DelegateBase
 // Delegate Containers
 UnicastDelegate<>
     UnicastDelegateSafe<>
-        Signal<>
 MulticastDelegate<>
     MulticastDelegateSafe<>
-        SignalSafe<>
+Signal<>          // thread-safe multicast with RAII ScopedConnection
 ```
 
 Some degree of code duplication exists within the delegate inheritance hierarchy. This arises because the `Free`, `Member`, and `Function` classes support different target function types, making code sharing via inheritance difficult. Alternative solutions to share code either compromised type safety, caused non-intuitive user syntax, or significantly increased implementation complexity and code readability. Extensive unit tests ensure a reliable implementation.
@@ -1994,16 +1989,17 @@ SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type syste
 
 ## Timer Example
 
-Creating a timer callback service is trivial. A `UnicastDelegate<void(void)>` used inside a `Timer` class solves this nicely.
+Creating a timer callback service is trivial. `Timer` exposes a `Signal<void(void)>` member that clients connect to.
 
 ```cpp
-/// @brief A timer class provides periodic timer callbacks on the client's 
+/// @brief A timer class provides periodic timer callbacks on the client's
 /// thread of control. Timer is thread safe.
 class Timer
 {
 public:
-    /// Client's register with OnExpired to get timer callbacks
-    std::shared_ptr<dmq::SignalSafe<void(void)>> OnExpired;
+    /// Clients connect to OnExpired to receive timer callbacks.
+    /// Signal<> is thread-safe and requires no shared_ptr management.
+    dmq::Signal<void(void)> OnExpired;
 
     /// Starts a timer for callbacks on the specified timeout interval.
     /// @param[in] timeout - the timeout in milliseconds.
@@ -2011,7 +2007,7 @@ public:
 
     /// Stops a timer.
     void Stop();
-    
+
     ///...
 };
 ```
@@ -2026,7 +2022,7 @@ dmq::ScopedConnection m_conn;
 void Init() {
     // 2. Connect using the RAII pattern
     // If 'this' is destroyed, m_conn destructor automatically disconnects the timer.
-    m_conn = m_timer.OnExpired->Connect(MakeDelegate(this, &MyClass::OnTimer, m_thread));
+    m_conn = m_timer.OnExpired.Connect(MakeDelegate(this, &MyClass::OnTimer, m_thread));
     m_timer.Start(std::chrono::milliseconds(250));
 }
 ```

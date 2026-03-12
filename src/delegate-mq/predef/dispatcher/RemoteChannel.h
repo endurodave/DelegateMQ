@@ -46,11 +46,38 @@ namespace dmq {
 template <class Sig>
 class RemoteChannel; // Not defined
 
-/// @brief Aggregates dispatcher, stream, and serializer for a single function signature.
+/// @brief Aggregates dispatcher, stream, serializer, and delegate binding for a single
+/// function signature. The canonical way to configure a remote endpoint.
 ///
-/// @details `RemoteChannel` is non-copyable because it owns mutable stream state.
-/// Delegates created via `MakeDelegate(..., channel)` borrow pointers to the
-/// channel's internal dispatcher and stream, so the channel must outlive them.
+/// @details `RemoteChannel` is the single object a user needs to declare per message
+/// signature. It owns the `Dispatcher`, the serialization stream, and the internal
+/// `DelegateFunctionRemote` that handles both sending and receiving.
+///
+/// **Usage pattern (preferred):**
+/// @code
+///   // Declare per signature — one channel replaces channel + separate delegate
+///   std::optional<RemoteChannel<void(AlarmMsg&)>> m_alarmChannel;
+///
+///   // In Create():
+///   m_alarmChannel.emplace(GetSendTransport(), m_alarmSer);
+///   m_alarmChannel->Bind(this, &MyClass::OnAlarm, ALARM_ID);
+///   m_alarmChannel->SetErrorHandler(MakeDelegate(this, &MyClass::OnError));
+///   RegisterEndpoint(ALARM_ID, m_alarmChannel->GetEndpoint());
+///
+///   // Send (fire-and-forget):
+///   (*m_alarmChannel)(msg);
+///
+///   // Send (blocking wait):
+///   RemoteInvokeWait(*m_alarmChannel, msg);
+/// @endcode
+///
+/// **Legacy MakeDelegate pattern (still supported):**
+/// @code
+///   auto d = MakeDelegate(&MyFunc, REMOTE_ID, channel);
+/// @endcode
+///
+/// `RemoteChannel` is non-copyable because it owns mutable stream state and the internal
+/// delegate holds raw pointers into the channel.
 ///
 /// @tparam RetType The return type of the remote function.
 /// @tparam Args    The argument types of the remote function.
@@ -68,12 +95,74 @@ public:
         m_dispatcher.SetTransport(&transport);
     }
 
-    // Non-copyable: owns stream state, and delegates hold raw pointers into this object.
+    // Non-copyable: owns stream state and internal delegate holds raw pointers into this object.
     RemoteChannel(const RemoteChannel&) = delete;
     RemoteChannel& operator=(const RemoteChannel&) = delete;
+    RemoteChannel(RemoteChannel&&) = delete;
+    RemoteChannel& operator=(RemoteChannel&&) = delete;
 
-    RemoteChannel(RemoteChannel&&) = default;
-    RemoteChannel& operator=(RemoteChannel&&) = default;
+    // -----------------------------------------------------------------------
+    // Delegate binding — preferred user-facing API (Item 2 / Item 4)
+    // -----------------------------------------------------------------------
+
+    /// @brief Bind a non-const member function as the receive-side handler.
+    /// @details Wires the internal delegate (dispatcher, serializer, stream) and sets
+    /// the target function in one call. Call this once in your Create()/Initialize().
+    /// @param[in] object  Raw pointer to the target object.
+    /// @param[in] func    The non-const member function to call on receive.
+    /// @param[in] id      The remote delegate identifier shared with the sender.
+    template<class TClass>
+    void Bind(TClass* object, RetType(TClass::* func)(Args...), DelegateRemoteId id) {
+        m_delegate.Bind([object, func](Args... args) -> RetType {
+            return (object->*func)(args...);
+        }, id);
+        m_delegate.SetDispatcher(&m_dispatcher);
+        m_delegate.SetSerializer(m_serializer);
+        m_delegate.SetStream(&m_stream);
+    }
+
+    /// @brief Bind a const member function as the receive-side handler.
+    template<class TClass>
+    void Bind(const TClass* object, RetType(TClass::* func)(Args...) const, DelegateRemoteId id) {
+        m_delegate.Bind([object, func](Args... args) -> RetType {
+            return (object->*func)(args...);
+        }, id);
+        m_delegate.SetDispatcher(&m_dispatcher);
+        m_delegate.SetSerializer(m_serializer);
+        m_delegate.SetStream(&m_stream);
+    }
+
+    /// @brief Bind a `std::function` as the receive-side handler.
+    void Bind(std::function<RetType(Args...)> func, DelegateRemoteId id) {
+        m_delegate.Bind(func, id);
+        m_delegate.SetDispatcher(&m_dispatcher);
+        m_delegate.SetSerializer(m_serializer);
+        m_delegate.SetStream(&m_stream);
+    }
+
+    /// @brief Invoke the channel (fire-and-forget send).
+    /// @pre Bind() must have been called first.
+    void operator()(Args... args) { m_delegate(args...); }
+
+    /// @brief Register an error handler delegate.
+    template<class Handler>
+    void SetErrorHandler(Handler&& handler) {
+        m_delegate.SetErrorHandler(std::forward<Handler>(handler));
+    }
+
+    /// @brief The remote ID set by the most recent Bind() call.
+    DelegateRemoteId GetRemoteId() noexcept { return m_delegate.GetRemoteId(); }
+
+    /// @brief The error status of the most recent invocation.
+    DelegateError GetError() noexcept { return m_delegate.GetError(); }
+
+    /// @brief Returns the internal delegate as an IRemoteInvoker* for RegisterEndpoint().
+    IRemoteInvoker* GetEndpoint() noexcept { return &m_delegate; }
+
+    // -----------------------------------------------------------------------
+    // Infrastructure accessors — used by MakeDelegate overloads below.
+    // Prefer Bind() for new code.
+    // -----------------------------------------------------------------------
 
     /// @brief Get the internal dispatcher (implements IDispatcher).
     IDispatcher* GetDispatcher() noexcept { return &m_dispatcher; }
@@ -88,6 +177,7 @@ private:
     Dispatcher m_dispatcher;
     xostringstream m_stream;
     ISerializer<RetType(Args...)>* m_serializer = nullptr;
+    DelegateFunctionRemote<RetType(Args...)> m_delegate;
 };
 
 /// @brief C++17 deduction guide — lets the compiler deduce `Sig` from the serializer type.

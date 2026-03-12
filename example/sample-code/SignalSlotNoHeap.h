@@ -6,7 +6,7 @@ namespace Example
     /// @brief Demonstrates Signal as a plain member variable (single-threaded, minimal heap).
     void SignalSlotMemberExample();
 
-    /// @brief Demonstrates SignalSafe creation in static memory (BSS) using std::allocate_shared.
+    /// @brief Demonstrates Signal as a static variable (thread-safe, no heap management needed).
     void SignalSlotNoHeapExample();
 }
 

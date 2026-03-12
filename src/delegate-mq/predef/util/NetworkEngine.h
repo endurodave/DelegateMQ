@@ -11,6 +11,7 @@
 
 #include "predef/util/RemoteEndpoint.h"
 #include "predef/util/TransportMonitor.h"
+#include "predef/dispatcher/RemoteChannel.h"
 #include <map>
 #include <mutex>
 #include <atomic>
@@ -161,7 +162,7 @@ public:
                 };
 
             // 4. [Caller Thread] Register the callback.
-            dmq::ScopedConnection conn = m_transportMonitor.OnSendStatus->Connect(dmq::MakeDelegate(statusCbFunc));
+            dmq::ScopedConnection conn = m_transportMonitor.OnSendStatus.Connect(dmq::MakeDelegate(statusCbFunc));
 
             // 5. [Caller Thread] Define the "Send" logic lambda.
             auto* epPtr = &endpoint;
@@ -196,6 +197,64 @@ public:
             //     We are already on the correct thread, so execute immediately.
             endpoint(std::forward<Args>(args)...);
             return (endpoint.GetError() == dmq::DelegateError::SUCCESS);
+        }
+    }
+
+    /// @brief Overload of RemoteInvokeWait that accepts a RemoteChannel directly.
+    /// @details Equivalent to the DelegateMemberRemote overload; routes through the
+    /// channel's internal delegate. Prefer this when the endpoint is managed by a
+    /// RemoteChannel (i.e. configured via `channel.Bind()`).
+    template <class RetType, class... Args>
+    bool RemoteInvokeWait(dmq::RemoteChannel<RetType(Args...)>& channel, Args&&... args)
+    {
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        {
+            struct SyncState {
+                std::atomic<bool> success{ false };
+                bool complete = false;
+                dmq::Mutex mtx;
+                dmq::ConditionVariable cv;
+                XALLOCATOR
+            };
+            auto state = std::make_shared<SyncState>();
+            dmq::DelegateRemoteId remoteId = channel.GetRemoteId();
+
+            std::function<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)> statusCbFunc =
+                [state, remoteId](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
+                if (id == remoteId) {
+                    {
+                        std::lock_guard<dmq::Mutex> lock(state->mtx);
+                        state->complete = true;
+                        if (status == TransportMonitor::Status::SUCCESS)
+                            state->success.store(true);
+                    }
+                    state->cv.notify_one();
+                }
+            };
+
+            dmq::ScopedConnection conn = m_transportMonitor.OnSendStatus.Connect(dmq::MakeDelegate(statusCbFunc));
+
+            auto* chPtr = &channel;
+            std::function<bool(Args...)> asyncCallFunc = [chPtr](Args... fwdArgs) -> bool {
+                (*chPtr)(fwdArgs...);
+                return (chPtr->GetError() == dmq::DelegateError::SUCCESS);
+            };
+
+            auto retVal = dmq::MakeDelegate(asyncCallFunc, m_thread, SEND_TIMEOUT)
+                .AsyncInvoke(std::forward<Args>(args)...);
+
+            if (retVal.has_value() && retVal.value() == true)
+            {
+                std::unique_lock<dmq::Mutex> lock(state->mtx);
+                state->cv.wait_for(lock, RECV_TIMEOUT, [&] { return state->complete; });
+            }
+
+            return state->success.load();
+        }
+        else
+        {
+            channel(std::forward<Args>(args)...);
+            return (channel.GetError() == dmq::DelegateError::SUCCESS);
         }
     }
 

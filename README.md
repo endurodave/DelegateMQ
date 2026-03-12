@@ -30,8 +30,7 @@ It serves as a messaging layer for C++ applications, providing thread-safe async
 
 - `MakeDelegate` – Creates a delegate instance bound to a callable (lambda, function, or method).
 - `MulticastDelegateSafe` – A thread-safe container of delegates, allowing broadcast-style invocation.
-- `Signal` - A Signal implementation that returns a connection handle upon subscription (Signal/Slot pattern). Can be used as a stack variable or class member with no heap management required.
-- `SignalSafe` - A thread-safe `Signal` variant. Must be managed by `std::shared_ptr` (use `MakeSignal()`) to support safe concurrent disconnect from other threads.
+- `Signal` - A thread-safe Signal implementation that returns a `ScopedConnection` handle upon subscription (Signal/Slot pattern). Can be used as a stack variable, class member, or heap object — no `shared_ptr` management required.
 - `Thread` – A cross-platform thread class capable of asynchronous delegate invocation.
 
 # Examples
@@ -85,26 +84,25 @@ class Publisher
 {
 public:
     // 1. Define a thread-safe OnMessage signal.
-    // MakeSignal() creates a SignalSafe managed by shared_ptr, required for
-    // concurrent cross-thread disconnect safety.
-    dmq::SignalPtr<void(const std::string&)> OnMessage = dmq::MakeSignal<void(const std::string&)>();
+    // Signal<> is thread-safe by default — no shared_ptr required.
+    dmq::Signal<void(const std::string&)> OnMessage;
 
     void Publish(const std::string& msg)
     {
-        // 3. Emit signal to all connected slots (dereference the shared_ptr)
-        (*OnMessage)(msg);
+        // 3. Emit signal to all connected slots
+        OnMessage(msg);
     }
 };
 
 class Subscriber
 {
 public:
-    Subscriber(Publisher& pub) : m_thread("SubscriberThread") 
+    Subscriber(Publisher& pub) : m_thread("SubscriberThread")
     {
         m_thread.CreateThread();
 
         // 2. Connect to the publisher's signal
-        m_connection = pub.OnMessage->Connect(
+        m_connection = pub.OnMessage.Connect(
             dmq::MakeDelegate(this, &Subscriber::HandleMsg, m_thread)
         );
     }
@@ -295,7 +293,7 @@ DelegateMQ at a glance.
 | Complexity | Lightweight and extensible through external library interfaces and full source code |
 | Threads | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
 | Watchdog | Configurable timeout to detect and handle unresponsive threads. |
-| Signal and Slots | Standard Signal-Slot pattern implementation (`Signal` / `SignalSafe`). Supports `Connect()`, connection handles, and RAII-based automatic disconnection (`ScopedConnection`). |
+| Signal and Slots | Standard Signal-Slot pattern (`Signal<Sig>`). `Connect()` returns a `ScopedConnection` for RAII auto-disconnect. Thread-safe by default; no `shared_ptr` required. |
 | Multicast | Broadcast invoke anonymous callable targets onto multiple threads |
 | Message Priority | Asynchronous delegates support prioritization to ensure timely execution of critical messages |
 | Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |

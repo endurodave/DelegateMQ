@@ -6,7 +6,7 @@
 #ifndef NETWORK_MGR_H
 #define NETWORK_MGR_H
 
-#include "DelegateMQ.h" 
+#include "DelegateMQ.h"
 #include "RemoteIds.h"
 #include "AlarmMsg.h"
 #include "DataMsg.h"
@@ -16,47 +16,39 @@
 #include "predef/util/NetworkEngine.h"
 
 /// @brief NetworkMgr sends and receives data using a DelegateMQ transport implemented
-/// with Windows UDP sockets and msg_serialize. Class is thread safe. All public APIs are 
+/// with Windows UDP sockets and msg_serialize. Class is thread safe. All public APIs are
 /// asynchronous.
-/// 
-/// @details NetworkMgr inherits from NetworkEngine, which manages the internal thread 
-/// of control. All public APIs are asynchronous (blocking and non-blocking). Register 
+///
+/// @details NetworkMgr inherits from NetworkEngine, which manages the internal thread
+/// of control. All public APIs are asynchronous (blocking and non-blocking). Register
 /// with OnError or OnSendStatus to handle success or errors.
-/// 
-/// The underlying UDP transport layer managed by NetworkEngine is accessed only by a 
-/// single internal thread. Therefore, when invoking a remote delegate, the call is 
+///
+/// The underlying UDP transport layer managed by NetworkEngine is accessed only by a
+/// single internal thread. Therefore, when invoking a remote delegate, the call is
 /// automatically dispatched to the internal NetworkEngine thread.
-/// 
+///
 /// **Key Responsibilities:**
-/// * **Asynchronous Communication:** Exposes a fully thread-safe, asynchronous public API for network operations, 
+/// * **Asynchronous Communication:** Exposes a fully thread-safe, asynchronous public API for network operations,
 ///   utilizing an internal thread managed by `NetworkEngine` to handle all I/O.
-/// * **Transport Abstraction:** Implements specific UDP transport logic (using Windows or Linux sockets) while abstracting 
+/// * **Transport Abstraction:** Implements specific UDP transport logic (using Windows or Linux sockets) while abstracting
 ///   these details from the application logic. Two sockets are created: one for sending and one for receiving.
-/// * **Message Dispatching:** Automatically marshals all outgoing remote delegate invocations to the internal 
+/// * **Message Dispatching:** Automatically marshals all outgoing remote delegate invocations to the internal
 ///   network thread, ensuring safe single-threaded access to the underlying UDP resources.
 /// * **Invocation Modes:** Support for three distinct remote invocation patterns:
 ///     1. *Fire-and-Forget (Non-blocking):* Sends messages immediately without waiting for confirmation.
 ///     2. *Synchronous Wait (Blocking):* Blocks the calling thread until an acknowledgment (ACK) is received or a timeout occurs.
-/// * **Error & Status Reporting:** Provides registration points (`OnNetworkError`, `OnSendStatus`) for clients to subscribe 
+/// * **Error & Status Reporting:** Provides registration points (`OnNetworkError`, `OnSendStatus`) for clients to subscribe
 ///   to transmission results and error notifications.
 class NetworkMgr : public NetworkEngine
 {
 public:
-    // Public Signal Types
-    // Clients Connect() to these safely using RAII.
-    using AlarmSignal = dmq::SignalSafe<void(AlarmMsg&, AlarmNote&)>;
-    using CommandSignal = dmq::SignalSafe<void(CommandMsg&)>;
-    using DataSignal = dmq::SignalSafe<void(DataMsg&)>;
-    using ActuatorSignal = dmq::SignalSafe<void(ActuatorMsg&)>;
-    using ErrorSignal = dmq::SignalSafe<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>;
-    using SendStatusSignal = dmq::SignalSafe<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>;
-
-	std::shared_ptr<AlarmSignal>      OnAlarm        = dmq::MakeSignal<void(AlarmMsg&, AlarmNote&)>();
-	std::shared_ptr<CommandSignal>    OnCommand      = dmq::MakeSignal<void(CommandMsg&)>();
-	std::shared_ptr<DataSignal>       OnData         = dmq::MakeSignal<void(DataMsg&)>();
-	std::shared_ptr<ActuatorSignal>   OnActuator     = dmq::MakeSignal<void(ActuatorMsg&)>();
-    std::shared_ptr<ErrorSignal>      OnNetworkError = dmq::MakeSignal<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>();
-    std::shared_ptr<SendStatusSignal> OnSendStatus   = dmq::MakeSignal<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>();
+    // Public Signals — thread-safe direct members. Clients Connect() using RAII.
+    dmq::Signal<void(AlarmMsg&, AlarmNote&)>                                            OnAlarm;
+    dmq::Signal<void(CommandMsg&)>                                                       OnCommand;
+    dmq::Signal<void(DataMsg&)>                                                          OnData;
+    dmq::Signal<void(ActuatorMsg&)>                                                      OnActuator;
+    dmq::Signal<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> OnNetworkError;
+    dmq::Signal<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>        OnSendStatus;
 
     static NetworkMgr& Instance() { static NetworkMgr instance; return instance; }
 
@@ -73,7 +65,7 @@ public:
     bool SendActuatorMsgWait(ActuatorMsg& msg);
 
 protected:
-    // Override base class hooks to fire our static Signals
+    // Override base class hooks to fire our Signals
     void OnError(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux) override;
     void OnStatus(dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) override;
 
@@ -82,10 +74,10 @@ private:
     ~NetworkMgr() = default;
 
     // Helper functions to forward incoming data to the Signals
-    void ForwardAlarm(AlarmMsg& msg, AlarmNote& note) { if (OnAlarm) (*OnAlarm)(msg, note); }
-    void ForwardCommand(CommandMsg& msg) { if (OnCommand) (*OnCommand)(msg); }
-    void ForwardData(DataMsg& msg) { if (OnData) (*OnData)(msg); }
-    void ForwardActuator(ActuatorMsg& msg) { if (OnActuator) (*OnActuator)(msg); }
+    void ForwardAlarm(AlarmMsg& msg, AlarmNote& note)   { OnAlarm(msg, note); }
+    void ForwardCommand(CommandMsg& msg)                 { OnCommand(msg); }
+    void ForwardData(DataMsg& msg)                       { OnData(msg); }
+    void ForwardActuator(ActuatorMsg& msg)               { OnActuator(msg); }
 
     // TYPE ALIAS: Unicast, Unsafe, Member Delegate bound to 'NetworkMgr'
     // This allows exact binding to 'this' in Create()

@@ -52,7 +52,7 @@ public:
         : m_transport(transport), m_monitor(monitor), m_maxRetries(maxRetries) 
     {
         // Connection handled via RAII dmq::Connection member
-        m_connection = m_monitor.OnSendStatus->Connect(dmq::MakeDelegate(this, &RetryMonitor::OnStatusChanged));
+        m_connection = m_monitor.OnSendStatus.Connect(dmq::MakeDelegate(this, &RetryMonitor::OnStatusChanged));
     }
 
     ~RetryMonitor() {
@@ -143,7 +143,7 @@ private:
     const int m_maxRetries;
     std::map<uint16_t, RetryEntry> m_retryStore;
     dmq::RecursiveMutex m_lock;
-    dmq::Connection m_connection;
+    dmq::ScopedConnection m_connection;
 };
 
 #endif // _RETRY_MONITOR_H

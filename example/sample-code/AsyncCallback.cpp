@@ -20,20 +20,12 @@ namespace Example
     class Sensor
     {
     public:
-        dmq::SignalPtr<void(int value, const std::string& source)> OnData;
-
-        Sensor() {
-            // Initialize the signal
-            OnData = dmq::MakeSignal<void(int, const std::string&)>();
-        }
+        dmq::Signal<void(int value, const std::string& source)> OnData;
 
         // Simulate incoming data
         void ProduceData(int value)
         {
-            // Dereference shared_ptr to invoke
-            if (OnData) {
-                (*OnData)(value, "Sensor1");
-            }
+            OnData(value, "Sensor1");
         }
     };
 
@@ -48,8 +40,7 @@ namespace Example
         // 1. Init: Register for callbacks using shared_from_this()
         void Init(Sensor& sensor, Thread& workerThread)
         {
-            // Use (*ptr) += for operator overloading on shared_ptr
-            (*sensor.OnData) += MakeDelegate(
+            sensor.OnData += MakeDelegate(
                 shared_from_this(),
                 &DataLogger::HandleData,
                 workerThread
@@ -59,7 +50,7 @@ namespace Example
         // 2. Term: Must allow manual unregistration before destruction
         void Term(Sensor& sensor, Thread& workerThread)
         {
-            (*sensor.OnData) -= MakeDelegate(
+            sensor.OnData -= MakeDelegate(
                 shared_from_this(),
                 &DataLogger::HandleData,
                 workerThread
@@ -97,7 +88,7 @@ namespace Example
             );
 
             // Register using the member
-            (*sensor.OnData) += m_delegate;
+            sensor.OnData += m_delegate;
         }
 
         ~DataAnalyzer()
@@ -109,7 +100,7 @@ namespace Example
         void Stop(Sensor& sensor)
         {
             // Unregister using the member
-            (*sensor.OnData) -= m_delegate;
+            sensor.OnData -= m_delegate;
         }
 
     private:
@@ -132,8 +123,7 @@ namespace Example
 
         void Init(Sensor& sensor, Thread& workerThread)
         {
-            // Use arrow operator -> to call Connect() on the shared_ptr
-            m_connection = sensor.OnData->Connect(MakeDelegate(
+            m_connection = sensor.OnData.Connect(MakeDelegate(
                 shared_from_this(),
                 &DataMonitor::CheckThreshold,
                 workerThread
@@ -185,7 +175,7 @@ namespace Example
             };
         auto lambdaDelegate = MakeDelegate(lambdaFunc, callback_thread);
 
-        (*sensor.OnData) += lambdaDelegate;
+        sensor.OnData += lambdaDelegate;
 
         // 5. Produce Data
         cout << "\n--- Producing Batch 1 ---" << endl;
@@ -217,7 +207,7 @@ namespace Example
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
         // Cleanup Lambda
-        (*sensor.OnData) -= lambdaDelegate;
+        sensor.OnData -= lambdaDelegate;
 
         callback_thread.ExitThread();
     }

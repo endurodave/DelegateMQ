@@ -1,172 +1,230 @@
 #ifndef SIGNAL_H
 #define SIGNAL_H
 
-/// @file
-/// @brief Delegate containers `Signal` that support RAII connection management.
+/// @file Signal.h
+/// @brief Thread-safe Signal/slot with RAII connection handles; no allocation requirement.
 ///
-/// @details This header defines `Signal` classes, which extend the standard
-/// multicast delegates to return `Connection` handles upon subscription. These handles can be
-/// wrapped in `ScopedConnection` to automatically unsubscribe when the handle goes out of scope.
+/// @details `Signal<Sig>` is a thread-safe multicast delegate container that returns RAII
+/// `ScopedConnection` handles from `Connect()`. Key properties:
 ///
-/// @note `Signal` may be instantiated on the stack, as a class member, or on the heap.
-/// A `Disconnect()` call after the `Signal` is destroyed is always a safe no-op.
-/// For thread-safe signals where connections may be disconnected from other threads,
-/// use `SignalSafe` managed by `std::shared_ptr` (see SignalSafe.h).
+/// * **No allocation requirement** — Signal may live on the stack, as a class member, or on
+///   the heap without restriction.
+/// * **Thread-safe** — concurrent Connect/Disconnect/operator() calls are all safe.
+/// * **Lifetime-safe disconnect** — calling `Disconnect()` (or letting a `ScopedConnection`
+///   go out of scope) after the Signal is destroyed is always a safe no-op.
+///
+/// Internally, Signal stores its subscriber list in a heap-allocated `State` block shared
+/// with the disconnect lambdas via `shared_ptr`. The destructor marks the block dead under
+/// the mutex, so any concurrent disconnect that races with destruction simply sees the
+/// dead flag and returns without touching the list.
 
-#include "MulticastDelegate.h"
+#include "DelegateOpt.h"
+#include "Delegate.h"
 #include <functional>
 #include <memory>
 
 namespace dmq {
 
-    // --- Connection Handle Classes ---
+template <class R>
+class Signal;
 
-    /// @brief Represents a unique handle to a delegate connection.
-    /// Move-only to prevent double-disconnection bugs.
-    class Connection {
-    public:
-        Connection() = default;
+// ---------------------------------------------------------------------------
+// Connection
+// ---------------------------------------------------------------------------
 
-        template<typename DisconnectFunc>
-        Connection(std::weak_ptr<void> watcher, DisconnectFunc&& func)
-            : m_watcher(watcher)
-            , m_disconnect(std::forward<DisconnectFunc>(func))
-            , m_connected(true)
-        {
-        }
+/// @brief A unique, move-only handle to a single delegate subscription.
+/// @details Returned by `Signal::Connect()`. Call `Disconnect()` to unsubscribe
+/// manually, or store in a `ScopedConnection` for automatic RAII disconnect.
+class Connection {
+public:
+    Connection() = default;
 
-        Connection(const Connection&) = delete;
-        Connection& operator=(const Connection&) = delete;
+    template<typename DisconnectFunc>
+    Connection(std::weak_ptr<void> watcher, DisconnectFunc&& func)
+        : m_watcher(watcher)
+        , m_disconnect(std::forward<DisconnectFunc>(func))
+        , m_connected(true) {}
 
-        Connection(Connection&& other) noexcept
-            : m_watcher(std::move(other.m_watcher))
-            , m_disconnect(std::move(other.m_disconnect))
-            , m_connected(other.m_connected)
-        {
-            other.m_connected = false;
+    Connection(const Connection&) = delete;
+    Connection& operator=(const Connection&) = delete;
+
+    Connection(Connection&& other) noexcept
+        : m_watcher(std::move(other.m_watcher))
+        , m_disconnect(std::move(other.m_disconnect))
+        , m_connected(other.m_connected) {
+        other.m_connected = false;
+        other.m_disconnect = nullptr;
+    }
+
+    Connection& operator=(Connection&& other) noexcept {
+        if (this != &other) {
+            Disconnect();
+            m_watcher    = std::move(other.m_watcher);
+            m_disconnect = std::move(other.m_disconnect);
+            m_connected  = other.m_connected;
+            other.m_connected  = false;
             other.m_disconnect = nullptr;
         }
+        return *this;
+    }
 
-        Connection& operator=(Connection&& other) noexcept {
-            if (this != &other) {
-                Disconnect();
-                m_watcher = std::move(other.m_watcher);
-                m_disconnect = std::move(other.m_disconnect);
-                m_connected = other.m_connected;
-                other.m_connected = false;
-                other.m_disconnect = nullptr;
+    ~Connection() {}
+
+    bool IsConnected() const { return m_connected && !m_watcher.expired(); }
+
+    void Disconnect() {
+        if (!m_connected) return;
+        if (!m_watcher.expired() && m_disconnect)
+            m_disconnect();
+        m_disconnect = nullptr;
+        m_watcher.reset();
+        m_connected = false;
+    }
+
+private:
+    std::weak_ptr<void>  m_watcher;
+    std::function<void()> m_disconnect;
+    bool m_connected = false;
+    XALLOCATOR
+};
+
+// ---------------------------------------------------------------------------
+// ScopedConnection
+// ---------------------------------------------------------------------------
+
+/// @brief RAII wrapper for `Connection`. Automatically disconnects on scope exit.
+class ScopedConnection {
+public:
+    ScopedConnection() = default;
+    explicit ScopedConnection(Connection&& conn) : m_connection(std::move(conn)) {}
+    ~ScopedConnection() { m_connection.Disconnect(); }
+
+    ScopedConnection(ScopedConnection&& other) noexcept
+        : m_connection(std::move(other.m_connection)) {}
+
+    ScopedConnection& operator=(ScopedConnection&& other) noexcept {
+        if (this != &other) {
+            m_connection.Disconnect();
+            m_connection = std::move(other.m_connection);
+        }
+        return *this;
+    }
+
+    ScopedConnection(const ScopedConnection&) = delete;
+    ScopedConnection& operator=(const ScopedConnection&) = delete;
+
+    void Disconnect() { m_connection.Disconnect(); }
+    bool IsConnected() const { return m_connection.IsConnected(); }
+
+private:
+    Connection m_connection;
+    XALLOCATOR
+};
+
+// ---------------------------------------------------------------------------
+// Signal
+// ---------------------------------------------------------------------------
+
+/// @brief Thread-safe multicast delegate returning RAII connection handles.
+/// @details May be instantiated on the stack, as a class member, or on the heap.
+/// `Signal<Sig>` is the single signal type in the library.
+template<class RetType, class... Args>
+class Signal<RetType(Args...)>
+{
+public:
+    using DelegateType = Delegate<RetType(Args...)>;
+
+    Signal() = default;
+
+    ~Signal() {
+        // Mark the shared state dead under the lock. Any concurrent Disconnect()
+        // that races with this will either complete its removal first (holding the
+        // lock) or see alive=false and skip removal. Either way, no UAF.
+        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+        m_state->alive = false;
+        m_state->delegates.clear();
+    }
+
+    Signal(const Signal&) = delete;
+    Signal& operator=(const Signal&) = delete;
+    Signal(Signal&&) = delete;
+    Signal& operator=(Signal&&) = delete;
+
+    /// @brief Subscribe a delegate and return a RAII connection handle.
+    /// @details The returned `ScopedConnection` automatically disconnects on
+    /// scope exit. Safe to call regardless of how the Signal was allocated.
+    /// @return A `ScopedConnection`. Let it go out of scope to auto-disconnect,
+    ///         or call `Disconnect()` manually.
+    [[nodiscard]] ScopedConnection Connect(const DelegateType& delegate) {
+        auto copy  = std::shared_ptr<DelegateType>(delegate.Clone());
+        auto state = m_state;
+        {
+            std::lock_guard<RecursiveMutex> lock(state->mtx);
+            state->delegates.push_back(copy);
+        }
+        return ScopedConnection(Connection(
+            std::weak_ptr<void>(state),
+            [state, copy]() {
+                std::lock_guard<RecursiveMutex> lock(state->mtx);
+                if (state->alive)
+                    state->delegates.remove(copy);  // shared_ptr identity comparison
             }
-            return *this;
+        ));
+    }
+
+    /// @brief Invoke all connected delegates.
+    void operator()(Args... args) {
+        // Snapshot the list under the lock; invoke outside the lock to avoid
+        // deadlocks when a callback itself connects or disconnects.
+        xlist<std::shared_ptr<DelegateType>> snapshot;
+        {
+            std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+            snapshot = m_state->delegates;
         }
+        for (auto& d : snapshot)
+            (*d)(args...);
+    }
 
-        ~Connection() {}
+    /// @brief Add a delegate without a connection handle (no auto-disconnect).
+    void operator+=(const DelegateType& delegate) {
+        auto copy = std::shared_ptr<DelegateType>(delegate.Clone());
+        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+        m_state->delegates.push_back(copy);
+    }
 
-        bool IsConnected() const {
-            return m_connected && !m_watcher.expired();
-        }
+    /// @brief Remove a delegate by value equality.
+    void operator-=(const DelegateType& delegate) {
+        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+        m_state->delegates.remove_if([&delegate](const auto& d) {
+            return *d == delegate;
+        });
+    }
 
-        void Disconnect() {
-            if (!m_connected) return;
-            if (!m_watcher.expired()) {
-                if (m_disconnect) {
-                    m_disconnect();
-                }
-            }
-            m_disconnect = nullptr;
-            m_watcher.reset();
-            m_connected = false;
-        }
+    /// @brief Number of currently connected subscribers.
+    std::size_t Size() const {
+        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+        return m_state->delegates.size();
+    }
 
-    private:
-        std::weak_ptr<void> m_watcher;
-        std::function<void()> m_disconnect;
-        bool m_connected = false;
+    bool IsEmpty() const { return Size() == 0; }
+
+    /// @brief Disconnect all subscribers.
+    void Clear() {
+        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+        m_state->delegates.clear();
+    }
+
+    XALLOCATOR
+
+private:
+    struct State {
+        mutable RecursiveMutex mtx;
+        bool alive = true;
+        xlist<std::shared_ptr<DelegateType>> delegates;
         XALLOCATOR
     };
-
-    /// @brief RAII wrapper for Connection. Automatically disconnects when it goes out of scope.
-    class ScopedConnection {
-    public:
-        ScopedConnection() = default;
-        ScopedConnection(Connection&& conn) : m_connection(std::move(conn)) {}
-        ~ScopedConnection() { m_connection.Disconnect(); }
-
-        ScopedConnection(ScopedConnection&& other) noexcept : m_connection(std::move(other.m_connection)) {}
-        ScopedConnection& operator=(ScopedConnection&& other) noexcept {
-            if (this != &other) {
-                m_connection.Disconnect();
-                m_connection = std::move(other.m_connection);
-            }
-            return *this;
-        }
-
-        ScopedConnection(const ScopedConnection&) = delete;
-        ScopedConnection& operator=(const ScopedConnection&) = delete;
-
-        void Disconnect() { m_connection.Disconnect(); }
-        bool IsConnected() const { return m_connection.IsConnected(); }
-
-    private:
-        Connection m_connection;
-        XALLOCATOR
-    };
-
-    // --- Signal Container ---
-
-    template <class R>
-    class Signal;
-
-    /// @brief A non-thread-safe Multicast Delegate that returns a `Connection` handle.
-    /// @details May be instantiated on the stack, as a class member, or on the heap.
-    /// `Disconnect()` is always a safe no-op even if called after the Signal is destroyed.
-    /// For concurrent multi-threaded disconnect, use `SignalSafe` instead.
-    template<class RetType, class... Args>
-    class Signal<RetType(Args...)>
-        : public MulticastDelegate<RetType(Args...)>
-    {
-    public:
-        using BaseType = MulticastDelegate<RetType(Args...)>;
-        using DelegateType = Delegate<RetType(Args...)>;
-        using MulticastDelegate<RetType(Args...)>::operator=;
-
-        Signal() = default;
-        Signal(const Signal&) = delete;
-        Signal& operator=(const Signal&) = delete;
-        Signal(Signal&&) = delete;
-        Signal& operator=(Signal&&) = delete;
-
-        /// @brief Connect a delegate and return a unique handle.
-        /// @details The returned `Connection` (or `ScopedConnection`) automatically
-        /// removes the delegate when it goes out of scope or `Disconnect()` is called.
-        /// Safe to call regardless of how the Signal was allocated.
-        /// @return A `Connection` handle. Store in a `ScopedConnection` for automatic
-        /// disconnect, or call `Disconnect()` manually.
-        [[nodiscard]] Connection Connect(const DelegateType& delegate) {
-            std::weak_ptr<void> weakLifetime = m_lifetime;
-
-            this->PushBack(delegate);
-
-            std::shared_ptr<DelegateType> delegateCopy(delegate.Clone());
-
-            return Connection(weakLifetime, [this, weakLifetime, delegateCopy]() {
-                // m_lifetime expires when Signal is destroyed, making this a safe no-op.
-                if (!weakLifetime.expired()) {
-                    this->Remove(*delegateCopy);
-                }
-            });
-        }
-
-        void operator+=(const DelegateType& delegate) {
-            this->PushBack(delegate);
-        }
-        XALLOCATOR
-
-    private:
-        /// Lifetime sentinel: a heap-allocated token owned exclusively by this Signal.
-        /// When Signal is destroyed, m_lifetime is destroyed and all weak_ptr copies
-        /// held by disconnect lambdas expire, making subsequent Disconnect() calls no-ops.
-        std::shared_ptr<void> m_lifetime{std::make_shared<bool>(true)};
-    };
+    std::shared_ptr<State> m_state = std::make_shared<State>();
+};
 
 } // namespace dmq
 

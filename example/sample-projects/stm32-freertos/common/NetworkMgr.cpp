@@ -23,11 +23,11 @@ int NetworkMgr::Create()
     m_commandMsgDel.Bind(this, &NetworkMgr::ForwardCommand, ids::COMMAND_MSG_ID);
     m_actuatorMsgDel.Bind(this, &NetworkMgr::ForwardActuator, ids::ACTUATOR_MSG_ID);
 
-    // Register for error callbacks using single  signment (=)
-    m_alarmMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
-    m_dataMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
-    m_commandMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
-    m_actuatorMsgDel.OnError = MakeDelegate(this, &NetworkMgr::OnError);
+    // Register for error callbacks
+    m_alarmMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
+    m_dataMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
+    m_commandMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
+    m_actuatorMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
 
     // Register endpoints with the Base Engine (So Incoming() can find them)
     RegisterEndpoint(ids::ALARM_MSG_ID, &m_alarmMsgDel);
@@ -49,11 +49,11 @@ int NetworkMgr::Create()
 
 // Override hooks to fire signals
 void NetworkMgr::OnError(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux) {
-    if (OnNetworkError) (*OnNetworkError)(id, error, aux);
+    OnNetworkError(id, error, aux);
 }
 
 void NetworkMgr::OnStatus(DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
-    if (OnSendStatus) (*OnSendStatus)(id, seq, status);
+    OnSendStatus(id, seq, status);
 }
 
 void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note) {

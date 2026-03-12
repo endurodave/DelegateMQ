@@ -93,8 +93,7 @@ public:
 
     using StressSig = void(const Payload&);
 
-    // Thread-safe Signal
-    std::shared_ptr<SignalSafe<StressSig>> Signal = MakeSignal<StressSig>();
+    dmq::Signal<StressSig> OnMessage;
 
     void Start(int id)
     {
@@ -119,7 +118,7 @@ public:
                     g_expectedAsync += asyncSubs;
                     g_signalsFired++;
 
-                    (*Signal)(p); // Emit
+                    OnMessage(p); // Emit
                 }
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -194,7 +193,7 @@ void ChaosMonkey(std::vector<std::shared_ptr<StressPublisher>>& publishers)
     while (g_running)
     {
         auto& pub = publishers[distPub(rng)];
-        conn = pub->Signal->Connect(MakeDelegate(&vSub, &VolatileSub::Handle, chaosThread));
+        conn = pub->OnMessage.Connect(MakeDelegate(&vSub, &VolatileSub::Handle, chaosThread));
 
         // Hold connection briefly
         std::this_thread::sleep_for(std::chrono::microseconds(100));
@@ -238,11 +237,11 @@ int stress_test()
             for (auto& pub : publishers) {
                 // Half Sync, Half Async
                 if (i % 2 == 0) {
-                    connections.push_back(pub->Signal->Connect(
+                    connections.push_back(pub->OnMessage.Connect(
                         MakeDelegate(sub.get(), &StressSubscriber::OnSyncEvent)));
                 }
                 else {
-                    connections.push_back(pub->Signal->Connect(
+                    connections.push_back(pub->OnMessage.Connect(
                         MakeDelegate(sub.get(), &StressSubscriber::OnAsyncEvent, sub->GetThread())));
                 }
             }

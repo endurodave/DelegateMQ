@@ -112,8 +112,8 @@ int main()
     // It MUST remain in scope for as long as you want to receive messages.
     dmq::ScopedConnection dataConn;
 
-    // 2. Connect using the arrow operator and store the result
-    dataConn = DataMgr::DataMsgCb->Connect(MakeDelegate(&DataMsgRecv, receiveThread));
+    // 2. Connect and store the result
+    dataConn = DataMgr::DataMsgCb.Connect(MakeDelegate(&DataMsgRecv, receiveThread));
 
     // Start all data collection
     bool success = ClientApp::Instance().Start();

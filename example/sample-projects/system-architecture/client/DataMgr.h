@@ -9,14 +9,13 @@
 #include "DataMsg.h"
 #include "NetworkMgr.h"
 #include <mutex>
-#include <memory> // Required for shared_ptr
 
 // DataMgr collects data from local and remote data sources. 
 class DataMgr
 {
 public:
     // Register with delegate to receive callbacks when data is received
-    static dmq::SignalPtr<void(DataMsg&)> DataMsgCb;
+    static dmq::Signal<void(DataMsg&)> DataMsgCb;
 
     static DataMgr& Instance()
     {
@@ -42,7 +41,7 @@ private:
 
         // Register to receive remote data updates
         // Use Connect() and store handle in m_networkDataConn
-        m_networkDataConn = NetworkMgr::Instance().OnData->Connect(MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread));
+        m_networkDataConn = NetworkMgr::Instance().OnData.Connect(MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread));
     }
 
     ~DataMgr()
@@ -74,9 +73,8 @@ private:
         }
 
         // Notify all subscribers new data arrived
-        // Invoke signal via dereference
         auto msg = GetCombindedDataMsg();
-        if (DataMsgCb) (*DataMsgCb)(msg);
+        DataMsgCb(msg);
     }
 
     void RemoteDataMsgUpdate(DataMsg& dataMsg)
@@ -87,9 +85,8 @@ private:
         }
 
         // Notify all subscribers new data arrived
-        // Invoke signal via dereference
         auto msg = GetCombindedDataMsg();
-        if (DataMsgCb) (*DataMsgCb)(msg);
+        DataMsgCb(msg);
     }
 
     Thread m_thread;
