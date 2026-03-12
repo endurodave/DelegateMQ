@@ -21,9 +21,8 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Build Integration](#build-integration)
     - [CMake](#cmake)
     - [Generic (Make/IDE)](#generic-makeide)
-- [Porting Guide](#porting-guide)
-  - [Embedded Systems](#embedded-systems)
 - [Quick Start](#quick-start)
+  - [Mental Model](#mental-model)
   - [Invocation Modes](#invocation-modes)
     - [Synchronous](#synchronous)
     - [Asynchronous — Non-Blocking (Fire-and-Forget)](#asynchronous--non-blocking-fire-and-forget)
@@ -35,6 +34,8 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Remote Delegate](#remote-delegate)
   - [Async Public API Pattern](#async-public-api-pattern)
   - [Delegate Invocation Semantics](#delegate-invocation-semantics)
+- [Porting Guide](#porting-guide)
+  - [Embedded Systems](#embedded-systems)
 - [Background](#background)
 - [Usage](#usage)
   - [Delegates](#delegates)
@@ -259,38 +260,6 @@ using namespace dmq;
 
 **Note:** If using utility features (like `Thread` or `Timer`), ensure you compile and link the corresponding `.cpp` files found in the `delegate-mq/predef` directory.
 
-# Porting Guide
-
-Numerous predefined platforms are already supported such as Windows, Linux, FreeRTOS, ARM "bare-metal", and others. Ready-made plugins for threading and communication interfaces exist, or you can create new ones. The library also supports different configurable items such as error handling and heap allocation options.
-
-1.  **Search codebase for `@TODO`**: Find specific decision locations tagged in the source files.
-2.  **Implement `IThread`**: Required to use **Asynchronous** delegates. 
-3.  **Implement `ISerializer` and `ITransport`**: Required to use **Remote** delegates across processes/processors.
-    * *Optional:* Implement `ITransportMonitor` if your application layer requires command acknowledgments (ACKs).
-    * See [Sample Projects](#sample-projects) for numerous remote delegate examples.
-4.  **Check System Clock**: Ensure `std::chrono::steady_clock` is supported on your target hardware, as it is required for timers and transport timeouts. Otherwise, change `dmq::Clock` in `DelegateOpt.h` to a new clock type.
-5.  **Call `Timer::ProcessTimers()`**: Periodically call `ProcessTimers()` (e.g., from a main loop or hardware timer ISR) to support timers and thread watchdogs.
-6.  **Configure Build Options**: Set CMake DMQ library build options within `CMakeLists.txt`.
-    * Example: `DMQ_ASSERTS` for debug assertions.
-    * Example: `DMQ_ALLOCATOR` to switch between standard Heap (new/delete) and the deterministic Fixed Block Allocator.
-7.  **Implement Fault Handling**: Customize `Fault.cpp` to route errors to your system's logger or crash handler. 
-
-## Embedded Systems
-
-Running C++ messaging on embedded targets (like STM32) requires specific attention to resources.
-
-1. **Stack Usage & Debug Mode:**
-
-    **Issue:** In Debug mode (-O0), C++ templates generate deep call stacks, possibly causing stack overflows.  
-    **Fix:** Increase task stack (e.g. 8KB) or in Release mode (-O2), stacks shrink significantly.
-
-2. **Transport Implementation (if using remote delegates):**
-
-    **Issue:** Blocking UART calls (e.g., `HAL_UART_Receive`) starve high-priority tasks.  
-    **Fix:** Use an Interrupt-Driven Ring Buffer. The ISR captures data immediately, and the Receive Task sleeps on a Semaphore until data exists.
-
-See the `stm32-freertos` example `README.md` for a complete implementation of static stacks, interrupt-driven UART, and correct FreeRTOS configuration.
-
 # Quick Start
 
 DelegateMQ has **three invocation modes**. The right one depends entirely on where the target function runs:
@@ -304,6 +273,37 @@ DelegateMQ has **three invocation modes**. The right one depends entirely on whe
 The key insight: **adding a `thread` argument to `MakeDelegate()` is the only difference between synchronous and asynchronous**. Everything else — the call syntax, argument types, return values — is identical.
 
 See [Sample Projects](#sample-projects) for complete working examples.
+
+---
+
+## Mental Model
+
+Three questions drive every DelegateMQ design decision.
+
+**1. Where does the target function run?**
+
+```
+Same thread    → Delegate<>            sync, direct call
+Worker thread  → DelegateAsync<>      fire-and-forget
+               → DelegateAsyncWait<>  blocking, returns value
+Remote system  → DelegateRemote<>     cross-process / cross-processor
+```
+
+`MakeDelegate()` creates all of the above — only the arguments change. There is no separate API to learn for each mode.
+
+**2. How many targets receive the call?**
+
+| Targets | Type | Notes |
+| --- | --- | --- |
+| One | `Delegate<>` / `UnicastDelegate<>` | Direct call or single-slot event |
+| Many | `Signal<Sig>` | Preferred — RAII lifetime via `ScopedConnection` |
+| Many | `MulticastDelegateSafe<Sig>` | Manual add/remove; no RAII |
+
+See [When to use `MulticastDelegateSafe` instead](#when-to-use-multicastdelegatesafe-instead) for the full decision matrix.
+
+**3. Does the target need to outlive the caller?**
+
+Async delegates optionally hold a `weak_ptr` to the target object. If the object is destroyed before the queued call executes, the call is silently dropped — no crash, no dangling pointer. Use `std::shared_ptr` / `std::enable_shared_from_this` for this protection. See [Object Lifetime and Async Delegates](#object-lifetime-and-async-delegates).
 
 ---
 
@@ -475,13 +475,16 @@ OnData(10);  // both slots called
 
 ### When to use `MulticastDelegateSafe` instead
 
-Use `Signal` (recommended for most cases) unless you have a specific reason to manage subscription lifetime manually.
+Use `Signal` by default. Reach for `MulticastDelegateSafe` only when you need explicit control over subscription timing.
 
-| | `Signal` | `MulticastDelegateSafe` |
+| | `Signal<Sig>` | `MulticastDelegateSafe<Sig>` |
 | --- | --- | --- |
-| Unsubscription | Automatic via `ScopedConnection` | Manual: `-= MakeDelegate(...)` |
-| Lifetime safety | Safe: disconnects on scope exit | Risk of dangling pointer if `-=` is missed |
-| Use when | Default choice | You need explicit control over subscription timing |
+| **Subscription** | `Connect()` → returns `ScopedConnection` | `operator+=` → no return value |
+| **Unsubscription** | Automatic when `ScopedConnection` is destroyed | Manual `operator-=` |
+| **Lifetime safety** | Safe — disconnects on scope exit, even if Signal is already destroyed | Caller responsible; missed `-=` leaves a dangling subscriber |
+| **Mixed sync/async slots** | Yes — each subscriber independently chooses its thread | Yes |
+| **Prefer when** | Observer pattern, component events, any long-lived subscription | Subscription lifetime is fully explicit and controlled by the caller |
+| **Avoid when** | You need to control the exact moment of disconnect | Subscriber lifetime is hard to predict or tied to complex ownership |
 
 ```cpp
 // MulticastDelegateSafe — manual subscription management
@@ -584,8 +587,6 @@ private:
 
 Callers invoke `Save()` without knowing or caring which thread they're on — thread safety is enforced inside the class.
 
-
-
 ## Delegate Invocation Semantics
 
 Target callable invocation and argument handling based on the delegate type.
@@ -602,6 +603,38 @@ Target callable invocation and argument handling based on the delegate type.
 | Return Value | Yes. Immediate. | No. Ignored. | Yes. Returned after target callable completes. | No. Not supported. |
 
 ¹ Yes means caller blocks until the bound target callable completes.
+
+# Porting Guide
+
+Numerous predefined platforms are already supported such as Windows, Linux, FreeRTOS, ARM "bare-metal", and others. Ready-made plugins for threading and communication interfaces exist, or you can create new ones. The library also supports different configurable items such as error handling and heap allocation options.
+
+1.  **Search codebase for `@TODO`**: Find specific decision locations tagged in the source files.
+2.  **Implement `IThread`**: Required to use **Asynchronous** delegates. 
+3.  **Implement `ISerializer` and `ITransport`**: Required to use **Remote** delegates across processes/processors.
+    * *Optional:* Implement `ITransportMonitor` if your application layer requires command acknowledgments (ACKs).
+    * See [Sample Projects](#sample-projects) for numerous remote delegate examples.
+4.  **Check System Clock**: Ensure `std::chrono::steady_clock` is supported on your target hardware, as it is required for timers and transport timeouts. Otherwise, change `dmq::Clock` in `DelegateOpt.h` to a new clock type.
+5.  **Call `Timer::ProcessTimers()`**: Periodically call `ProcessTimers()` (e.g., from a main loop or hardware timer ISR) to support timers and thread watchdogs.
+6.  **Configure Build Options**: Set CMake DMQ library build options within `CMakeLists.txt`.
+    * Example: `DMQ_ASSERTS` for debug assertions.
+    * Example: `DMQ_ALLOCATOR` to switch between standard Heap (new/delete) and the deterministic Fixed Block Allocator.
+7.  **Implement Fault Handling**: Customize `Fault.cpp` to route errors to your system's logger or crash handler. 
+
+## Embedded Systems
+
+Running C++ messaging on embedded targets (like STM32) requires specific attention to resources.
+
+1. **Stack Usage & Debug Mode:**
+
+    **Issue:** In Debug mode (-O0), C++ templates generate deep call stacks, possibly causing stack overflows.  
+    **Fix:** Increase task stack (e.g. 8KB) or in Release mode (-O2), stacks shrink significantly.
+
+2. **Transport Implementation (if using remote delegates):**
+
+    **Issue:** Blocking UART calls (e.g., `HAL_UART_Receive`) starve high-priority tasks.  
+    **Fix:** Use an Interrupt-Driven Ring Buffer. The ISR captures data immediately, and the Receive Task sleeps on a Semaphore until data exists.
+
+See the `stm32-freertos` example `README.md` for a complete implementation of static stacks, interrupt-driven UART, and correct FreeRTOS configuration.
 
 # Background
 
@@ -1218,6 +1251,8 @@ safe -= MakeDelegate(&t2, &Test::Func2);   // Works correctly!
 ```
 
 ## Alternatives Considered
+
+For a broader comparison of DelegateMQ against signal/slot libraries (Qt, Boost.Signals2, sigslot), remote communication frameworks (DDS, gRPC, ZeroMQ), and async patterns (`std::async`, OS queues, Boost.Asio), see [Technology Comparison](COMPARISON.md).
 
 ### `std::function`
 

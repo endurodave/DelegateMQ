@@ -193,28 +193,13 @@ public:
             (*d)(args...);
     }
 
-    /// @brief Add a delegate without a connection handle (no auto-disconnect).
-    void operator+=(const DelegateType& delegate) {
-        auto copy = std::shared_ptr<DelegateType>(delegate.Clone());
-        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
-        m_state->delegates.push_back(copy);
-    }
-
-    /// @brief Remove a delegate by value equality.
-    void operator-=(const DelegateType& delegate) {
-        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
-        m_state->delegates.remove_if([&delegate](const auto& d) {
-            return *d == delegate;
-        });
-    }
-
     /// @brief Number of currently connected subscribers.
     std::size_t Size() const {
         std::lock_guard<RecursiveMutex> lock(m_state->mtx);
         return m_state->delegates.size();
     }
 
-    bool IsEmpty() const { return Size() == 0; }
+    bool Empty() const { return Size() == 0; }
 
     /// @brief Disconnect all subscribers.
     void Clear() {

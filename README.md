@@ -153,6 +153,8 @@ delegates(123);
 Asynchronous public API reinvokes `StoreAsync()` call onto the internal `m_thread` context.
 
 ```cpp
+struct Data { int x = 0; };
+
 // Store data using asynchronous public API. Class is thread-safe.
 class DataStore
 {
@@ -180,6 +182,47 @@ public:
 private:
     Data m_data;        // Data storage
     Thread m_thread;    // Internal thread
+};
+```
+
+Invoke `MsgOut()` on a remote process or processor using `RemoteChannel`. The sender serializes arguments and dispatches them over the transport; the receiver deserializes and calls the target function — with no change to the call syntax.
+
+```cpp
+#include "DelegateMQ.h"
+
+// Shared message ID (both sides must agree)
+constexpr dmq::DelegateRemoteId MSG_ID = 1;
+
+// --- Receiver side (remote process/processor) ---
+class MsgReceiver
+{
+public:
+    MsgReceiver(ITransport& transport, ISerializer<void(std::string)>& ser)
+        : m_channel(transport, ser)
+    {
+        m_channel.Bind(this, &MsgReceiver::OnMsg, MSG_ID);
+        RegisterEndpoint(MSG_ID, m_channel.GetEndpoint());  // app-defined routing table
+    }
+
+private:
+    void OnMsg(std::string msg) { MsgOut(msg); }  // called on receive
+    dmq::RemoteChannel<void(std::string)> m_channel;
+};
+
+// --- Sender side (local process/processor) ---
+class MsgSender
+{
+public:
+    MsgSender(ITransport& transport, ISerializer<void(std::string)>& ser)
+        : m_channel(transport, ser)
+    {
+        m_channel.Bind(std::function<void(std::string)>([](std::string){}), MSG_ID);
+    }
+
+    void Send(const std::string& msg) { m_channel(msg); }  // fire-and-forget
+
+private:
+    dmq::RemoteChannel<void(std::string)> m_channel;
 };
 ```
 
@@ -216,17 +259,78 @@ Asynchronous delegates simplify multithreaded programming by allowing you to inv
 
 Remote delegates extend the library to enable Remote Procedure Calls (RPC) across process or network boundaries. This allows you to invoke a function on a remote machine as easily as calling a local function. The system automatically handles argument marshaling, serialization, and thread dispatching.
 
+`RemoteChannel<Sig>` is the single setup object per message signature. Construct it with a transport and serializer, call `Bind()` once to wire the target function and remote ID, then invoke with `operator()`. The receiver registers its channel endpoint so incoming messages are automatically dispatched to the bound function.
+
 **Key Features:**
 
 * **No IDL Required:** Works with standard C++ types and structs.
 * **Invocation Modes:** Supports Blocking (synchronous wait), Non-blocking (fire-and-forget), and Futures (asynchronous return values).
-* **Transport Agnostic:** The application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers.
+* **Transport Agnostic:** The application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers. Implement `ITransport` for any medium (TCP, UDP, serial, shared memory, etc.).
 
 **Supported Integrations:**
 
 * **Serialization:** [MessagePack](https://msgpack.org/index.html), [RapidJSON](https://github.com/Tencent/rapidjson), [Cereal](https://github.com/USCiLab/cereal), [Bitsery](https://github.com/fraillt/bitsery), [MessageSerialize](https://github.com/endurodave/MessageSerialize)
 * **Transport:** [ZeroMQ](https://zeromq.org/), [NNG](https://github.com/nanomsg/nng), [MQTT](https://github.com/eclipse-paho/paho.mqtt.c), [Serial Port](https://github.com/sigrokproject/libserialport), TCP, UDP, ARM LwIP, ThreadX NetX/Duo, Zephyr Networking, data pipe, memory buffer
  
+## Signal / Slot
+
+`Signal<Sig>` is a thread-safe multicast signal. Emit it like a function call; each connected slot receives the call independently, on whichever thread it chose at connect time. `Connect()` returns a `ScopedConnection` that auto-disconnects when it goes out of scope — no manual unsubscribe needed.
+
+Declare the signal as a plain class member — no `shared_ptr` or heap allocation required:
+
+```cpp
+class Button
+{
+public:
+    dmq::Signal<void(int buttonId)> OnPressed;  // plain member
+
+    void Press(int id) { OnPressed(id); }       // emit to all connected slots
+};
+```
+
+Connect a slot and store the `ScopedConnection` for automatic lifetime management:
+
+```cpp
+class UI
+{
+public:
+    UI(Button& btn) : m_thread("UIThread")
+    {
+        m_thread.CreateThread();
+
+        // Slot dispatched to m_thread on every Press()
+        m_conn = btn.OnPressed.Connect(
+            dmq::MakeDelegate(this, &UI::HandlePress, m_thread)
+        );
+    }
+    // No explicit disconnect needed — m_conn disconnects when UI is destroyed
+
+private:
+    void HandlePress(int buttonId) { std::cout << "Button " << buttonId << "\n"; }
+
+    Thread m_thread;
+    dmq::ScopedConnection m_conn;
+};
+
+Button btn;
+{
+    UI ui(btn);
+    btn.Press(1);   // UI::HandlePress queued on UIThread
+}                   // ui destroyed -> m_conn disconnects
+btn.Press(2);       // safe: no subscribers, nothing happens
+```
+
+**`Signal` vs `MulticastDelegateSafe`** — use `Signal` by default; reach for `MulticastDelegateSafe` only when subscription lifetime is fully explicit:
+
+| | `Signal<Sig>` | `MulticastDelegateSafe<Sig>` |
+|---|---|---|
+| Subscription | `Connect()` → `ScopedConnection` | `operator+=` → no return value |
+| Unsubscription | Automatic on scope exit | Manual `operator-=` |
+| Lifetime safety | Safe — disconnects even if Signal outlives subscriber | Caller responsible; missed `-=` leaves dangling subscriber |
+| Mixed sync/async slots | Yes | Yes |
+
+See [Publish / Subscribe with Signal](docs/DETAILS.md#publish--subscribe-with-signal) for lambda slots, nested signals, and additional patterns.
+
 ## Delegate Semantics
 
 It is always safe to call the delegate. In its null state, a call will not perform any action and will return a default-constructed return value. A delegate behaves like a normal pointer type: it can be copied, compared for equality, called, and compared to `nullptr`. Const correctness is maintained; stored const objects can only be called by const member functions.
@@ -238,7 +342,7 @@ It is always safe to call the delegate. In its null state, a call will not perfo
  * Reassigned.
  * Called.
 
-See [Delegate Invocation Semantics](docs/DETAILS.md/#delegate-invocation-semantics) for information on target callable invocation and argument handling based on the delegate type.
+See [Delegate Invocation Semantics](docs/DETAILS.md#delegate-invocation-semantics) for information on target callable invocation and argument handling based on the delegate type.
  
 # Modular Architecture
 
@@ -258,12 +362,13 @@ To build and run DelegateMQ, follow these simple steps. The library uses <a href
    `cmake -B build .`
 3. Build and run the project within the `build` directory. 
 
-See [Example Projects](docs/DETAILS.md/#example-projects) to build more project examples (remote/IPC, embedded). See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
+See [Example Projects](docs/DETAILS.md#example-projects) to build more project examples (remote/IPC, embedded). See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
 
 # Documentation
 
  - See [Design Details](docs/DETAILS.md) for a [porting guide](docs/DETAILS.md#porting-guide), design documentation and [more examples](docs/DETAILS.md#sample-projects).
- - See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation. 
+ - See [Technology Comparison](docs/COMPARISON.md) for how DelegateMQ compares to DDS, gRPC, Qt signals, Boost.Signals2, `std::async`, and OS message queues.
+ - See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation.
  - See [Unit Test Code Coverage](https://app.codecov.io/gh/endurodave/DelegateMQ) test results.
 
 # Motivation

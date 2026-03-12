@@ -23,11 +23,11 @@ int NetworkMgr::Create()
     m_commandMsgDel.Bind(this, &NetworkMgr::ForwardCommand, ids::COMMAND_MSG_ID);
     m_actuatorMsgDel.Bind(this, &NetworkMgr::ForwardActuator, ids::ACTUATOR_MSG_ID);
 
-    // Register for error callbacks
-    m_alarmMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
-    m_dataMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
-    m_commandMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
-    m_actuatorMsgDel.OnError += MakeDelegate(this, &NetworkMgr::OnError);
+    // Register for error callbacks (RAII — auto-disconnect when NetworkMgr is destroyed)
+    m_alarmErrConn    = m_alarmMsgDel.OnError.Connect(MakeDelegate(this, &NetworkMgr::OnError));
+    m_dataErrConn     = m_dataMsgDel.OnError.Connect(MakeDelegate(this, &NetworkMgr::OnError));
+    m_commandErrConn  = m_commandMsgDel.OnError.Connect(MakeDelegate(this, &NetworkMgr::OnError));
+    m_actuatorErrConn = m_actuatorMsgDel.OnError.Connect(MakeDelegate(this, &NetworkMgr::OnError));
 
     // Register endpoints with the Base Engine (So Incoming() can find them)
     RegisterEndpoint(ids::ALARM_MSG_ID, &m_alarmMsgDel);

@@ -50,6 +50,7 @@
 
 extern void RunDelegateUnitTests();
 void RunSimpleExamples();
+void RunRemoteChannelExamples();
 void RunPubSubExamples();
 void RunAsyncAPIExamples();
 void RunAllExamples();
@@ -103,9 +104,9 @@ int main(void)
     workerThread1.CreateThread(std::chrono::milliseconds(5000));
     SysDataNoLock::GetInstance();
 
-    // Create a timer that expires every 1S and calls 
+    // Create a timer that expires every 1S and calls
     // TimerExpiredCb on workerThread1 upon expiration
-    GetTimer().OnExpired += MakeDelegate(&TimerExpiredCb, workerThread1);
+    dmq::ScopedConnection timerConn = GetTimer().OnExpired.Connect(MakeDelegate(&TimerExpiredCb, workerThread1));
     GetTimer().Start(std::chrono::seconds(1));
 
     // Start the thread that will run ProcessTimers
@@ -115,6 +116,7 @@ int main(void)
     for (int i = 0; i < 3; i++)
     {
         RunSimpleExamples();
+        RunRemoteChannelExamples();
         RunPubSubExamples();
         RunAsyncAPIExamples();
         RunAllExamples();
@@ -128,7 +130,6 @@ int main(void)
         timerThread.join();
 
     GetTimer().Stop();
-    GetTimer().OnExpired.Clear();
 
     workerThread1.ExitThread();
 
@@ -147,16 +148,17 @@ size_t MsgOut(const std::string& msg)
 //------------------------------------------------------------------------------
 void RunSimpleExamples()
 {
-    class Dispatcher : public IDispatcher
+    class MockTransport : public ITransport
     {
     public:
-        virtual int Dispatch(std::ostream& os, DelegateRemoteId id) {
-            // @TODO: Send argument data to the transport for sending.
+        int Send(xostringstream& os, const DmqHeader& header) override {
+            // @TODO: Send serialized data to the remote endpoint.
             // See example\sample-projects\system-architecture-no-deps
             // for a complete working remote delegate client/server example.
-            cout << "Dispatch DelegateRemoteId=" << id << endl;
+            cout << "Transport Send DelegateRemoteId=" << header.GetId() << endl;
             return 0;
         }
+        int Receive(xstringstream& is, DmqHeader& header) override { return 0; }
     };
 
     // 1. Synchronous Invocation
@@ -177,19 +179,88 @@ void RunSimpleExamples()
     if (retVal.has_value())     // Async invoke completed within 1 second?
         size = retVal.value();  // Get return value
 
-    // Create remote delegate support objects
-    std::ostringstream stream(ios::out | ios::binary);
-    Dispatcher dispatcher;
-    Serializer<void(const std::string&)> serializer;
+    // 5. Remote Invocation — RemoteChannel owns transport wiring (dispatcher, stream, serializer)
+    MockTransport transport;
+    Serializer<void(std::string)> serializer;
+    dmq::RemoteChannel<void(std::string)> channel(transport, serializer);
+    channel.Bind(std::function<void(std::string)>(&MsgOut), dmq::DelegateRemoteId(1));
+    channel("Invoke MsgOut remote!");
+}
 
-    // Configure remote delegate
-    dmq::DelegateFreeRemote<void(const std::string&)> remote(dmq::DelegateRemoteId(1));
-    remote.SetStream(&stream);
-    remote.SetDispatcher(&dispatcher);
-    remote.SetSerializer(&serializer);
+//------------------------------------------------------------------------------
+// MsgSender / MsgReceiver remote delegate example (in-process loopback)
+//
+// LoopbackTransport bridges sender and receiver in-process: Send() immediately
+// delivers the serialized payload to the registered receiver's Invoke(),
+// simulating a round-trip without a real transport.
+//------------------------------------------------------------------------------
 
-    // 5. Invoke remote delegate
-    remote("Invoke MsgOut remote!");
+// Loopback transport: on Send(), deserializes and invokes the registered receiver
+class LoopbackTransport : public ITransport
+{
+public:
+    void SetReceiver(IRemoteInvoker* recv) { m_receiver = recv; }
+
+    int Send(xostringstream& os, const DmqHeader& header) override {
+        cout << "LoopbackTransport Send DelegateRemoteId=" << header.GetId() << endl;
+        if (m_receiver) {
+            xstringstream is(os.str());
+            m_receiver->Invoke(is);
+        }
+        return 0;
+    }
+    int Receive(xstringstream& is, DmqHeader& header) override { return 0; }
+
+private:
+    IRemoteInvoker* m_receiver = nullptr;
+};
+
+constexpr dmq::DelegateRemoteId MSG_OUT_ID = 10;
+
+// Receiver: binds MsgOut as the remote handler
+class MsgReceiver
+{
+public:
+    MsgReceiver(ITransport& transport, ISerializer<void(std::string)>& ser)
+        : m_channel(transport, ser)
+    {
+        m_channel.Bind(std::function<void(std::string)>(&MsgOut), MSG_OUT_ID);
+    }
+
+    IRemoteInvoker* GetEndpoint() { return m_channel.GetEndpoint(); }
+
+private:
+    dmq::RemoteChannel<void(std::string)> m_channel;
+};
+
+// Sender: invokes MsgOut on the remote receiver
+class MsgSender
+{
+public:
+    MsgSender(ITransport& transport, ISerializer<void(std::string)>& ser)
+        : m_channel(transport, ser)
+    {
+        m_channel.Bind(std::function<void(std::string)>([](std::string) {}), MSG_OUT_ID);
+    }
+
+    void Send(const std::string& msg) { m_channel(msg); }
+
+private:
+    dmq::RemoteChannel<void(std::string)> m_channel;
+};
+
+void RunRemoteChannelExamples()
+{
+    Serializer<void(std::string)> serializer;
+    LoopbackTransport transport;
+
+    MsgReceiver receiver(transport, serializer);
+    transport.SetReceiver(receiver.GetEndpoint());
+
+    MsgSender sender(transport, serializer);
+
+    // Sender serializes args -> LoopbackTransport::Send() -> MsgReceiver::Invoke() -> MsgOut()
+    sender.Send("MsgSender -> MsgReceiver via loopback!");
 }
 
 // Signal<> is inherently thread-safe: subscribers dispatch onto their own

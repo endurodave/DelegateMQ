@@ -194,12 +194,16 @@
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/zephyr-udp/ZephyrUdpTransport.h"
 #elif defined(DMQ_TRANSPORT_NONE)
-    // Create a custom application-specific transport
+    // No built-in transport. Include the interface and dispatcher so application code
+    // can implement a custom ITransport and use RemoteChannel with a mock or stub.
+    #include "predef/dispatcher/Dispatcher.h"
+    #include "predef/transport/ITransport.h"
 #else
     #warning "Transport implementation not found."
 #endif
 
-// Include RemoteChannel when any real transport is configured (Dispatcher.h was included).
+// Include RemoteChannel whenever Dispatcher.h has been included (all transport
+// configurations including NONE, where a mock ITransport can be supplied).
 // RemoteChannel aggregates dispatcher, serializer, and stream into one object,
 // mirroring how Thread aggregates async delegate wiring behind a single IThread.
 #if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_NNG) || \
@@ -208,7 +212,8 @@
     defined(DMQ_TRANSPORT_LINUX_TCP) || defined(DMQ_TRANSPORT_MQTT) || \
     defined(DMQ_TRANSPORT_SERIAL_PORT) || defined(DMQ_TRANSPORT_ARM_LWIP_UDP) || \
     defined(DMQ_TRANSPORT_ARM_LWIP_NETCONN_UDP) || defined(DMQ_TRANSPORT_THREADX_UDP) || \
-    defined(DMQ_TRANSPORT_STM32_UART) || defined(DMQ_TRANSPORT_ZEPHYR_UDP)
+    defined(DMQ_TRANSPORT_STM32_UART) || defined(DMQ_TRANSPORT_ZEPHYR_UDP) || \
+    defined(DMQ_TRANSPORT_NONE)
     #include "predef/dispatcher/RemoteChannel.h"
 #endif
 

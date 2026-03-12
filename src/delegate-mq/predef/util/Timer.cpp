@@ -151,7 +151,7 @@ void Timer::CheckExpired()
     }
 
     // Call the client's expired callback function
-    if (!OnExpired.IsEmpty()) {
+    if (!OnExpired.Empty()) {
         OnExpired();
     }
 }

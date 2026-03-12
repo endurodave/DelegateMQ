@@ -89,6 +89,12 @@ private:
     EndpointType<CommandMsg&>           m_commandMsgDel;
     EndpointType<DataMsg&>              m_dataMsgDel;
     EndpointType<ActuatorMsg&>          m_actuatorMsgDel;
+
+    // RAII error-signal connections (auto-disconnect on NetworkMgr destruction)
+    dmq::ScopedConnection m_alarmErrConn;
+    dmq::ScopedConnection m_commandErrConn;
+    dmq::ScopedConnection m_dataErrConn;
+    dmq::ScopedConnection m_actuatorErrConn;
 };
 
 #endif

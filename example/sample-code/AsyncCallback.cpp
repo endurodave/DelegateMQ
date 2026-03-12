@@ -1,13 +1,13 @@
 /// @file
 /// @brief Examples of receiving asynchronous callbacks on a specific thread.
-/// Demonstrates manual lifetime management, stored delegates, and modern RAII signals.
+/// Demonstrates RAII ScopedConnection lifetime management with Signal.
 
 #include "DelegateMQ.h"
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
-#include <functional> 
+#include <functional>
 
 using namespace dmq;
 using namespace std;
@@ -30,7 +30,7 @@ namespace Example
     };
 
     // -------------------------------------------------------------------------
-    // Subscriber 1: Manual Lifetime Management (Init / Term Pattern)
+    // Subscriber 1: RAII Connection with Manual Disconnect (Init / Term Pattern)
     // -------------------------------------------------------------------------
     class DataLogger : public std::enable_shared_from_this<DataLogger>
     {
@@ -40,21 +40,17 @@ namespace Example
         // 1. Init: Register for callbacks using shared_from_this()
         void Init(Sensor& sensor, Thread& workerThread)
         {
-            sensor.OnData += MakeDelegate(
+            m_connection = sensor.OnData.Connect(MakeDelegate(
                 shared_from_this(),
                 &DataLogger::HandleData,
                 workerThread
-            );
+            ));
         }
 
-        // 2. Term: Must allow manual unregistration before destruction
-        void Term(Sensor& sensor, Thread& workerThread)
+        // 2. Term: Explicitly disconnect before destruction if needed
+        void Term()
         {
-            sensor.OnData -= MakeDelegate(
-                shared_from_this(),
-                &DataLogger::HandleData,
-                workerThread
-            );
+            m_connection.Disconnect();
         }
 
         ~DataLogger()
@@ -68,10 +64,12 @@ namespace Example
             cout << "[DataLogger] Received " << value << " from " << source
                 << " on thread " << Thread::GetCurrentThreadId() << endl;
         }
+
+        ScopedConnection m_connection;
     };
 
     // -------------------------------------------------------------------------
-    // Subscriber 2: Stored Delegate Pattern (Semi-Automatic)
+    // Subscriber 2: Stored Connection Pattern (Semi-Automatic)
     // -------------------------------------------------------------------------
     class DataAnalyzer : public std::enable_shared_from_this<DataAnalyzer>
     {
@@ -80,27 +78,24 @@ namespace Example
 
         void Init(Sensor& sensor, Thread& workerThread)
         {
-            // Create the delegate ONCE and store it as a member.
-            m_delegate = MakeDelegate(
+            // Connect and store the RAII handle as a member.
+            m_connection = sensor.OnData.Connect(MakeDelegate(
                 shared_from_this(),
                 &DataAnalyzer::Analyze,
                 workerThread
-            );
-
-            // Register using the member
-            sensor.OnData += m_delegate;
+            ));
         }
 
         ~DataAnalyzer()
         {
-            // Destructor handles unregistration automatically via m_delegate
-            cout << "DataAnalyzer destroyed (Delegate auto-removed)" << endl;
+            // m_connection destructor auto-disconnects
+            cout << "DataAnalyzer destroyed (Connection auto-severed)" << endl;
         }
 
-        void Stop(Sensor& sensor)
+        void Stop()
         {
-            // Unregister using the member
-            sensor.OnData -= m_delegate;
+            // Unregister explicitly using the stored connection
+            m_connection.Disconnect();
         }
 
     private:
@@ -110,7 +105,7 @@ namespace Example
                 << " on thread " << Thread::GetCurrentThreadId() << endl;
         }
 
-        DelegateMemberAsyncSp<DataAnalyzer, void(int, const std::string&)> m_delegate;
+        ScopedConnection m_connection;
     };
 
     // -------------------------------------------------------------------------
@@ -156,11 +151,11 @@ namespace Example
 
         Sensor sensor;
 
-        // 1. Setup Subscriber 1 (Manual)
+        // 1. Setup Subscriber 1 (Manual Disconnect)
         auto logger = std::make_shared<DataLogger>();
         logger->Init(sensor, callback_thread);
 
-        // 2. Setup Subscriber 2 (Stored Delegate)
+        // 2. Setup Subscriber 2 (Stored Connection)
         auto analyzer = std::make_shared<DataAnalyzer>();
         analyzer->Init(sensor, callback_thread);
 
@@ -168,14 +163,12 @@ namespace Example
         auto monitor = std::make_shared<DataMonitor>();
         monitor->Init(sensor, callback_thread);
 
-        // 4. Setup Lambda (Manual)
+        // 4. Setup Lambda (ScopedConnection)
         std::function<void(int, const std::string&)> lambdaFunc =
             [](int val, const std::string& src) {
             cout << "[Lambda] Got " << val << " on thread " << Thread::GetCurrentThreadId() << endl;
             };
-        auto lambdaDelegate = MakeDelegate(lambdaFunc, callback_thread);
-
-        sensor.OnData += lambdaDelegate;
+        auto lambdaConnection = sensor.OnData.Connect(MakeDelegate(lambdaFunc, callback_thread));
 
         // 5. Produce Data
         cout << "\n--- Producing Batch 1 ---" << endl;
@@ -188,12 +181,12 @@ namespace Example
         // 6. Cleanup & Demonstration
         cout << "\n--- Cleanup Phase ---" << endl;
 
-        // Manual cleanup 
-        logger->Term(sensor, callback_thread);
+        // Manual disconnect then destroy
+        logger->Term();
         logger.reset();
 
-        // Automatic cleanup (Analyzer)
-        analyzer->Stop(sensor); // Optional, reset() would also work
+        // Explicit stop, then destroy (m_connection destructor also disconnects)
+        analyzer->Stop();
         analyzer.reset();
 
         // Automatic cleanup (Monitor - ScopedConnection)
@@ -206,8 +199,8 @@ namespace Example
 
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        // Cleanup Lambda
-        sensor.OnData -= lambdaDelegate;
+        // Cleanup Lambda (explicit disconnect or let lambdaConnection go out of scope)
+        lambdaConnection.Disconnect();
 
         callback_thread.ExitThread();
     }

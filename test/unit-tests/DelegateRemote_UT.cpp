@@ -110,10 +110,10 @@ namespace Remote
         void Error4(const std::shared_ptr<const StructParam>* c) {}
     };
 
-    class Dispatcher : public IDispatcher
+    class MockDispatcher : public IDispatcher
     {
     public:
-        Dispatcher() : m_ss(ios::in | ios::out | ios::binary) {}
+        MockDispatcher() : m_ss(ios::in | ios::out | ios::binary) {}
 
         virtual int Dispatch(std::ostream& os, DelegateRemoteId id) {
             // Save dispatched string to simulate sending data over a transport
@@ -333,7 +333,7 @@ static void DelegateFreeRemoteTests()
     ASSERT_TRUE(sparam.val == TEST_INT);
     
     {
-        Dispatcher dispatcher;
+        MockDispatcher dispatcher;
         Remote::Serializer<void(Class* c)> serializer;
 
         // Remote invoke does not copy Class object when passed to func
@@ -387,7 +387,7 @@ static void DelegateFreeRemoteTests()
             ASSERT_TRUE(false);
     };
     std::function<void(DelegateRemoteId, DelegateError, int)> errorHandlerNoAssert = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {};
-    Dispatcher dispatcher;
+    MockDispatcher dispatcher;
     xostringstream os(ios::in | ios::out | ios::binary);
 
     {
@@ -649,7 +649,7 @@ static void DelegateMemberRemoteTests()
             ASSERT_TRUE(false);
     };
     std::function<void(DelegateRemoteId, DelegateError, int)> errorHandlerNoAssert = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {};
-    Dispatcher dispatcher;
+    MockDispatcher dispatcher;
     RemoteClass remoteClass;
     xostringstream os(ios::in | ios::out | ios::binary);
 
@@ -860,7 +860,7 @@ static void DelegateMemberSpRemoteTests()
         ASSERT_TRUE(d->x == TEST_INT);
         ASSERT_TRUE(d->y == TEST_INT + 1);
     };
-    Dispatcher dispatcher;
+    MockDispatcher dispatcher;
     xostringstream os(ios::in | ios::out | ios::binary);
 
     {
@@ -1054,7 +1054,7 @@ static void DelegateFunctionRemoteTests()
             ASSERT_TRUE(false);
     };
     std::function<void(DelegateRemoteId, DelegateError, int)> errorHandlerNoAssert = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {};
-    Dispatcher dispatcher;
+    MockDispatcher dispatcher;
     xostringstream os(ios::in | ios::out | ios::binary);
     auto remoteClass = std::make_shared<RemoteClass>();
 
