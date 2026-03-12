@@ -160,17 +160,17 @@ public:
     IRemoteInvoker* GetEndpoint() noexcept { return &m_delegate; }
 
     // -----------------------------------------------------------------------
-    // Infrastructure accessors — used by MakeDelegate overloads below.
-    // Prefer Bind() for new code.
+    // Internal accessors — used by the MakeDelegate free-function overloads
+    // defined below. Not intended for direct use by application code.
     // -----------------------------------------------------------------------
 
-    /// @brief Get the internal dispatcher (implements IDispatcher).
+    /// @internal Used by MakeDelegate overloads. Prefer Bind() in application code.
     IDispatcher* GetDispatcher() noexcept { return &m_dispatcher; }
 
-    /// @brief Get the typed serializer supplied at construction.
+    /// @internal Used by MakeDelegate overloads. Prefer Bind() in application code.
     ISerializer<RetType(Args...)>* GetSerializer() noexcept { return m_serializer; }
 
-    /// @brief Get the serialization output stream owned by this channel.
+    /// @internal Used by MakeDelegate overloads. Prefer Bind() in application code.
     xostringstream& GetStream() noexcept { return m_stream; }
 
 private:

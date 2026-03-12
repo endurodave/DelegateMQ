@@ -29,12 +29,12 @@ template <class R>
 class Signal;
 
 // ---------------------------------------------------------------------------
-// Connection
+// detail::Connection  (implementation detail — use ScopedConnection)
 // ---------------------------------------------------------------------------
+namespace detail {
 
-/// @brief A unique, move-only handle to a single delegate subscription.
-/// @details Returned by `Signal::Connect()`. Call `Disconnect()` to unsubscribe
-/// manually, or store in a `ScopedConnection` for automatic RAII disconnect.
+/// @brief Move-only subscription token. Internal implementation detail of Signal.
+/// Users should store `ScopedConnection`, not `Connection` directly.
 class Connection {
 public:
     Connection() = default;
@@ -88,15 +88,23 @@ private:
     XALLOCATOR
 };
 
+} // namespace detail
+
 // ---------------------------------------------------------------------------
 // ScopedConnection
 // ---------------------------------------------------------------------------
 
-/// @brief RAII wrapper for `Connection`. Automatically disconnects on scope exit.
+/// @brief RAII handle to a single Signal subscription. Disconnects automatically
+/// on destruction. The only connection type users need to store.
+///
+/// @code
+///   dmq::ScopedConnection conn = mySignal.Connect(MakeDelegate(...));
+///   // conn goes out of scope -> automatically disconnected
+/// @endcode
 class ScopedConnection {
 public:
     ScopedConnection() = default;
-    explicit ScopedConnection(Connection&& conn) : m_connection(std::move(conn)) {}
+    explicit ScopedConnection(detail::Connection&& conn) : m_connection(std::move(conn)) {}
     ~ScopedConnection() { m_connection.Disconnect(); }
 
     ScopedConnection(ScopedConnection&& other) noexcept
@@ -117,7 +125,7 @@ public:
     bool IsConnected() const { return m_connection.IsConnected(); }
 
 private:
-    Connection m_connection;
+    detail::Connection m_connection;
     XALLOCATOR
 };
 
@@ -162,7 +170,7 @@ public:
             std::lock_guard<RecursiveMutex> lock(state->mtx);
             state->delegates.push_back(copy);
         }
-        return ScopedConnection(Connection(
+        return ScopedConnection(detail::Connection(
             std::weak_ptr<void>(state),
             [state, copy]() {
                 std::lock_guard<RecursiveMutex> lock(state->mtx);

@@ -117,7 +117,7 @@ $(function(){initNavTree('_thread_x_mutex_8h_source.html',''); initResizable(tru
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classdmq_1_1_thread_x_mutex.html#a8e7c99abdce3e36d54efcd59892ec5d4">   14</a></span>        <a class="code hl_function" href="classdmq_1_1_thread_x_mutex.html#a8e7c99abdce3e36d54efcd59892ec5d4">ThreadXMutex</a>() {</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            <span class="comment">// Cast string literal to (CHAR*) for strict compliance</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>            UINT status = tx_mutex_create(&amp;m_mutex, (CHAR*)<span class="stringliteral">&quot;DMQ_Mutex&quot;</span>, TX_INHERIT);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            configASSERT(status == TX_SUCCESS);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            <a class="code hl_define" href="cmsis-rtos2_2_thread_8cpp.html#a0b8af275eb03ef66766aa89546edc85d">ASSERT_TRUE</a>(status == TX_SUCCESS);</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        }</div>
 </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
@@ -167,6 +167,7 @@ $(function(){initNavTree('_thread_x_mutex_8h_source.html',''); initResizable(tru
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html_aab8f2b35dce578b5190d9bc20746ef04"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html#aab8f2b35dce578b5190d9bc20746ef04">dmq::ThreadXMutex::ThreadXMutex</a></div><div class="ttdeci">ThreadXMutex(const ThreadXMutex &amp;)=delete</div></div>
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html_aaca1ab6303654aa80db604783e922a3d"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html#aaca1ab6303654aa80db604783e922a3d">dmq::ThreadXMutex::~ThreadXMutex</a></div><div class="ttdeci">~ThreadXMutex()</div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:20</div></div>
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html_aace25d60fd7f4ac3958d3b0af783842e"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html#aace25d60fd7f4ac3958d3b0af783842e">dmq::ThreadXMutex::lock</a></div><div class="ttdeci">void lock()</div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:24</div></div>
+<div class="ttc" id="acmsis-rtos2_2_thread_8cpp_html_a0b8af275eb03ef66766aa89546edc85d"><div class="ttname"><a href="cmsis-rtos2_2_thread_8cpp.html#a0b8af275eb03ef66766aa89546edc85d">ASSERT_TRUE</a></div><div class="ttdeci">#define ASSERT_TRUE(x)</div><div class="ttdef"><b>Definition</b> cmsis-rtos2/Thread.cpp:8</div></div>
 <div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

@@ -143,8 +143,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:add81131c7328add7a09c8b3269028e2c" id="r_add81131c7328add7a09c8b3269028e2c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classdmq_1_1_signal_safe.html">dmq::SignalSafe</a>&lt; void(<a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a>, uint16_t, <a class="el" href="#ac815afe1a228c0cd92dc294278aea86e">Status</a>)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add81131c7328add7a09c8b3269028e2c">OnSendStatus</a></td></tr>
-<tr class="separator:add81131c7328add7a09c8b3269028e2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7c677d7bc5478f3c42a77aa6d098802" id="r_ad7c677d7bc5478f3c42a77aa6d098802"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt; void(<a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a>, uint16_t, <a class="el" href="#ac815afe1a228c0cd92dc294278aea86e">Status</a>)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7c677d7bc5478f3c42a77aa6d098802">OnSendStatus</a></td></tr>
+<tr class="separator:ad7c677d7bc5478f3c42a77aa6d098802"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A thread-safe monitor for tracking outgoing remote messages and detecting timeouts. </p>
@@ -322,18 +322,18 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="add81131c7328add7a09c8b3269028e2c" name="add81131c7328add7a09c8b3269028e2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add81131c7328add7a09c8b3269028e2c">&#9670;&#160;</a></span>OnSendStatus</h2>
+<a id="ad7c677d7bc5478f3c42a77aa6d098802" name="ad7c677d7bc5478f3c42a77aa6d098802"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7c677d7bc5478f3c42a77aa6d098802">&#9670;&#160;</a></span>OnSendStatus</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;<a class="el" href="classdmq_1_1_signal_safe.html">dmq::SignalSafe</a>&lt;void(<a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a>, uint16_t, <a class="el" href="#ac815afe1a228c0cd92dc294278aea86e">Status</a>)&gt; &gt; TransportMonitor::OnSendStatus</td>
+          <td class="memname"><a class="el" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(<a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a>, uint16_t, <a class="el" href="#ac815afe1a228c0cd92dc294278aea86e">Status</a>)&gt; TransportMonitor::OnSendStatus</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Signal emitted when a message status is determined. Subscribers receive: (remoteId, seqNum, status) Use a shared_ptr for the signal as required by SignalSafe </p>
+<p>Signal emitted when a message status is determined. Subscribers receive: (remoteId, seqNum, status) </p>
 
 </div>
 </div>

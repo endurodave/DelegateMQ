@@ -24,16 +24,16 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 - [Porting Guide](#porting-guide)
   - [Embedded Systems](#embedded-systems)
 - [Quick Start](#quick-start)
-  - [Basic Examples](#basic-examples)
-  - [Publish/Subscribe Example](#publishsubscribe-example)
-    - [Publisher](#publisher)
-    - [Subscriber](#subscriber)
-  - [Signal Slot Example](#signal-slot-example)
-    - [Signal](#signal)
-    - [Slot (Subscriber)](#slot-subscriber)
+  - [Invocation Modes](#invocation-modes)
+    - [Synchronous](#synchronous)
+    - [Asynchronous — Non-Blocking (Fire-and-Forget)](#asynchronous--non-blocking-fire-and-forget)
+    - [Asynchronous — Blocking (Wait for Result)](#asynchronous--blocking-wait-for-result)
+    - [Lambdas](#lambdas)
+  - [Publish / Subscribe with Signal](#publish--subscribe-with-signal)
     - [Lambda Slots](#lambda-slots)
-    - [`Signal` vs. `MulticastDelegateSafe`](#signal-vs-multicastdelegatesafe)
-  - [Asynchronous API Example](#asynchronous-api-example)
+    - [When to use `MulticastDelegateSafe` instead](#when-to-use-multicastdelegatesafe-instead)
+  - [Remote Delegate](#remote-delegate)
+  - [Async Public API Pattern](#async-public-api-pattern)
   - [Delegate Invocation Semantics](#delegate-invocation-semantics)
 - [Background](#background)
 - [Usage](#usage)
@@ -54,7 +54,6 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Init/Term Pattern](#initterm-pattern)
     - [RAII Pattern](#raii-pattern)
     - [Object Lifetime Usage Guide](#object-lifetime-usage-guide)
-  - [Usage Summary](#usage-summary)
 - [Design Details](#design-details)
   - [Library Dependencies](#library-dependencies)
   - [Fixed-Block Memory Allocator](#fixed-block-memory-allocator)
@@ -294,305 +293,298 @@ See the `stm32-freertos` example `README.md` for a complete implementation of st
 
 # Quick Start
 
-Simple delegate examples showing basic functionality. See [Sample Projects](#sample-projects) for more sample code.
+DelegateMQ has **three invocation modes**. The right one depends entirely on where the target function runs:
 
-## Basic Examples
+| Mode | When to use | How to create |
+| --- | --- | --- |
+| **Synchronous** | Target is on the same thread as the caller | `MakeDelegate(&obj, &Class::Func)` |
+| **Asynchronous** | Target must run on a specific worker thread | `MakeDelegate(&obj, &Class::Func, thread)` |
+| **Remote** | Target is on a different process or processor | `RemoteChannel<Sig>` + `Bind()` |
 
-Simple function definitions.
+The key insight: **adding a `thread` argument to `MakeDelegate()` is the only difference between synchronous and asynchronous**. Everything else — the call syntax, argument types, return values — is identical.
+
+See [Sample Projects](#sample-projects) for complete working examples.
+
+---
+
+## Invocation Modes
+
+### Synchronous
+
+Invoke a function directly on the calling thread. No threading infrastructure needed.
 
 ```cpp
-void FreeFunc(int value) {
-    cout << "FreeFuncInt " << value << endl;
+void Log(const std::string& msg) {
+    std::cout << msg << std::endl;
 }
 
-class TestClass {
+class Sensor {
 public:
-    void MemberFunc(int value) {
-        cout << "MemberFunc " << value << endl;
-    }
+    float Read() { return 42.0f; }
+};
+
+// Bind to a free function and invoke
+auto logDelegate = MakeDelegate(&Log);
+logDelegate("System started");
+
+// Bind to a member function and invoke
+Sensor sensor;
+auto readDelegate = MakeDelegate(&sensor, &Sensor::Read);
+float value = readDelegate();
+```
+
+### Asynchronous — Non-Blocking (Fire-and-Forget)
+
+Add a `thread` argument. The function is queued onto that thread and the caller returns immediately. No return value is available.
+
+```cpp
+Thread workerThread("Worker");
+workerThread.CreateThread();
+
+// Invoke Log() on workerThread — caller does not wait
+auto asyncLog = MakeDelegate(&Log, workerThread);
+asyncLog("Processing started");  // returns immediately
+```
+
+### Asynchronous — Blocking (Wait for Result)
+
+Add a thread and a timeout. The caller blocks until the target function completes and the return value is available.
+
+```cpp
+// Block until Read() completes on workerThread, then get the return value
+auto syncRead = MakeDelegate(&sensor, &Sensor::Read, workerThread, WAIT_INFINITE);
+float value = syncRead();  // blocks until workerThread executes Read()
+
+// With a timeout — use AsyncInvoke to get an optional return value
+auto timedRead = MakeDelegate(&sensor, &Sensor::Read, workerThread, std::chrono::milliseconds(100));
+auto result = timedRead.AsyncInvoke();
+if (result.has_value())
+    float v = result.value();  // completed within 100ms
+```
+
+### Lambdas
+
+Lambdas work the same way. Use `+` to convert a stateless lambda to a function pointer, or wrap capturing lambdas in `std::function`.
+
+```cpp
+// Stateless lambda — synchronous
+auto echo = MakeDelegate(+[](const std::string& s) { std::cout << s; });
+echo("hello");
+
+// Capturing lambda — asynchronous, fire-and-forget
+int threshold = 10;
+auto check = MakeDelegate(
+    std::function<void(int)>([threshold](int v) {
+        if (v > threshold) std::cout << "Over threshold\n";
+    }),
+    workerThread
+);
+check(15);
+```
+
+---
+
+## Publish / Subscribe with Signal
+
+`Signal<Sig>` is the recommended way to implement publish/subscribe. It returns a `ScopedConnection` handle from `Connect()` that automatically disconnects when it goes out of scope — no manual unsubscribe needed.
+
+**Publisher** — declare `Signal<>` as a plain class member and call it to emit:
+
+```cpp
+class Button
+{
+public:
+    dmq::Signal<void(int buttonId)> OnPressed;  // plain member, no shared_ptr needed
+
+    void Press(int id) { OnPressed(id); }       // emit to all connected slots
 };
 ```
 
-Create delegates and invoke. Function template overloaded `MakeDelegate()` function is typically used to create a delegate instance. 
+**Subscriber** — connect with `MakeDelegate`, store the `ScopedConnection`:
 
 ```cpp
-// Create a delegate bound to a free function then invoke synchronously
-auto delegateFree = MakeDelegate(&FreeFunc);
-delegateFree(123);
-
-// Create a delegate bound to a member function then invoke synchronously
-TestClass testClass;
-auto delegateMember = MakeDelegate(&testClass, &TestClass::MemberFunc);
-delegateMember(123);
-
-// Create a delegate bound to a member function then invoke asynchronously (non-blocking)
-auto delegateMemberAsync = MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread);
-delegateMemberAsync(123);
-
-// Create a delegate bound to a member function then invoke asynchronously blocking
-auto delegateMemberAsyncWait = MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread, WAIT_INFINITE);
-delegateMemberAsyncWait(123);
-```
-
-Create a delegate container, insert a delegate instance and invoke asynchronously. 
-
-```cpp
-// Create a thread-safe multicast delegate container that accepts Delegate<void(int)> delegates
-MulticastDelegateSafe<void(int)> delegateSafe;
-
-// Add a delegate to the container that will invoke on workerThread1
-delegateSafe += MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread1);
-
-// Asynchronously invoke the delegate target member function TestClass::MemberFunc()
-delegateSafe(123);
-
-// Remove the delegate from the container
-delegateSafe -= MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread1);
-```
-
-Invoke a lambda using a delegate. 
-
-```cpp
-DelegateFunction<int(int)> delFunc([](int x) -> int { return x + 5; });
-int retVal = delFunc(8);
-```
-Asynchronously invoke `LambdaFunc1` on `workerThread1` and block waiting for the return value. 
-
-```cpp
-std::function LambdaFunc1 = [](int i) -> int {
-    cout << "Called LambdaFunc1 " << i << std::endl;
-    return ++i;
-};
-
-// Asynchronously invoke lambda on workerThread1 and wait for the return value
-auto lambdaDelegate1 = MakeDelegate(LambdaFunc1, workerThread1, WAIT_INFINITE);
-int lambdaRetVal2 = lambdaDelegate1(123);
-```
-
-Asynchronously invoke `AddFunc` on `workerThread1` using `std::async` and do other work while waiting for the return value. 
-
-```cpp
-// Long running function 
-std::function AddFunc = [](int a, int b) {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    return a + b;
-};
-
-// Create async delegate with lambda target function
-auto addDelegate = MakeDelegate(AddFunc, workerThread1, WAIT_INFINITE);
-
-// Using std::async, invokes AddFunc on workerThread1
-std::future<int> result = std::async(std::launch::async, addDelegate, 5, 3);
-
-cout << "Do work while waiting for AddFunc to complete." << endl;
-
-// Wait for AddFunc return value
-int sum = result.get();
-cout << "AddFunc return value: " << sum << " ";
-```
-
-## Publish/Subscribe Example
-
-A simple publish/subscribe example using asynchronous delegates.
-
-### Publisher
-
-Typically a delegate is inserted into a delegate container. <code>AlarmCd</code> is a delegate container. 
-
-<img src="Figure1.jpg" alt="Figure 1: AlarmCb Delegate Container" style="width:50%;">  
-
-**Figure 1: AlarmCb Delegate Container**
-
-1. <code>MulticastDelegateSafe</code> - the delegate container type.
-2. <code>void(int, const string&)</code> - the function signature accepted by the delegate container. Any function matching can be inserted, such as a class member, static or lambda function.
-3. <code>AlarmCb</code> - the delegate container name. 
-
-Invoke delegate container to notify subscribers.
-
-```cpp
-MulticastDelegateSafe<void(int, const string&)> AlarmCb;
-
-void NotifyAlarmSubscribers(int alarmId, const string& note)
-{
-    // Invoke delegate to generate callback(s) to subscribers
-    AlarmCb(alarmId, note);
-}
-```
-### Subscriber
-
-Typically a subscriber registers with a delegate container instance to receive callbacks, either synchronously or asynchronously.
-
-<img src="Figure2.jpg" alt="Figure 2: Insert into AlarmCb Delegate Container" style="width:65%;">
-
-**Figure 2: Insert into AlarmCb Delegate Container**
-
-1. <code>AlarmCb</code> - the publisher delegate container instance.
-2. <code>+=</code> - add a function target to the container. 
-3. <code>MakeDelegate</code> - creates a delegate instance.
-4. <code>&alarmSub</code> - the subscriber object pointer.
-5. <code>&AlarmSub::MemberAlarmCb</code> - the subscriber callback member function.
-6. <code>workerThread1</code> - the thread the callback will be invoked on. Adding a thread argument changes the callback type from synchronous to asynchronous.
-
-Create a function conforming to the delegate signature. Insert a callable functions into the delegate container.
-
-```cpp
-class AlarmSub
+class UI
 {
 public:
-    AlarmSub()
-    {
-        // Register to receive callbacks on workerThread1
-        AlarmCb += MakeDelegate(this, &AlarmSub::HandleAlarmCb, workerThread1);
-    }
-
-    ~AlarmSub()
-    {
-        // Unregister from callbacks
-        AlarmCb -= MakeDelegate(this, &AlarmSub::HandleAlarmCb, workerThread1);
-    }
-
-    void HandleAlarmCb(int alarmId, const string& note)
-    {
-        // Handle callback here. Called on workerThread1 context.
-    }
-}
-```
-
-## Signal Slot Example
-
-The Signal-Slot pattern simplifies the Publish/Subscribe model by introducing automatic connection management (RAII). This prevents dangling pointer crashes by automatically disconnecting the subscriber when it goes out of scope.
-
-**Unique Feature: Mixed Sync & Async Slots**
-Unlike many other C++ signal/slot libraries which are strictly synchronous, DelegateMQ allows a single Signal to drive both **synchronous** and **asynchronous** slots simultaneously. The *subscriber* determines the execution mode (sync, async, or remote) at the moment of connection. The publisher remains completely decoupled, simply emitting the event while DelegateMQ handles the threading logic for each observer.
-
-### Signal
-
-`Signal<Sig>` is a thread-safe multicast signal. It can be declared as a plain class member or local variable — no `shared_ptr` management required.
-
-```cpp
-class Publisher
-{
-public:
-    // Signal<> is thread-safe by default — declare as a plain member.
-    dmq::Signal<void(const std::string&)> MsgSig;
-
-    void Publish(const std::string& msg)
-    {
-        // Emit signal to all connected slots
-        MsgSig(msg);
-    }
-};
-```
-
-### Slot (Subscriber)
-
-The subscriber connects to the signal using `Connect()`. This returns a `dmq::ScopedConnection` handle. When this handle is destroyed (e.g., when the `Subscriber` class is destroyed), the connection is automatically removed.
-
-```cpp
-class Subscriber
-{
-public:
-    Subscriber(Publisher& pub) : m_thread("SubscriberThread")
+    UI(Button& btn) : m_thread("UIThread")
     {
         m_thread.CreateThread();
 
-        // Connect to the publisher's signal.
-        // We use 'MakeDelegate' to bind the member function to our thread.
-        // We store the result in 'm_connection'.
-        m_connection = pub.MsgSig.Connect(
-            MakeDelegate(this, &Subscriber::HandleMsg, m_thread)
+        // Connect: callback will run on m_thread context
+        m_conn = btn.OnPressed.Connect(
+            MakeDelegate(this, &UI::HandlePress, m_thread)
         );
     }
-
-    // DESTRUCTOR: No manual unregistration needed!
-    // m_connection destructor automatically disconnects from the Publisher.
-    ~Subscriber() = default;
+    // No destructor needed — m_conn disconnects automatically when UI is destroyed
 
 private:
-    void HandleMsg(const std::string& msg)
+    void HandlePress(int buttonId)
     {
-        std::cout << "Received: " << msg << std::endl;
+        std::cout << "Button " << buttonId << " pressed\n";
     }
 
     Thread m_thread;
-
-    // The "Magic" Link: Holds the connection alive.
-    // If this object dies, the link is broken automatically.
-    dmq::ScopedConnection m_connection;
+    dmq::ScopedConnection m_conn;  // RAII: disconnects on destruction
 };
+
+// Usage
+Button btn;
+{
+    UI ui(btn);
+    btn.Press(1);   // UI::HandlePress called on UIThread
+}                   // ui destroyed -> m_conn disconnects -> no more callbacks
+btn.Press(2);       // safe: no subscribers, nothing happens
+```
+
+**One signal, mixed sync and async slots** — unlike most signal libraries, DelegateMQ lets each subscriber independently choose its execution context. The publisher doesn't need to know:
+
+```cpp
+Button btn;
+
+// Subscriber A: synchronous (called on the emitting thread)
+dmq::ScopedConnection connA = btn.OnPressed.Connect(
+    MakeDelegate(+[](int id) { std::cout << "Sync: " << id; })
+);
+
+// Subscriber B: asynchronous (called on workerThread)
+dmq::ScopedConnection connB = btn.OnPressed.Connect(
+    MakeDelegate(+[](int id) { std::cout << "Async: " << id; }, workerThread)
+);
+
+btn.Press(1);  // connA called synchronously, connB queued on workerThread
 ```
 
 ### Lambda Slots
 
-You can also connect lambdas directly to signals.
-
-**Stateless Lambdas**: Use the unary `+` operator to convert the lambda to a function pointer for easy deduction.
-
 ```cpp
-dmq::Signal<void(int)> mySignal;
-dmq::ScopedConnection conn;
+dmq::Signal<void(int)> OnData;
 
-// Use '+' for simple lambdas
-conn = mySignal.Connect(MakeDelegate(+[](int val) {
-    std::cout << "Lambda received: " << val << std::endl;
+// Stateless lambda
+dmq::ScopedConnection c1 = OnData.Connect(MakeDelegate(+[](int v) {
+    std::cout << "Got: " << v << "\n";
 }));
+
+// Capturing lambda
+int factor = 3;
+dmq::ScopedConnection c2 = OnData.Connect(MakeDelegate(
+    std::function<void(int)>([factor](int v) { std::cout << v * factor; })
+));
+
+OnData(10);  // both slots called
 ```
 
-**Stateful Lambdas (Captures)**: Wrap capturing lambdas in `std::function`.
+### When to use `MulticastDelegateSafe` instead
 
-```cpp
-int x = 42;
-conn = mySignal.Connect(MakeDelegate(std::function<void(int)>([x](int val) {
-    std::cout << "Captured x + val: " << (x + val) << std::endl;
-})));
-```
+Use `Signal` (recommended for most cases) unless you have a specific reason to manage subscription lifetime manually.
 
-### `Signal` vs. `MulticastDelegateSafe`
-
-`Signal` adds automatic connection management (RAII) on top of `MulticastDelegateSafe`. Think of `Signal` as a "Smart Multicast Delegate."
-
-**The Core Difference: Lifetime Safety**
-
-`MulticastDelegateSafe`: You must manually unsubscribe (`-=`). If a subscriber object is destroyed but forgets to unsubscribe, the delegate container holds a dangling pointer. Next time it invokes, the program crashes.
-
-`Signal`: Returns a `ScopedConnection` handle when you subscribe (`Connect()`). If that handle goes out of scope (or the subscriber is destroyed), it automatically unsubscribes. Thread-safe disconnection is always safe — even if `Disconnect()` races with the `Signal` destructor.
-
-| Feature | MulticastDelegateSafe | Signal |
+| | `Signal` | `MulticastDelegateSafe` |
 | --- | --- | --- |
-| Subscription | `+= MakeDelegate(...)` | `.Connect(MakeDelegate(...))` |
-| Unsubscription | **Manual**: `-= MakeDelegate(...)` | **Automatic**: via `ScopedConnection` destructor |
-| Safety Risk | **High**: Risk of dangling pointers if `-=` is forgotten. | **Low**: Connection is severed automatically when subscriber dies. |
-| Storage Requirement | Stack or heap. | Stack, class member, or heap — no `shared_ptr` needed. |
-
-
-
-## Asynchronous API Example
-
-`SetSystemModeAsyncAPI()` is an asynchronous function call that re-invokes on `workerThread2` if necessary. 
+| Unsubscription | Automatic via `ScopedConnection` | Manual: `-= MakeDelegate(...)` |
+| Lifetime safety | Safe: disconnects on scope exit | Risk of dangling pointer if `-=` is missed |
+| Use when | Default choice | You need explicit control over subscription timing |
 
 ```cpp
-void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
+// MulticastDelegateSafe — manual subscription management
+MulticastDelegateSafe<void(int)> OnData;
+OnData += MakeDelegate(&obj, &MyClass::Handle, workerThread);
+OnData(42);
+OnData -= MakeDelegate(&obj, &MyClass::Handle, workerThread);  // must not forget this
+```
+
+---
+
+## Remote Delegate
+
+Remote delegates send a function call across a process or network boundary. The receiver doesn't need to know a call is coming over a transport — it just implements a normal member function.
+
+**Three concepts to understand:**
+- **`RemoteChannel<Sig>`** — one instance per message signature; owns the transport wiring.
+- **`Bind(obj, func, id)`** — connects a member function to a remote ID on the channel.
+- **`RegisterEndpoint(id, channel.GetEndpoint())`** — tells the receive side which function to call when a message with that ID arrives.
+
+```cpp
+// --- Shared message ID (known to both sender and receiver) ---
+constexpr DelegateRemoteId TEMPERATURE_ID = 1;
+
+// --- Receiver side ---
+class DataLogger
 {
-    // Is the caller executing on workerThread2?
-    if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
+public:
+    DataLogger(ITransport& transport, ISerializer<void(float)>& ser)
     {
-        // Create an asynchronous delegate and re-invoke the function call on workerThread2
-        MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncAPI, workerThread2).AsyncInvoke(systemMode);
-        return;
+        m_channel.emplace(transport, ser);
+        m_channel->Bind(this, &DataLogger::OnTemperature, TEMPERATURE_ID);
+        RegisterEndpoint(TEMPERATURE_ID, m_channel->GetEndpoint());
     }
 
-    // Create the callback data
-    SystemModeChanged callbackData;
-    callbackData.PreviousSystemMode = m_systemMode;
-    callbackData.CurrentSystemMode = systemMode;
+private:
+    void OnTemperature(float value)
+    {
+        std::cout << "Received temperature: " << value << "\n";
+    }
 
-    // Update the system mode
-    m_systemMode = systemMode;
+    std::optional<RemoteChannel<void(float)>> m_channel;
+};
 
-    // Callback all registered subscribers
-    SystemModeChangedDelegate(callbackData);
-}
+// --- Sender side ---
+class Thermometer
+{
+public:
+    Thermometer(ITransport& transport, ISerializer<void(float)>& ser)
+    {
+        m_channel.emplace(transport, ser);
+        // Bind() wires up the remote ID, dispatcher, serializer, and stream.
+        // The bound function is never called on the sender side; it is a
+        // required placeholder so Bind() can configure the channel.
+        m_channel->Bind(this, &Thermometer::Unused, TEMPERATURE_ID);
+    }
+
+    // Fire-and-forget send (operator() on the optional<RemoteChannel>)
+    void Send(float value) { (*m_channel)(value); }
+
+    // Blocking send — waits for ACK or timeout
+    bool SendWait(float value) { return RemoteInvokeWait(*m_channel, value); }
+
+private:
+    void Unused(float) {}  // required by Bind(); never invoked on the sender side
+    std::optional<RemoteChannel<void(float)>> m_channel;
+};
 ```
+
+The sender calls `(*m_channel)(value)` or `RemoteInvokeWait(*m_channel, value)`. The transport serializes the argument, sends it, and on the receiver side `OnTemperature()` is called — just like a normal function. See [Sample Projects](#sample-projects) for complete working examples with real transports.
+
+---
+
+## Async Public API Pattern
+
+A common pattern in active-object classes: a public method that is safe to call from any thread by re-invoking itself on the object's internal thread if needed.
+
+```cpp
+class DataStore
+{
+public:
+    DataStore() : m_thread("DataStoreThread") { m_thread.CreateThread(); }
+
+    void Save(const Data& data)
+    {
+        // If called from the wrong thread, re-invoke on m_thread (non-blocking)
+        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId()) {
+            MakeDelegate(this, &DataStore::Save, m_thread)(data);
+            return;
+        }
+        // Now guaranteed to run on m_thread
+        m_data = data;
+    }
+
+private:
+    Data m_data;
+    Thread m_thread;
+};
+```
+
+Callers invoke `Save()` without knowing or caring which thread they're on — thread safety is enforced inside the class.
+
+
 
 ## Delegate Invocation Semantics
 
@@ -1167,80 +1159,6 @@ This table outlines when it is safe to use raw pointers (`this`) during delegate
 | Async Blocking (Timeout) | Caller thread blocks until success OR timeout expires. | NO | Unsafe. If the timeout expires, the caller proceeds and may destroy the object. However, the message is still in the queue. When the target thread eventually processes it, it will crash. Use `shared_from_this()`. |
 | Async (Singleton / Global) | Object lifetime exceeds the thread lifetime (e.g., Singleton, Static, or Global). | YES | Safe. Since the object is guaranteed to exist for the entire duration of the application (or until after the worker thread is destroyed), the pointer will never be invalid. |
 
-## Usage Summary
-
-Synchronous delegates are created using one argument for free functions and two for instance member functions.
-
-```cpp
-auto freeDelegate = MakeDelegate(&MyFreeFunc);
-auto memberDelegate = MakeDelegate(&myClass, &MyClass::MyMemberFunc);
-```
-
-Adding the thread argument creates a non-blocking asynchronous delegate.
-
-```cpp
-auto freeDelegate = MakeDelegate(&MyFreeFunc, myThread);
-auto memberDelegate = MakeDelegate(&myClass, &MyClass::MyMemberFunc, myThread);
-```
-
-A `std::shared_ptr` can replace a raw instance pointer on synchronous and non-blocking asynchronous member delegates.
-
-```cpp
-std::shared_ptr<MyClass> myClass(new MyClass());
-auto memberDelegate = MakeDelegate(myClass, &MyClass::MyMemberFunc, myThread);
-```
-
-Adding a `timeout` argument creates a blocking asynchronous delegate.
-
-```cpp
-auto freeDelegate = MakeDelegate(&MyFreeFunc, myThread, WAIT_INFINITE);
-auto memberDelegate = MakeDelegate(&myClass, &MyClass::MyMemberFunc, myThread, std::chrono::milliseconds(5000));
-```
-
-Add to a multicast containers using `operator+=` and `operator-=`. 
-
-```cpp
-MulticastDelegate<void(int)> multicastContainer;
-multicastContainer += MakeDelegate(&MyFreeFunc);
-multicastContainer -= MakeDelegate(&MyFreeFunc);
-```
-
-Use the thread-safe multicast delegate container when using asynchronous delegates to allow multiple threads to safely add/remove from the container.
-
-```cpp
-MulticastDelegateSafe<void(int)> multicastContainer;
-multicastContainer += MakeDelegate(&MyFreeFunc, myThread);
-multicastContainer -= MakeDelegate(&MyFreeFunc, myThread);
-```
-
-Add to a unicast container using `operator=`.
-
-```cpp
-UnicastDelegate<void(int)> unicastContainer;
-unicastContainer = MakeDelegate(&MyFreeFunc);
-unicastContainer = 0;
-```
-
-All delegates and delegate containers are invoked using `operator()`.
-
-```cpp
-myDelegate(123)
-```
-
-Use `IsSuccess()` on blocking delegates before using the return value or outgoing arguments.
-
-```cpp
-if (myDelegate) 
-{
-     int outInt = 0;
-     int retVal = myDelegate(&outInt);
-     if (myDelegate.IsSuccess()) 
-     {
-          cout << outInt << retVal;
-     }
-}
-```
-
 # Design Details
 
 ## Library Dependencies
@@ -1303,40 +1221,9 @@ safe -= MakeDelegate(&t2, &Test::Func2);   // Works correctly!
 
 ### `std::function`
 
-`std::function` compares the function signature, not the underlying callable instance. The example below demonstrates this limitation.
+`std::function` was not chosen as the delegate storage type because it compares function *signatures*, not callable *instances*. Two `std::bind` wrappers for different objects with the same signature are indistinguishable at runtime, making correct add/remove from a multicast container impossible.
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <functional>
-
-class Test {
-public:
-    void Func(int i) { }
-    void Func2(int i) { }
-};
-
-int main() {
-    Test t1, t2;
-
-    // Create std::function objects for different instances
-    std::function<void(int)> f1 = std::bind(&Test::Func, &t1, std::placeholders::_1);
-    std::function<void(int)> f2 = std::bind(&Test::Func2, &t2, std::placeholders::_1);
-
-    // Store them in a std::vector
-    std::vector<std::function<void(int)>> funcs;
-    funcs.push_back(f1);
-    funcs.push_back(f2);
-
-    // std::function can't determine difference!
-    if (funcs[0].target_type() == funcs[1].target_type())
-        std::cout << "Wrong!" << std::endl;
-
-    return 0;
-}
-```
-
-The delegate library prevents this error. See [Caution Using `std::bind`](#caution-using-stdbind) for more information.
+DelegateMQ delegates compare by both callable type and target identity, so `MulticastDelegateSafe::operator-=` always removes the intended subscriber. See [Caution Using `std::bind`](#caution-using-stdbind) for a concrete example.
 
 ### `std::async` and `std::future`
 
@@ -1344,7 +1231,7 @@ The DelegateMQ library's asynchronous features differ from `std::async` in that 
 
 In short, the DelegateMQ library offers features that are not natively available in the C++ standard library to ease multi-threaded application development.
 
- ### `DelegateMQ` vs. `std::async` Feature Comparisons
+### `DelegateMQ` vs. `std::async` Feature Comparisons
 
 | Feature | `Delegate` | `DelegateAsync` | `DelegateAsyncWait` | `std::async` |
 | ---- | ----| ---- | ---- | ---- |

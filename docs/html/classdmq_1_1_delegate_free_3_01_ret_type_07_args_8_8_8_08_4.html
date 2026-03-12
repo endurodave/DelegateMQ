@@ -105,7 +105,7 @@ $(function(){initNavTree('classdmq_1_1_delegate_free_3_01_ret_type_07_args_8_8_8
 </div><!--header-->
 <div class="contents">
 
-<p><code><a class="el" href="structdmq_1_1_delegate_free.html">DelegateFree</a>&lt;&gt;</code> class synchronously invokes a free target function.  
+<p><code><a class="el" href="classdmq_1_1_delegate_free.html">DelegateFree</a>&lt;&gt;</code> class synchronously invokes a free target function.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_delegate_8h_source.html">Delegate.h</a>&gt;</code></p>
@@ -127,7 +127,7 @@ Inheritance diagram for dmq::DelegateFree&lt; RetType(Args...)&gt;:</div>
 Public Types</h2></td></tr>
 <tr class="memitem:a66a528283c487613b6f664ce5d7b33e9" id="r_a66a528283c487613b6f664ce5d7b33e9"><td class="memItemLeft" align="right" valign="top">typedef RetType(*)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66a528283c487613b6f664ce5d7b33e9">FreeFunc</a>(Args...)</td></tr>
 <tr class="separator:a66a528283c487613b6f664ce5d7b33e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad04a8529c9d9cfc065993cb610de8872" id="r_ad04a8529c9d9cfc065993cb610de8872"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> = <a class="el" href="structdmq_1_1_delegate_free.html">DelegateFree</a>&lt;RetType(Args...)&gt;</td></tr>
+<tr class="memitem:ad04a8529c9d9cfc065993cb610de8872" id="r_ad04a8529c9d9cfc065993cb610de8872"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> = <a class="el" href="classdmq_1_1_delegate_free.html">DelegateFree</a>&lt;RetType(Args...)&gt;</td></tr>
 <tr class="separator:ad04a8529c9d9cfc065993cb610de8872"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -144,9 +144,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac9975f6c26a59f59e38d5551c8ff90aa" id="r_ac9975f6c26a59f59e38d5551c8ff90aa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9975f6c26a59f59e38d5551c8ff90aa">DelegateFree</a> ()=default</td></tr>
 <tr class="memdesc:ac9975f6c26a59f59e38d5551c8ff90aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor creates an empty delegate.  <br /></td></tr>
 <tr class="separator:ac9975f6c26a59f59e38d5551c8ff90aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5073ad6716af30349636003bce55e61b" id="r_a5073ad6716af30349636003bce55e61b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5073ad6716af30349636003bce55e61b">~DelegateFree</a> ()</td></tr>
-<tr class="memdesc:a5073ad6716af30349636003bce55e61b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor ensures empty when destroyed.  <br /></td></tr>
-<tr class="separator:a5073ad6716af30349636003bce55e61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af64e2acf8b7cb96ac881f13024c6d67f" id="r_af64e2acf8b7cb96ac881f13024c6d67f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af64e2acf8b7cb96ac881f13024c6d67f">~DelegateFree</a> () override</td></tr>
+<tr class="memdesc:af64e2acf8b7cb96ac881f13024c6d67f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor ensures empty when destroyed.  <br /></td></tr>
+<tr class="separator:af64e2acf8b7cb96ac881f13024c6d67f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa56867459cf7c396dfe607019e2d3dd" id="r_afa56867459cf7c396dfe607019e2d3dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa56867459cf7c396dfe607019e2d3dd">Bind</a> (<a class="el" href="#a66a528283c487613b6f664ce5d7b33e9">FreeFunc</a> func)</td></tr>
 <tr class="memdesc:afa56867459cf7c396dfe607019e2d3dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a free function to the delegate.  <br /></td></tr>
 <tr class="separator:afa56867459cf7c396dfe607019e2d3dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -210,7 +210,7 @@ Friends</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;class RetType, class... Args&gt;<br />
-class dmq::DelegateFree&lt; RetType(Args...)&gt;</div><p><code><a class="el" href="structdmq_1_1_delegate_free.html">DelegateFree</a>&lt;&gt;</code> class synchronously invokes a free target function. </p>
+class dmq::DelegateFree&lt; RetType(Args...)&gt;</div><p><code><a class="el" href="classdmq_1_1_delegate_free.html">DelegateFree</a>&lt;&gt;</code> class synchronously invokes a free target function. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">RetType</td><td>The return type of the bound delegate function. </td></tr>
@@ -228,7 +228,7 @@ class dmq::DelegateFree&lt; RetType(Args...)&gt;</div><p><code><a class="el" hre
 template&lt;class RetType , class... Args&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::ClassType = <a class="el" href="structdmq_1_1_delegate_free.html">DelegateFree</a>&lt;RetType(Args...)&gt;</td>
+          <td class="memname">using <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::ClassType = <a class="el" href="classdmq_1_1_delegate_free.html">DelegateFree</a>&lt;RetType(Args...)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -244,7 +244,7 @@ template&lt;class RetType , class... Args&gt; </div>
 template&lt;class RetType , class... Args&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">RetType(*) <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::FreeFunc(Args...)</td>
+          <td class="memname">RetType(*) <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::FreeFunc(Args...)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -264,7 +264,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::DelegateFree </td>
+          <td class="memname"><a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::DelegateFree </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a66a528283c487613b6f664ce5d7b33e9">FreeFunc</a></td>          <td class="paramname"><span class="paramname"><em>func</em></span></td><td>)</td>
           <td></td>
@@ -299,7 +299,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::DelegateFree </td>
+          <td class="memname"><a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::DelegateFree </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
           <td></td>
@@ -334,7 +334,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::DelegateFree </td>
+          <td class="memname"><a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::DelegateFree </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
           <td></td>
@@ -369,7 +369,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::DelegateFree </td>
+          <td class="memname"><a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::DelegateFree </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -386,8 +386,8 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a5073ad6716af30349636003bce55e61b" name="a5073ad6716af30349636003bce55e61b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5073ad6716af30349636003bce55e61b">&#9670;&#160;</a></span>~DelegateFree()</h2>
+<a id="af64e2acf8b7cb96ac881f13024c6d67f" name="af64e2acf8b7cb96ac881f13024c6d67f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af64e2acf8b7cb96ac881f13024c6d67f">&#9670;&#160;</a></span>~DelegateFree()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -398,7 +398,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::~<a class="el" href="structdmq_1_1_delegate_free.html">DelegateFree</a> </td>
+          <td class="memname"><a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::~<a class="el" href="classdmq_1_1_delegate_free.html">DelegateFree</a> </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -406,7 +406,7 @@ template&lt;class RetType , class... Args&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -428,7 +428,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Assign </td>
+          <td class="memname">void <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Assign </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
           <td></td>
@@ -463,7 +463,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Bind </td>
+          <td class="memname">void <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Bind </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#a66a528283c487613b6f664ce5d7b33e9">FreeFunc</a></td>          <td class="paramname"><span class="paramname"><em>func</em></span></td><td>)</td>
           <td></td>
@@ -498,7 +498,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Clear </td>
+          <td class="memname">void <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Clear </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -528,7 +528,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> * <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Clone </td>
+          <td class="memname">virtual <a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> * <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Clone </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -545,7 +545,7 @@ template&lt;class RetType , class... Args&gt; </div>
 <p>Clones the current instance of the class by creating a new object and copying the state of the current object to it. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to a new <code>ClassType</code> instance or nullptr if allocation fails. </dd></dl>
 <dl class="section post"><dt>Postcondition</dt><dd>The caller is responsible for deleting the clone object and checking for nullptr. </dd></dl>
 
-<p>Implements <a class="el" href="classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ae036803e39429adf2b2b541b35be5604">dmq::Delegate&lt; RetType(Args...)&gt;</a>.</p>
+<p>Implements <a class="el" href="classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a5cfbba0822b289f1b02f2df6150c1e6c">dmq::Delegate&lt; RetType(Args...)&gt;</a>.</p>
 
 <p>Reimplemented in <a class="el" href="classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#a146f09b553cf0239dd880ac86b0462a4">dmq::DelegateFreeAsync&lt; RetType(Args...)&gt;</a>, <a class="el" href="classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#af58a3470296560a9e3becbfade1fd63c">dmq::DelegateFreeAsyncWait&lt; RetType(Args...)&gt;</a>, and <a class="el" href="classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a5e1bcfc7eae630d87b172503d3c64b91">dmq::DelegateFreeRemote&lt; RetType(Args...)&gt;</a>.</p>
 
@@ -563,7 +563,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Empty </td>
+          <td class="memname">bool <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Empty </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -593,7 +593,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Equal </td>
+          <td class="memname">virtual bool <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::Equal </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classdmq_1_1_delegate_base.html">DelegateBase</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
           <td> const</td>
@@ -633,7 +633,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator bool </td>
+          <td class="memname"><a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator bool </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -663,7 +663,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator!= </td>
+          <td class="memname">virtual bool <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator!= </td>
           <td>(</td>
           <td class="paramtype">std::nullptr_t</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -695,7 +695,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual RetType <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator() </td>
+          <td class="memname">virtual RetType <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator() </td>
           <td>(</td>
           <td class="paramtype">Args...</td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
           <td></td>
@@ -736,7 +736,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator&lt; </td>
+          <td class="memname">bool <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator&lt; </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
           <td> const</td>
@@ -770,7 +770,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp; <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator= </td>
+          <td class="memname"><a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp; <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator= </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
           <td></td>
@@ -806,7 +806,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp; <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator= </td>
+          <td class="memname"><a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp; <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator= </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
           <td></td>
@@ -842,7 +842,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator= </td>
+          <td class="memname">virtual void <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator= </td>
           <td>(</td>
           <td class="paramtype">std::nullptr_t</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -873,7 +873,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator== </td>
+          <td class="memname">bool <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator== </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="#ad04a8529c9d9cfc065993cb610de8872">ClassType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>rhs</em></span></td><td>)</td>
           <td> const</td>
@@ -901,7 +901,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool <a class="el" href="structdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator== </td>
+          <td class="memname">virtual bool <a class="el" href="classdmq_1_1_delegate_free.html">dmq::DelegateFree</a>&lt; RetType(Args...)&gt;::operator== </td>
           <td>(</td>
           <td class="paramtype">std::nullptr_t</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>

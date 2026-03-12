@@ -28,7 +28,7 @@ var searchData=
   ['is_5funsupported_5fcontainer_3c_20std_3a_3aunordered_5fmap_3c_20key_2c_20t_2c_20hash_2c_20keyequal_2c_20alloc_20_3e_20_3e_25',['is_unsupported_container&lt; std::unordered_map&lt; Key, T, Hash, KeyEqual, Alloc &gt; &gt;',['../structserialize__traits_1_1is__unsupported__container_3_01std_1_1unordered__map_3_01_key_00_01_t97d3b979ae1c382b357d194c306cdd28.html',1,'serialize_traits']]],
   ['is_5funsupported_5fcontainer_3c_20std_3a_3aunordered_5fmultimap_3c_20key_2c_20t_2c_20hash_2c_20keyequal_2c_20alloc_20_3e_20_3e_26',['is_unsupported_container&lt; std::unordered_multimap&lt; Key, T, Hash, KeyEqual, Alloc &gt; &gt;',['../structserialize__traits_1_1is__unsupported__container_3_01std_1_1unordered__multimap_3_01_key_00571da480b2217d8490b18a0bcc496eb2.html',1,'serialize_traits']]],
   ['is_5funsupported_5fcontainer_3c_20std_3a_3aunordered_5fmultiset_3c_20t_2c_20hash_2c_20keyequal_2c_20alloc_20_3e_20_3e_27',['is_unsupported_container&lt; std::unordered_multiset&lt; T, Hash, KeyEqual, Alloc &gt; &gt;',['../structserialize__traits_1_1is__unsupported__container_3_01std_1_1unordered__multiset_3_01_t_00_062a8fb1713695d62e688ecb3f56d982b.html',1,'serialize_traits']]],
-  ['iserializer_28',['ISerializer',['../structdmq_1_1_i_serializer.html',1,'dmq']]],
+  ['iserializer_28',['ISerializer',['../classdmq_1_1_i_serializer.html',1,'dmq']]],
   ['iserializer_3c_20rettype_28args_2e_2e_2e_29_3e_29',['ISerializer&lt; RetType(Args...)&gt;',['../classdmq_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
   ['ithread_30',['IThread',['../classdmq_1_1_i_thread.html',1,'dmq']]],
   ['ithreadinvoker_31',['IThreadInvoker',['../classdmq_1_1_i_thread_invoker.html',1,'dmq']]],

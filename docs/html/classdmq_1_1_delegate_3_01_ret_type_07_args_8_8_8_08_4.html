@@ -137,9 +137,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af93e05d98b9fa8997ba3163a388af7df" id="r_af93e05d98b9fa8997ba3163a388af7df"><td class="memItemLeft" align="right" valign="top">virtual RetType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af93e05d98b9fa8997ba3163a388af7df">operator()</a> (Args... args)=0</td></tr>
 <tr class="memdesc:af93e05d98b9fa8997ba3163a388af7df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoke the bound callable function stored within the delegate instance.  <br /></td></tr>
 <tr class="separator:af93e05d98b9fa8997ba3163a388af7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae036803e39429adf2b2b541b35be5604" id="r_ae036803e39429adf2b2b541b35be5604"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae036803e39429adf2b2b541b35be5604">Clone</a> () const =0</td></tr>
-<tr class="memdesc:ae036803e39429adf2b2b541b35be5604"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone an instance of a <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> instance.  <br /></td></tr>
-<tr class="separator:ae036803e39429adf2b2b541b35be5604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cfbba0822b289f1b02f2df6150c1e6c" id="r_a5cfbba0822b289f1b02f2df6150c1e6c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classdmq_1_1_delegate.html">Delegate</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5cfbba0822b289f1b02f2df6150c1e6c">Clone</a> () const override=0</td></tr>
+<tr class="memdesc:a5cfbba0822b289f1b02f2df6150c1e6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone an instance of a <a class="el" href="classdmq_1_1_delegate.html">Delegate</a> instance.  <br /></td></tr>
+<tr class="separator:a5cfbba0822b289f1b02f2df6150c1e6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classdmq_1_1_delegate_base"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classdmq_1_1_delegate_base')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classdmq_1_1_delegate_base.html">dmq::DelegateBase</a></td></tr>
 <tr class="memitem:a0e20360ffb7e3a117d6e564fce0e8f48 inherit pub_methods_classdmq_1_1_delegate_base" id="r_a0e20360ffb7e3a117d6e564fce0e8f48"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_delegate_base.html#a0e20360ffb7e3a117d6e564fce0e8f48">DelegateBase</a> ()=default</td></tr>
 <tr class="separator:a0e20360ffb7e3a117d6e564fce0e8f48 inherit pub_methods_classdmq_1_1_delegate_base"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -169,8 +169,8 @@ class dmq::Delegate&lt; RetType(Args...)&gt;</div><p>Template base class for all
   </dd>
 </dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae036803e39429adf2b2b541b35be5604" name="ae036803e39429adf2b2b541b35be5604"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae036803e39429adf2b2b541b35be5604">&#9670;&#160;</a></span>Clone()</h2>
+<a id="a5cfbba0822b289f1b02f2df6150c1e6c" name="a5cfbba0822b289f1b02f2df6150c1e6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cfbba0822b289f1b02f2df6150c1e6c">&#9670;&#160;</a></span>Clone()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -181,7 +181,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> * <a class="el" href="structdmq_1_1_delegate.html">dmq::Delegate</a>&lt; RetType(Args...)&gt;::Clone </td>
+          <td class="memname">virtual <a class="el" href="classdmq_1_1_delegate.html">Delegate</a> * <a class="el" href="classdmq_1_1_delegate.html">dmq::Delegate</a>&lt; RetType(Args...)&gt;::Clone </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -189,13 +189,13 @@ template&lt;class RetType , class... Args&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Clone an instance of a <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> instance. </p>
-<dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="structdmq_1_1_delegate.html">Delegate</a> instance created on the heap. </dd></dl>
+<p>Clone an instance of a <a class="el" href="classdmq_1_1_delegate.html">Delegate</a> instance. </p>
+<dl class="section return"><dt>Returns</dt><dd>A new <a class="el" href="classdmq_1_1_delegate.html">Delegate</a> instance created on the heap. </dd></dl>
 <dl class="section post"><dt>Postcondition</dt><dd>The caller is responsible for deleting the instance. </dd></dl>
 
 <p>Implements <a class="el" href="classdmq_1_1_delegate_base.html#ae3eeba6fcac36d198f74638a6b8b4fe0">dmq::DelegateBase</a>.</p>
@@ -216,7 +216,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual RetType <a class="el" href="structdmq_1_1_delegate.html">dmq::Delegate</a>&lt; RetType(Args...)&gt;::operator() </td>
+          <td class="memname">virtual RetType <a class="el" href="classdmq_1_1_delegate.html">dmq::Delegate</a>&lt; RetType(Args...)&gt;::operator() </td>
           <td>(</td>
           <td class="paramtype">Args...</td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
           <td></td>

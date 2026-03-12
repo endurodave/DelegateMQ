@@ -144,9 +144,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9f16e869339e7a23068d33a426d81c61" id="r_a9f16e869339e7a23068d33a426d81c61"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9f16e869339e7a23068d33a426d81c61">DelegateFunction</a> ()=default</td></tr>
 <tr class="memdesc:a9f16e869339e7a23068d33a426d81c61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor creates an empty delegate.  <br /></td></tr>
 <tr class="separator:a9f16e869339e7a23068d33a426d81c61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad188268f57d0b43514943d43c3438842" id="r_ad188268f57d0b43514943d43c3438842"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad188268f57d0b43514943d43c3438842">~DelegateFunction</a> ()</td></tr>
-<tr class="memdesc:ad188268f57d0b43514943d43c3438842"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor ensures empty when destroyed.  <br /></td></tr>
-<tr class="separator:ad188268f57d0b43514943d43c3438842"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bddc7aea4d6de56a738379f28951e82" id="r_a3bddc7aea4d6de56a738379f28951e82"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3bddc7aea4d6de56a738379f28951e82">~DelegateFunction</a> () override</td></tr>
+<tr class="memdesc:a3bddc7aea4d6de56a738379f28951e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor ensures empty when destroyed.  <br /></td></tr>
+<tr class="separator:a3bddc7aea4d6de56a738379f28951e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85f7da149605b1edafe812f3d2a1382c" id="r_a85f7da149605b1edafe812f3d2a1382c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a85f7da149605b1edafe812f3d2a1382c">Bind</a> (<a class="el" href="#a5d4361481e7b8dfe44a54ffab0c17b28">FunctionType</a> func)</td></tr>
 <tr class="memdesc:a85f7da149605b1edafe812f3d2a1382c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a member function to the delegate.  <br /></td></tr>
 <tr class="separator:a85f7da149605b1edafe812f3d2a1382c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -215,7 +215,7 @@ class dmq::DelegateFunction&lt; RetType(Args...)&gt;</div><p><code><a class="el"
 <p><code>Test t1, t2;</code> <br  />
  <code>std::function&lt;void(int)&gt; f1 = std::bind(&amp;Test::Func, &amp;t1, std::placeholders::_1);</code> <br  />
  <code>std::function&lt;void(int)&gt; f2 = std::bind(&amp;Test::Func, &amp;t2, std::placeholders::_1);</code> <br  />
- <code><a class="el" href="structdmq_1_1_multicast_delegate_safe.html">MulticastDelegateSafe</a>&lt;void(int)&gt; safe;</code> <br  />
+ <code><a class="el" href="classdmq_1_1_multicast_delegate_safe.html">MulticastDelegateSafe</a>&lt;void(int)&gt; safe;</code> <br  />
  <code>safe += MakeDelegate(f1);</code> <br  />
  <code>safe += MakeDelegate(f2);</code> <br  />
  <code>safe -= MakeDelegate(f2); // Should remove f2, not f1!</code> <br  />
@@ -397,8 +397,8 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="ad188268f57d0b43514943d43c3438842" name="ad188268f57d0b43514943d43c3438842"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad188268f57d0b43514943d43c3438842">&#9670;&#160;</a></span>~DelegateFunction()</h2>
+<a id="a3bddc7aea4d6de56a738379f28951e82" name="a3bddc7aea4d6de56a738379f28951e82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bddc7aea4d6de56a738379f28951e82">&#9670;&#160;</a></span>~DelegateFunction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -417,7 +417,7 @@ template&lt;class RetType , class... Args&gt; </div>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -556,7 +556,7 @@ template&lt;class RetType , class... Args&gt; </div>
 <p>Clones the current instance of the class by creating a new object and copying the state of the current object to it. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to a new <code>ClassType</code> instance or nullptr if allocation fails. </dd></dl>
 <dl class="section post"><dt>Postcondition</dt><dd>The caller is responsible for deleting the clone object and checking for nullptr. </dd></dl>
 
-<p>Implements <a class="el" href="classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ae036803e39429adf2b2b541b35be5604">dmq::Delegate&lt; RetType(Args...)&gt;</a>.</p>
+<p>Implements <a class="el" href="classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a5cfbba0822b289f1b02f2df6150c1e6c">dmq::Delegate&lt; RetType(Args...)&gt;</a>.</p>
 
 <p>Reimplemented in <a class="el" href="classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html#a7c43429e7f71dc6c65e8e76e13c45438">dmq::DelegateFunctionAsync&lt; RetType(Args...)&gt;</a>, <a class="el" href="classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#a3202c35e0faa57f6b6a2045c29811b3d">dmq::DelegateFunctionAsyncWait&lt; RetType(Args...)&gt;</a>, and <a class="el" href="classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#ac56985043710a44668759152893a5b16">dmq::DelegateFunctionRemote&lt; RetType(Args...)&gt;</a>.</p>
 

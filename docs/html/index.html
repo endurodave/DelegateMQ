@@ -108,14 +108,48 @@ Overview</h1>
 Key Components</h1>
 <ul>
 <li><b><code><a class="el" href="_dispatcher_8h.html" title="The bridge between the serialization layer and the physical transport layer.">Dispatcher.h</a></code></b>: The concrete implementation of the <code>IDispatcher</code> interface.</li>
+<li><b><code><a class="el" href="_remote_channel_8h.html" title="Aggregates transport, serializer, dispatcher, and stream into a single object, mirroring how IThread/...">RemoteChannel.h</a></code></b>: An aggregator that owns a <code><a class="el" href="class_dispatcher.html" title="Dispatcher sends data to the transport for transmission to the endpoint.">Dispatcher</a></code>, an <code>xostringstream</code> (serialization buffer), and borrows an <code>ISerializer</code> for a single function signature. Use <code>RemoteChannel</code> to configure <code>DelegateMemberRemote</code> endpoints without manually wiring each component.</li>
 </ul>
 <h2><a class="anchor" id="autotoc_md3"></a>
 Responsibilities</h2>
+<h3><a class="anchor" id="autotoc_md4"></a>
+Dispatcher</h3>
 <ol type="1">
 <li><b>Protocol Framing</b>: It constructs the <code><a class="el" href="class_dmq_header.html" title="Header for remote delegate messages.">DmqHeader</a></code> for every message, assigning the correct <b>Remote ID</b> and generating a monotonic <b>Sequence Number</b>.</li>
 <li><b>Stream Validation</b>: It ensures the output stream (<code>xostringstream</code>) contains valid data before transmission.</li>
-<li><b>Transport Handoff</b>: It forwards the framed message (Header + Payload) to the registered <code><a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a></code> instance for physical transmission. </li>
+<li><b>Transport Handoff</b>: It forwards the framed message (Header + Payload) to the registered <code><a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a></code> instance for physical transmission.</li>
 </ol>
+<h3><a class="anchor" id="autotoc_md5"></a>
+RemoteChannel</h3>
+<p><code>RemoteChannel&lt;Sig&gt;</code> owns a <code>DelegateFunctionRemote</code> internally and handles all wiring automatically. Call <code>Bind()</code> once to configure the channel, then invoke it with <code>operator()</code>.</p>
+<div class="fragment"><div class="line"><span class="comment">// Create one channel per message signature</span></div>
+<div class="line">RemoteChannel&lt;void(AlarmMsg&amp;, AlarmNote&amp;)&gt; alarmChannel(transport, alarmSerializer);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Bind a member function and remote ID — channel owns the delegate internally</span></div>
+<div class="line">alarmChannel.Bind(<span class="keyword">this</span>, &amp;MyClass::ForwardAlarm, ALARM_MSG_ID);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Optionally register an error handler</span></div>
+<div class="line">alarmChannel.SetErrorHandler(MakeDelegate(<span class="keyword">this</span>, &amp;MyClass::OnError));</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Register the receive endpoint with NetworkEngine</span></div>
+<div class="line">RegisterEndpoint(ALARM_MSG_ID, alarmChannel.GetEndpoint());</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Invoke (fire-and-forget)</span></div>
+<div class="line">AlarmMsg msg; AlarmNote note;</div>
+<div class="line">alarmChannel(msg, note);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Or invoke with blocking wait (via NetworkEngine::RemoteInvokeWait)</span></div>
+<div class="line"><span class="keywordtype">bool</span> ok = RemoteInvokeWait(alarmChannel, msg, note);</div>
+</div><!-- fragment --><p>Key accessors:</p><ul>
+<li><code>Bind(obj, func, id)</code> — binds a member function and configures all internal plumbing.</li>
+<li><code>operator()(args...)</code> — invokes (sends) the remote message.</li>
+<li><code>GetEndpoint()</code> — returns <code>IRemoteInvoker*</code> for <code>RegisterEndpoint()</code>.</li>
+<li><code>GetError()</code> / <code>GetRemoteId()</code> — query last error and remote ID.</li>
+<li><code>SetErrorHandler(delegate)</code> — register an error notification callback.</li>
+</ul>
+<blockquote class="doxtable">
+<p>&zwj;<b>Legacy accessors</b> (<code>GetDispatcher()</code>, <code>GetSerializer()</code>, <code>GetStream()</code>) remain available for code that manually wires a <code>DelegateMemberRemote</code>. </p>
+</blockquote>
 </div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->

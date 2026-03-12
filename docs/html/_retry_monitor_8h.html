@@ -123,18 +123,18 @@ Classes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Automatic retransmission manager for DelegateMQ remote calls. </p>
 <p>The <a class="el" href="class_retry_monitor.html">RetryMonitor</a> acts as a reliability decorator for any <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a> implementation. It bridges the gap between detection (<a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a>) and recovery (Physical Transport).</p>
-<h3><a class="anchor" id="autotoc_md25"></a>
+<h3><a class="anchor" id="autotoc_md27"></a>
 Core Responsibilities</h3>
 <ol type="1">
 <li><b>Data Persistence</b>: Stores the fully serialized binary payload of every outgoing remote delegate call, indexed by its unique Sequence Number.</li>
-<li><b>Timeout Handling</b>: Subscribes to the <code><a class="el" href="class_transport_monitor.html#add81131c7328add7a09c8b3269028e2c">TransportMonitor::OnSendStatus</a></code> signal.</li>
+<li><b>Timeout Handling</b>: Subscribes to the <code><a class="el" href="class_transport_monitor.html#ad7c677d7bc5478f3c42a77aa6d098802">TransportMonitor::OnSendStatus</a></code> signal.</li>
 <li><b>Automatic Recovery</b>: If a TIMEOUT status is received, it decrements the retry counter and re-submits the exact binary packet to the transport.</li>
 <li><b>Cleanup</b>: Discards stored packets upon SUCCESS (ACK received) or when <code>maxRetries</code> is exhausted.</li>
 </ol>
-<h3><a class="anchor" id="autotoc_md26"></a>
+<h3><a class="anchor" id="autotoc_md28"></a>
 Sequence Number Integrity</h3>
 <p>Retries use the <b>original</b> sequence number. This allows the Receiver to perform idempotency checks (filtering out duplicate calls if an ACK was lost but the function was already executed).</p>
-<h3><a class="anchor" id="autotoc_md27"></a>
+<h3><a class="anchor" id="autotoc_md29"></a>
 Reentrancy Note</h3>
 <p>This class calls <code><a class="el" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">ITransport::Send()</a></code>. If the underlying transport (e.g., <a class="el" href="class_serial_transport.html">SerialTransport</a>) routes its high-level <code>Send()</code> back into this monitor, the transport MUST implement a reentrancy guard to prevent infinite recursion.</p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a> </dd></dl>

@@ -28,10 +28,11 @@ It serves as a messaging layer for C++ applications, providing thread-safe async
 
 # Key Concepts
 
-- `MakeDelegate` – Creates a delegate instance bound to a callable (lambda, function, or method).
-- `MulticastDelegateSafe` – A thread-safe container of delegates, allowing broadcast-style invocation.
-- `Signal` - A thread-safe Signal implementation that returns a `ScopedConnection` handle upon subscription (Signal/Slot pattern). Can be used as a stack variable, class member, or heap object — no `shared_ptr` management required.
-- `Thread` – A cross-platform thread class capable of asynchronous delegate invocation.
+- `MakeDelegate` – Creates a delegate bound to any callable. Adding a `Thread` argument makes it asynchronous; adding a `RemoteChannel` makes it remote. The call syntax is the same in all three cases.
+- `Thread` – A cross-platform thread class. Passed to `MakeDelegate` to dispatch a call to a specific worker thread.
+- `RemoteChannel<Sig>` – Owns the transport wiring for one message signature. Call `Bind()` once to configure, then invoke with `operator()` to send remotely.
+- `Signal<Sig>` – Thread-safe multicast signal. `Connect()` returns a `ScopedConnection` that auto-disconnects on scope exit. Declare as a plain class member — no `shared_ptr` required.
+- `MulticastDelegateSafe` – Thread-safe delegate container for broadcast invocation without RAII connection management.
 
 # Examples
 
@@ -83,15 +84,9 @@ int main(void)
 class Publisher
 {
 public:
-    // 1. Define a thread-safe OnMessage signal.
-    // Signal<> is thread-safe by default — no shared_ptr required.
-    dmq::Signal<void(const std::string&)> OnMessage;
+    dmq::Signal<void(const std::string&)> OnMessage;  // plain member, no shared_ptr needed
 
-    void Publish(const std::string& msg)
-    {
-        // 3. Emit signal to all connected slots
-        OnMessage(msg);
-    }
+    void Publish(const std::string& msg) { OnMessage(msg); }
 };
 
 class Subscriber
@@ -101,25 +96,21 @@ public:
     {
         m_thread.CreateThread();
 
-        // 2. Connect to the publisher's signal
+        // Connect: callback dispatched to m_thread on each Publish()
         m_connection = pub.OnMessage.Connect(
             dmq::MakeDelegate(this, &Subscriber::HandleMsg, m_thread)
         );
     }
-
-    // 5. Destructor automatically disconnects m_connection via RAII
-    ~Subscriber() = default;
+    // m_connection destructor fires here — auto-disconnects from Publisher
 
 private:
-    void HandleMsg(const std::string& msg) 
+    void HandleMsg(const std::string& msg)
     {
-        // 4. Handle publisher signal on m_thread
-        std::cout << "Writing data on thread: " << Thread::GetCurrentThreadId() << std::endl;
-        std::cout << msg << std::endl;
+        std::cout << msg << std::endl;  // called on m_thread
     }
 
     Thread m_thread;
-    dmq::ScopedConnection m_connection; // Automatically disconnects when Subscriber is destroyed
+    dmq::ScopedConnection m_connection;
 };
 
 int main()
@@ -128,33 +119,34 @@ int main()
 
     {
         Subscriber sub(pub);
-        pub.Publish("Hello World!"); 
-    } // sub goes out of scope here -> m_connection disconnects automatically
+        pub.Publish("Hello World!");    // HandleMsg called on sub's thread
+    }                                   // sub destroyed -> auto-disconnected
 
-    pub.Publish("No one is listening..."); // Safe, no slots connected
+    pub.Publish("No one is listening..."); // safe: no subscribers
     return 0;
 }
 ```
 
-Multiple callables targets stored and broadcast invoked asynchronously.
+Multiple callable targets stored and broadcast-invoked, each on its own thread.
 
 ```cpp
-// Create an async delegate targeting lambda on thread1
-auto lambda = [](int i) { std::cout << i; };
-auto lambdaDelegate = dmq::MakeDelegate(std::function(lambda), thread1);
+Thread thread1("Thread1"), thread2("Thread2");
+thread1.CreateThread(); thread2.CreateThread();
 
-// Create an async delegate targeting Class::Func() on thread2
-Class myClass;
-auto memberDelegate = dmq::MakeDelegate(&myClass, &Class::Func, thread2);
+// Async delegate targeting a lambda on thread1
+auto lambdaDelegate = dmq::MakeDelegate(
+    std::function<void(int)>([](int i) { std::cout << i; }), thread1);
 
-// Create a thread-safe delegate container
+// Async delegate targeting a member function on thread2
+struct Printer { void Print(int i) { std::cout << i; } } printer;
+auto memberDelegate = dmq::MakeDelegate(&printer, &Printer::Print, thread2);
+
+// Thread-safe multicast container
 dmq::MulticastDelegateSafe<void(int)> delegates;
-
-// Insert delegates into the container 
 delegates += lambdaDelegate;
 delegates += memberDelegate;
 
-// Invoke all callable targets asynchronously 
+// Invokes both targets asynchronously on their respective threads
 delegates(123);
 ```
 
@@ -322,10 +314,6 @@ Repositories utilizing the DelegateMQ library.
 * <a href="https://github.com/endurodave/StateMachineWithModernDelegates">C++ State Machine with Asynchronous Delegates</a> - a framework combining a C++ state machine with the asynchronous delegate library.
 * <a href="https://github.com/endurodave/AsyncStateMachine">Asynchronous State Machine Design in C++</a> - an asynchronous C++ state machine implemented using an asynchronous delegate library.
 * <a href="https://github.com/endurodave/Async-SQLite">Asynchronous SQLite API using C++ Delegates</a> - an asynchronous SQLite wrapper implemented using an asynchronous delegate library.
-
-
-
-
 
 
 

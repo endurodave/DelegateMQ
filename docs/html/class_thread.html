@@ -116,12 +116,13 @@ Inheritance diagram for Thread:</div>
  <div class="center">
   <img src="class_thread.png" usemap="#Thread_map" alt=""/>
   <map id="Thread_map" name="Thread_map">
-<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="0,0,83,24"/>
+<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="93,392,176,416"/>
+<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="93,336,176,360"/>
+<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="93,280,176,304"/>
+<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="93,224,176,248"/>
+<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="93,168,176,192"/>
+<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="93,56,176,80"/>
 <area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="93,0,176,24"/>
-<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="279,0,362,24"/>
-<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="372,0,455,24"/>
-<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="465,0,548,24"/>
-<area href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous..." alt="dmq::IThread" shape="rect" coords="558,0,641,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -239,6 +240,27 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a50681ae734fd18e2acb2bfa89fef0a48" id="r_a50681ae734fd18e2acb2bfa89fef0a48"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50681ae734fd18e2acb2bfa89fef0a48">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">dmq::DelegateMsg</a> &gt; msg) override</td></tr>
 <tr class="memdesc:a50681ae734fd18e2acb2bfa89fef0a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueues a delegate message for execution on this thread.  <br /></td></tr>
 <tr class="separator:a50681ae734fd18e2acb2bfa89fef0a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80b20bca04b2b742c93b1523a4fccb1d" id="r_a80b20bca04b2b742c93b1523a4fccb1d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80b20bca04b2b742c93b1523a4fccb1d">Thread</a> (const std::string &amp;threadName, size_t maxQueueSize=0)</td></tr>
+<tr class="separator:a80b20bca04b2b742c93b1523a4fccb1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a026b23628e1727050e864e00489c0baf" id="r_a026b23628e1727050e864e00489c0baf"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a026b23628e1727050e864e00489c0baf">~Thread</a> ()</td></tr>
+<tr class="memdesc:a026b23628e1727050e864e00489c0baf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
+<tr class="separator:a026b23628e1727050e864e00489c0baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae39a39fcabf49e086bf484ad6c140e79" id="r_ae39a39fcabf49e086bf484ad6c140e79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae39a39fcabf49e086bf484ad6c140e79">CreateThread</a> (std::optional&lt; <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &gt; watchdogTimeout=std::nullopt)</td></tr>
+<tr class="separator:ae39a39fcabf49e086bf484ad6c140e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabf05b92a7bc081a464b8adcb916f321" id="r_aabf05b92a7bc081a464b8adcb916f321"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabf05b92a7bc081a464b8adcb916f321">ExitThread</a> ()</td></tr>
+<tr class="memdesc:aabf05b92a7bc081a464b8adcb916f321"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called once at program exit to shut down the worker thread.  <br /></td></tr>
+<tr class="separator:aabf05b92a7bc081a464b8adcb916f321"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7184e3af00fe15912a24f594944fc78e" id="r_a7184e3af00fe15912a24f594944fc78e"><td class="memItemLeft" align="right" valign="top">DWORD&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7184e3af00fe15912a24f594944fc78e">GetThreadId</a> ()</td></tr>
+<tr class="memdesc:a7184e3af00fe15912a24f594944fc78e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID of this thread instance.  <br /></td></tr>
+<tr class="separator:a7184e3af00fe15912a24f594944fc78e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a093b95e8def5030fd8b0033ce14edc81" id="r_a093b95e8def5030fd8b0033ce14edc81"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a> ()</td></tr>
+<tr class="memdesc:a093b95e8def5030fd8b0033ce14edc81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get thread name.  <br /></td></tr>
+<tr class="separator:a093b95e8def5030fd8b0033ce14edc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a964e7f80fe043c7a7c3c047f30335a16" id="r_a964e7f80fe043c7a7c3c047f30335a16"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a964e7f80fe043c7a7c3c047f30335a16">GetQueueSize</a> ()</td></tr>
+<tr class="memdesc:a964e7f80fe043c7a7c3c047f30335a16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get size of thread message queue.  <br /></td></tr>
+<tr class="separator:a964e7f80fe043c7a7c3c047f30335a16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50681ae734fd18e2acb2bfa89fef0a48" id="r_a50681ae734fd18e2acb2bfa89fef0a48"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50681ae734fd18e2acb2bfa89fef0a48">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">dmq::DelegateMsg</a> &gt; msg) override</td></tr>
+<tr class="separator:a50681ae734fd18e2acb2bfa89fef0a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a192e02ca6e9efd7b7da940157fb9438a" id="r_a192e02ca6e9efd7b7da940157fb9438a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a192e02ca6e9efd7b7da940157fb9438a">Thread</a> (const std::string &amp;threadName)</td></tr>
 <tr class="separator:a192e02ca6e9efd7b7da940157fb9438a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37d9edd3a1a776cbc27dedff949c9726" id="r_a37d9edd3a1a776cbc27dedff949c9726"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37d9edd3a1a776cbc27dedff949c9726">~Thread</a> ()</td></tr>
@@ -275,6 +297,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a336a33ac9d745ae018d1d1f3c37ecda2" id="r_a336a33ac9d745ae018d1d1f3c37ecda2"><td class="memItemLeft" align="right" valign="top">static TX_THREAD *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a336a33ac9d745ae018d1d1f3c37ecda2">GetCurrentThreadId</a> ()</td></tr>
 <tr class="memdesc:a336a33ac9d745ae018d1d1f3c37ecda2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID of the currently executing thread.  <br /></td></tr>
 <tr class="separator:a336a33ac9d745ae018d1d1f3c37ecda2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7046dfdb6b24722f319a45fe4ccb3d0" id="r_ac7046dfdb6b24722f319a45fe4ccb3d0"><td class="memItemLeft" align="right" valign="top">static DWORD&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac7046dfdb6b24722f319a45fe4ccb3d0">GetCurrentThreadId</a> ()</td></tr>
+<tr class="memdesc:ac7046dfdb6b24722f319a45fe4ccb3d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the ID of the currently executing thread.  <br /></td></tr>
+<tr class="separator:ac7046dfdb6b24722f319a45fe4ccb3d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8b580eba451dff6781a65f7c035880c" id="r_aa8b580eba451dff6781a65f7c035880c"><td class="memItemLeft" align="right" valign="top">static k_tid_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa8b580eba451dff6781a65f7c035880c">GetCurrentThreadId</a> ()</td></tr>
 <tr class="separator:aa8b580eba451dff6781a65f7c035880c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -292,10 +317,11 @@ Static Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux). </p>
+<p>Windows-native thread for systems using the Win32 API.</p>
 <p>The <a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> class creates a worker thread capable of dispatching and invoking asynchronous delegates. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a80b20bca04b2b742c93b1523a4fccb1d" name="a80b20bca04b2b742c93b1523a4fccb1d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80b20bca04b2b742c93b1523a4fccb1d">&#9670;&#160;</a></span>Thread() <span class="overload">[1/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a80b20bca04b2b742c93b1523a4fccb1d">&#9670;&#160;</a></span>Thread() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -323,7 +349,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a37d9edd3a1a776cbc27dedff949c9726" name="a37d9edd3a1a776cbc27dedff949c9726"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[1/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -340,7 +366,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a80b20bca04b2b742c93b1523a4fccb1d" name="a80b20bca04b2b742c93b1523a4fccb1d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80b20bca04b2b742c93b1523a4fccb1d">&#9670;&#160;</a></span>Thread() <span class="overload">[2/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a80b20bca04b2b742c93b1523a4fccb1d">&#9670;&#160;</a></span>Thread() <span class="overload">[2/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -368,7 +394,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a37d9edd3a1a776cbc27dedff949c9726" name="a37d9edd3a1a776cbc27dedff949c9726"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[2/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[2/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -387,7 +413,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a192e02ca6e9efd7b7da940157fb9438a" name="a192e02ca6e9efd7b7da940157fb9438a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a192e02ca6e9efd7b7da940157fb9438a">&#9670;&#160;</a></span>Thread() <span class="overload">[3/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a192e02ca6e9efd7b7da940157fb9438a">&#9670;&#160;</a></span>Thread() <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -410,7 +436,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a37d9edd3a1a776cbc27dedff949c9726" name="a37d9edd3a1a776cbc27dedff949c9726"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[3/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -429,7 +455,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a80b20bca04b2b742c93b1523a4fccb1d" name="a80b20bca04b2b742c93b1523a4fccb1d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80b20bca04b2b742c93b1523a4fccb1d">&#9670;&#160;</a></span>Thread() <span class="overload">[4/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a80b20bca04b2b742c93b1523a4fccb1d">&#9670;&#160;</a></span>Thread() <span class="overload">[4/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -457,7 +483,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a37d9edd3a1a776cbc27dedff949c9726" name="a37d9edd3a1a776cbc27dedff949c9726"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[4/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[4/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -476,7 +502,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a80b20bca04b2b742c93b1523a4fccb1d" name="a80b20bca04b2b742c93b1523a4fccb1d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80b20bca04b2b742c93b1523a4fccb1d">&#9670;&#160;</a></span>Thread() <span class="overload">[5/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a80b20bca04b2b742c93b1523a4fccb1d">&#9670;&#160;</a></span>Thread() <span class="overload">[5/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -504,7 +530,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a37d9edd3a1a776cbc27dedff949c9726" name="a37d9edd3a1a776cbc27dedff949c9726"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[5/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[5/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -522,8 +548,63 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a80b20bca04b2b742c93b1523a4fccb1d" name="a80b20bca04b2b742c93b1523a4fccb1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80b20bca04b2b742c93b1523a4fccb1d">&#9670;&#160;</a></span>Thread() <span class="overload">[6/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Thread::Thread </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>threadName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>maxQueueSize</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Constructor </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">threadName</td><td>The name of the thread for debugging. </td></tr>
+    <tr><td class="paramname">maxQueueSize</td><td>The maximum number of messages allowed in the queue. 0 means unlimited (no back pressure). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a026b23628e1727050e864e00489c0baf" name="a026b23628e1727050e864e00489c0baf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a026b23628e1727050e864e00489c0baf">&#9670;&#160;</a></span>~Thread() <span class="overload">[6/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Thread::~Thread </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructor. </p>
+
+</div>
+</div>
 <a id="a192e02ca6e9efd7b7da940157fb9438a" name="a192e02ca6e9efd7b7da940157fb9438a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a192e02ca6e9efd7b7da940157fb9438a">&#9670;&#160;</a></span>Thread() <span class="overload">[6/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a192e02ca6e9efd7b7da940157fb9438a">&#9670;&#160;</a></span>Thread() <span class="overload">[7/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -540,7 +621,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a37d9edd3a1a776cbc27dedff949c9726" name="a37d9edd3a1a776cbc27dedff949c9726"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[6/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d9edd3a1a776cbc27dedff949c9726">&#9670;&#160;</a></span>~Thread() <span class="overload">[7/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -558,7 +639,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a7ac27cb95d8af8be6dd6f8e7c24e24ee" name="a7ac27cb95d8af8be6dd6f8e7c24e24ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[1/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -575,7 +656,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a7ac27cb95d8af8be6dd6f8e7c24e24ee" name="a7ac27cb95d8af8be6dd6f8e7c24e24ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[2/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[2/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -594,7 +675,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a7ac27cb95d8af8be6dd6f8e7c24e24ee" name="a7ac27cb95d8af8be6dd6f8e7c24e24ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[3/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -613,7 +694,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a7ac27cb95d8af8be6dd6f8e7c24e24ee" name="a7ac27cb95d8af8be6dd6f8e7c24e24ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[4/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[4/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -632,7 +713,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a7ac27cb95d8af8be6dd6f8e7c24e24ee" name="a7ac27cb95d8af8be6dd6f8e7c24e24ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[5/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ac27cb95d8af8be6dd6f8e7c24e24ee">&#9670;&#160;</a></span>CreateThread() <span class="overload">[5/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -649,7 +730,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="ae39a39fcabf49e086bf484ad6c140e79" name="ae39a39fcabf49e086bf484ad6c140e79"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae39a39fcabf49e086bf484ad6c140e79">&#9670;&#160;</a></span>CreateThread() <span class="overload">[6/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae39a39fcabf49e086bf484ad6c140e79">&#9670;&#160;</a></span>CreateThread() <span class="overload">[6/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -673,8 +754,32 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ae39a39fcabf49e086bf484ad6c140e79" name="ae39a39fcabf49e086bf484ad6c140e79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae39a39fcabf49e086bf484ad6c140e79">&#9670;&#160;</a></span>CreateThread() <span class="overload">[7/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Thread::CreateThread </td>
+          <td>(</td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>watchdogTimeout</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::nullopt</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Called once to create the worker thread. If watchdogTimeout value provided, the maximum watchdog interval is used. Otherwise no watchdog. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">watchdogTimeout</td><td>- optional watchdog timeout. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>TRUE if thread is created. FALSE otherwise. </dd></dl>
+
+</div>
+</div>
 <a id="a2271b62a98277944bdf38c5c2304a078" name="a2271b62a98277944bdf38c5c2304a078"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2271b62a98277944bdf38c5c2304a078">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[1/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2271b62a98277944bdf38c5c2304a078">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -707,7 +812,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aef7a8ebd5ab60700ca5296c77e43188d" name="aef7a8ebd5ab60700ca5296c77e43188d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef7a8ebd5ab60700ca5296c77e43188d">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[2/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aef7a8ebd5ab60700ca5296c77e43188d">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[2/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -744,7 +849,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a50681ae734fd18e2acb2bfa89fef0a48" name="a50681ae734fd18e2acb2bfa89fef0a48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50681ae734fd18e2acb2bfa89fef0a48">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[3/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a50681ae734fd18e2acb2bfa89fef0a48">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -781,7 +886,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a50681ae734fd18e2acb2bfa89fef0a48" name="a50681ae734fd18e2acb2bfa89fef0a48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50681ae734fd18e2acb2bfa89fef0a48">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[4/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a50681ae734fd18e2acb2bfa89fef0a48">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[4/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -818,7 +923,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a50681ae734fd18e2acb2bfa89fef0a48" name="a50681ae734fd18e2acb2bfa89fef0a48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50681ae734fd18e2acb2bfa89fef0a48">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[5/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a50681ae734fd18e2acb2bfa89fef0a48">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[5/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -846,6 +951,39 @@ Static Public Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>A shared pointer to the delegate message. This pointer must remain valid until the target thread finishes execution. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433">dmq::IThread</a>.</p>
+
+</div>
+</div>
+<a id="a50681ae734fd18e2acb2bfa89fef0a48" name="a50681ae734fd18e2acb2bfa89fef0a48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50681ae734fd18e2acb2bfa89fef0a48">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[6/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Thread::DispatchDelegate </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">dmq::DelegateMsg</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>msg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Dispatch and invoke a delegate target on the destination thread. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">msg</td><td>- Delegate message containing target function arguments. </td></tr>
   </table>
   </dd>
 </dl>
@@ -855,7 +993,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aef7a8ebd5ab60700ca5296c77e43188d" name="aef7a8ebd5ab60700ca5296c77e43188d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef7a8ebd5ab60700ca5296c77e43188d">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[6/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aef7a8ebd5ab60700ca5296c77e43188d">&#9670;&#160;</a></span>DispatchDelegate() <span class="overload">[7/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -892,7 +1030,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aabf05b92a7bc081a464b8adcb916f321" name="aabf05b92a7bc081a464b8adcb916f321"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[1/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -909,7 +1047,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aabf05b92a7bc081a464b8adcb916f321" name="aabf05b92a7bc081a464b8adcb916f321"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[2/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[2/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -928,7 +1066,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aabf05b92a7bc081a464b8adcb916f321" name="aabf05b92a7bc081a464b8adcb916f321"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[3/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -947,7 +1085,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aabf05b92a7bc081a464b8adcb916f321" name="aabf05b92a7bc081a464b8adcb916f321"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[4/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[4/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -966,7 +1104,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aabf05b92a7bc081a464b8adcb916f321" name="aabf05b92a7bc081a464b8adcb916f321"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[5/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[5/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -985,7 +1123,26 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aabf05b92a7bc081a464b8adcb916f321" name="aabf05b92a7bc081a464b8adcb916f321"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[6/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[6/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Thread::ExitThread </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Called once at program exit to shut down the worker thread. </p>
+
+</div>
+</div>
+<a id="aabf05b92a7bc081a464b8adcb916f321" name="aabf05b92a7bc081a464b8adcb916f321"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabf05b92a7bc081a464b8adcb916f321">&#9670;&#160;</a></span>ExitThread() <span class="overload">[7/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1002,7 +1159,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aeb0d7722b5eb23da37c83810a6ee9cd4" name="aeb0d7722b5eb23da37c83810a6ee9cd4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb0d7722b5eb23da37c83810a6ee9cd4">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[1/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb0d7722b5eb23da37c83810a6ee9cd4">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1027,7 +1184,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a57c1f91eca6bf785d151d5310cc40dcc" name="a57c1f91eca6bf785d151d5310cc40dcc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a57c1f91eca6bf785d151d5310cc40dcc">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[2/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a57c1f91eca6bf785d151d5310cc40dcc">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[2/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1054,7 +1211,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a0ad256a3d31ccd2d822f6d9206c15a4a" name="a0ad256a3d31ccd2d822f6d9206c15a4a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ad256a3d31ccd2d822f6d9206c15a4a">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[3/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ad256a3d31ccd2d822f6d9206c15a4a">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1081,7 +1238,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a25dc0ec2d5c28fafeaae5b3d7ca1f40a" name="a25dc0ec2d5c28fafeaae5b3d7ca1f40a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25dc0ec2d5c28fafeaae5b3d7ca1f40a">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[4/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a25dc0ec2d5c28fafeaae5b3d7ca1f40a">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[4/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1108,7 +1265,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a336a33ac9d745ae018d1d1f3c37ecda2" name="a336a33ac9d745ae018d1d1f3c37ecda2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a336a33ac9d745ae018d1d1f3c37ecda2">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[5/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a336a33ac9d745ae018d1d1f3c37ecda2">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[5/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1134,8 +1291,35 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ac7046dfdb6b24722f319a45fe4ccb3d0" name="ac7046dfdb6b24722f319a45fe4ccb3d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7046dfdb6b24722f319a45fe4ccb3d0">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[6/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static DWORD Thread::GetCurrentThreadId </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the ID of the currently executing thread. </p>
+
+</div>
+</div>
 <a id="aa8b580eba451dff6781a65f7c035880c" name="aa8b580eba451dff6781a65f7c035880c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa8b580eba451dff6781a65f7c035880c">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[6/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8b580eba451dff6781a65f7c035880c">&#9670;&#160;</a></span>GetCurrentThreadId() <span class="overload">[7/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1160,7 +1344,26 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a964e7f80fe043c7a7c3c047f30335a16" name="a964e7f80fe043c7a7c3c047f30335a16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a964e7f80fe043c7a7c3c047f30335a16">&#9670;&#160;</a></span>GetQueueSize()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a964e7f80fe043c7a7c3c047f30335a16">&#9670;&#160;</a></span>GetQueueSize() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t Thread::GetQueueSize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get size of thread message queue. </p>
+
+</div>
+</div>
+<a id="a964e7f80fe043c7a7c3c047f30335a16" name="a964e7f80fe043c7a7c3c047f30335a16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a964e7f80fe043c7a7c3c047f30335a16">&#9670;&#160;</a></span>GetQueueSize() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1179,7 +1382,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="ae2099fbcf989ce4d7b95c68219d9982b" name="ae2099fbcf989ce4d7b95c68219d9982b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae2099fbcf989ce4d7b95c68219d9982b">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[1/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2099fbcf989ce4d7b95c68219d9982b">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1196,7 +1399,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a16fb3b47a1431a3fe16a2e717b105dec" name="a16fb3b47a1431a3fe16a2e717b105dec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a16fb3b47a1431a3fe16a2e717b105dec">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[2/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a16fb3b47a1431a3fe16a2e717b105dec">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[2/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1215,7 +1418,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a521e1ef8efdbc48290a9bf35f8144315" name="a521e1ef8efdbc48290a9bf35f8144315"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a521e1ef8efdbc48290a9bf35f8144315">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[3/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a521e1ef8efdbc48290a9bf35f8144315">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1234,7 +1437,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a2294b75a90c36b4f14e32ae8d975a0fb" name="a2294b75a90c36b4f14e32ae8d975a0fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2294b75a90c36b4f14e32ae8d975a0fb">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[4/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2294b75a90c36b4f14e32ae8d975a0fb">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[4/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1253,7 +1456,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a2616d0c5f41d983a67069d01e44804fb" name="a2616d0c5f41d983a67069d01e44804fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2616d0c5f41d983a67069d01e44804fb">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[5/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a2616d0c5f41d983a67069d01e44804fb">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[5/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1271,8 +1474,27 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a7184e3af00fe15912a24f594944fc78e" name="a7184e3af00fe15912a24f594944fc78e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7184e3af00fe15912a24f594944fc78e">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[6/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DWORD Thread::GetThreadId </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the ID of this thread instance. </p>
+
+</div>
+</div>
 <a id="ae2099fbcf989ce4d7b95c68219d9982b" name="ae2099fbcf989ce4d7b95c68219d9982b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae2099fbcf989ce4d7b95c68219d9982b">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[6/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2099fbcf989ce4d7b95c68219d9982b">&#9670;&#160;</a></span>GetThreadId() <span class="overload">[7/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1289,7 +1511,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a093b95e8def5030fd8b0033ce14edc81" name="a093b95e8def5030fd8b0033ce14edc81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[1/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1314,34 +1536,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a093b95e8def5030fd8b0033ce14edc81" name="a093b95e8def5030fd8b0033ce14edc81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[2/6]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string Thread::GetThreadName </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get thread name. </p>
-
-</div>
-</div>
-<a id="a093b95e8def5030fd8b0033ce14edc81" name="a093b95e8def5030fd8b0033ce14edc81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[3/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[2/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1368,7 +1563,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a093b95e8def5030fd8b0033ce14edc81" name="a093b95e8def5030fd8b0033ce14edc81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[4/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1395,7 +1590,61 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="a093b95e8def5030fd8b0033ce14edc81" name="a093b95e8def5030fd8b0033ce14edc81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[5/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[4/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Thread::GetThreadName </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get thread name. </p>
+
+</div>
+</div>
+<a id="a093b95e8def5030fd8b0033ce14edc81" name="a093b95e8def5030fd8b0033ce14edc81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[5/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Thread::GetThreadName </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get thread name. </p>
+
+</div>
+</div>
+<a id="a093b95e8def5030fd8b0033ce14edc81" name="a093b95e8def5030fd8b0033ce14edc81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a093b95e8def5030fd8b0033ce14edc81">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[6/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1420,7 +1669,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <a id="aedbb785ac2c5f1b3663a22e551818a48" name="aedbb785ac2c5f1b3663a22e551818a48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aedbb785ac2c5f1b3663a22e551818a48">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[6/6]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aedbb785ac2c5f1b3663a22e551818a48">&#9670;&#160;</a></span>GetThreadName() <span class="overload">[7/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1674,11 +1923,13 @@ Static Public Attributes</h2></td></tr>
 <li><a class="el" href="qt_2_thread_8h_source.html">qt/Thread.h</a></li>
 <li><a class="el" href="stdlib_2_thread_8h_source.html">stdlib/Thread.h</a></li>
 <li><a class="el" href="threadx_2_thread_8h_source.html">threadx/Thread.h</a></li>
+<li><a class="el" href="win32_2_thread_8h_source.html">win32/Thread.h</a></li>
 <li><a class="el" href="cmsis-rtos2_2_thread_8cpp.html">cmsis-rtos2/Thread.cpp</a></li>
 <li><a class="el" href="freertos_2_thread_8cpp.html">freertos/Thread.cpp</a></li>
 <li><a class="el" href="qt_2_thread_8cpp.html">qt/Thread.cpp</a></li>
 <li><a class="el" href="stdlib_2_thread_8cpp.html">stdlib/Thread.cpp</a></li>
 <li><a class="el" href="threadx_2_thread_8cpp.html">threadx/Thread.cpp</a></li>
+<li><a class="el" href="win32_2_thread_8cpp.html">win32/Thread.cpp</a></li>
 <li><a class="el" href="zephyr_2_thread_8cpp.html">zephyr/Thread.cpp</a></li>
 </ul>
 </div><!-- contents -->
