@@ -222,11 +222,15 @@ public:
             is.clear(); is.str(""); is.write((char*)m_tempRxBuffer, len);
         }
 
-        // 4. Read & Consume CRC
+        // 4. Read & Verify CRC
         uint16_t receivedCrc;
         uint8_t* pCrc = (uint8_t*)&receivedCrc;
         if (!ReadByteBlocked(pCrc[0])) return -1;
         if (!ReadByteBlocked(pCrc[1])) return -1;
+
+        uint16_t calcCrc = Crc16CalcBlock(headerBuf, DmqHeader::HEADER_SIZE, 0xFFFF);
+        if (len > 0) calcCrc = Crc16CalcBlock(m_tempRxBuffer, len, calcCrc);
+        if (receivedCrc != calcCrc) return -1;
 
         // 5. Handle ACKs
         if (header.GetId() == dmq::ACK_REMOTE_ID) {

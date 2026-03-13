@@ -147,7 +147,7 @@ static void DelegateFreeAsyncTests()
     auto noErrorDel = MakeDelegate(&NoError, workerThread);
     auto noErrorDel2 = MakeDelegate(&NoError2, workerThread);
 #if 0
-    // Causes compiler error. shared_ptr references not allowed; undefined behavior 
+    // Causes compiler error. shared_ptr references not allowed; undefined behavior
     // in multi-threaded system.
     auto errorDel = MakeDelegate(&Error, workerThread);
     auto errorDel2 = MakeDelegate(&Error2, workerThread);
@@ -159,6 +159,13 @@ static void DelegateFreeAsyncTests()
     auto singletonSp = ClassSingleton::GetInstanceSp();
     auto delShared = MakeDelegate(&SetClassSingletonShared, workerThread);
     delShared(singletonSp);
+
+    // Invoke the type-safe delegates to verify dispatch doesn't crash at runtime.
+    // shared_ptr arg is copied (the pointer, not the pointee); std::string arg is
+    // deep-copied to the heap by the async dispatch mechanism.
+    auto structParamSp = std::make_shared<const StructParam>();
+    noErrorDel(structParamSp);
+    noErrorDel2(std::string("hello world"), structParamSp);
 
     // Test nullptr arguments
     auto nullPtrArg = MakeDelegate(&NullPtrArg, workerThread);
@@ -396,7 +403,7 @@ static void DelegateMemberAsyncTests()
     auto noErrorDel = MakeDelegate(&classError, &ClassError::NoError, workerThread);
     auto noErrorDel2 = MakeDelegate(&classError, &ClassError::NoError2, workerThread);
 #if 0
-    // Causes compiler error. shared_ptr references not allowed; undefined behavior 
+    // Causes compiler error. shared_ptr references not allowed; undefined behavior
     // in multi-threaded system.
     auto errorDel = MakeDelegate(&classError, &ClassError::Error, workerThread);
     auto errorDel2 = MakeDelegate(&classError, &ClassError::Error2, workerThread);
@@ -408,6 +415,11 @@ static void DelegateMemberAsyncTests()
     auto singletonSp = ClassSingleton::GetInstanceSp();
     auto delShared = MakeDelegate(&setClassSingleton, &SetClassSingleton::Shared, workerThread);
     delShared(singletonSp);
+
+    // Invoke the type-safe delegates to verify dispatch doesn't crash at runtime.
+    auto structParamSp2 = std::make_shared<const StructParam>();
+    noErrorDel(structParamSp2);
+    noErrorDel2(std::string("hello world"), structParamSp2);
 
     Class voidTest;
     // Compile error. Invalid to pass void* argument to async target function

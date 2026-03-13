@@ -3,7 +3,7 @@
 #include <iostream>
 #include "delegate/DelegateOpt.h"
 
-#if WIN32
+#ifdef _WIN32
 	#include "windows.h"
 #endif
 
@@ -22,7 +22,7 @@ void FaultHandler(const char* file, unsigned short line)
     LOG_ERROR("FaultHandler File={} Line={}", file, line);
 
     // 2. Break only if interactive or specifically desired
-#if WIN32
+#ifdef _WIN32
     // Optional: Only break if a debugger is actually present to avoid CI crashes
     if (IsDebuggerPresent()) {
         DebugBreak();

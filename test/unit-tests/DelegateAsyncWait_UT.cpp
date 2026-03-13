@@ -209,6 +209,23 @@ static void DelegateFreeAsyncWaitTests()
     rvalueRefDel(12345678);
 #endif
 
+    // std::string is deep-copied to the heap by the async dispatch mechanism.
+    // AsyncWait blocks until the worker executes the function, so we can verify
+    // the value actually arrived on the other thread.
+    {
+        std::string received;
+        std::function<void(const std::string&)> stringFunc = [&received](const std::string& s) {
+            received = s;
+        };
+        auto stringDel = MakeDelegate(stringFunc, workerThread, WAIT_INFINITE);
+        stringDel(std::string("hello world"));
+        ASSERT_TRUE(received == "hello world");
+
+        // Empty string
+        stringDel(std::string(""));
+        ASSERT_TRUE(received == "");
+    }
+
     // Array of delegates
     Del* arr = new Del[2];
     arr[0].Bind(FreeFuncInt1, workerThread);
@@ -218,7 +235,7 @@ static void DelegateFreeAsyncWaitTests()
     delete[] arr;
 
     // Test default return value (time expired before invoke).
-    // Can't guarantee timeout of 0 will fail (depends on OS scheduler),  
+    // Can't guarantee timeout of 0 will fail (depends on OS scheduler),
     // so loop till success is false.
     auto zeroWait = MakeDelegate(&RetVoidPtr, workerThread, chrono::milliseconds(0));
     int loops = 0;

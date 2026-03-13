@@ -238,7 +238,7 @@ public:
             if (err != NNG_EAGAIN) {
                 // std::cerr << "nng_send failed with error: " << nng_strerror(err) << std::endl;
             }
-            return err;
+            return -1;
         }
 
         return 0;

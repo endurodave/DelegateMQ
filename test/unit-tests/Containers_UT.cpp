@@ -524,7 +524,7 @@ static void SignalTests()
         ASSERT_TRUE(callCount == 1);
     }
 
-    // Test 3: Move Semantics
+    // Test 3: Move Semantics (move-construction)
     {
         Signal<void(int*)> sig;
         ScopedConnection conn1 = sig.Connect(MakeDelegate(+[](int*) {}));
@@ -541,11 +541,134 @@ static void SignalTests()
         conn2.Disconnect();
         ASSERT_TRUE(sig.Size() == 0);
     }
+
+    // Test 4: Move-assignment of ScopedConnection
+    {
+        Signal<void(int*)> sig;
+        ScopedConnection conn1 = sig.Connect(MakeDelegate(+[](int*) {}));
+        ScopedConnection conn2;
+
+        ASSERT_TRUE(conn1.IsConnected());
+        ASSERT_TRUE(!conn2.IsConnected());
+        ASSERT_TRUE(sig.Size() == 1);
+
+        conn2 = std::move(conn1);
+
+        ASSERT_TRUE(!conn1.IsConnected());
+        ASSERT_TRUE(conn2.IsConnected());
+        ASSERT_TRUE(sig.Size() == 1);
+
+        conn2.Disconnect();
+        ASSERT_TRUE(sig.Size() == 0);
+    }
+
+    // Test 5: Multiple subscribers — all fire, individual disconnect works
+    {
+        Signal<void(int*)> sig;
+        int cnt1 = 0, cnt2 = 0, cnt3 = 0;
+
+        ScopedConnection c1 = sig.Connect(MakeDelegate(+[](int* p) { (*p)++; }));
+        ScopedConnection c2 = sig.Connect(MakeDelegate(+[](int* p) { (*p)++; }));
+        ScopedConnection c3 = sig.Connect(MakeDelegate(+[](int* p) { (*p)++; }));
+
+        ASSERT_TRUE(sig.Size() == 3);
+        ASSERT_TRUE(!sig.Empty());
+
+        sig(&cnt1);
+        ASSERT_TRUE(cnt1 == 3); // all three incremented the same counter
+
+        // Disconnect middle subscriber; remaining two still fire
+        c2.Disconnect();
+        ASSERT_TRUE(sig.Size() == 2);
+
+        cnt1 = 0;
+        sig(&cnt1);
+        ASSERT_TRUE(cnt1 == 2);
+    }
+
+    // Test 6: Empty() and Clear()
+    {
+        Signal<void()> sig;
+
+        ASSERT_TRUE(sig.Empty());
+        ASSERT_TRUE(sig.Size() == 0);
+
+        ScopedConnection c1 = sig.Connect(MakeDelegate(+[]() {}));
+        ScopedConnection c2 = sig.Connect(MakeDelegate(+[]() {}));
+
+        ASSERT_TRUE(!sig.Empty());
+        ASSERT_TRUE(sig.Size() == 2);
+
+        sig.Clear();
+
+        // Clear() empties the subscriber list but does NOT invalidate connection tokens.
+        // ScopedConnections still hold a live watcher; IsConnected() is still true.
+        ASSERT_TRUE(sig.Empty());
+        ASSERT_TRUE(sig.Size() == 0);
+        ASSERT_TRUE(c1.IsConnected());
+        ASSERT_TRUE(c2.IsConnected());
+
+        // Explicit disconnect after Clear() is a safe no-op (list is already empty).
+        c1.Disconnect();
+        c2.Disconnect();
+        ASSERT_TRUE(!c1.IsConnected());
+        ASSERT_TRUE(!c2.IsConnected());
+    }
+
+    // Test 7: Signal destroyed while ScopedConnection is still alive.
+    // The Connection's disconnect lambda holds a shared_ptr<State>, so State is
+    // kept alive until the ScopedConnection is itself destroyed or disconnected.
+    // IsConnected() checks m_watcher.expired() — which stays false because the
+    // lambda's shared_ptr keeps State alive. The alive flag (set in ~Signal) is
+    // what prevents UAF; Disconnect() checks it and becomes a safe no-op.
+    {
+        ScopedConnection conn;
+        {
+            Signal<void()> sig;
+            conn = sig.Connect(MakeDelegate(+[]() {}));
+            ASSERT_TRUE(conn.IsConnected());
+        } // Signal destroyed — sets state->alive = false, but State object stays
+          // alive because conn's lambda still holds shared_ptr<State>.
+
+        // IsConnected() is still true (m_watcher not expired).
+        ASSERT_TRUE(conn.IsConnected());
+
+        // Disconnect() is safe: the lambda runs, sees alive == false, does nothing.
+        conn.Disconnect();
+        ASSERT_TRUE(!conn.IsConnected());
+    }
+
+    // Test 8: Disconnect from within a slot (reentrancy)
+    {
+        Signal<void()> sig;
+        int fireCount = 0;
+
+        ScopedConnection* connPtr = nullptr;
+        ScopedConnection conn;
+
+        // Slot that disconnects itself on first invocation
+        std::function<void()> selfDisconnect = [&]() {
+            fireCount++;
+            if (connPtr) connPtr->Disconnect();
+        };
+
+        conn = sig.Connect(MakeDelegate(selfDisconnect));
+        connPtr = &conn;
+
+        ASSERT_TRUE(sig.Size() == 1);
+
+        sig(); // fires once, then disconnects itself
+        ASSERT_TRUE(fireCount == 1);
+        ASSERT_TRUE(sig.Size() == 0);
+
+        sig(); // no subscribers remain
+        ASSERT_TRUE(fireCount == 1);
+    }
 }
 
 static void SignalThreadSafeTests()
 {
-    // Test 5: Thread Safe Signal (Signal<> is inherently thread-safe)
+    // Test: Thread Safe Signal (Signal<> is inherently thread-safe)
     {
         dmq::Signal<void(int*)> sig;
         int callCount = 0;

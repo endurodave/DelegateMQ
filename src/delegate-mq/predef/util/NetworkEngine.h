@@ -286,6 +286,7 @@ private:
 
     Thread m_recvThread;
     std::atomic<bool> m_recvThreadExit{ false };
+    bool m_recvThreadCreated = false;
     Timer m_timeoutTimer;
     dmq::ScopedConnection m_timeoutTimerConn;
 

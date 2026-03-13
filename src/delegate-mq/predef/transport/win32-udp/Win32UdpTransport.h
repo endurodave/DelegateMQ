@@ -57,6 +57,8 @@ public:
 
     int Create(Type type, LPCSTR addr, USHORT port)
     {
+        m_type = type;
+
         // Create a UDP socket
         m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (m_socket == INVALID_SOCKET)

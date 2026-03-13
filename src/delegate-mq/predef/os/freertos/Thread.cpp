@@ -153,10 +153,10 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     // DEBUG: Print attempt
     //printf("[Thread] Dispatching to %s...\n", THREAD_NAME.c_str());
 
-    // C++ 'new' uses System Heap (not FreeRTOS heap). 
+    // C++ 'new' uses System Heap (not FreeRTOS heap).
     // If this fails, increase Heap_Size in linker script.
-    ThreadMsg* threadMsg = new ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
-    
+    ThreadMsg* threadMsg = new (std::nothrow) ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
+
     if (threadMsg == nullptr) {
         printf("[Thread] CRITICAL: 'new ThreadMsg' returned NULL! System Heap full? (%s)\n", THREAD_NAME.c_str());
         return;

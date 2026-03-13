@@ -165,6 +165,8 @@ public:
     ///         or call `Disconnect()` manually.
     [[nodiscard]] ScopedConnection Connect(const DelegateType& delegate) {
         auto copy  = std::shared_ptr<DelegateType>(delegate.Clone());
+        if (!copy)
+            BAD_ALLOC();
         auto state = m_state;
         {
             std::lock_guard<RecursiveMutex> lock(state->mtx);

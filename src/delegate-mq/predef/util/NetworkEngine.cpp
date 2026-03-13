@@ -178,11 +178,9 @@ void NetworkEngine::Start()
     if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
         return MakeDelegate(this, &NetworkEngine::Start, m_thread)();
 
-    static bool bRecvThreadCreated = false;
-
-    if (!bRecvThreadCreated)
+    if (!m_recvThreadCreated)
     {
-        bRecvThreadCreated = true;
+        m_recvThreadCreated = true;
         m_recvThread.CreateThread();
 
         // Post the "RecvThread" loop to run on this new thread.
