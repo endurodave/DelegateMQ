@@ -143,6 +143,8 @@ namespace dmq
     #include <string>
     #include <list>
     #include <sstream>
+    #include <memory>
+    #include <utility>
 
     // Not using xallocator; define as nothing
     #undef XALLOCATOR
@@ -161,6 +163,13 @@ namespace dmq
 
     typedef std::string xstring;
     typedef std::wstring xwstring;
+
+    // Fallback xmake_shared — uses std::make_shared when fixed-block allocator is disabled
+    template <typename T, typename... Args>
+    inline std::shared_ptr<T> xmake_shared(Args&&... args)
+    {
+        return std::make_shared<T>(std::forward<Args>(args)...);
+    }
 #endif
 
 // @TODO: Select the desired logging (see Predef.cmake).
