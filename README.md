@@ -408,17 +408,22 @@ DelegateMQ at a glance.
 
 Alternative asynchronous implementations similar in concept to DelegateMQ, simpler, and less features.
 
-* <a href="https://github.com/endurodave/AsyncCallback">Asynchronous Callbacks in C++</a> - A C++ asynchronous callback framework.
-* <a href="https://github.com/endurodave/C_AsyncCallback">Asynchronous Callbacks in C</a> - A C language asynchronous callback framework.
+| Project | Description |
+| :--- | :--- |
+| [Asynchronous Callbacks in C++](https://github.com/endurodave/AsyncCallback) | A C++ asynchronous callback framework. |
+| [Asynchronous Callbacks in C](https://github.com/endurodave/C_AsyncCallback) | A C language asynchronous callback framework. |
 
 # Other Projects Using DelegateMQ
 
 Repositories utilizing the DelegateMQ library.
 
-* <a href="https://github.com/endurodave/IntegrationTestFramework">Integration Test Framework using Google Test and Delegates</a> - a multi-threaded C++ software integration test framework using Google Test and DelegateMQ libraries.
-* <a href="https://github.com/endurodave/StateMachineWithModernDelegates">C++ State Machine with Asynchronous Delegates</a> - a framework combining a C++ state machine with the asynchronous delegate library.
-* <a href="https://github.com/endurodave/AsyncStateMachine">Asynchronous State Machine Design in C++</a> - an asynchronous C++ state machine implemented using an asynchronous delegate library.
-* <a href="https://github.com/endurodave/Async-SQLite">Asynchronous SQLite API using C++ Delegates</a> - an asynchronous SQLite wrapper implemented using an asynchronous delegate library.
+| Project | Description |
+| :--- | :--- |
+| [Integration Test Framework](https://github.com/endurodave/IntegrationTestFramework) | A multi-threaded C++ software integration test framework using Google Test and DelegateMQ libraries. |
+| [Delegate FSM](https://github.com/endurodave/delegate-fsm) | A modern C++ state machine using delegates for state registration and async active-object dispatch. |
+| [State Machine With Modern Delegates](https://github.com/endurodave/StateMachineWithModernDelegates) | A framework combining a C++ state machine with the asynchronous delegate library. |
+| [Async State Machine](https://github.com/endurodave/AsyncStateMachine) | An asynchronous C++ state machine implemented using an asynchronous delegate library. |
+| [Async-SQLite](https://github.com/endurodave/Async-SQLite) | An asynchronous SQLite wrapper implemented using an asynchronous delegate library. |
 
 
 
