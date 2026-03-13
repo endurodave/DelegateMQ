@@ -141,7 +141,7 @@ void ExecuteAllTests() {
     // NOTE: C++ Destructor ~Timer() MUST run to unregister from the global list!
     Timer myTimer;
 
-    (*myTimer.OnExpired) += MakeDelegate(&handler, &TestHandler::OnTimerExpired);
+    ScopedConnection timerConn = myTimer.OnExpired.Connect(MakeDelegate(&handler, &TestHandler::OnTimerExpired));
 
     printf("  -> Starting Timer (200ms delay)...\n");
     myTimer.Start(std::chrono::milliseconds(200));

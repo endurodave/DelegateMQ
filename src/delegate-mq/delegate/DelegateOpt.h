@@ -12,9 +12,9 @@
     #error "RTTI compiler option is disabled but required by the DelegateMQ library."
 #endif
 
-#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32)
-    // Windows / Linux / macOS (Standard Library)
-    #include <condition_variable> 
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT)
+    // Windows / Linux / macOS / Qt (Standard Library)
+    #include <condition_variable>
 #elif defined(DMQ_THREAD_FREERTOS)
     #include "predef/util/FreeRTOSClock.h"
     #include "predef/util/FreeRTOSMutex.h"
@@ -38,7 +38,7 @@ namespace dmq
     // @TODO: Change aliases to switch clock type globally if necessary
 
     // --- CLOCK SELECTION ---
-#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32)
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT)
     // Windows / Linux / macOS / Qt
     using Clock = std::chrono::steady_clock;
 
@@ -68,7 +68,7 @@ namespace dmq
     using TimePoint = typename Clock::time_point;
 
     // --- MUTEX / LOCK SELECTION ---
-#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32)
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT)
     // Windows / Linux / macOS / Qt
     using Mutex = std::mutex;
     using RecursiveMutex = std::recursive_mutex;

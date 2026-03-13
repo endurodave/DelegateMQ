@@ -31,10 +31,7 @@ public:
         m_dispatcher.SetTransport(&m_reliableTransport);
 
         // Subscribe to the Status Signal
-        // We connect our callback to the signal shared_ptr provided by TransportMonitor
-        if (m_transportMonitor.OnSendStatus) {
-            m_statusHandle = (*m_transportMonitor.OnSendStatus).Connect(MakeDelegate(this, &Sender::OnSendStatus));  // TODO need m_thread? 
-        }
+        m_statusHandle = m_transportMonitor.OnSendStatus.Connect(MakeDelegate(this, &Sender::OnSendStatus));
 
         // Set the delegate interfaces
         m_sendDelegate.SetStream(&m_argStream);
@@ -55,13 +52,13 @@ public:
     void Start()
     {
         // Start a timer to send data
-        (*m_sendTimer.OnExpired) += MakeDelegate(this, &Sender::Send, m_thread);
+        m_sendTimerConn = m_sendTimer.OnExpired.Connect(MakeDelegate(this, &Sender::Send, m_thread));
         m_sendTimer.Start(std::chrono::milliseconds(50));
     }
 
     void Stop()
     {
-        (*m_sendTimer.OnExpired) -= MakeDelegate(this, &Sender::Send, m_thread);
+        m_sendTimerConn.Disconnect();
         m_sendTimer.Stop();
 
         m_thread.ExitThread();
@@ -121,6 +118,7 @@ private:
 
     Thread m_thread;
     Timer m_sendTimer;
+    dmq::ScopedConnection m_sendTimerConn;
 
     xostringstream m_argStream;
     Dispatcher m_dispatcher;
@@ -135,7 +133,7 @@ private:
     // Sender remote delegate
     DelegateMemberRemote<Sender, void(Data&, DataAux&)> m_sendDelegate;
 
-    dmq::Connection m_statusHandle;
+    dmq::ScopedConnection m_statusHandle;
 
     int x = 0;
     int y = 0;

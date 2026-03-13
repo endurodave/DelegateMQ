@@ -45,8 +45,8 @@ public:
             return MakeDelegate(this, &Sender::Start, m_thread)();
 
         // Start a timer to send data
-        (*m_sendTimer.OnExpired) += MakeDelegate(this, &Sender::Send, m_thread);
-        //(*m_sendTimer.OnExpired) += MakeDelegate(this, &Sender::SendV2, m_thread);
+        m_sendTimerConn = m_sendTimer.OnExpired.Connect(MakeDelegate(this, &Sender::Send, m_thread));
+        //m_sendTimerConn = m_sendTimer.OnExpired.Connect(MakeDelegate(this, &Sender::SendV2, m_thread));
         m_sendTimer.Start(std::chrono::milliseconds(500));
     }
 
@@ -55,6 +55,7 @@ public:
         if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
             return MakeDelegate(this, &Sender::Stop, m_thread)();
 
+        m_sendTimerConn.Disconnect();
         m_sendTimer.Stop();
         m_transport.Close();
     }
@@ -125,6 +126,7 @@ private:
 
     Thread m_thread;
     Timer m_sendTimer;
+    dmq::ScopedConnection m_sendTimerConn;
 
     xostringstream m_argStream;
     Dispatcher m_dispatcher;

@@ -61,7 +61,7 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 
             // Timer to ensure the Thread instance runs periodically.
             m_threadTimer = std::make_unique<Timer>();
-            m_threadTimerConn = m_threadTimer->OnExpired.Connect(MakeDelegate(this, &Thread::ThreadCheck));
+            m_threadTimerConn = m_threadTimer->OnExpired.Connect(MakeDelegate(this, &Thread::ThreadCheck, *this));
             m_threadTimer->Start(m_watchdogTimeout.load() / 4);
 
             // Timer to check that this Thread instance runs.

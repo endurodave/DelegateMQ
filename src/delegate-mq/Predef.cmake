@@ -32,9 +32,15 @@ elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_ZEPHYR")
     )
 elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_CMSIS_RTOS2")
     add_compile_definitions(DMQ_THREAD_CMSIS_RTOS2)
-    file(GLOB THREAD_SOURCES 
-        "${DMQ_ROOT_DIR}/predef/os/cmsis-rtos2/*.c*" 
-        "${DMQ_ROOT_DIR}/predef/os/cmsis-rtos2/*.h" 
+    file(GLOB THREAD_SOURCES
+        "${DMQ_ROOT_DIR}/predef/os/cmsis-rtos2/*.c*"
+        "${DMQ_ROOT_DIR}/predef/os/cmsis-rtos2/*.h"
+    )
+elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_QT")
+    add_compile_definitions(DMQ_THREAD_QT)
+    file(GLOB THREAD_SOURCES
+        "${DMQ_ROOT_DIR}/predef/os/qt/*.c*"
+        "${DMQ_ROOT_DIR}/predef/os/qt/*.h"
     )
 elseif (DMQ_THREAD STREQUAL "DMQ_THREAD_NONE")
     add_compile_definitions(DMQ_THREAD_NONE)
@@ -100,7 +106,7 @@ elseif (DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_ARM_LWIP_NETCONN_UDP")
     file(GLOB TRANSPORT_SOURCES "${DMQ_ROOT_DIR}/predef/transport/arm-lwip-netconn-udp/*.h")    
 elseif (DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_THREADX_UDP")
     add_compile_definitions(DMQ_TRANSPORT_THREADX_UDP)
-    file(GLOB TRANSPORT_SOURCES "${DMQ_ROOT_DIR}/predef/transport/threadx-udp/*.h")
+    file(GLOB TRANSPORT_SOURCES "${DMQ_ROOT_DIR}/predef/transport/netx-udp/*.h")
 elseif (DMQ_TRANSPORT STREQUAL "DMQ_TRANSPORT_STM32_UART")
     add_compile_definitions(DMQ_TRANSPORT_STM32_UART)
     file(GLOB TRANSPORT_SOURCES "${DMQ_ROOT_DIR}/predef/transport/stm32-uart/*.h")

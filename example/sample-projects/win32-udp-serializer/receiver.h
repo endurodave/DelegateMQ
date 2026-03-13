@@ -47,13 +47,13 @@ public:
     void Start()
     {
         // Start a timer to poll data
-        (*m_recvTimer.OnExpired) += MakeDelegate(this, &Receiver::Poll, m_thread);
+        m_recvTimerConn = m_recvTimer.OnExpired.Connect(MakeDelegate(this, &Receiver::Poll, m_thread));
         m_recvTimer.Start(std::chrono::milliseconds(50));
     }
 
     void Stop()
     {
-        (*m_recvTimer.OnExpired) -= MakeDelegate(this, &Receiver::Poll, m_thread);
+        m_recvTimerConn.Disconnect();
         m_recvTimer.Stop();
         m_thread.ExitThread();
         m_recvTimer.Stop();
@@ -91,6 +91,7 @@ private:
     DelegateRemoteId m_id = INVALID_REMOTE_ID;
     Thread m_thread;
     Timer m_recvTimer;
+    dmq::ScopedConnection m_recvTimerConn;
 
     xostringstream m_argStream;
     UdpTransport m_transport;

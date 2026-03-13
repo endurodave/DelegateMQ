@@ -52,7 +52,7 @@ std::stringstream Transport::m_ss(ios::in | ios::out | ios::binary);
 std::mutex Transport::m_mutex;
 
 // Dispatcher sends data to the transport for transmission to the receiver
-class Dispatcher : public IDispatcher
+class BareMetalDispatcher : public IDispatcher
 {
 public:
     // Send argument data to the transport
@@ -167,13 +167,13 @@ public:
         m_thread.CreateThread();
 
         // Start a timer to send data
-        (*m_sendTimer.OnExpired) += MakeDelegate(this, &Sender::Send, m_thread);
+        m_sendTimerConn = m_sendTimer.OnExpired.Connect(MakeDelegate(this, &Sender::Send, m_thread));
         m_sendTimer.Start(std::chrono::milliseconds(50));
     }
 
     ~Sender()
     {
-        (*m_sendTimer.OnExpired) -= MakeDelegate(this, &Sender::Send, m_thread);
+        m_sendTimerConn.Disconnect();
         m_sendTimer.Stop();
         m_thread.ExitThread();
     }
@@ -196,8 +196,9 @@ private:
     Timer m_sendTimer;
 
     xostringstream m_args;
-    Dispatcher m_dispatcher;
+    BareMetalDispatcher m_dispatcher;
     Serializer<void(Data&)> m_serializer;
+    dmq::ScopedConnection m_sendTimerConn;
 
     // Sender remote delegate
     DelegateMemberRemote<Sender, void(Data&)> m_sendDelegate;
@@ -224,13 +225,13 @@ public:
         m_thread.CreateThread();
 
         // Start a timer to poll data
-        (*m_recvTimer.OnExpired) += MakeDelegate(this, &Receiver::Poll, m_thread);
+        m_recvTimerConn = m_recvTimer.OnExpired.Connect(MakeDelegate(this, &Receiver::Poll, m_thread));
         m_recvTimer.Start(std::chrono::milliseconds(50));
     }
 
     ~Receiver()
     {
-        (*m_recvTimer.OnExpired) -= MakeDelegate(this, &Receiver::Poll, m_thread);
+        m_recvTimerConn.Disconnect();
         m_thread.ExitThread();
         m_recvDelegate = nullptr;
     }
@@ -284,6 +285,7 @@ private:
 
     xostringstream m_args;
     Serializer<void(Data&)> m_serializer;
+    dmq::ScopedConnection m_recvTimerConn;
 
     // Receiver remote delegate
     DelegateMemberRemote<Receiver, void(Data&)> m_recvDelegate;

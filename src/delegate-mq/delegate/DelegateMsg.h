@@ -42,7 +42,7 @@ public:
 
 	/// Get the delegate message priority
 	/// @return Delegate message priority
-	Priority GetPriority() { return m_priority; }
+	Priority GetPriority() const { return m_priority; }
 
 private:
 	/// The IThreadInvoker instance used to invoke the target function 
