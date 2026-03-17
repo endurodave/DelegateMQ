@@ -218,7 +218,7 @@ private:
         xlist<std::shared_ptr<DelegateType>> delegates;
         XALLOCATOR
     };
-    std::shared_ptr<State> m_state = std::make_shared<State>();
+    std::shared_ptr<State> m_state = xmake_shared<State>();
 };
 
 } // namespace dmq

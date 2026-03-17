@@ -272,8 +272,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread
-            // If using XALLOCATOR explicit operator new required. See xallocator.h.
-            std::shared_ptr<DelegateAsyncMsg<Args...>> msg(new DelegateAsyncMsg<Args...>(delegate, m_priority, std::forward<Args>(args)...));
+            auto msg = xmake_shared<DelegateAsyncMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
 
@@ -586,8 +585,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread
-            // If using XALLOCATOR explicit operator new required. See xallocator.h.
-            std::shared_ptr<DelegateAsyncMsg<Args...>> msg(new DelegateAsyncMsg<Args...>(delegate, m_priority, std::forward<Args>(args)...));
+            auto msg = xmake_shared<DelegateAsyncMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
 
@@ -829,8 +827,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread
-            // If using XALLOCATOR explicit operator new required. See xallocator.h.
-            std::shared_ptr<DelegateAsyncMsg<Args...>> msg(new DelegateAsyncMsg<Args...>(delegate, m_priority, std::forward<Args>(args)...));
+            auto msg = xmake_shared<DelegateAsyncMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
 
@@ -1084,8 +1081,7 @@ public:
                 BAD_ALLOC();
 
             // Create a new message instance for sending to the destination thread
-            // If using XALLOCATOR explicit operator new required. See xallocator.h.
-            std::shared_ptr<DelegateAsyncMsg<Args...>> msg(new DelegateAsyncMsg<Args...>(delegate, m_priority, std::forward<Args>(args)...));
+            auto msg = xmake_shared<DelegateAsyncMsg<Args...>>(delegate, m_priority, std::forward<Args>(args)...);
             if (!msg)
                 BAD_ALLOC();
 
