@@ -88,6 +88,14 @@ QThread* Thread::GetCurrentThreadId()
 }
 
 //----------------------------------------------------------------------------
+// IsCurrentThread
+//----------------------------------------------------------------------------
+bool Thread::IsCurrentThread()
+{
+    return GetThreadId() == GetCurrentThreadId();
+}
+
+//----------------------------------------------------------------------------
 // DispatchDelegate
 //----------------------------------------------------------------------------
 void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)

@@ -48,6 +48,9 @@ public:
     osThreadId_t GetThreadId();
     static osThreadId_t GetCurrentThreadId();
 
+    /// Returns true if the calling thread is this thread
+    virtual bool IsCurrentThread() override;
+
     /// Set the thread priority.
     /// Can be called before or after CreateThread().
     void SetThreadPriority(osPriority_t priority);

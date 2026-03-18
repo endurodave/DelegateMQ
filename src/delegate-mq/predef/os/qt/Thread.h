@@ -41,6 +41,9 @@ public:
     /// Get the current executing QThread pointer
     static QThread* GetCurrentThreadId();
 
+    /// Returns true if the calling thread is this thread
+    virtual bool IsCurrentThread() override;
+
     std::string GetThreadName() const { return m_threadName; }
 
     // IThread Interface Implementation

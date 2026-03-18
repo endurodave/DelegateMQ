@@ -254,6 +254,11 @@ DWORD Thread::GetThreadId() { return m_threadId; }
 DWORD Thread::GetCurrentThreadId() { return ::GetCurrentThreadId(); }
 
 //----------------------------------------------------------------------------
+// IsCurrentThread
+//----------------------------------------------------------------------------
+bool Thread::IsCurrentThread() { return GetThreadId() == GetCurrentThreadId(); }
+
+//----------------------------------------------------------------------------
 // GetQueueSize
 //----------------------------------------------------------------------------
 size_t Thread::GetQueueSize()

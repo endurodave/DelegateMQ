@@ -341,7 +341,7 @@ public:
     {
         // If the caller thread is not the internal thread, reinvoke this function 
         // asynchronously on the internal thread to ensure thread-safety
-        if (m_thread.GetThreadId() != Thread::GetCurrentThreadId())
+        if (!m_thread.IsCurrentThread())
         {
             // Reinvoke StoreAsync(data) on m_thread context
             return dmq::MakeDelegate(shared_from_this(), &DataStore::StoreAsync, m_thread)(data);

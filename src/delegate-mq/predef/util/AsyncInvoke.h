@@ -42,7 +42,7 @@ auto AsyncInvoke(Func func, Thread& thread, const dmq::Duration& timeout, Args&&
     using RetType = decltype(func(std::forward<Args>(args)...));
 
     // Is the calling function executing on the requested thread?
-    if (thread.GetThreadId() != Thread::GetCurrentThreadId())
+    if (!thread.IsCurrentThread())
     {
         // Explicitly convert lambda 'func' to std::function.
         // MakeDelegate cannot deduce std::function from a raw lambda.
@@ -85,7 +85,7 @@ auto AsyncInvoke(TClass* tclass, Func func, Thread& thread, const dmq::Duration&
     // Deduce return type using std::invoke (robust for member pointers)
     using RetType = decltype(std::invoke(func, tclass, std::forward<Args>(args)...));
 
-    if (thread.GetThreadId() != Thread::GetCurrentThreadId())
+    if (!thread.IsCurrentThread())
     {
         // Create delegate. MakeDelegate handles member pointers correctly.
         auto delegate = dmq::MakeDelegate(tclass, func, thread, timeout);
@@ -120,7 +120,7 @@ auto AsyncInvoke(std::shared_ptr<TClass> tclass, Func func, Thread& thread, cons
     // Deduce return type using std::invoke (robust for member pointers)
     using RetType = decltype(std::invoke(func, tclass, std::forward<Args>(args)...));
 
-    if (thread.GetThreadId() != Thread::GetCurrentThreadId())
+    if (!thread.IsCurrentThread())
     {
         // Create delegate. MakeDelegate handles shared_ptr correctly (creates DelegateMemberSp).
         auto delegate = dmq::MakeDelegate(tclass, func, thread, timeout);

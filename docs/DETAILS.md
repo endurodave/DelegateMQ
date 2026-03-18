@@ -1857,7 +1857,7 @@ While creating a separate private function for an asynchronous API works, delega
 void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
 {
     // Is the caller executing on workerThread2?
-    if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
+    if (!workerThread2.IsCurrentThread())
     {
         // Create an asynchronous delegate and re-invoke the function call on workerThread2
         auto delegate = 
@@ -1887,7 +1887,7 @@ A blocking asynchronous API can be encapsulated within a class member function. 
 SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type systemMode)
 {
     // Is the caller executing on workerThread2?
-    if (workerThread2.GetThreadId() != Thread::GetCurrentThreadId())
+    if (!workerThread2.IsCurrentThread())
     {
         // Create an asynchronous delegate and re-invoke the function call on workerThread2
         auto delegate = MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncWaitAPI, workerThread2, WAIT_INFINITE);

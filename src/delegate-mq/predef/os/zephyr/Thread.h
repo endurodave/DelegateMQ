@@ -23,6 +23,10 @@ public:
     // Note: k_tid_t is a struct k_thread* in Zephyr
     k_tid_t GetThreadId();
     static k_tid_t GetCurrentThreadId();
+
+    /// Returns true if the calling thread is this thread
+    virtual bool IsCurrentThread() override;
+
     std::string GetThreadName() { return THREAD_NAME; }
 
     virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg) override;

@@ -56,6 +56,9 @@ public:
     /// Get the ID of the currently executing thread
     static TX_THREAD* GetCurrentThreadId();
 
+    /// Returns true if the calling thread is this thread
+    virtual bool IsCurrentThread() override;
+
     /// Set the ThreadX Priority (0 = Highest). 
     /// Can be called before or after CreateThread().
     void SetThreadPriority(UINT priority);

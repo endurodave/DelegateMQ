@@ -67,7 +67,7 @@ namespace Example
         /// @param data The data string.
         /// @return Size of data sent.
         size_t SendDataV2(const std::string& data) {
-            if (m_thread.GetThreadId() != Thread::GetCurrentThreadId())
+            if (!m_thread.IsCurrentThread())
                 return MakeDelegate(shared_from_this(), &Communication::SendDataV2, m_thread, WAIT_INFINITE)(data);
             cout << data << endl;
             return data.size();

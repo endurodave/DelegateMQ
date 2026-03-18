@@ -132,6 +132,7 @@ void Thread::ExitThread()
 //----------------------------------------------------------------------------
 TaskHandle_t Thread::GetThreadId() { return m_thread; }
 TaskHandle_t Thread::GetCurrentThreadId() { return xTaskGetCurrentTaskHandle(); }
+bool Thread::IsCurrentThread() { return GetThreadId() == GetCurrentThreadId(); }
 
 void Thread::SetThreadPriority(int priority) {
     m_priority = priority;

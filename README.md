@@ -167,9 +167,9 @@ public:
     // 1. Store data asynchronously on m_thread context (non-blocking)
     void StoreAsync(const Data& data)
     {
-        // 2. If the caller thread is not the internal thread, reinvoke this function 
+        // 2. If the caller thread is not the internal thread, reinvoke this function
         //    asynchronously on the internal thread to ensure thread-safety
-        if (m_thread.GetThreadId() != Thread::GetCurrentThreadId()) 
+        if (!m_thread.IsCurrentThread())
         {
             // 3. Reinvoke StoreAsync(data) on m_thread context
             dmq::MakeDelegate(this, &DataStore::StoreAsync, m_thread)(data);
@@ -420,9 +420,7 @@ Repositories utilizing the DelegateMQ library.
 | Project | Description |
 | :--- | :--- |
 | [Integration Test Framework](https://github.com/endurodave/IntegrationTestFramework) | A multi-threaded C++ software integration test framework using Google Test and DelegateMQ libraries. |
-| [Delegate FSM](https://github.com/endurodave/delegate-fsm) | A modern C++ state machine using delegates for state registration and async active-object dispatch. |
-| [State Machine With Modern Delegates](https://github.com/endurodave/StateMachineWithModernDelegates) | A framework combining a C++ state machine with the asynchronous delegate library. |
-| [Async State Machine](https://github.com/endurodave/AsyncStateMachine) | An asynchronous C++ state machine implemented using an asynchronous delegate library. |
+| [Active-Object State Machine in C++](https://github.com/endurodave/active-fsm) | A modern active-object C++ finite state machine providing RAII-safe asynchronous dispatch and pub/sub signals. |
 | [Async-SQLite](https://github.com/endurodave/Async-SQLite) | An asynchronous SQLite wrapper implemented using an asynchronous delegate library. |
 
 

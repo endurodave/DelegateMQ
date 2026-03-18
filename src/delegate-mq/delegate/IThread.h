@@ -25,17 +25,21 @@ public:
 	virtual ~IThread() = default;
 
 	/// @brief Enqueues a delegate message for execution on this thread.
-	/// 
-	/// @details 
-	/// This function is called by the *source* thread (the caller). The implementation must 
+	///
+	/// @details
+	/// This function is called by the *source* thread (the caller). The implementation must
 	/// thread-safely transfer ownership of the `msg` into the target thread's processing queue.
-	/// 
-	/// Once the message is received by the target thread's main loop, that loop is responsible 
+	///
+	/// Once the message is received by the target thread's main loop, that loop is responsible
 	/// for calling `IInvoker::Invoke(msg)` to actually execute the function.
 	///
-	/// @param[in] msg A shared pointer to the delegate message. This pointer must remain valid 
+	/// @param[in] msg A shared pointer to the delegate message. This pointer must remain valid
 	/// until the target thread finishes execution.
 	virtual void DispatchDelegate(std::shared_ptr<DelegateMsg> msg) = 0;
+
+	/// @brief Returns true if the calling thread is this thread.
+	/// Used to decide whether to marshal an event or execute inline.
+	virtual bool IsCurrentThread() = 0;
 };
 
 }
