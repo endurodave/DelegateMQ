@@ -26,6 +26,7 @@
 /// @see SafeTimer.cpp for examples on how to handle callbacks safely with object lifetimes.
 class Timer
 {
+    XALLOCATOR
 public:
     /// Clients connect to OnExpired to get timer expiration callbacks.
     dmq::Signal<void(void)> OnExpired;

@@ -16,7 +16,7 @@ using namespace dmq;
 // Thread
 //----------------------------------------------------------------------------
 Thread::Thread(const std::string& threadName, size_t maxQueueSize)
-    : m_thread(nullptr)
+    : m_thread(std::nullopt)
     , m_exit(false)
     , THREAD_NAME(threadName)
     , MAX_QUEUE_SIZE(maxQueueSize)
@@ -38,17 +38,17 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 {
     if (!m_thread)
     {
-        m_threadStartPromise = std::promise<void>();
-        m_threadStartFuture = m_threadStartPromise.get_future();
+        m_threadStartPromise.emplace();
+        m_threadStartFuture.emplace(m_threadStartPromise->get_future());
         m_exit = false;
 
-        m_thread = std::unique_ptr<std::thread>(new thread(&Thread::Process, this));
+        m_thread.emplace(&Thread::Process, this);
 
         auto handle = m_thread->native_handle();
         SetThreadName(handle, THREAD_NAME);
 
         // Wait for the thread to enter the Process method
-        m_threadStartFuture.get();
+        m_threadStartFuture->get();
 
         m_lastAliveTime.store(Timer::GetNow());
 
@@ -59,12 +59,12 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
             m_watchdogTimeout = watchdogTimeout.value();
 
             // Timer to ensure the Thread instance runs periodically.
-            m_threadTimer = std::make_unique<Timer>();
+            m_threadTimer = std::unique_ptr<Timer>(new Timer());
             m_threadTimerConn = m_threadTimer->OnExpired.Connect(MakeDelegate(this, &Thread::ThreadCheck, *this));
             m_threadTimer->Start(m_watchdogTimeout.load() / 4);
 
             // Timer to check that this Thread instance runs. 
-            m_watchdogTimer = std::make_unique<Timer>();
+            m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
             m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(MakeDelegate(this, &Thread::WatchdogCheck));
             m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
         }
@@ -79,7 +79,7 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 //----------------------------------------------------------------------------
 std::thread::id Thread::GetThreadId()
 {
-    if (m_thread == nullptr)
+    if (!m_thread.has_value())
         throw std::invalid_argument("Thread pointer is null");
 
     return m_thread->get_id();
@@ -147,7 +147,7 @@ void Thread::ExitThread()
     }
 
     // Create a new ThreadMsg
-    std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_EXIT_THREAD, 0));
+    auto threadMsg = xmake_shared<ThreadMsg>(MSG_EXIT_THREAD, nullptr);
 
     {
         lock_guard<mutex> lock(m_mutex);
@@ -182,7 +182,7 @@ void Thread::ExitThread()
 
     {
         lock_guard<mutex> lock(m_mutex);
-        m_thread = nullptr;
+        m_thread.reset();
         while (!m_queue.empty())
             m_queue.pop();
 
@@ -202,11 +202,11 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     if (m_exit.load())
         return;
 
-    if (m_thread == nullptr)
+    if (!m_thread.has_value())
         throw std::invalid_argument("Thread pointer is null");
 
     // If using XALLOCATOR explicit operator new required. See xallocator.h.
-    std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_DISPATCH_DELEGATE, msg));
+    auto threadMsg = xmake_shared<ThreadMsg>(MSG_DISPATCH_DELEGATE, msg);
 
     std::unique_lock<std::mutex> lk(m_mutex);
 
@@ -264,7 +264,7 @@ void Thread::ThreadCheck()
 void Thread::Process()
 {
     // Signal that the thread has started processing to notify CreateThread
-    m_threadStartPromise.set_value();
+    m_threadStartPromise->set_value();
 
     LOG_INFO("Thread::Process Start {}", THREAD_NAME);
 

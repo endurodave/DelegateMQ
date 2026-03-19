@@ -143,7 +143,7 @@ public:
                 dmq::ConditionVariable cv;   // Generic CV
                 XALLOCATOR
             };
-            auto state = std::make_shared<SyncState>();
+            auto state = xmake_shared<SyncState>();
             dmq::DelegateRemoteId remoteId = endpoint.GetRemoteId();
 
             // 3. [Caller Thread] Define the callback that wakes us up later.
@@ -216,7 +216,7 @@ public:
                 dmq::ConditionVariable cv;
                 XALLOCATOR
             };
-            auto state = std::make_shared<SyncState>();
+            auto state = xmake_shared<SyncState>();
             dmq::DelegateRemoteId remoteId = channel.GetRemoteId();
 
             std::function<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)> statusCbFunc =

@@ -139,6 +139,7 @@ namespace dmq
     #include "predef/allocator/xlist.h"
     #include "predef/allocator/xsstream.h"
     #include "predef/allocator/stl_allocator.h"
+    #include "predef/allocator/xnew.h"
 #else
     #include <string>
     #include <list>
@@ -169,6 +170,17 @@ namespace dmq
     inline std::shared_ptr<T> xmake_shared(Args&&... args)
     {
         return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
+    // Fallback xnew/xdelete — use standard new/delete when fixed-block allocator is disabled
+    template<typename T, typename... Args>
+    inline T* xnew(Args&&... args) {
+        return new(std::nothrow) T(std::forward<Args>(args)...);
+    }
+
+    template<typename T>
+    inline void xdelete(T* p) {
+        delete p;
     }
 #endif
 

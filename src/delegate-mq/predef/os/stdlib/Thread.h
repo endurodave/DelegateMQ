@@ -107,10 +107,16 @@ private:
     /// other user delegate events to be handled.
     void ThreadCheck();
 
-    std::unique_ptr<std::thread> m_thread;
+    std::optional<std::thread> m_thread;
+#ifdef DMQ_ALLOCATOR
+    std::priority_queue<std::shared_ptr<ThreadMsg>,
+        std::vector<std::shared_ptr<ThreadMsg>, stl_allocator<std::shared_ptr<ThreadMsg>>>,
+        ThreadMsgComparator> m_queue;
+#else
     std::priority_queue<std::shared_ptr<ThreadMsg>,
         std::vector<std::shared_ptr<ThreadMsg>>,
         ThreadMsgComparator> m_queue;
+#endif
     std::mutex m_mutex;
     std::condition_variable m_cv;
 
@@ -122,9 +128,9 @@ private:
     // Max queue size for back pressure (0 = unlimited)
     const size_t MAX_QUEUE_SIZE;
 
-    // Promise and future to synchronize thread start
-    std::promise<void> m_threadStartPromise;
-    std::future<void> m_threadStartFuture;
+    // Promise and future to synchronize thread start (constructed lazily in CreateThread)
+    std::optional<std::promise<void>> m_threadStartPromise;
+    std::optional<std::future<void>> m_threadStartFuture;
 
     std::atomic<bool> m_exit;
 

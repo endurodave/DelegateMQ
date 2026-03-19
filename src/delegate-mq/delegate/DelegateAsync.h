@@ -267,7 +267,7 @@ public:
         }
         else {
             // Create a clone instance of this delegate 
-            auto delegate = std::shared_ptr<ClassType>(Clone());
+            auto delegate = xmake_shared<ClassType>(*this);
             if (!delegate)
                 BAD_ALLOC();
 
@@ -580,7 +580,7 @@ public:
         }
         else {
             // Create a clone instance of this delegate 
-            auto delegate = std::shared_ptr<ClassType>(Clone());
+            auto delegate = xmake_shared<ClassType>(*this);
             if (!delegate)
                 BAD_ALLOC();
 
@@ -822,7 +822,7 @@ public:
         }
         else {
             // Create a clone instance of this delegate 
-            auto delegate = std::shared_ptr<ClassType>(Clone());
+            auto delegate = xmake_shared<ClassType>(*this);
             if (!delegate)
                 BAD_ALLOC();
 
@@ -1076,7 +1076,7 @@ public:
         }
         else {
             // Create a clone instance of this delegate 
-            auto delegate = std::shared_ptr<ClassType>(Clone());
+            auto delegate = xmake_shared<ClassType>(*this);
             if (!delegate)
                 BAD_ALLOC();
 
