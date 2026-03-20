@@ -65,7 +65,7 @@ namespace Example
     };
 
     void SafeTimerExample() {
-        auto safeTimer = std::make_shared<SafeTimer>();
+        auto safeTimer = xmake_shared<SafeTimer>();
         safeTimer->Init();
 
         this_thread::sleep_for(chrono::milliseconds(500));

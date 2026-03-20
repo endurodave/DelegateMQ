@@ -152,15 +152,15 @@ namespace Example
         Sensor sensor;
 
         // 1. Setup Subscriber 1 (Manual Disconnect)
-        auto logger = std::make_shared<DataLogger>();
+        auto logger = xmake_shared<DataLogger>();
         logger->Init(sensor, callback_thread);
 
         // 2. Setup Subscriber 2 (Stored Connection)
-        auto analyzer = std::make_shared<DataAnalyzer>();
+        auto analyzer = xmake_shared<DataAnalyzer>();
         analyzer->Init(sensor, callback_thread);
 
         // 3. Setup Subscriber 3 (Scoped Connection)
-        auto monitor = std::make_shared<DataMonitor>();
+        auto monitor = xmake_shared<DataMonitor>();
         monitor->Init(sensor, callback_thread);
 
         // 4. Setup Lambda (ScopedConnection)

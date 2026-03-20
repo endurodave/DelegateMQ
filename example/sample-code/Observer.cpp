@@ -93,8 +93,8 @@ namespace Example
     void ObserverExample()
     {
         // Create concrete observers
-        std::shared_ptr<ConcreteObserverA> observerA = std::make_shared<ConcreteObserverA>();
-        std::shared_ptr<ConcreteObserverB> observerB = std::make_shared<ConcreteObserverB>();
+        std::shared_ptr<ConcreteObserverA> observerA = xmake_shared<ConcreteObserverA>();
+        std::shared_ptr<ConcreteObserverB> observerB = xmake_shared<ConcreteObserverB>();
 
         // Create a concrete subject
         ConcreteSubject subject(10);  // Initial state is 10

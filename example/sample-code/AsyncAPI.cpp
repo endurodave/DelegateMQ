@@ -80,7 +80,7 @@ namespace Example
         /// @return Size of data sent.
         size_t SendDataV3(const std::string& data) {
             auto self = shared_from_this();
-            auto sendDataLambda = [self](const std::string& data) -> bool {
+            auto sendDataLambda = [self](const std::string& data) -> size_t {
                 cout << data << endl;
                 return data.size();
                 };
@@ -124,7 +124,7 @@ namespace Example
         comm_thread.CreateThread();
 
         // Create the communication object associated with the thread.
-        auto comm = std::make_shared<Communication>(comm_thread);
+        auto comm = xmake_shared<Communication>(comm_thread);
 
         // Test member functions
         // These calls originate on the main thread but execute on 'comm_thread'.

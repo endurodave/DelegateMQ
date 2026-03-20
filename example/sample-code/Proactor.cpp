@@ -78,7 +78,7 @@ namespace Example
         Proactor proactor;
 
         // Create a handler that will process the file read result
-        auto handler = std::make_shared<FileReadHandler>();
+        auto handler = xmake_shared<FileReadHandler>();
 
         // Initiate an asynchronous file read operation
         proactor.asyncReadFile("example.txt", handler);

@@ -15,7 +15,7 @@ namespace Example
 {
     static Thread workerThread1("AllTargets");
 
-    static int callCnt = 0;
+    static std::atomic<int> callCnt = 0;
 
     static void FreeFunc(int value) {
         cout << "FreeFunc " << value << " " << ++callCnt << endl;
@@ -56,7 +56,7 @@ namespace Example
         };
 
         Class testClass;
-        std::shared_ptr<Class> testClassSp = std::make_shared<Class>();
+        std::shared_ptr<Class> testClassSp = xmake_shared<Class>();
 
         // Create a multicast delegate container that accepts Delegate<void(int)> delegates.
         // Any function with the signature "void Func(int)".
