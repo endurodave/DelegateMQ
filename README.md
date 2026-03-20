@@ -421,7 +421,8 @@ Repositories utilizing the DelegateMQ library.
 | :--- | :--- |
 | [Integration Test Framework](https://github.com/endurodave/IntegrationTestFramework) | A multi-threaded C++ software integration test framework using Google Test and DelegateMQ libraries. |
 | [Active-Object State Machine in C++](https://github.com/endurodave/active-fsm) | A modern active-object C++ finite state machine providing RAII-safe asynchronous dispatch and pub/sub signals. |
-| [Async-SQLite](https://github.com/endurodave/Async-SQLite) | An asynchronous SQLite wrapper implemented using an asynchronous delegate library. |
+| [Async-SQLite](https://github.com/endurodave/Async-SQLite) | An asynchronous SQLite thread-safe wrapper implemented using an asynchronous delegate library. |
+| [Async-DuckDB](https://github.com/endurodave/Async-DuckDB) | An asynchronous DuckDB thread-safe wrapper implemented using an asynchronous delegate library. |
 
 
 
