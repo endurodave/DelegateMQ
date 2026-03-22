@@ -84,10 +84,10 @@ Asynchronous delegates simplify multithreaded programming by allowing you to inv
   * **Asynchronous:** Use standard `std::future` to retrieve results later.
 
 ```cpp
-// 1. Asynchronous Invocation (Non-blocking / Fire-and-forget)
 Thread thread("WorkerThread");
 thread.CreateThread();
 
+// 1. Asynchronous Invocation (Non-blocking / Fire-and-forget)
 auto async = dmq::MakeDelegate(&MsgOut, thread);
 async("Invoke MsgOut async (non-blocking)!");
 
