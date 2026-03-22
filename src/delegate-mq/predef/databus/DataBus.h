@@ -1,0 +1,295 @@
+#ifndef DMQ_DATABUS_H
+#define DMQ_DATABUS_H
+
+#include "DelegateMQ.h"
+#include "Participant.h"
+#include "DataBusQos.h"
+#include "predef/util/Fault.h"
+
+#ifdef _WIN32
+#include "predef/util/WinsockConnect.h"
+#endif
+
+#include <string>
+#include <unordered_map>
+#include <memory>
+#include <mutex>
+#include <vector>
+#include <functional>
+#include <typeindex>
+
+namespace dmq {
+
+// The DataBus is a central registry for topic-based communication.
+// It allows components to publish and subscribe to data topics identified by strings.
+//
+// LIFETIME NOTE: This class assumes that any external ISerializer or ITransport objects 
+// passed to it (e.g., via AddParticipant or RegisterSerializer) will outlive 
+// the DataBus instance or its Reset() calls.
+class DataBus {
+public:
+    // Subscribe to a topic with optional QoS and thread dispatching.
+    // NOTE: This triggers an immediate LVC callback if enabled. There is a small window
+    // between LVC delivery and actual Signal connection where a publish might be missed.
+    template <typename T, typename F>
+    static dmq::ScopedConnection Subscribe(const std::string& topic, F&& func, dmq::IThread* thread = nullptr, QoS qos = {}) {
+        return GetInstance().InternalSubscribe<T>(topic, std::forward<F>(func), thread, qos);
+    }
+
+    // Subscribe to a topic with a filter.
+    template <typename T, typename F, typename P>
+    static dmq::ScopedConnection SubscribeFilter(const std::string& topic, F&& func, P&& predicate, dmq::IThread* thread = nullptr, QoS qos = {}) {
+        auto filterFunc = [f = std::forward<F>(func), p = std::forward<P>(predicate)](T data) {
+            if (p(data)) {
+                f(data);
+            }
+        };
+        return GetInstance().InternalSubscribe<T>(topic, std::move(filterFunc), thread, qos);
+    }
+
+    // Publish data to a topic.
+    template <typename T>
+    static void Publish(const std::string& topic, T data) {
+        GetInstance().InternalPublish<T>(topic, std::move(data));
+    }
+
+    // Add a remote participant to the bus.
+    static void AddParticipant(std::shared_ptr<Participant> participant) {
+        GetInstance().InternalAddParticipant(participant);
+    }
+
+    // Register a serializer for a topic (required for remote distribution).
+    template <typename T>
+    static void RegisterSerializer(const std::string& topic, dmq::ISerializer<void(T)>& serializer) {
+        GetInstance().InternalRegisterSerializer<T>(topic, serializer);
+    }
+
+    // Register a stringifier for a topic to enable spying/logging.
+    template <typename T>
+    static void RegisterStringifier(const std::string& topic, std::function<std::string(const T&)> func) {
+        GetInstance().InternalRegisterStringifier<T>(topic, std::move(func));
+    }
+
+    // Subscribe to all bus traffic (topic and stringified value).
+    static dmq::ScopedConnection Monitor(std::function<void(const std::string&, const std::string&)> func) {
+        DataBus& instance = GetInstance();
+        std::lock_guard<dmq::RecursiveMutex> lock(instance.m_mutex);
+        return instance.m_monitorSignal.Connect(dmq::MakeDelegate(std::move(func)));
+    }
+
+    // Reset the DataBus (mostly for testing).
+    static void ResetForTesting() {
+        GetInstance().InternalReset();
+    }
+
+private:
+    DataBus() = default;
+    ~DataBus() = default;
+
+    DataBus(const DataBus&) = delete;
+    DataBus& operator=(const DataBus&) = delete;
+
+    static DataBus& GetInstance() {
+        static DataBus instance;
+        return instance;
+    }
+
+    template <typename T>
+    using SignalPtr = std::shared_ptr<dmq::Signal<void(T)>>;
+
+    template <typename T, typename F>
+    dmq::ScopedConnection InternalSubscribe(const std::string& topic, F&& func, dmq::IThread* thread, QoS qos) {
+        SignalPtr<T> signal;
+        
+        // Performance Note: Forced std::function construction for internal type management.
+        std::function<void(T)> typedFunc = std::forward<F>(func);
+        T* cachedValPtr = nullptr;
+        T cachedVal;
+        dmq::ScopedConnection conn;
+
+        {
+            std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+            
+            // 1. Enable LVC if requested (persists for topic lifetime until ResetForTesting)
+            if (qos.lastValueCache) {
+                m_topicQos[topic].lastValueCache = true;
+            }
+
+            // 2. Get or create signal with type safety check (std::type_index)
+            signal = GetOrCreateSignal<T>(topic);
+            if (!signal) {
+                return {}; // Type mismatch or other failure
+            }
+
+            // 3. Establish connection while holding the lock. This ensures no publishes
+            // are missed, as any new publish will be blocked until this lock is released.
+            if (thread) {
+                conn = signal->Connect(dmq::MakeDelegate(typedFunc, *thread));
+            } else {
+                conn = signal->Connect(dmq::MakeDelegate(typedFunc));
+            }
+
+            // 4. Prepare LVC delivery if enabled and available
+            if (qos.lastValueCache) {
+                auto it = m_lastValues.find(topic);
+                if (it != m_lastValues.end()) {
+                    cachedVal = *std::static_pointer_cast<T>(it->second);
+                    cachedValPtr = &cachedVal;
+                }
+            }
+        }
+
+        // 5. Dispatch LVC outside the lock to prevent deadlocks. 
+        // IMPORTANT: Because this happens after releasing the lock, a high-frequency
+        // publisher on another thread could have already sent a new value to the
+        // connected signal. The subscriber might receive the fresh value FIRST,
+        // followed by this stale LVC value. Users of LVC should ensure their 
+        // logic handles potential out-of-order state arrival.
+        if (cachedValPtr) {
+            if (thread) {
+                dmq::MakeDelegate(typedFunc, *thread).AsyncInvoke(*cachedValPtr);
+            } else {
+                typedFunc(*cachedValPtr);
+            }
+        }
+
+        return conn;
+    }
+
+    template <typename T>
+    void InternalPublish(const std::string& topic, T data) {
+        SignalPtr<T> signal;
+        std::shared_ptr<void> serializerPtr;
+        dmq::ISerializer<void(T)>* serializer = nullptr;
+        std::vector<std::shared_ptr<Participant>> participantsSnapshot;
+        std::string strVal = "?";
+        bool hasMonitor = false;
+
+        {
+            std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+            
+            // 1. Update LVC ONLY if enabled for this topic to save memory.
+            // NOTE: QoS lastValueCache is currently "sticky" per topic. Once enabled
+            // by any subscriber, it remains active for that topic until ResetForTesting().
+            auto itQos = m_topicQos.find(topic);
+            if (itQos != m_topicQos.end() && itQos->second.lastValueCache) {
+                m_lastValues[topic] = std::make_shared<T>(data);
+            }
+
+            // 2. Prepare monitor data
+            if (!m_monitorSignal.Empty()) {
+                hasMonitor = true;
+                auto itStr = m_stringifiers.find(topic);
+                if (itStr != m_stringifiers.end()) {
+                    auto func = static_cast<std::function<std::string(const T&)>*>(itStr->second.get());
+                    strVal = (*func)(data);
+                }
+            }
+
+            // 3. Get signal and remote info. Only create Signal if there is local interest.
+            auto itSig = m_signals.find(topic);
+            if (itSig != m_signals.end()) {
+                signal = std::static_pointer_cast<dmq::Signal<void(T)>>(itSig->second);
+            }
+            
+            auto itSer = m_serializers.find(topic);
+            if (itSer != m_serializers.end()) {
+                serializerPtr = itSer->second;
+                serializer = static_cast<dmq::ISerializer<void(T)>*>(serializerPtr.get());
+            }
+
+            // 4. Snapshot participants while locked to ensure atomicity between 
+            // local and remote dispatch sets.
+            participantsSnapshot = m_participants;
+        }
+
+        // 5. Dispatch Monitor outside lock to allow re-entry/prevent deadlocks
+        if (hasMonitor) {
+            m_monitorSignal(topic, strVal);
+        }
+
+        // 6. Local distribution
+        if (signal) {
+            (*signal)(data);
+        }
+
+        // 7. Remote distribution using the snapshot
+        if (serializer) {
+            for (auto& participant : participantsSnapshot) {
+                participant->Send<T>(topic, data, *serializer);
+            }
+        }
+    }
+
+    void InternalAddParticipant(std::shared_ptr<Participant> participant) {
+        std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+        m_participants.push_back(participant);
+    }
+
+    template <typename T>
+    void InternalRegisterSerializer(const std::string& topic, dmq::ISerializer<void(T)>& serializer) {
+        std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+        // Use shared_ptr with no-op deleter because serializer is owned by caller
+        m_serializers[topic] = std::shared_ptr<void>(&serializer, [](void*) {});
+    }
+
+    template <typename T>
+    void InternalRegisterStringifier(const std::string& topic, std::function<std::string(const T&)> func) {
+        std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+        // Use shared_ptr with custom deleter to fix memory leak
+        m_stringifiers[topic] = std::shared_ptr<void>(
+            new std::function<std::string(const T&)>(std::move(func)),
+            [](void* ptr) { delete static_cast<std::function<std::string(const T&)>*>(ptr); }
+        );
+    }
+
+    void InternalReset() {
+        std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+        m_signals.clear();
+        m_participants.clear();
+        m_serializers.clear();
+        m_lastValues.clear();
+        m_topicQos.clear();
+        m_stringifiers.clear(); // shared_ptr correctly frees allocated functions
+        m_typeIndices.clear();
+        m_monitorSignal.Clear();
+    }
+
+    template <typename T>
+    SignalPtr<T> GetOrCreateSignal(const std::string& topic) {
+        // Assume lock is held by caller
+        auto itType = m_typeIndices.find(topic);
+        if (itType != m_typeIndices.end()) {
+            if (itType->second != std::type_index(typeid(T))) {
+                // Runtime Type Safety: Catch same topic string used with different types
+                ::FaultHandler(__FILE__, (unsigned short)__LINE__);
+                return nullptr; 
+            }
+        } else {
+            m_typeIndices.emplace(topic, std::type_index(typeid(T)));
+        }
+
+        auto it = m_signals.find(topic);
+        if (it != m_signals.end()) {
+            return std::static_pointer_cast<dmq::Signal<void(T)>>(it->second);
+        }
+
+        auto signal = std::make_shared<dmq::Signal<void(T)>>();
+        m_signals[topic] = std::static_pointer_cast<void>(signal);
+        return signal;
+    }
+
+    dmq::RecursiveMutex m_mutex;
+    std::unordered_map<std::string, std::shared_ptr<void>> m_signals;
+    std::unordered_map<std::string, std::type_index> m_typeIndices;
+    std::vector<std::shared_ptr<Participant>> m_participants;
+    std::unordered_map<std::string, std::shared_ptr<void>> m_serializers;
+    std::unordered_map<std::string, std::shared_ptr<void>> m_lastValues;
+    std::unordered_map<std::string, QoS> m_topicQos;
+    std::unordered_map<std::string, std::shared_ptr<void>> m_stringifiers;
+    dmq::Signal<void(const std::string&, const std::string&)> m_monitorSignal;
+};
+
+} // namespace dmq
+
+#endif // DMQ_DATABUS_H

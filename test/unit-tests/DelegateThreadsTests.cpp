@@ -9,8 +9,8 @@ using namespace dmq;
 using namespace std;
 using namespace UnitTestData;
 
-static Thread workerThread1("DelegateThreads1_UT");
-static Thread workerThread2("DelegateThreads2_UT");
+static Thread workerThread1("DelegateThreads1Tests");
+static Thread workerThread2("DelegateThreads2Tests");
 
 static std::mutex m_lock;
 static const int LOOPS = 10;
@@ -278,7 +278,7 @@ static void FunctionTests()
     std::cout << "FunctionTests() complete!" << std::endl;
 }
 
-void DelegateThreads_UT()
+void DelegateThreadsTests()
 {
     workerThread1.CreateThread();
     workerThread2.CreateThread();

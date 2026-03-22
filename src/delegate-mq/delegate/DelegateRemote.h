@@ -459,6 +459,10 @@ public:
     // @return The remote identifier.
     DelegateRemoteId GetRemoteId() noexcept { return m_id; }
 
+    ///@brief Set the remote identifier.
+    // @param[in] id The remote identifier.
+    void SetRemoteId(DelegateRemoteId id) noexcept { m_id = id; }
+
     /// @brief Set the dispatcher instance used to send to remote
     /// @param[in] dispatcher A dispatcher instance
     void SetDispatcher(IDispatcher* dispatcher) {
@@ -952,6 +956,10 @@ public:
     // @return The remote identifier.
     DelegateRemoteId GetRemoteId() noexcept { return m_id; }
 
+    ///@brief Set the remote identifier.
+    // @param[in] id The remote identifier.
+    void SetRemoteId(DelegateRemoteId id) noexcept { m_id = id; }
+
     /// @brief Set the dispatcher instance used to send to remote
     /// @param[in] dispatcher A dispatcher instance
     void SetDispatcher(IDispatcher* dispatcher) {
@@ -1384,6 +1392,10 @@ public:
     ///@brief Get the remote identifier.
     // @return The remote identifier.
     DelegateRemoteId GetRemoteId() noexcept { return m_id; }
+
+    ///@brief Set the remote identifier.
+    // @param[in] id The remote identifier.
+    void SetRemoteId(DelegateRemoteId id) noexcept { m_id = id; }
 
     /// @brief Set the dispatcher instance used to send to remote
     /// @param[in] dispatcher A dispatcher instance

@@ -2571,13 +2571,13 @@ void DelegateMemberAsyncWaitTests()
 		int ret = MemberFuncIntWithReturn5Delegate(TEST_INT, TEST_INT, TEST_INT, TEST_INT, TEST_INT);
 }
 
-extern void Delegate_UT();
-extern void DelegateAsync_UT();
-extern void DelegateAsyncWait_UT();
-extern void DelegateRemote_UT();
-extern void DelegateThreads_UT();
-extern void Containers_UT();
-extern void RemoteChannel_UT();
+extern void DelegateTests();
+extern void DelegateAsyncTests();
+extern void DelegateAsyncWaitTests();
+extern void DelegateRemoteTests();
+extern void DelegateThreadsTests();
+extern void ContainersTests();
+extern void RemoteChannelTests();
 
 void RunDelegateUnitTests()
 {
@@ -2585,13 +2585,13 @@ void RunDelegateUnitTests()
 
 	try
 	{
-		Containers_UT();
-		Delegate_UT();
-		DelegateAsync_UT();
-		DelegateAsyncWait_UT();
-		DelegateRemote_UT();
-		DelegateThreads_UT();
-		RemoteChannel_UT();
+		ContainersTests();
+		DelegateTests();
+		DelegateAsyncTests();
+		DelegateAsyncWaitTests();
+		DelegateRemoteTests();
+		DelegateThreadsTests();
+		RemoteChannelTests();
 	}
 	catch (const std::exception& e)
 	{

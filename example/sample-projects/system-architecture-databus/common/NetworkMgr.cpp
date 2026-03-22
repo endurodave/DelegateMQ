@@ -1,0 +1,99 @@
+#include "NetworkMgr.h"
+
+using namespace dmq;
+using namespace std;
+
+NetworkMgr::NetworkMgr()
+{
+}
+
+int NetworkMgr::Create()
+{
+    // Initialize one RemoteChannel per message signature.
+    // Each channel owns its Dispatcher, stream, and serializer — and now also
+    // owns the delegate binding via Bind(), replacing the separate DelegateMemberRemote.
+    m_alarmChannel.emplace(GetSendTransport(), m_alarmSer);
+    m_commandChannel.emplace(GetSendTransport(), m_commandSer);
+    m_dataChannel.emplace(GetSendTransport(), m_dataSer);
+    m_actuatorChannel.emplace(GetSendTransport(), m_actuatorSer);
+
+    // Bind the receive-side handler and wire the send-side infrastructure in one call.
+    m_alarmChannel->Bind(this, &NetworkMgr::ForwardAlarm, ids::ALARM_MSG_ID);
+    m_commandChannel->Bind(this, &NetworkMgr::ForwardCommand, ids::COMMAND_MSG_ID);
+    m_dataChannel->Bind(this, &NetworkMgr::ForwardData, ids::DATA_MSG_ID);
+    m_actuatorChannel->Bind(this, &NetworkMgr::ForwardActuator, ids::ACTUATOR_MSG_ID);
+
+    // Register error handlers
+    m_alarmChannel->SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+    m_commandChannel->SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+    m_dataChannel->SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+    m_actuatorChannel->SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+
+    // Register endpoints with the Base Engine (so Incoming() can route by ID)
+    RegisterEndpoint(ids::ALARM_MSG_ID,   m_alarmChannel->GetEndpoint());
+    RegisterEndpoint(ids::COMMAND_MSG_ID, m_commandChannel->GetEndpoint());
+    RegisterEndpoint(ids::DATA_MSG_ID,    m_dataChannel->GetEndpoint());
+    RegisterEndpoint(ids::ACTUATOR_MSG_ID, m_actuatorChannel->GetEndpoint());
+
+    // Initialize Base Engine
+#ifdef SERVER_APP
+    // Server Publishes on 50000, Listens on 50001
+    return Initialize("127.0.0.1", 50000, "127.0.0.1", 50001);
+#else
+    // Client Publishes on 50001, Listens on 50000
+    return Initialize("127.0.0.1", 50001, "127.0.0.1", 50000);
+#endif
+}
+
+// Override hooks to fire signals
+void NetworkMgr::OnError(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux) {
+    OnNetworkError(id, error, aux);
+}
+
+void NetworkMgr::OnStatus(DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
+    OnSendStatus(id, seq, status);
+}
+
+void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note) {
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::SendAlarmMsg, m_thread)(msg, note);
+    (*m_alarmChannel)(msg, note);
+}
+
+bool NetworkMgr::SendAlarmMsgWait(AlarmMsg& msg, AlarmNote& note) {
+    return RemoteInvokeWait(*m_alarmChannel, msg, note);
+}
+
+void NetworkMgr::SendCommandMsg(CommandMsg& command) {
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::SendCommandMsg, m_thread)(command);
+    (*m_commandChannel)(command);
+}
+
+bool NetworkMgr::SendCommandMsgWait(CommandMsg& command) {
+    return RemoteInvokeWait(*m_commandChannel, command);
+}
+
+void NetworkMgr::SendDataMsg(DataMsg& data) {
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::SendDataMsg, m_thread)(data);
+    (*m_dataChannel)(data);
+}
+
+bool NetworkMgr::SendDataMsgWait(DataMsg& data) {
+    return RemoteInvokeWait(*m_dataChannel, data);
+}
+
+void NetworkMgr::SendActuatorMsg(ActuatorMsg& msg) {
+    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        return MakeDelegate(this, &NetworkMgr::SendActuatorMsg, m_thread)(msg);
+    (*m_actuatorChannel)(msg);
+}
+
+bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg) {
+    return RemoteInvokeWait(*m_actuatorChannel, msg);
+}
+
+std::future<bool> NetworkMgr::SendActuatorMsgFuture(ActuatorMsg& msg) {
+    return std::async(&NetworkMgr::SendActuatorMsgWait, this, std::ref(msg));
+}

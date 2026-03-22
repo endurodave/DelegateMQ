@@ -231,6 +231,7 @@ auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const
 template<typename... Ts>
 auto make_tuple_heap(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, std::tuple<Ts...> tup)
 {
+    (void)heapArgs;
     return tup;
 }
 

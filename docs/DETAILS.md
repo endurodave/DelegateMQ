@@ -32,6 +32,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Lambda Slots](#lambda-slots)
     - [When to use `MulticastDelegateSafe` instead](#when-to-use-multicastdelegatesafe-instead)
   - [Remote Delegate](#remote-delegate)
+  - [DataBus](#databus)
   - [Async Public API Pattern](#async-public-api-pattern)
   - [Delegate Invocation Semantics](#delegate-invocation-semantics)
 - [Porting Guide](#porting-guide)
@@ -555,6 +556,85 @@ private:
 ```
 
 The sender calls `(*m_channel)(value)` or `RemoteInvokeWait(*m_channel, value)`. The transport serializes the argument, sends it, and on the receiver side `OnTemperature()` is called — just like a normal function. See [Sample Projects](#sample-projects) for complete working examples with real transports.
+
+---
+
+## DataBus
+
+`DataBus` is a high-level middleware built on top of DelegateMQ's core delegates. It provides a topic-based data distribution system (DDS Lite) that works across threads and remote nodes with full location transparency.
+
+### Core Concepts
+
+- **Topic**: A unique string identifier for a data stream (e.g., `"sensor/battery_voltage"`).
+- **Participant**: Represents a node in the network. Manages remote topic mappings and transport integration.
+- **QoS (Quality of Service)**: Configuration for topic behavior, such as Last Value Cache (LVC).
+
+### Features
+
+1. **Location Transparency**: Components subscribe to topics by name. They do not need to know if the publisher is in the same thread, a different thread, or on a completely different processor.
+2. **Dynamic Discovery (Manual)**: While not fully automatic like industrial DDS, `DataBus` allows adding `Participant` objects at runtime to bridge local buses across a network.
+3. **Type Safety**: Runtime checks ensure that if two components use the same topic name, they must use the same data type; otherwise, a fault is triggered.
+4. **Spy/Monitor Support**: Call `DataBus::Monitor()` to receive a callback for every single message published on the bus, including a stringified version of the data for logging.
+
+### Example: Local Pub/Sub
+
+```cpp
+// 1. Subscriber A (Synchronous)
+auto conn1 = dmq::DataBus::Subscribe<int>("system/status", [](int status) {
+    // Process status...
+});
+
+// 2. Subscriber B (Asynchronous on workerThread)
+auto conn2 = dmq::DataBus::Subscribe<int>("system/status", [](int status) {
+    // Process status on workerThread context...
+}, &workerThread);
+
+// 3. Publisher
+dmq::DataBus::Publish<int>("system/status", 1);
+```
+
+### Example: Last Value Cache (LVC)
+
+LVC ensures that new subscribers get the "latest and greatest" data immediately upon subscription, even if the publisher hasn't sent an update recently.
+
+```cpp
+dmq::QoS qos;
+qos.lastValueCache = true;
+
+// This subscriber will immediately receive the last value published to "sensor/temp"
+auto conn = dmq::DataBus::Subscribe<float>("sensor/temp", [](float v) {
+    std::cout << "Initial or updated temp: " << v << "\n";
+}, nullptr, qos);
+```
+
+### Example: Remote Distribution
+
+To send data across the network, register a serializer and a participant.
+
+```cpp
+// 1. Setup transport and participant
+UdpTransport transport;
+auto remoteNode = std::make_shared<dmq::Participant>(transport);
+remoteNode->AddRemoteTopic("telemetry/data", 100); // Map topic to remote ID 100
+
+// 2. Register with the bus
+dmq::DataBus::AddParticipant(remoteNode);
+dmq::DataBus::RegisterSerializer<MyData>("telemetry/data", mySerializer);
+
+// 3. Publish normally
+// The bus handles local distribution AND remote sending via the participant
+dmq::DataBus::Publish<MyData>("telemetry/data", someData);
+```
+
+### Last Value Cache (LVC)
+
+LVC is a Quality of Service (QoS) feature that ensures new subscribers to a topic receive the most recent information immediately, rather than waiting for the next publisher update.
+
+**How it works:**
+- **Cache Depth**: The cache depth is exactly **one (1) value per topic**. The DataBus stores only the latest data instance for each topic string.
+- **On Subscription**: When a subscriber connects with `qos.lastValueCache = true`, the DataBus checks if a value exists for that topic. If it does, the value is dispatched to the subscriber immediately (either synchronously or on the specified worker thread).
+- **On Publication**: If LVC is enabled for a topic, every `Publish` call overwrites the previous cached value with the new data.
+- **Optimization**: To save memory, the DataBus only caches values for topics where at least one subscriber has explicitly requested LVC.
 
 ---
 
@@ -2029,6 +2109,7 @@ Three System Architecture build projects exist:
 
 * [system-architecture](../example/sample-projects/system-architecture/) - builds on Windows and Linux. Requires MessagePack and ZeroMQ external libraries. See [Examples Setup](#examples-setup).
 * [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - builds on Windows or Linux. No external libraries required.
+* [system-architecture-databus](../example/sample-projects/system-architecture-databus/) - builds on Windows or Linux. Abstracted using the Data Bus. No external libraries required.
 * [system-architecture-python](../example/sample-projects/system-architecture-python/) - Python client communicates with C++ server using MessagePack and ZeroMQ external libraries.
 
 Follow the steps below to execute the first two projects. See `README.txt` within [system-architecture-python](../example/sample-projects/system-architecture-python/) for the Python example.
@@ -2077,6 +2158,7 @@ Interface implementation details.
 | **stm32-freertos** | Embedded FreeRTOS example for STM32F4 Discovery. | FreeRTOS | None | None |
 | **system-architecture** | System architecture example with dependencies. | `std::thread` | Various | Various |
 | **system-architecture-no-deps** | System architecture example (UDP) with no deps. | `std::thread` | `operator<<` / `operator>>` | UDP Socket |
+| **system-architecture-databus** | System architecture example using the Data Bus. | `std::thread` | `serialize` class | UDP Socket |
 | **system-architecture-python** | Python binding example. | `std::thread` | N/A | Python Binding |
 | **win32-pipe-serializer** | Windows Named Pipe example. | `std::thread` | `serialize` class | Windows Pipe |
 | **win32-tcp-serializer** | Windows TCP Socket example. | `std::thread` | `serialize` class | Windows TCP Socket |

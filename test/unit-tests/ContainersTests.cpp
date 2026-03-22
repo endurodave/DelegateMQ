@@ -684,7 +684,7 @@ static void SignalThreadSafeTests()
     }
 }
 
-void Containers_UT()
+void ContainersTests()
 {
     UnicastDelegateTests();
     UnicastDelegateSafeTests();

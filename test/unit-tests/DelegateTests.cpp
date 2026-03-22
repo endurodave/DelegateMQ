@@ -96,10 +96,10 @@ static void DelegateFreeTests()
     auto r = d();
     using ArgT = decltype(r);
 #ifndef USE_ALLOCATOR
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
 #endif
-    ASSERT_TRUE(std::numeric_limits<ArgT>::max() == 0xffff);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::max)() == 0xffff);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_signed == false);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_exact == true);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_integer == true);
@@ -271,10 +271,10 @@ static void DelegateMemberTests()
     auto r = d();
     using ArgT = decltype(r);
 #ifndef USE_ALLOCATOR
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
 #endif
-    ASSERT_TRUE(std::numeric_limits<ArgT>::max() == 0xffff);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::max)() == 0xffff);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_signed == false);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_exact == true);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_integer == true);
@@ -437,10 +437,10 @@ static void DelegateMemberSharedTests()
     auto r = d();
     using ArgT = decltype(r);
 #ifndef USE_ALLOCATOR
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
 #endif
-    ASSERT_TRUE(std::numeric_limits<ArgT>::max() == 0xffff);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::max)() == 0xffff);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_signed == false);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_exact == true);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_integer == true);
@@ -680,10 +680,10 @@ static void DelegateFunctionTests()
     auto r = d();
     using ArgT = decltype(r);
 #ifndef USE_ALLOCATOR
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
 #endif
-    ASSERT_TRUE(std::numeric_limits<ArgT>::max() == 0xffff);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::max)() == 0xffff);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_signed == false);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_exact == true);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_integer == true);
@@ -785,7 +785,7 @@ static void DelegateFunctionTests()
     }
 }
 
-void Delegate_UT()
+void DelegateTests()
 {
     DelegateFreeTests();
     DelegateMemberTests();

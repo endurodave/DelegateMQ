@@ -6,22 +6,25 @@ This document compares DelegateMQ to related technologies across three areas: **
 
 ## Table of Contents
 
-- [Signal / Slot Libraries](#signal--slot-libraries)
-  - [Qt Signals & Slots](#qt-signals--slots)
-  - [Boost.Signals2](#boostsignals2)
-  - [sigslot / nano-signal-slot](#sigslot--nano-signal-slot)
-  - [Signal/Slot Summary](#signalslot-summary)
-- [Remote / IPC Communication](#remote--ipc-communication)
-  - [DDS (Data Distribution Service)](#dds-data-distribution-service)
-  - [gRPC](#grpc)
-  - [Raw ZeroMQ / NNG](#raw-zeromq--nng)
-  - [Remote Summary](#remote-summary)
-- [Asynchronous Callbacks and Thread Dispatch](#asynchronous-callbacks-and-thread-dispatch)
-  - [std::async / std::future](#stdasync--stdfuture)
-  - [OS Message Queues (FreeRTOS, Win32, POSIX)](#os-message-queues-freertos-win32-posix)
-  - [Boost.Asio / Executors](#boostasio--executors)
-  - [Async Summary](#async-summary)
-- [Unified API: The Core Differentiator](#unified-api-the-core-differentiator)
+- [DelegateMQ — Technology Comparison](#delegatemq--technology-comparison)
+  - [Table of Contents](#table-of-contents)
+  - [Signal / Slot Libraries](#signal--slot-libraries)
+    - [Qt Signals \& Slots](#qt-signals--slots)
+    - [Boost.Signals2](#boostsignals2)
+    - [sigslot / nano-signal-slot](#sigslot--nano-signal-slot)
+    - [Signal/Slot Summary](#signalslot-summary)
+  - [Remote / IPC Communication](#remote--ipc-communication)
+    - [DataBus (DDS Lite)](#databus-dds-lite)
+    - [DDS (Data Distribution Service)](#dds-data-distribution-service)
+    - [gRPC](#grpc)
+    - [Raw ZeroMQ / NNG](#raw-zeromq--nng)
+    - [Remote Summary](#remote-summary)
+  - [Asynchronous Callbacks and Thread Dispatch](#asynchronous-callbacks-and-thread-dispatch)
+    - [std::async / std::future](#stdasync--stdfuture)
+    - [OS Message Queues (FreeRTOS, Win32, POSIX)](#os-message-queues-freertos-win32-posix)
+    - [Boost.Asio / Executors](#boostasio--executors)
+    - [Async Summary](#async-summary)
+  - [Unified API: The Core Differentiator](#unified-api-the-core-differentiator)
 
 ---
 
@@ -166,6 +169,25 @@ These libraries are good for in-thread event wiring where every subscriber runs 
 ---
 
 ## Remote / IPC Communication
+
+### DataBus (DDS Lite)
+
+`DataBus` is a high-level middleware built on top of DelegateMQ core. It provides a topic-based publish/subscribe system that functions as a "DDS Lite" or "MQTT Lite" specifically optimized for C++ applications that span multiple threads and remote nodes.
+
+| Feature | DDS (Full) | MQTT | DelegateMQ DataBus |
+|---|---|---|---|
+| Complexity | Very High | Medium | Low |
+| Footprint | Large (MBs) | Medium (Client lib) | Tiny (Header-only) |
+| IDL Required | Yes | No | No (Plain C++) |
+| Thread Safety | Manual Dispatch | Manual Dispatch | Automatic (via `IThread`) |
+| Location Transparency | Yes | Yes | Yes |
+| QoS - Last Value Cache | Yes | Yes (Retained) | Yes |
+| QoS - Reliability | Complex Policies | Levels 0, 1, 2 | Pluggable `ITransport` |
+| Primary Use Case | Critical Infrastructure | IoT / Cloud | Embedded / Desktop IPC |
+
+**Key Advantage**: Unlike full DDS systems that require complex IDL compilation and manual thread management to get data into your application's control loop, `DataBus` handles the thread-safe delivery automatically. You simply provide a pointer to your `Thread` object, and the callback is guaranteed to execute in that specific context.
+
+---
 
 ### DDS (Data Distribution Service)
 

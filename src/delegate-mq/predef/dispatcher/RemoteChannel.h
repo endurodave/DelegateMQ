@@ -93,6 +93,9 @@ public:
         , m_stream(std::ios::in | std::ios::out | std::ios::binary)
     {
         m_dispatcher.SetTransport(&transport);
+        m_delegate.SetDispatcher(&m_dispatcher);
+        m_delegate.SetSerializer(m_serializer);
+        m_delegate.SetStream(&m_stream);
     }
 
     // Non-copyable: owns stream state and internal delegate holds raw pointers into this object.
@@ -150,7 +153,11 @@ public:
         m_delegate.SetErrorHandler(std::forward<Handler>(handler));
     }
 
-    /// @brief The remote ID set by the most recent Bind() call.
+    /// @brief Set the remote ID for outbound messages.
+    /// @param[in] id The remote delegate identifier.
+    void SetRemoteId(DelegateRemoteId id) noexcept { m_delegate.SetRemoteId(id); }
+
+    /// @brief The remote ID set by the most recent Bind() or SetRemoteId() call.
     DelegateRemoteId GetRemoteId() noexcept { return m_delegate.GetRemoteId(); }
 
     /// @brief The error status of the most recent invocation.

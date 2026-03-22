@@ -1,8 +1,8 @@
-# Collect all .cpp files in this subdirectory
-file(GLOB SUBDIR_SOURCES "*.cpp")
+# Collect all .cpp files in this subdirectory and databus
+file(GLOB SUBDIR_SOURCES "*.cpp" "databus/*.cpp")
 
-# Collect all .h files in this subdirectory
-file(GLOB SUBDIR_HEADERS "*.h")
+# Collect all .h files in this subdirectory and databus
+file(GLOB SUBDIR_HEADERS "*.h" "databus/*.h")
 
 # Create a library target 
 add_library(unit_tests_lib STATIC ${SUBDIR_SOURCES} ${SUBDIR_HEADERS})

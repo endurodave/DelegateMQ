@@ -86,6 +86,7 @@ private:
     /// @brief Callback handled when a message is either ACK'd or Timed Out.
     void OnStatusChanged(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
     {
+        (void)id;
         // Variables to hold data for the retry OUTSIDE the lock
         bool shouldRetry = false;
         std::string retryPayload;

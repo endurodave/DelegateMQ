@@ -9,6 +9,7 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 set(DMQ_ASSERTS "OFF")                        # ON for assert faults
 set(DMQ_ALLOCATOR "OFF")                      # ON for fixed-block allocator
 set(DMQ_LOG "OFF")                            # ON for spglog output
+set(DMQ_DATABUS "ON")                         # ON for DataBus support
 set(DMQ_UTIL "ON")                            # ON for delegate utility classes
 set(DMQ_THREAD "DMQ_THREAD_STDLIB")           # Set thread support library or none
 set(DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")  # Set serialization support library or none

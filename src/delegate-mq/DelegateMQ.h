@@ -233,4 +233,9 @@
     #include "predef/util/NetworkEngine.h"
 #endif
 
+#if defined(DMQ_DATABUS)
+    #include "predef/databus/DataBus.h"
+    #include "predef/databus/Participant.h"
+#endif
+
 #endif

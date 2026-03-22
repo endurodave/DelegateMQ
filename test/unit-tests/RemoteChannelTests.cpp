@@ -8,8 +8,8 @@ using namespace dmq;
 using namespace std;
 using namespace UnitTestData;
 
-// RemoteChannel_UT.cpp tests the RemoteChannel aggregator class and its MakeDelegate
-// overloads. Tests follow the same pattern as DelegateRemote_UT:
+// RemoteChannelTests.cpp tests the RemoteChannel aggregator class and its MakeDelegate
+// overloads. Tests follow the same pattern as DelegateRemoteTests:
 //   1. Call sender delegate  -> serializes args into channel's stream, dispatches via
 //      Dispatcher -> MockTransport::Send captures the payload.
 //   2. Seek payload stream to 0, call receiver.Invoke() -> deserializes and calls target.
@@ -497,7 +497,7 @@ static void RemoteChannel_MakeDelegate_MatchesManualWiring()
 
 // ---- Entry point ---------------------------------------------------------------
 
-void RemoteChannel_UT()
+void RemoteChannelTests()
 {
     RemoteChannel_Construction();
 

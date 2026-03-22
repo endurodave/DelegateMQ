@@ -1140,7 +1140,7 @@ static void DelegateFunctionRemoteTests()
     }
 }
 
-void DelegateRemote_UT()
+void DelegateRemoteTests()
 {
     DelegateFreeRemoteTests();
     DelegateMemberRemoteTests();

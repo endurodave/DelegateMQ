@@ -8,7 +8,7 @@ using namespace dmq;
 using namespace std;
 using namespace UnitTestData;
 
-static Thread workerThread("DelegateAsyncWait_UT");
+static Thread workerThread("DelegateAsyncWaitTests");
 
 namespace AsyncWait
 {
@@ -97,10 +97,10 @@ static void DelegateFreeAsyncWaitTests()
     auto r = d();
     using ArgT = decltype(r);
 #ifndef USE_ALLOCATOR
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
 #endif
-    ASSERT_TRUE(std::numeric_limits<ArgT>::max() == 0xffff);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::max)() == 0xffff);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_signed == false);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_exact == true);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_integer == true);
@@ -310,10 +310,10 @@ static void DelegateMemberAsyncWaitTests()
     auto r = d();
     using ArgT = decltype(r);
 #ifndef USE_ALLOCATOR
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
 #endif
-    ASSERT_TRUE(std::numeric_limits<ArgT>::max() == 0xffff);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::max)() == 0xffff);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_signed == false);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_exact == true);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_integer == true);
@@ -495,10 +495,10 @@ static void DelegateMemberSpAsyncWaitTests()
     auto r = d();
     using ArgT = decltype(r);
 #ifndef USE_ALLOCATOR
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
 #endif
-    ASSERT_TRUE(std::numeric_limits<ArgT>::max() == 0xffff);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::max)() == 0xffff);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_signed == false);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_exact == true);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_integer == true);
@@ -765,10 +765,10 @@ static void DelegateFunctionAsyncWaitTests()
     auto r = d();
     using ArgT = decltype(r);
 #ifndef USE_ALLOCATOR
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
-    ASSERT_TRUE(std::numeric_limits<ArgT>::min() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::min)() == 0);
 #endif
-    ASSERT_TRUE(std::numeric_limits<ArgT>::max() == 0xffff);
+    ASSERT_TRUE((std::numeric_limits<ArgT>::max)() == 0xffff);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_signed == false);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_exact == true);
     ASSERT_TRUE(std::numeric_limits<ArgT>::is_integer == true);
@@ -877,7 +877,7 @@ static void DelegateFunctionAsyncWaitTests()
     }
 }
 
-void DelegateAsyncWait_UT()
+void DelegateAsyncWaitTests()
 {
     workerThread.CreateThread();
 

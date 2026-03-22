@@ -46,9 +46,13 @@
 #include "Command.h"
 #include "BindingProperty.h"
 #include "RemoteCommunication.h"
+#include "DataBus.h"
 #include "main.h"
 
 extern void RunDelegateUnitTests();
+#if defined(DMQ_DATABUS)
+extern void RunDataBusTests();
+#endif
 void RunSimpleExamples();
 void RunRemoteChannelExamples();
 void RunPubSubExamples();
@@ -122,6 +126,9 @@ int main(void)
         RunAllExamples();
         RunMiscExamples();
         RunDelegateUnitTests();
+#if defined(DMQ_DATABUS)
+        RunDataBusTests();
+#endif
     }
 
     // Ensure the timer thread completes before main exits
@@ -452,6 +459,9 @@ void RunAllExamples()
 
     // Run remote communication example
     RemoteCommunicationExample();
+
+    // Run DataBus example
+    DataBusExample();
 
     // C++20 examples
 #if defined(_MSVC_LANG) && _MSVC_LANG >= 202002L || __cplusplus >= 202002L

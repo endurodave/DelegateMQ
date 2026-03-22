@@ -8,7 +8,7 @@ using namespace dmq;
 using namespace std;
 using namespace UnitTestData;
 
-static Thread workerThread("DelegateAsync_UT");
+static Thread workerThread("DelegateAsyncTests");
 
 namespace Async
 {
@@ -793,7 +793,7 @@ static void DelegateFunctionAsyncTests()
 #endif
 }
 
-void DelegateAsync_UT()
+void DelegateAsyncTests()
 {
     workerThread.CreateThread();
 
