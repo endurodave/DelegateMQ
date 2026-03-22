@@ -134,17 +134,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5e466348ff3ce4266d706c3bd3ab897b" id="r_a5e466348ff3ce4266d706c3bd3ab897b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e466348ff3ce4266d706c3bd3ab897b">operator()</a> (Args... args)</td></tr>
 <tr class="memdesc:a5e466348ff3ce4266d706c3bd3ab897b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoke all connected delegates.  <br /></td></tr>
 <tr class="separator:a5e466348ff3ce4266d706c3bd3ab897b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d2cd6cebdd9e3cc5e093fa537c22f95" id="r_a9d2cd6cebdd9e3cc5e093fa537c22f95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d2cd6cebdd9e3cc5e093fa537c22f95">operator+=</a> (const <a class="el" href="#afa7af218c5d2c5e24833abedcd50af13">DelegateType</a> &amp;delegate)</td></tr>
-<tr class="memdesc:a9d2cd6cebdd9e3cc5e093fa537c22f95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a delegate without a connection handle (no auto-disconnect).  <br /></td></tr>
-<tr class="separator:a9d2cd6cebdd9e3cc5e093fa537c22f95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94c2e8f154d925b6c74bb3e4a6f29525" id="r_a94c2e8f154d925b6c74bb3e4a6f29525"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94c2e8f154d925b6c74bb3e4a6f29525">operator-=</a> (const <a class="el" href="#afa7af218c5d2c5e24833abedcd50af13">DelegateType</a> &amp;delegate)</td></tr>
-<tr class="memdesc:a94c2e8f154d925b6c74bb3e4a6f29525"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a delegate by value equality.  <br /></td></tr>
-<tr class="separator:a94c2e8f154d925b6c74bb3e4a6f29525"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebbaee83fbda14127553dda050e5dd54" id="r_aebbaee83fbda14127553dda050e5dd54"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aebbaee83fbda14127553dda050e5dd54">Size</a> () const</td></tr>
 <tr class="memdesc:aebbaee83fbda14127553dda050e5dd54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of currently connected subscribers.  <br /></td></tr>
 <tr class="separator:aebbaee83fbda14127553dda050e5dd54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6923a64c7c94454234aabda892042bac" id="r_a6923a64c7c94454234aabda892042bac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6923a64c7c94454234aabda892042bac">IsEmpty</a> () const</td></tr>
-<tr class="separator:a6923a64c7c94454234aabda892042bac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a411e294b9943431c93f0b99d1b0c88b7" id="r_a411e294b9943431c93f0b99d1b0c88b7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a411e294b9943431c93f0b99d1b0c88b7">Empty</a> () const</td></tr>
+<tr class="separator:a411e294b9943431c93f0b99d1b0c88b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a161da9663d2f45fe7a6bf6617e67b32d" id="r_a161da9663d2f45fe7a6bf6617e67b32d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a161da9663d2f45fe7a6bf6617e67b32d">Clear</a> ()</td></tr>
 <tr class="memdesc:a161da9663d2f45fe7a6bf6617e67b32d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnect all subscribers.  <br /></td></tr>
 <tr class="separator:a161da9663d2f45fe7a6bf6617e67b32d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -339,8 +333,8 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
-<a id="a6923a64c7c94454234aabda892042bac" name="a6923a64c7c94454234aabda892042bac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6923a64c7c94454234aabda892042bac">&#9670;&#160;</a></span>IsEmpty()</h2>
+<a id="a411e294b9943431c93f0b99d1b0c88b7" name="a411e294b9943431c93f0b99d1b0c88b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a411e294b9943431c93f0b99d1b0c88b7">&#9670;&#160;</a></span>Empty()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -351,7 +345,7 @@ template&lt;class RetType , class... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt; RetType(Args...)&gt;::IsEmpty </td>
+          <td class="memname">bool <a class="el" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt; RetType(Args...)&gt;::Empty </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -392,64 +386,6 @@ template&lt;class RetType , class... Args&gt; </div>
 </div><div class="memdoc">
 
 <p>Invoke all connected delegates. </p>
-
-</div>
-</div>
-<a id="a9d2cd6cebdd9e3cc5e093fa537c22f95" name="a9d2cd6cebdd9e3cc5e093fa537c22f95"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9d2cd6cebdd9e3cc5e093fa537c22f95">&#9670;&#160;</a></span>operator+=()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class RetType , class... Args&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt; RetType(Args...)&gt;::operator+= </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="#afa7af218c5d2c5e24833abedcd50af13">DelegateType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>delegate</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Add a delegate without a connection handle (no auto-disconnect). </p>
-
-</div>
-</div>
-<a id="a94c2e8f154d925b6c74bb3e4a6f29525" name="a94c2e8f154d925b6c74bb3e4a6f29525"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a94c2e8f154d925b6c74bb3e4a6f29525">&#9670;&#160;</a></span>operator-=()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class RetType , class... Args&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt; RetType(Args...)&gt;::operator-= </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="#afa7af218c5d2c5e24833abedcd50af13">DelegateType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>delegate</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Remove a delegate by value equality. </p>
 
 </div>
 </div>

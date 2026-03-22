@@ -11,6 +11,7 @@ var hierarchy =
     [ "dmq::CmsisRtos2Mutex", "classdmq_1_1_cmsis_rtos2_mutex.html", null ],
     [ "dmq::CmsisRtos2RecursiveMutex", "classdmq_1_1_cmsis_rtos2_recursive_mutex.html", null ],
     [ "dmq::detail::Connection", "classdmq_1_1detail_1_1_connection.html", null ],
+    [ "dmq::DataBus", "classdmq_1_1_data_bus.html", null ],
     [ "dmq::Delegate< R >", "classdmq_1_1_delegate.html", null ],
     [ "dmq::DelegateBase", "classdmq_1_1_delegate_base.html", [
       [ "dmq::Delegate< RetType(Args...)>", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", [
@@ -145,10 +146,12 @@ var hierarchy =
     ] ],
     [ "dmq::MulticastDelegateSafe< R >", "classdmq_1_1_multicast_delegate_safe.html", null ],
     [ "dmq::NullMutex", "structdmq_1_1_null_mutex.html", null ],
+    [ "dmq::Participant", "classdmq_1_1_participant.html", null ],
     [ "QObject", null, [
       [ "Thread", "class_thread.html", null ],
       [ "Worker", "class_worker.html", null ]
     ] ],
+    [ "dmq::QoS", "structdmq_1_1_qo_s.html", null ],
     [ "stl_allocator< T >::rebind< U >", "structstl__allocator_1_1rebind.html", null ],
     [ "stl_allocator< void >::rebind", "structstl__allocator_3_01void_01_4_1_1rebind.html", null ],
     [ "dmq::RemoteArg< Arg >", "classdmq_1_1_remote_arg.html", null ],
@@ -166,6 +169,7 @@ var hierarchy =
     [ "Serializer< Func >", "struct_serializer.html", null ],
     [ "dmq::Signal< R >", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< RetType(Args...)>", "classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
+    [ "dmq::Signal< void(const std::string &, const std::string &)>", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< void(dmq::DelegateRemoteId, uint16_t, Status)>", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< void(void)>", "classdmq_1_1_signal.html", null ],

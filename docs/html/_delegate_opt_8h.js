@@ -16,5 +16,8 @@ var _delegate_opt_8h =
     [ "xostringstream", "_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc", null ],
     [ "xstring", "_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44", null ],
     [ "xstringstream", "_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae", null ],
-    [ "xwstring", "_delegate_opt_8h.html#a3c297a25ec1e3808b17f63f488fb2046", null ]
+    [ "xwstring", "_delegate_opt_8h.html#a3c297a25ec1e3808b17f63f488fb2046", null ],
+    [ "xdelete", "_delegate_opt_8h.html#a884ae556ebbfac2b3e5ee912730b5466", null ],
+    [ "xmake_shared", "_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c", null ],
+    [ "xnew", "_delegate_opt_8h.html#ac54e2b2f79ec5717e58fd6c3d2779656", null ]
 ];

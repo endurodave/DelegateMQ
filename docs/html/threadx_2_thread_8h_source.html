@@ -128,51 +128,54 @@ $(function(){initNavTree('threadx_2_thread_8h_source.html',''); initResizable(tr
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="class_thread.html#a336a33ac9d745ae018d1d1f3c37ecda2">   57</a></span>    <span class="keyword">static</span> TX_THREAD* <a class="code hl_function" href="class_thread.html#a336a33ac9d745ae018d1d1f3c37ecda2">GetCurrentThreadId</a>();</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a6204b82c12ac60f24024493166e97ffe">SetThreadPriority</a>(UINT priority);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="class_thread.html#a30eb724d8fea3bda43918a9c246822ef">   64</a></span>    UINT <a class="code hl_function" href="class_thread.html#a30eb724d8fea3bda43918a9c246822ef">GetThreadPriority</a>();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">   60</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">IsCurrentThread</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a6204b82c12ac60f24024493166e97ffe">SetThreadPriority</a>(UINT priority);</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">   67</a></span>    std::string <a class="code hl_function" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a>() { <span class="keywordflow">return</span> THREAD_NAME; }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="class_thread.html#a30eb724d8fea3bda43918a9c246822ef">   67</a></span>    UINT <a class="code hl_function" href="class_thread.html#a30eb724d8fea3bda43918a9c246822ef">GetThreadPriority</a>();</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="comment">// IThread Interface Implementation</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">   70</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">DispatchDelegate</a>(std::shared_ptr&lt;dmq::DelegateMsg&gt; msg) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">   70</a></span>    std::string <a class="code hl_function" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a>() { <span class="keywordflow">return</span> THREAD_NAME; }</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_function" href="class_thread.html#a80b20bca04b2b742c93b1523a4fccb1d">Thread</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_class" href="class_thread.html">Thread</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> Process(ULONG instance);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="comment">// IThread Interface Implementation</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">   73</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">DispatchDelegate</a>(std::shared_ptr&lt;dmq::DelegateMsg&gt; msg) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_function" href="class_thread.html#a80b20bca04b2b742c93b1523a4fccb1d">Thread</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_class" href="class_thread.html">Thread</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">// Run loop called by Process</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span> Run();</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> Process(ULONG instance);</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="comment">// ThreadX Control Blocks</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    TX_THREAD m_thread;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    TX_QUEUE m_queue;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    TX_SEMAPHORE m_exitSem; <span class="comment">// Semaphore to signal thread completion</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="comment">// Memory buffers required by ThreadX (Managed by RAII)</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="comment">// Using ULONG[] ensures correct alignment for ThreadX stacks and queues</span></div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    std::unique_ptr&lt;ULONG[]&gt; m_stackMemory;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    std::unique_ptr&lt;ULONG[]&gt; m_queueMemory;</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">const</span> std::string THREAD_NAME;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="comment">// Configurable stack size (bytes)</span></div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">static</span> <span class="keyword">const</span> ULONG STACK_SIZE = 2048; </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="comment">// Run loop called by Process</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">void</span> Run();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="comment">// ThreadX Control Blocks</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    TX_THREAD m_thread;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    TX_QUEUE m_queue;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    TX_SEMAPHORE m_exitSem; <span class="comment">// Semaphore to signal thread completion</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// Memory buffers required by ThreadX (Managed by RAII)</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="comment">// Using ULONG[] ensures correct alignment for ThreadX stacks and queues</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    std::unique_ptr&lt;ULONG[]&gt; m_stackMemory;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::unique_ptr&lt;ULONG[]&gt; m_queueMemory;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">const</span> std::string THREAD_NAME;</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">size_t</span> m_queueSize; <span class="comment">// Stored queue size</span></div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    UINT m_priority;    <span class="comment">// Stored priority</span></div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>};</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">#endif </span><span class="comment">// _THREAD_THREADX_H</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="comment">// Configurable stack size (bytes)</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keyword">static</span> <span class="keyword">const</span> ULONG STACK_SIZE = 2048; </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">size_t</span> m_queueSize; <span class="comment">// Stored queue size</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    UINT m_priority;    <span class="comment">// Stored priority</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>};</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="preprocessor">#endif </span><span class="comment">// _THREAD_THREADX_H</span></div>
 <div class="ttc" id="a_i_thread_8h_html"><div class="ttname"><a href="_i_thread_8h.html">IThread.h</a></div><div class="ttdoc">Interface for cross-thread delegate dispatching.</div></div>
 <div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdoc">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).</div><div class="ttdef"><b>Definition</b> cmsis-rtos2/Thread.h:33</div></div>
-<div class="ttc" id="aclass_thread_html_a093b95e8def5030fd8b0033ce14edc81"><div class="ttname"><a href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">Thread::GetThreadName</a></div><div class="ttdeci">std::string GetThreadName()</div><div class="ttdoc">Get thread name.</div><div class="ttdef"><b>Definition</b> threadx/Thread.h:67</div></div>
+<div class="ttc" id="aclass_thread_html_a093b95e8def5030fd8b0033ce14edc81"><div class="ttname"><a href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">Thread::GetThreadName</a></div><div class="ttdeci">std::string GetThreadName()</div><div class="ttdoc">Get thread name.</div><div class="ttdef"><b>Definition</b> threadx/Thread.h:70</div></div>
 <div class="ttc" id="aclass_thread_html_a2616d0c5f41d983a67069d01e44804fb"><div class="ttname"><a href="class_thread.html#a2616d0c5f41d983a67069d01e44804fb">Thread::GetThreadId</a></div><div class="ttdeci">TX_THREAD * GetThreadId()</div><div class="ttdoc">Get the ID of this thread instance.</div></div>
 <div class="ttc" id="aclass_thread_html_a30eb724d8fea3bda43918a9c246822ef"><div class="ttname"><a href="class_thread.html#a30eb724d8fea3bda43918a9c246822ef">Thread::GetThreadPriority</a></div><div class="ttdeci">UINT GetThreadPriority()</div><div class="ttdoc">Get current priority.</div></div>
 <div class="ttc" id="aclass_thread_html_a336a33ac9d745ae018d1d1f3c37ecda2"><div class="ttname"><a href="class_thread.html#a336a33ac9d745ae018d1d1f3c37ecda2">Thread::GetCurrentThreadId</a></div><div class="ttdeci">static TX_THREAD * GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div></div>
 <div class="ttc" id="aclass_thread_html_a37d9edd3a1a776cbc27dedff949c9726"><div class="ttname"><a href="class_thread.html#a37d9edd3a1a776cbc27dedff949c9726">Thread::~Thread</a></div><div class="ttdeci">~Thread()</div><div class="ttdoc">Destructor.</div></div>
+<div class="ttc" id="aclass_thread_html_a425529002347b5f39b0356c7c6697eda"><div class="ttname"><a href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread::IsCurrentThread</a></div><div class="ttdeci">virtual bool IsCurrentThread() override</div><div class="ttdoc">Returns true if the calling thread is this thread.</div></div>
 <div class="ttc" id="aclass_thread_html_a50681ae734fd18e2acb2bfa89fef0a48"><div class="ttname"><a href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">Thread::DispatchDelegate</a></div><div class="ttdeci">virtual void DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg) override</div><div class="ttdoc">Enqueues a delegate message for execution on this thread.</div></div>
 <div class="ttc" id="aclass_thread_html_a5ba0168b8796e86596481f00a2a407a8"><div class="ttname"><a href="class_thread.html#a5ba0168b8796e86596481f00a2a407a8">Thread::DEFAULT_QUEUE_SIZE</a></div><div class="ttdeci">static const uint32_t DEFAULT_QUEUE_SIZE</div><div class="ttdoc">Default queue size if 0 is passed.</div><div class="ttdef"><b>Definition</b> cmsis-rtos2/Thread.h:36</div></div>
 <div class="ttc" id="aclass_thread_html_a6204b82c12ac60f24024493166e97ffe"><div class="ttname"><a href="class_thread.html#a6204b82c12ac60f24024493166e97ffe">Thread::SetThreadPriority</a></div><div class="ttdeci">void SetThreadPriority(osPriority_t priority)</div><div class="ttdef"><b>Definition</b> cmsis-rtos2/Thread.cpp:71</div></div>

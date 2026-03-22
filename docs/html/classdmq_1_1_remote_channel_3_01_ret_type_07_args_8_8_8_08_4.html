@@ -139,8 +139,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acf2f56bc4ff722b7ced640941ef76152"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#acf2f56bc4ff722b7ced640941ef76152">SetErrorHandler</a> (Handler &amp;&amp;handler)</td></tr>
 <tr class="memdesc:acf2f56bc4ff722b7ced640941ef76152"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register an error handler delegate.  <br /></td></tr>
 <tr class="separator:acf2f56bc4ff722b7ced640941ef76152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe82ad0f01e86f110ec05f14153abe50" id="r_abe82ad0f01e86f110ec05f14153abe50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe82ad0f01e86f110ec05f14153abe50">SetRemoteId</a> (<a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">DelegateRemoteId</a> id) noexcept</td></tr>
+<tr class="memdesc:abe82ad0f01e86f110ec05f14153abe50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the remote ID for outbound messages.  <br /></td></tr>
+<tr class="separator:abe82ad0f01e86f110ec05f14153abe50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b21bb7b77c0b89df77ce0c3ac31c389" id="r_a6b21bb7b77c0b89df77ce0c3ac31c389"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">DelegateRemoteId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6b21bb7b77c0b89df77ce0c3ac31c389">GetRemoteId</a> () noexcept</td></tr>
-<tr class="memdesc:a6b21bb7b77c0b89df77ce0c3ac31c389"><td class="mdescLeft">&#160;</td><td class="mdescRight">The remote ID set by the most recent <a class="el" href="#accc5b32807f245e737a4097535927cef" title="Bind a non-const member function as the receive-side handler.">Bind()</a> call.  <br /></td></tr>
+<tr class="memdesc:a6b21bb7b77c0b89df77ce0c3ac31c389"><td class="mdescLeft">&#160;</td><td class="mdescRight">The remote ID set by the most recent <a class="el" href="#accc5b32807f245e737a4097535927cef" title="Bind a non-const member function as the receive-side handler.">Bind()</a> or <a class="el" href="#abe82ad0f01e86f110ec05f14153abe50" title="Set the remote ID for outbound messages.">SetRemoteId()</a> call.  <br /></td></tr>
 <tr class="separator:a6b21bb7b77c0b89df77ce0c3ac31c389"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70f0d55e7da5c11ef5a740a3f53fb501" id="r_a70f0d55e7da5c11ef5a740a3f53fb501"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacedmq.html#a62ea8a73887af62d409322557b4e757d">DelegateError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70f0d55e7da5c11ef5a740a3f53fb501">GetError</a> () noexcept</td></tr>
 <tr class="memdesc:a70f0d55e7da5c11ef5a740a3f53fb501"><td class="mdescLeft">&#160;</td><td class="mdescRight">The error status of the most recent invocation.  <br /></td></tr>
@@ -511,7 +514,7 @@ template&lt;class RetType , class... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>The remote ID set by the most recent <a class="el" href="#accc5b32807f245e737a4097535927cef" title="Bind a non-const member function as the receive-side handler.">Bind()</a> call. </p>
+<p>The remote ID set by the most recent <a class="el" href="#accc5b32807f245e737a4097535927cef" title="Bind a non-const member function as the receive-side handler.">Bind()</a> or <a class="el" href="#abe82ad0f01e86f110ec05f14153abe50" title="Set the remote ID for outbound messages.">SetRemoteId()</a> call. </p>
 
 </div>
 </div>
@@ -681,6 +684,41 @@ template&lt;class Handler &gt; </div>
 </div><div class="memdoc">
 
 <p>Register an error handler delegate. </p>
+
+</div>
+</div>
+<a id="abe82ad0f01e86f110ec05f14153abe50" name="abe82ad0f01e86f110ec05f14153abe50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe82ad0f01e86f110ec05f14153abe50">&#9670;&#160;</a></span>SetRemoteId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classdmq_1_1_remote_channel.html">dmq::RemoteChannel</a>&lt; RetType(Args...)&gt;::SetRemoteId </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">DelegateRemoteId</a></td>          <td class="paramname"><span class="paramname"><em>id</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the remote ID for outbound messages. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">id</td><td>The remote delegate identifier. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

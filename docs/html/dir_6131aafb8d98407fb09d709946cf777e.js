@@ -7,6 +7,7 @@ var dir_6131aafb8d98407fb09d709946cf777e =
     [ "xallocator.h", "xallocator_8h.html", "xallocator_8h" ],
     [ "xlist.h", "xlist_8h.html", "xlist_8h" ],
     [ "xmap.h", "xmap_8h.html", "xmap_8h" ],
+    [ "xnew.h", "xnew_8h.html", "xnew_8h" ],
     [ "xqueue.h", "xqueue_8h.html", "xqueue_8h" ],
     [ "xset.h", "xset_8h.html", "xset_8h" ],
     [ "xsstream.h", "xsstream_8h.html", "xsstream_8h" ],

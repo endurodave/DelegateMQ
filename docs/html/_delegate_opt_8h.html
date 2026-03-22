@@ -100,7 +100,8 @@ $(function(){initNavTree('_delegate_opt_8h.html',''); initResizable(true); });
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">DelegateOpt.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -115,6 +116,8 @@ $(function(){initNavTree('_delegate_opt_8h.html',''); initResizable(true); });
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;list&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
 </div>
 <p><a href="_delegate_opt_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -166,6 +169,18 @@ Typedefs</h2></td></tr>
 <tr class="separator:a8e4b2760271c0d353bc1e58de15aeb44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c297a25ec1e3808b17f63f488fb2046" id="r_a3c297a25ec1e3808b17f63f488fb2046"><td class="memItemLeft" align="right" valign="top">typedef std::wstring&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c297a25ec1e3808b17f63f488fb2046">xwstring</a></td></tr>
 <tr class="separator:a3c297a25ec1e3808b17f63f488fb2046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a897146520ab3fe3629d618cf8efb925c" id="r_a897146520ab3fe3629d618cf8efb925c"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:a897146520ab3fe3629d618cf8efb925c"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a897146520ab3fe3629d618cf8efb925c">xmake_shared</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="separator:a897146520ab3fe3629d618cf8efb925c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac54e2b2f79ec5717e58fd6c3d2779656" id="r_ac54e2b2f79ec5717e58fd6c3d2779656"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:ac54e2b2f79ec5717e58fd6c3d2779656"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac54e2b2f79ec5717e58fd6c3d2779656">xnew</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="separator:ac54e2b2f79ec5717e58fd6c3d2779656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a884ae556ebbfac2b3e5ee912730b5466" id="r_a884ae556ebbfac2b3e5ee912730b5466"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a884ae556ebbfac2b3e5ee912730b5466"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a884ae556ebbfac2b3e5ee912730b5466">xdelete</a> (T *p)</td></tr>
+<tr class="separator:a884ae556ebbfac2b3e5ee912730b5466"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Delegate library options header file. </p>
@@ -323,6 +338,88 @@ Typedefs</h2></td></tr>
           <td class="memname">typedef std::wstring <a class="el" href="#a3c297a25ec1e3808b17f63f488fb2046">xwstring</a></td>
         </tr>
       </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a884ae556ebbfac2b3e5ee912730b5466" name="a884ae556ebbfac2b3e5ee912730b5466"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a884ae556ebbfac2b3e5ee912730b5466">&#9670;&#160;</a></span>xdelete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void xdelete </td>
+          <td>(</td>
+          <td class="paramtype">T *</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a897146520ab3fe3629d618cf8efb925c" name="a897146520ab3fe3629d618cf8efb925c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a897146520ab3fe3629d618cf8efb925c">&#9670;&#160;</a></span>xmake_shared()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; T &gt; xmake_shared </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac54e2b2f79ec5717e58fd6c3d2779656" name="ac54e2b2f79ec5717e58fd6c3d2779656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac54e2b2f79ec5717e58fd6c3d2779656">&#9670;&#160;</a></span>xnew()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T * xnew </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>

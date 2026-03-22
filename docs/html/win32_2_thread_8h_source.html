@@ -142,64 +142,67 @@ $(function(){initNavTree('win32_2_thread_8h_source.html',''); initResizable(true
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="class_thread.html#ac7046dfdb6b24722f319a45fe4ccb3d0">   78</a></span>    <span class="keyword">static</span> DWORD <a class="code hl_function" href="class_thread.html#ac7046dfdb6b24722f319a45fe4ccb3d0">GetCurrentThreadId</a>();</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">   81</a></span>    std::string <a class="code hl_function" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a>() { <span class="keywordflow">return</span> THREAD_NAME; }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">   81</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">IsCurrentThread</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="class_thread.html#a964e7f80fe043c7a7c3c047f30335a16">   84</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="class_thread.html#a964e7f80fe043c7a7c3c047f30335a16">GetQueueSize</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">   84</a></span>    std::string <a class="code hl_function" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a>() { <span class="keywordflow">return</span> THREAD_NAME; }</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">   89</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">DispatchDelegate</a>(std::shared_ptr&lt;dmq::DelegateMsg&gt; msg) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_function" href="class_thread.html#a80b20bca04b2b742c93b1523a4fccb1d">Thread</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_class" href="class_thread.html">Thread</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">static</span> DWORD WINAPI ThreadProc(LPVOID lpParam);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="class_thread.html#a964e7f80fe043c7a7c3c047f30335a16">   87</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="class_thread.html#a964e7f80fe043c7a7c3c047f30335a16">GetQueueSize</a>();</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">   92</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">DispatchDelegate</a>(std::shared_ptr&lt;dmq::DelegateMsg&gt; msg) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_function" href="class_thread.html#a80b20bca04b2b742c93b1523a4fccb1d">Thread</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <a class="code hl_class" href="class_thread.html">Thread</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">void</span> Process();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">static</span> DWORD WINAPI ThreadProc(LPVOID lpParam);</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">void</span> WatchdogCheck();</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">void</span> ThreadCheck();</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    HANDLE m_hThread = NULL;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    DWORD m_threadId = 0;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">void</span> Process();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordtype">void</span> WatchdogCheck();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">void</span> ThreadCheck();</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="comment">// Manual-reset event to synchronize thread startup</span></div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    HANDLE m_hStartEvent = NULL;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    HANDLE m_hThread = NULL;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    DWORD m_threadId = 0;</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    CRITICAL_SECTION m_cs;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="comment">// Condition variable to wake up consumers when a message is enqueued</span></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    CONDITION_VARIABLE m_cvNotEmpty;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="comment">// Manual-reset event to synchronize thread startup</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    HANDLE m_hStartEvent = NULL;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    CRITICAL_SECTION m_cs;</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="comment">// Condition variable to wake up blocked producers when space is available</span></div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    CONDITION_VARIABLE m_cvNotFull;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="comment">// Condition variable to wake up consumers when a message is enqueued</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    CONDITION_VARIABLE m_cvNotEmpty;</div>
 <div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    std::priority_queue&lt;std::shared_ptr&lt;ThreadMsg&gt;,</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        std::vector&lt;std::shared_ptr&lt;ThreadMsg&gt;&gt;,</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <a class="code hl_struct" href="struct_thread_msg_comparator.html">ThreadMsgComparator</a>&gt; m_queue;</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">const</span> std::string THREAD_NAME;</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="comment">// Max queue size for back pressure (0 = unlimited)</span></div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> MAX_QUEUE_SIZE;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="comment">// Condition variable to wake up blocked producers when space is available</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    CONDITION_VARIABLE m_cvNotFull;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    std::priority_queue&lt;std::shared_ptr&lt;ThreadMsg&gt;,</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        std::vector&lt;std::shared_ptr&lt;ThreadMsg&gt;&gt;,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <a class="code hl_struct" href="struct_thread_msg_comparator.html">ThreadMsgComparator</a>&gt; m_queue;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">const</span> std::string THREAD_NAME;</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    std::atomic&lt;bool&gt; m_exit;</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <span class="comment">// Watchdog related members</span></div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::atomic&lt;dmq::TimePoint&gt; m_lastAliveTime;</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    std::unique_ptr&lt;Timer&gt; m_watchdogTimer;</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> m_watchdogTimerConn;</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    std::unique_ptr&lt;Timer&gt; m_threadTimer;</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> m_threadTimerConn;</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    std::atomic&lt;dmq::Duration&gt; m_watchdogTimeout;</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>};</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="comment">// Max queue size for back pressure (0 = unlimited)</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> MAX_QUEUE_SIZE;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::atomic&lt;bool&gt; m_exit;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="comment">// Watchdog related members</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    std::atomic&lt;dmq::TimePoint&gt; m_lastAliveTime;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    std::unique_ptr&lt;Timer&gt; m_watchdogTimer;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> m_watchdogTimerConn;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    std::unique_ptr&lt;Timer&gt; m_threadTimer;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> m_threadTimerConn;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    std::atomic&lt;dmq::Duration&gt; m_watchdogTimeout;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>};</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_i_thread_8h_html"><div class="ttname"><a href="_i_thread_8h.html">IThread.h</a></div><div class="ttdoc">Interface for cross-thread delegate dispatching.</div></div>
 <div class="ttc" id="a_timer_8h_html"><div class="ttname"><a href="_timer_8h.html">Timer.h</a></div></div>
 <div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdoc">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).</div><div class="ttdef"><b>Definition</b> cmsis-rtos2/Thread.h:33</div></div>
 <div class="ttc" id="aclass_thread_html_a026b23628e1727050e864e00489c0baf"><div class="ttname"><a href="class_thread.html#a026b23628e1727050e864e00489c0baf">Thread::~Thread</a></div><div class="ttdeci">virtual ~Thread()</div><div class="ttdoc">Destructor.</div></div>
-<div class="ttc" id="aclass_thread_html_a093b95e8def5030fd8b0033ce14edc81"><div class="ttname"><a href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">Thread::GetThreadName</a></div><div class="ttdeci">std::string GetThreadName()</div><div class="ttdoc">Get thread name.</div><div class="ttdef"><b>Definition</b> win32/Thread.h:81</div></div>
+<div class="ttc" id="aclass_thread_html_a093b95e8def5030fd8b0033ce14edc81"><div class="ttname"><a href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">Thread::GetThreadName</a></div><div class="ttdeci">std::string GetThreadName()</div><div class="ttdoc">Get thread name.</div><div class="ttdef"><b>Definition</b> win32/Thread.h:84</div></div>
+<div class="ttc" id="aclass_thread_html_a425529002347b5f39b0356c7c6697eda"><div class="ttname"><a href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread::IsCurrentThread</a></div><div class="ttdeci">virtual bool IsCurrentThread() override</div><div class="ttdoc">Returns true if the calling thread is this thread.</div></div>
 <div class="ttc" id="aclass_thread_html_a50681ae734fd18e2acb2bfa89fef0a48"><div class="ttname"><a href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">Thread::DispatchDelegate</a></div><div class="ttdeci">virtual void DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg) override</div></div>
 <div class="ttc" id="aclass_thread_html_a7184e3af00fe15912a24f594944fc78e"><div class="ttname"><a href="class_thread.html#a7184e3af00fe15912a24f594944fc78e">Thread::GetThreadId</a></div><div class="ttdeci">DWORD GetThreadId()</div><div class="ttdoc">Get the ID of this thread instance.</div></div>
 <div class="ttc" id="aclass_thread_html_a7ac27cb95d8af8be6dd6f8e7c24e24ee"><div class="ttname"><a href="class_thread.html#a7ac27cb95d8af8be6dd6f8e7c24e24ee">Thread::CreateThread</a></div><div class="ttdeci">bool CreateThread()</div><div class="ttdef"><b>Definition</b> cmsis-rtos2/Thread.cpp:42</div></div>

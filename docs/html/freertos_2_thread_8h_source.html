@@ -130,45 +130,48 @@ $(function(){initNavTree('freertos_2_thread_8h_source.html',''); initResizable(t
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="class_thread.html#a57c1f91eca6bf785d151d5310cc40dcc">   60</a></span>    <span class="keyword">static</span> TaskHandle_t <a class="code hl_function" href="class_thread.html#a57c1f91eca6bf785d151d5310cc40dcc">GetCurrentThreadId</a>();</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">   63</a></span>    std::string <a class="code hl_function" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a>() { <span class="keywordflow">return</span> THREAD_NAME; }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">   63</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">IsCurrentThread</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a6204b82c12ac60f24024493166e97ffe">SetThreadPriority</a>(<span class="keywordtype">int</span> priority);</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a40a26dc2cbc4a57f492d1a3b1086ada9">SetStackMem</a>(StackType_t* stackBuffer, uint32_t stackSizeInWords);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="comment">// IThread Interface Implementation</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">   76</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">DispatchDelegate</a>(std::shared_ptr&lt;dmq::DelegateMsg&gt; msg) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">   66</a></span>    std::string <a class="code hl_function" href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">GetThreadName</a>() { <span class="keywordflow">return</span> THREAD_NAME; }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a6204b82c12ac60f24024493166e97ffe">SetThreadPriority</a>(<span class="keywordtype">int</span> priority);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a40a26dc2cbc4a57f492d1a3b1086ada9">SetStackMem</a>(StackType_t* stackBuffer, uint32_t stackSizeInWords);</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <a class="code hl_function" href="class_thread.html#a80b20bca04b2b742c93b1523a4fccb1d">Thread</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_class" href="class_thread.html">Thread</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> Process(<span class="keywordtype">void</span>* instance);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="comment">// IThread Interface Implementation</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">   79</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">DispatchDelegate</a>(std::shared_ptr&lt;dmq::DelegateMsg&gt; msg) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_function" href="class_thread.html#a80b20bca04b2b742c93b1523a4fccb1d">Thread</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_class" href="class_thread.html">Thread</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="class_thread.html">Thread</a>&amp;) = <span class="keyword">delete</span>;</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="comment">// Run loop called by Process</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> Run();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> Process(<span class="keywordtype">void</span>* instance);</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    TaskHandle_t m_thread = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    QueueHandle_t m_queue = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    SemaphoreHandle_t m_exitSem = <span class="keyword">nullptr</span>; <span class="comment">// Synchronization for safe destruction</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">const</span> std::string THREAD_NAME;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">size_t</span> m_queueSize;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">int</span> m_priority;</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="comment">// Static allocation support</span></div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    StackType_t* m_stackBuffer = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    uint32_t m_stackSize = 1024; <span class="comment">// Default size (words)</span></div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    StaticTask_t m_tcb;          <span class="comment">// TCB storage for static creation</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>};</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="comment">// Run loop called by Process</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">void</span> Run();</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    TaskHandle_t m_thread = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    QueueHandle_t m_queue = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    SemaphoreHandle_t m_exitSem = <span class="keyword">nullptr</span>; <span class="comment">// Synchronization for safe destruction</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keyword">const</span> std::string THREAD_NAME;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">size_t</span> m_queueSize;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">int</span> m_priority;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="comment">// Static allocation support</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    StackType_t* m_stackBuffer = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    uint32_t m_stackSize = 1024; <span class="comment">// Default size (words)</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    StaticTask_t m_tcb;          <span class="comment">// TCB storage for static creation</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>};</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_i_thread_8h_html"><div class="ttname"><a href="_i_thread_8h.html">IThread.h</a></div><div class="ttdoc">Interface for cross-thread delegate dispatching.</div></div>
 <div class="ttc" id="aclass_thread_html"><div class="ttname"><a href="class_thread.html">Thread</a></div><div class="ttdoc">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).</div><div class="ttdef"><b>Definition</b> cmsis-rtos2/Thread.h:33</div></div>
-<div class="ttc" id="aclass_thread_html_a093b95e8def5030fd8b0033ce14edc81"><div class="ttname"><a href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">Thread::GetThreadName</a></div><div class="ttdeci">std::string GetThreadName()</div><div class="ttdoc">Get thread name.</div><div class="ttdef"><b>Definition</b> freertos/Thread.h:63</div></div>
+<div class="ttc" id="aclass_thread_html_a093b95e8def5030fd8b0033ce14edc81"><div class="ttname"><a href="class_thread.html#a093b95e8def5030fd8b0033ce14edc81">Thread::GetThreadName</a></div><div class="ttdeci">std::string GetThreadName()</div><div class="ttdoc">Get thread name.</div><div class="ttdef"><b>Definition</b> freertos/Thread.h:66</div></div>
 <div class="ttc" id="aclass_thread_html_a16fb3b47a1431a3fe16a2e717b105dec"><div class="ttname"><a href="class_thread.html#a16fb3b47a1431a3fe16a2e717b105dec">Thread::GetThreadId</a></div><div class="ttdeci">TaskHandle_t GetThreadId()</div><div class="ttdoc">Get the ID of this thread instance.</div></div>
 <div class="ttc" id="aclass_thread_html_a37d9edd3a1a776cbc27dedff949c9726"><div class="ttname"><a href="class_thread.html#a37d9edd3a1a776cbc27dedff949c9726">Thread::~Thread</a></div><div class="ttdeci">~Thread()</div><div class="ttdoc">Destructor.</div></div>
 <div class="ttc" id="aclass_thread_html_a40a26dc2cbc4a57f492d1a3b1086ada9"><div class="ttname"><a href="class_thread.html#a40a26dc2cbc4a57f492d1a3b1086ada9">Thread::SetStackMem</a></div><div class="ttdeci">void SetStackMem(StackType_t *stackBuffer, uint32_t stackSizeInWords)</div><div class="ttdef"><b>Definition</b> freertos/Thread.cpp:36</div></div>
+<div class="ttc" id="aclass_thread_html_a425529002347b5f39b0356c7c6697eda"><div class="ttname"><a href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread::IsCurrentThread</a></div><div class="ttdeci">virtual bool IsCurrentThread() override</div><div class="ttdoc">Returns true if the calling thread is this thread.</div></div>
 <div class="ttc" id="aclass_thread_html_a50681ae734fd18e2acb2bfa89fef0a48"><div class="ttname"><a href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">Thread::DispatchDelegate</a></div><div class="ttdeci">virtual void DispatchDelegate(std::shared_ptr&lt; dmq::DelegateMsg &gt; msg) override</div><div class="ttdoc">Enqueues a delegate message for execution on this thread.</div></div>
 <div class="ttc" id="aclass_thread_html_a57c1f91eca6bf785d151d5310cc40dcc"><div class="ttname"><a href="class_thread.html#a57c1f91eca6bf785d151d5310cc40dcc">Thread::GetCurrentThreadId</a></div><div class="ttdeci">static TaskHandle_t GetCurrentThreadId()</div><div class="ttdoc">Get the ID of the currently executing thread.</div></div>
 <div class="ttc" id="aclass_thread_html_a5ba0168b8796e86596481f00a2a407a8"><div class="ttname"><a href="class_thread.html#a5ba0168b8796e86596481f00a2a407a8">Thread::DEFAULT_QUEUE_SIZE</a></div><div class="ttdeci">static const uint32_t DEFAULT_QUEUE_SIZE</div><div class="ttdoc">Default queue size if 0 is passed.</div><div class="ttdef"><b>Definition</b> cmsis-rtos2/Thread.h:36</div></div>

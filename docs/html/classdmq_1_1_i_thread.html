@@ -131,6 +131,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a79a35ad35dd7564be046e01bade22433" id="r_a79a35ad35dd7564be046e01bade22433"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79a35ad35dd7564be046e01bade22433">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">DelegateMsg</a> &gt; msg)=0</td></tr>
 <tr class="memdesc:a79a35ad35dd7564be046e01bade22433"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueues a delegate message for execution on this thread.  <br /></td></tr>
 <tr class="separator:a79a35ad35dd7564be046e01bade22433"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fbec4883b326e0aa8af4b45ba2b0dfd" id="r_a0fbec4883b326e0aa8af4b45ba2b0dfd"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fbec4883b326e0aa8af4b45ba2b0dfd">IsCurrentThread</a> ()=0</td></tr>
+<tr class="memdesc:a0fbec4883b326e0aa8af4b45ba2b0dfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the calling thread is this thread. Used to decide whether to marshal an event or execute inline.  <br /></td></tr>
+<tr class="separator:a0fbec4883b326e0aa8af4b45ba2b0dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A base class for a delegate enabled execution thread. Implemented by application code if asynchronous delegates are used. </p>
@@ -199,6 +202,35 @@ Public Member Functions</h2></td></tr>
 </dl>
 
 <p>Implemented in <a class="el" href="class_thread.html#a2271b62a98277944bdf38c5c2304a078">Thread</a>, <a class="el" href="class_thread.html#aef7a8ebd5ab60700ca5296c77e43188d">Thread</a>, <a class="el" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">Thread</a>, <a class="el" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">Thread</a>, <a class="el" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">Thread</a>, <a class="el" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">Thread</a>, and <a class="el" href="class_thread.html#aef7a8ebd5ab60700ca5296c77e43188d">Thread</a>.</p>
+
+</div>
+</div>
+<a id="a0fbec4883b326e0aa8af4b45ba2b0dfd" name="a0fbec4883b326e0aa8af4b45ba2b0dfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fbec4883b326e0aa8af4b45ba2b0dfd">&#9670;&#160;</a></span>IsCurrentThread()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool dmq::IThread::IsCurrentThread </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true if the calling thread is this thread. Used to decide whether to marshal an event or execute inline. </p>
+
+<p>Implemented in <a class="el" href="class_thread.html#a984dc9a4df58608a80fe79942bd7596f">Thread</a>, <a class="el" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread</a>, <a class="el" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread</a>, <a class="el" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread</a>, <a class="el" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread</a>, <a class="el" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread</a>, and <a class="el" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread</a>.</p>
 
 </div>
 </div>

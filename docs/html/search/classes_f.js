@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['zephyrclock_0',['ZephyrClock',['../structdmq_1_1_zephyr_clock.html',1,'dmq']]],
-  ['zephyrmutex_1',['ZephyrMutex',['../classdmq_1_1_zephyr_mutex.html',1,'dmq']]],
-  ['zephyrudptransport_2',['ZephyrUdpTransport',['../class_zephyr_udp_transport.html',1,'']]],
-  ['zeromqtransport_3',['ZeroMqTransport',['../class_zero_mq_transport.html',1,'']]]
+  ['win32pipetransport_0',['Win32PipeTransport',['../class_win32_pipe_transport.html',1,'']]],
+  ['winsockcontext_1',['WinsockContext',['../class_winsock_context.html',1,'']]],
+  ['worker_2',['Worker',['../class_worker.html',1,'']]]
 ];

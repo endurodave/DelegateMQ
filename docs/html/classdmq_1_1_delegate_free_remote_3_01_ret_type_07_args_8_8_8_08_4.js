@@ -30,6 +30,7 @@ var classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "SetDispatcher", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a4d1b65800abf496d847918a7df7717bb", null ],
     [ "SetErrorHandler", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#aaa4ce69f0f05c962ecec56b8b6f59f90", null ],
     [ "SetErrorHandler", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a6f5d8ba4722f0ed57e157c670d60631e", null ],
+    [ "SetRemoteId", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a068e571e7c3951589fc214fc9930234b", null ],
     [ "SetSerializer", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a1e6c58709f5d6c6484172489bfaf896b", null ],
     [ "SetStream", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#af626a540f95d9f63153e5b6070b97ca6", null ],
     [ "operator!=", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],

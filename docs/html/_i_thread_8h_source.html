@@ -114,14 +114,17 @@ $(function(){initNavTree('_i_thread_8h_source.html',''); initResizable(true); })
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classdmq_1_1_i_thread.html#a9e6ada351d8e8f32bdee5cb8ae70b5bb">   25</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classdmq_1_1_i_thread.html#a9e6ada351d8e8f32bdee5cb8ae70b5bb">~IThread</a>() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433">   38</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433">DispatchDelegate</a>(std::shared_ptr&lt;DelegateMsg&gt; msg) = 0;</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classdmq_1_1_i_thread.html#a0fbec4883b326e0aa8af4b45ba2b0dfd">   42</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classdmq_1_1_i_thread.html#a0fbec4883b326e0aa8af4b45ba2b0dfd">IsCurrentThread</a>() = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
 </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_delegate_msg_8h_html"><div class="ttname"><a href="_delegate_msg_8h.html">DelegateMsg.h</a></div><div class="ttdoc">Delegate inter-thread message base class.</div></div>
 <div class="ttc" id="aclassdmq_1_1_i_thread_html"><div class="ttname"><a href="classdmq_1_1_i_thread.html">dmq::IThread</a></div><div class="ttdoc">A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...</div><div class="ttdef"><b>Definition</b> IThread.h:22</div></div>
+<div class="ttc" id="aclassdmq_1_1_i_thread_html_a0fbec4883b326e0aa8af4b45ba2b0dfd"><div class="ttname"><a href="classdmq_1_1_i_thread.html#a0fbec4883b326e0aa8af4b45ba2b0dfd">dmq::IThread::IsCurrentThread</a></div><div class="ttdeci">virtual bool IsCurrentThread()=0</div><div class="ttdoc">Returns true if the calling thread is this thread. Used to decide whether to marshal an event or exec...</div></div>
 <div class="ttc" id="aclassdmq_1_1_i_thread_html_a79a35ad35dd7564be046e01bade22433"><div class="ttname"><a href="classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433">dmq::IThread::DispatchDelegate</a></div><div class="ttdeci">virtual void DispatchDelegate(std::shared_ptr&lt; DelegateMsg &gt; msg)=0</div><div class="ttdoc">Enqueues a delegate message for execution on this thread.</div></div>
 <div class="ttc" id="aclassdmq_1_1_i_thread_html_a9e6ada351d8e8f32bdee5cb8ae70b5bb"><div class="ttname"><a href="classdmq_1_1_i_thread.html#a9e6ada351d8e8f32bdee5cb8ae70b5bb">dmq::IThread::~IThread</a></div><div class="ttdeci">virtual ~IThread()=default</div><div class="ttdoc">Destructor.</div></div>
 <div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>

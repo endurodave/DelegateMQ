@@ -30,6 +30,7 @@ var classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "SetDispatcher", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#aafd0318b1253c776d23e3dd8780f3e59", null ],
     [ "SetErrorHandler", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#ac7c4d22028bd6e68459929a4d166f7af", null ],
     [ "SetErrorHandler", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a7f1b5ece9b20629853d31f7ae3c3291f", null ],
+    [ "SetRemoteId", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a8f35591644507884aaf6ec2e5d5e4936", null ],
     [ "SetSerializer", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#ab805f096f0efde8274cf9fb48ae80eeb", null ],
     [ "SetStream", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a0589a7a6721fc41ff154b852febba12c", null ],
     [ "operator!=", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a9060a79c701f93a271858cb8b787f534", null ],

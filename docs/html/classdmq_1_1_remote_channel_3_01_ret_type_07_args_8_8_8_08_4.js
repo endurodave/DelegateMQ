@@ -15,5 +15,6 @@ var classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "operator()", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a88b5547f1fa3097631ab1fc425b0e3e0", null ],
     [ "operator=", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a8c9fc371244c479f85e92d4591527082", null ],
     [ "operator=", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a8713aaa8d7679e1a550ded53ef1e65eb", null ],
-    [ "SetErrorHandler", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#acf2f56bc4ff722b7ced640941ef76152", null ]
+    [ "SetErrorHandler", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#acf2f56bc4ff722b7ced640941ef76152", null ],
+    [ "SetRemoteId", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#abe82ad0f01e86f110ec05f14153abe50", null ]
 ];
