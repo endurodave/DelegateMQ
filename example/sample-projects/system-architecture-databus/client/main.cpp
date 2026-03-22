@@ -52,7 +52,7 @@ int main() {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     });
-
+    
     // Run for a while
     std::cout << "Client running. Waiting for data..." << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(60));
