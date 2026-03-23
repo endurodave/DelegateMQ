@@ -33,6 +33,13 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [When to use `MulticastDelegateSafe` instead](#when-to-use-multicastdelegatesafe-instead)
   - [Remote Delegate](#remote-delegate)
   - [DataBus](#databus)
+    - [Core Concepts](#core-concepts)
+    - [Features](#features)
+    - [DataBus Spy](#databus-spy)
+    - [Example: Local Pub/Sub](#example-local-pubsub)
+    - [Example: Last Value Cache (LVC)](#example-last-value-cache-lvc)
+    - [Example: Remote Distribution](#example-remote-distribution)
+    - [Last Value Cache (LVC)](#last-value-cache-lvc)
   - [Async Public API Pattern](#async-public-api-pattern)
   - [Delegate Invocation Semantics](#delegate-invocation-semantics)
 - [Porting Guide](#porting-guide)
@@ -166,14 +173,16 @@ Most remote delegate example projects depend on external libraries. Scripts are 
 4. Run `02_build_libs.py`. Builds dependent libraries.
 5. Run `03_generate_samples.py`. Creates project build files using CMake.
 
-All dependend libraries—along with **DelegateMQ**—are now organized within a single parent directory. 
+All dependent libraries—along with **DelegateMQ**—are now organized within a single parent directory. 
 
 ```text
 DelegateMQWorkspace/
 ├── bitsery/
 ├── cereal/
 ├── DelegateMQ/
+├── DelegateMQ-Spy/
 ├── FreeRTOSv202212.00/
+├── ftxui/
 ├── libserialport/
 ├── msgpack-c/
 ├── mqtt/
@@ -213,6 +222,7 @@ Set the desired DMQ build options and include `DelegateMQ.cmake` within your `CM
 set(DMQ_ASSERTS "OFF")                      # ON for assert faults
 set(DMQ_ALLOCATOR "OFF")                    # ON for fixed-block allocator
 set(DMQ_LOG "OFF")                          # ON for spglog debug output
+set(DMQ_DATABUS "OFF")                      # ON for DataBus support
 set(DMQ_UTIL "ON")                          # ON for delegate utility classes
 set(DMQ_THREAD "DMQ_THREAD_STDLIB")         # Set thread support library or none
 set(DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")  # Set serialization support library or none
@@ -284,7 +294,7 @@ Three questions drive every DelegateMQ design decision.
 **1. Where does the target function run?**
 
 ```
-Same thread    → Delegate<>            sync, direct call
+Same thread    → Delegate<>           sync, direct call
 Worker thread  → DelegateAsync<>      fire-and-forget
                → DelegateAsyncWait<>  blocking, returns value
 Remote system  → DelegateRemote<>     cross-process / cross-processor
@@ -574,7 +584,16 @@ The sender calls `(*m_channel)(value)` or `RemoteInvokeWait(*m_channel, value)`.
 1. **Location Transparency**: Components subscribe to topics by name. They do not need to know if the publisher is in the same thread, a different thread, or on a completely different processor.
 2. **Dynamic Discovery (Manual)**: While not fully automatic like industrial DDS, `DataBus` allows adding `Participant` objects at runtime to bridge local buses across a network.
 3. **Type Safety**: Runtime checks ensure that if two components use the same topic name, they must use the same data type; otherwise, a fault is triggered.
-4. **Spy/Monitor Support**: Call `DataBus::Monitor()` to receive a callback for every single message published on the bus, including a stringified version of the data for logging.
+4. **Spy/Monitor Support**: Call `DataBus::Monitor()` to receive a callback for every single message published on the bus. This is the foundation for the [DelegateMQ Spy](https://github.com/endurodave/DelegateMQ-Spy) tool. The callback receives a `dmq::SpyPacket` containing:
+    - **topic**: The unique string name of the data topic.
+    - **value**: A stringified version of the data (provided by user-registered stringifiers).
+    - **timestamp_us**: A high-resolution timestamp (microseconds since epoch) taken when the publisher called `DataBus::Publish`.
+
+### DataBus Spy
+
+**[DelegateMQ Spy](https://github.com/endurodave/DelegateMQ-Spy)** is a standalone TUI diagnostic tool that provides a "Software Logic Analyzer" view of the DataBus. It captures, filters, and displays all bus traffic in real-time without blocking the main application thread. 
+
+To enable spy support in a sample project, build with `-DDMQ_DATABUS_SPY=ON`. This activates an asynchronous "Spy Bridge" that exports packets over UDP to the standalone console.
 
 ### Example: Local Pub/Sub
 
@@ -2109,7 +2128,7 @@ Three System Architecture build projects exist:
 
 * [system-architecture](../example/sample-projects/system-architecture/) - builds on Windows and Linux. Requires MessagePack and ZeroMQ external libraries. See [Examples Setup](#examples-setup).
 * [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - builds on Windows or Linux. No external libraries required.
-* [system-architecture-databus](../example/sample-projects/system-architecture-databus/) - builds on Windows or Linux. Abstracted using the Data Bus. No external libraries required.
+* [databus](../example/sample-projects/databus/) - builds on Windows or Linux. Abstracted using the Data Bus. No external libraries required.
 * [system-architecture-python](../example/sample-projects/system-architecture-python/) - Python client communicates with C++ server using MessagePack and ZeroMQ external libraries.
 
 Follow the steps below to execute the first two projects. See `README.txt` within [system-architecture-python](../example/sample-projects/system-architecture-python/) for the Python example.
@@ -2158,7 +2177,7 @@ Interface implementation details.
 | **stm32-freertos** | Embedded FreeRTOS example for STM32F4 Discovery. | FreeRTOS | None | None |
 | **system-architecture** | System architecture example with dependencies. | `std::thread` | Various | Various |
 | **system-architecture-no-deps** | System architecture example (UDP) with no deps. | `std::thread` | `operator<<` / `operator>>` | UDP Socket |
-| **system-architecture-databus** | System architecture example using the Data Bus. | `std::thread` | `serialize` class | UDP Socket |
+| **databus** | System architecture example using the Data Bus. | `std::thread` | `serialize` class | UDP Socket |
 | **system-architecture-python** | Python binding example. | `std::thread` | N/A | Python Binding |
 | **win32-pipe-serializer** | Windows Named Pipe example. | `std::thread` | `serialize` class | Windows Pipe |
 | **win32-tcp-serializer** | Windows TCP Socket example. | `std::thread` | `serialize` class | Windows TCP Socket |

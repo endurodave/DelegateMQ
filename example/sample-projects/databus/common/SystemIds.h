@@ -6,11 +6,13 @@
 namespace SystemTopic {
     // Topic names
     static const char* const DataMsg = "Topic/DataMsg";
+    static const char* const CommandMsg = "Topic/CommandMsg";
 
     // Remote IDs (DelegateRemoteId) for network distribution
     // These must match between client and server
     enum RemoteId : dmq::DelegateRemoteId {
-        DataMsgId = 100
+        DataMsgId = 100,
+        CommandMsgId = 101
     };
 }
 

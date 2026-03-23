@@ -55,4 +55,16 @@ struct DataMsg : public serialize::I {
     }
 };
 
+// Command Message to adjust polling rate
+struct CommandMsg : public serialize::I {
+    int pollingRateMs = 1000;
+
+    virtual std::ostream& write(::serialize& ms, std::ostream& os) override {
+        return ms.write(os, pollingRateMs);
+    }
+    virtual std::istream& read(::serialize& ms, std::istream& is) override {
+        return ms.read(is, pollingRateMs);
+    }
+};
+
 #endif // SYSTEM_MESSAGES_H

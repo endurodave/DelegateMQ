@@ -19,18 +19,21 @@ int DataBusSpyTestMain() {
 
     std::string lastTopic;
     std::string lastValue;
+    uint64_t lastTimestamp = 0;
 
     // Connect the spy monitor
-    auto spyConn = dmq::DataBus::Monitor([&](const std::string& topic, const std::string& value) {
-        std::cout << "[SPY] " << topic << " = " << value << std::endl;
-        lastTopic = topic;
-        lastValue = value;
+    auto spyConn = dmq::DataBus::Monitor([&](const dmq::SpyPacket& packet) {
+        std::cout << "[SPY] " << packet.timestamp_us << " " << packet.topic << " = " << packet.value << std::endl;
+        lastTopic = packet.topic;
+        lastValue = packet.value;
+        lastTimestamp = packet.timestamp_us;
     });
 
     // Publish data
     dmq::DataBus::Publish<int>("sensor/temp", 22);
     ASSERT_TRUE(lastTopic == "sensor/temp");
     ASSERT_TRUE(lastValue == "22 C");
+    ASSERT_TRUE(lastTimestamp > 0);
 
     dmq::DataBus::Publish<std::string>("system/status", "OK");
     ASSERT_TRUE(lastTopic == "system/status");

@@ -4,6 +4,7 @@
 #include "DelegateMQ.h"
 #include "Participant.h"
 #include "DataBusQos.h"
+#include "SpyPacket.h"
 #include "predef/util/Fault.h"
 
 #ifdef _WIN32
@@ -71,7 +72,7 @@ public:
     }
 
     // Subscribe to all bus traffic (topic and stringified value).
-    static dmq::ScopedConnection Monitor(std::function<void(const std::string&, const std::string&)> func) {
+    static dmq::ScopedConnection Monitor(std::function<void(const SpyPacket&)> func) {
         DataBus& instance = GetInstance();
         std::lock_guard<dmq::RecursiveMutex> lock(instance.m_mutex);
         return instance.m_monitorSignal.Connect(dmq::MakeDelegate(std::move(func)));
@@ -164,6 +165,7 @@ private:
         std::vector<std::shared_ptr<Participant>> participantsSnapshot;
         std::string strVal = "?";
         bool hasMonitor = false;
+        uint64_t timestamp = 0;
 
         {
             std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
@@ -184,6 +186,9 @@ private:
                     auto func = static_cast<std::function<std::string(const T&)>*>(itStr->second.get());
                     strVal = (*func)(data);
                 }
+
+                auto now = std::chrono::system_clock::now();
+                timestamp = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
             }
 
             // 3. Get signal and remote info. Only create Signal if there is local interest.
@@ -205,7 +210,8 @@ private:
 
         // 5. Dispatch Monitor outside lock to allow re-entry/prevent deadlocks
         if (hasMonitor) {
-            m_monitorSignal(topic, strVal);
+            SpyPacket packet{ topic, strVal, timestamp };
+            m_monitorSignal(packet);
         }
 
         // 6. Local distribution
@@ -287,7 +293,7 @@ private:
     std::unordered_map<std::string, std::shared_ptr<void>> m_lastValues;
     std::unordered_map<std::string, QoS> m_topicQos;
     std::unordered_map<std::string, std::shared_ptr<void>> m_stringifiers;
-    dmq::Signal<void(const std::string&, const std::string&)> m_monitorSignal;
+    dmq::Signal<void(const SpyPacket&)> m_monitorSignal;
 };
 
 } // namespace dmq

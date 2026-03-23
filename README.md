@@ -275,7 +275,7 @@ See [Delegate Invocation Semantics](docs/DETAILS.md#delegate-invocation-semantic
 - **Topic-Based**: Components communicate via string-named topics (e.g., "sensor/data").
 - **Location Transparency**: Subscribers don't know if the data came from a local thread or a remote processor.
 - **Quality of Service (QoS)**: Supports Last Value Cache (LVC) to ensure new subscribers receive the most recent data immediately.
-- **Monitoring**: Built-in "spy" support to monitor all bus traffic for debugging or logging.
+- **Monitoring**: Built-in "spy" support via `DataBus::Monitor()` to receive a callback for every message published on the bus.
 - **Type Safety**: Runtime type checking ensures topic data types match between publishers and subscribers.
 
 ```cpp
@@ -296,6 +296,20 @@ auto conn2 = dmq::DataBus::Subscribe<int>("status", [](int s) {
     // New subscribers get the last published value immediately
 }, nullptr, qos);
 ```
+
+# DelegateMQ Spy
+
+**[DelegateMQ-Spy](https://github.com/endurodave/DelegateMQ-Spy)** is a standalone diagnostic tool and TUI (Terminal User Interface) dashboard for the DelegateMQ DataBus. It acts as a "Software Logic Analyzer," allowing you to visualize and monitor all bus traffic in real-time across threads and network boundaries.
+
+**Key Features:**
+- **Live Traffic Feed**: Real-time display of all messages published to the DataBus.
+- **Regex Filtering**: Instantly filter topics using regular expressions to focus on specific data streams.
+- **Zero Impact**: Uses an asynchronous "Spy Bridge" to ensure that monitoring doesn't block or slow down your main application.
+- **Cross-Platform**: Built with modern C++ and FTXUI, providing a responsive dashboard in any terminal (Windows Terminal, PowerShell, Bash).
+
+<img src="docs/dmq-spy-screenshot.png" alt="DelegateMQ Spy Screenshot" style="max-width: 800px; width: 100%;">
+
+To use the Spy tool, simply enable the `DMQ_DATABUS_SPY` option in your application's build and start the `dmq-spy` console. See the [DelegateMQ-Spy repository](https://github.com/endurodave/DelegateMQ-Spy) for implementation details.
 
 # Modular Architecture
 
