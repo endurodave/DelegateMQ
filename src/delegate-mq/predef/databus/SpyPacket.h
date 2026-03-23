@@ -19,7 +19,7 @@ struct SpyPacket {
 
     /// @brief Bitsery serialization method.
     template <typename S>
-    void serialize(S& s) const {
+    void serialize(S& s) {
         s.text1b(topic, 1024);
         s.text1b(value, 8192);
         s.value8b(timestamp_us);
