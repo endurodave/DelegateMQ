@@ -18,11 +18,10 @@ struct SpyPacket {
     uint64_t timestamp_us;  ///< Microseconds (usually since boot) when the message was published.
 
     /// @brief Bitsery serialization method.
-    /// @note Uses text2b for larger string support (up to 64KB).
     template <typename S>
     void serialize(S& s) const {
-        s.text2b(topic, 1024);
-        s.text2b(value, 8192);
+        s.text1b(topic, 1024);
+        s.text1b(value, 8192);
         s.value8b(timestamp_us);
     }
 };
