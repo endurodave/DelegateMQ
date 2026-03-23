@@ -30,8 +30,8 @@ namespace dmq {
 class DataBus {
 public:
     // Subscribe to a topic with optional QoS and thread dispatching.
-    // NOTE: This triggers an immediate LVC callback if enabled. There is a small window
-    // between LVC delivery and actual Signal connection where a publish might be missed.
+    // NOTE: Signal connection is established before LVC delivery to ensure 
+    // no messages are missed.
     template <typename T, typename F>
     static dmq::ScopedConnection Subscribe(const std::string& topic, F&& func, dmq::IThread* thread = nullptr, QoS qos = {}) {
         return GetInstance().InternalSubscribe<T>(topic, std::forward<F>(func), thread, qos);
@@ -72,9 +72,14 @@ public:
     }
 
     // Subscribe to all bus traffic (topic and stringified value).
-    static dmq::ScopedConnection Monitor(std::function<void(const SpyPacket&)> func) {
+    static dmq::ScopedConnection Monitor(std::function<void(const SpyPacket&)> func, dmq::IThread* thread = nullptr, dmq::Priority priority = dmq::Priority::NORMAL) {
         DataBus& instance = GetInstance();
         std::lock_guard<dmq::RecursiveMutex> lock(instance.m_mutex);
+        if (thread) {
+            auto del = dmq::MakeDelegate(std::move(func), *thread);
+            del.SetPriority(priority);
+            return instance.m_monitorSignal.Connect(del);
+        }
         return instance.m_monitorSignal.Connect(dmq::MakeDelegate(std::move(func)));
     }
 
@@ -159,13 +164,17 @@ private:
 
     template <typename T>
     void InternalPublish(const std::string& topic, T data) {
+        // Capture timestamp before lock acquisition for maximum accuracy and 
+        // monotonic ordering using dmq::Clock.
+        auto now = dmq::Clock::now();
+        uint64_t timestamp = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
+
         SignalPtr<T> signal;
         std::shared_ptr<void> serializerPtr;
         dmq::ISerializer<void(T)>* serializer = nullptr;
         std::vector<std::shared_ptr<Participant>> participantsSnapshot;
         std::string strVal = "?";
         bool hasMonitor = false;
-        uint64_t timestamp = 0;
 
         {
             std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
@@ -186,9 +195,6 @@ private:
                     auto func = static_cast<std::function<std::string(const T&)>*>(itStr->second.get());
                     strVal = (*func)(data);
                 }
-
-                auto now = std::chrono::system_clock::now();
-                timestamp = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
             }
 
             // 3. Get signal and remote info. Only create Signal if there is local interest.
@@ -242,6 +248,18 @@ private:
     template <typename T>
     void InternalRegisterStringifier(const std::string& topic, std::function<std::string(const T&)> func) {
         std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+
+        // Runtime Type Safety: Ensure topic is not registered with multiple types
+        auto itType = m_typeIndices.find(topic);
+        if (itType != m_typeIndices.end()) {
+            if (itType->second != std::type_index(typeid(T))) {
+                ::FaultHandler(__FILE__, (unsigned short)__LINE__);
+                return;
+            }
+        } else {
+            m_typeIndices.emplace(topic, std::type_index(typeid(T)));
+        }
+
         // Use shared_ptr with custom deleter to fix memory leak
         m_stringifiers[topic] = std::shared_ptr<void>(
             new std::function<std::string(const T&)>(std::move(func)),
