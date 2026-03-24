@@ -74,7 +74,7 @@ public:
                 return -1;
             }
 
-            int loop = 1;
+            loop = 0; // Disable loopback for PUB
             setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
         }
         else {
