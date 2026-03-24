@@ -274,6 +274,7 @@ See [Delegate Invocation Semantics](docs/DETAILS.md#delegate-invocation-semantic
 **Features:**
 - **Topic-Based**: Components communicate via string-named topics (e.g., "sensor/data").
 - **Location Transparency**: Subscribers don't know if the data came from a local thread or a remote processor.
+- **Unicast & Multicast**: Supports point-to-point reliable delivery (Unicast) or one-to-many "Best Effort" distribution (Multicast).
 - **Quality of Service (QoS)**: Supports Last Value Cache (LVC) to ensure new subscribers receive the most recent data immediately.
 - **Monitoring**: Built-in "spy" support via `DataBus::Monitor()` to receive a callback for every message published on the bus.
 - **Type Safety**: Runtime type checking ensures topic data types match between publishers and subscribers.

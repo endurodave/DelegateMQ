@@ -182,10 +182,12 @@ These libraries are good for in-thread event wiring where every subscriber runs 
 | Thread Safety | Manual Dispatch | Manual Dispatch | Automatic (via `IThread`) |
 | Location Transparency | Yes | Yes | Yes |
 | QoS - Last Value Cache | Yes | Yes (Retained) | Yes |
-| QoS - Reliability | Complex Policies | Levels 0, 1, 2 | Pluggable `ITransport` |
+| QoS - Reliability | Complex Policies | Levels 0, 1, 2 | Reliable (Unicast) or Best-Effort (Multicast) |
 | Primary Use Case | Critical Infrastructure | IoT / Cloud | Embedded / Desktop IPC |
 
-**Key Advantage**: Unlike full DDS systems that require complex IDL compilation and manual thread management to get data into your application's control loop, `DataBus` handles the thread-safe delivery automatically. You simply provide a pointer to your `Thread` object, and the callback is guaranteed to execute in that specific context.
+**Key Advantage**: Unlike full DDS systems that require complex IDL compilation and manual thread management to get data into your application's control loop, `DataBus` handles the thread-safe delivery automatically. You simply provide a pointer to your `Thread` object, and the callback is guaranteed to execute in that specific context. 
+
+Additionally, the DataBus now supports **UDP Multicast**, allowing a single publisher to reach an unlimited number of subscribers with zero extra CPU or network overhead per client—ideal for high-frequency telemetry and monitoring tools like the [DelegateMQ Spy](#unified-api-the-core-differentiator).
 
 ---
 
@@ -304,9 +306,9 @@ private:
 | Publisher setup | `Participant → Topic → Publisher → DataWriter` | `RemoteChannel` + `Bind()` |
 | Subscriber setup | `Participant → Topic → Subscriber → DataReader` | `RemoteChannel` + `Bind()` |
 | Thread dispatch on receive | Manual (listener on DDS thread → queue → your thread) | Automatic (Poll runs on your thread) |
-| Discovery | Automatic (multicast/unicast, topic matching) | Manual (`DelegateRemoteId`) |
-| QoS policies | Rich (reliability, durability, history, lifespan, ...) | None built-in |
-| Transport | RTPS over UDP/TCP, multicast, secure | Pluggable `ITransport` — any medium |
+| Discovery | Automatic (multicast/unicast, topic matching) | Partial (via Multicast group) |
+| QoS policies | Rich (reliability, durability, history, lifespan, ...) | LVC, Fixed-block, Reliable/Best-Effort |
+| Transport | RTPS over UDP/TCP, multicast, secure | Pluggable `ITransport` — Unicast & Multicast UDP |
 | IDL / build tool required | Yes | No |
 | Embedded / RTOS support | Limited | Yes |
 | Interoperability standard | RTPS (vendor-interoperable) | No standard |
