@@ -55,6 +55,12 @@ public:
                 return -1;
             }
 
+            // Disable loopback so we don't receive our own packets
+            int loop = 0;
+            if (setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0) {
+                std::cerr << "IP_MULTICAST_LOOP failed." << std::endl;
+            }
+
             // Set the interface for outgoing multicast data
             struct in_addr localAddr;
             inet_aton(localInterface, &localAddr);

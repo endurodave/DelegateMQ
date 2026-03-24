@@ -36,7 +36,10 @@ int main() {
     std::cout << "Local Interface: " << localIP << std::endl;
 
 #ifdef DMQ_DATABUS_SPY
+    // Start Spy Bridge to export DataBus traffic to the Spy Console via Multicast
+    // Note: Use port 9999 to isolate spy traffic from app traffic on 8000.
     SpyBridge::StartMulticast("239.1.1.1", 9999, localIP);
+
     dmq::DataBus::RegisterStringifier<ShapeMsg>(SystemTopic::Square, [](const ShapeMsg& m) {
         return "Square X=" + std::to_string(m.x) + " Y=" + std::to_string(m.y);
     });
@@ -83,7 +86,7 @@ int main() {
         dmq::DataBus::Publish<ShapeMsg>(SystemTopic::Circle, circle);
 
         angle += 0.1f;
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(33));
     }
 
     transport.Close();

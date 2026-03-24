@@ -41,12 +41,13 @@ public:
             m_addr.sin_port = htons(port);
             inet_pton(AF_INET, groupAddr, &m_addr.sin_addr);
 
+            // Disable loopback so we don't receive our own packets
+            int loop = 0;
+            setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_LOOP, (const char*)&loop, sizeof(loop));
+
             in_addr localAddr;
             inet_pton(AF_INET, localInterface, &localAddr);
             setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_IF, (const char*)&localAddr, sizeof(localAddr));
-
-            int ttl = 3; 
-            setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_TTL, (const char*)&ttl, sizeof(ttl));
             
             std::cout << "[Multicast] Created PUB on " << localInterface << ", Group: " << groupAddr << ":" << port << std::endl;
         }
