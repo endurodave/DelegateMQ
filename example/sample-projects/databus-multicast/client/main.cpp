@@ -28,14 +28,9 @@
 int main() {
     std::cout << "Starting DataBus Multicast CLIENT (Subscriber)..." << std::endl;
 
-#ifdef _WIN32
     WinsockContext winsock;
     // Auto-detect physical IP for multicast interface
     std::string localIP = WinsockContext::GetLocalAddress();
-#else
-    // Default for Linux, usually auto-detected by OS
-    std::string localIP = "0.0.0.0";
-#endif
 
     std::cout << "Local Interface: " << localIP << std::endl;
 

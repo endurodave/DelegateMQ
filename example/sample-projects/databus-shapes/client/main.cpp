@@ -36,12 +36,8 @@ struct GlobalState {
 } g_state;
 
 int main() {
-#ifdef _WIN32
     WinsockContext winsock;
     std::string localIP = WinsockContext::GetLocalAddress();
-#else
-    std::string localIP = "0.0.0.0";
-#endif
 
     // 1. Initialize Multicast Transport (Group: 239.1.1.1, Port: 8000)
     MulticastTransport transport;

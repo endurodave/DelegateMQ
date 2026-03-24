@@ -16,6 +16,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <ifaddrs.h>
+#include <cstring>
 #endif
 
 #include <iostream>
@@ -93,6 +94,7 @@ public:
             inet_ntop(AF_INET, addrPtr, ipStr, INET_ADDRSTRLEN);
 
             std::string current(ipStr);
+            // Skip loopback and return the first physical one
             if (current.find("127.") != 0) {
                 firstIp = current;
                 break;

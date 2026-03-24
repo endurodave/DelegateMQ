@@ -26,12 +26,8 @@
 int main() {
     std::cout << "Starting DataBus Shapes Demo SERVER (Publisher)..." << std::endl;
 
-#ifdef _WIN32
     WinsockContext winsock;
     std::string localIP = WinsockContext::GetLocalAddress();
-#else
-    std::string localIP = "0.0.0.0";
-#endif
 
     std::cout << "Local Interface: " << localIP << std::endl;
 
