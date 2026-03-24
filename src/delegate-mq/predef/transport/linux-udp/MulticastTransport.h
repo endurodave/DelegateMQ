@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <net/if.h>
 #include <fcntl.h>
 #include <errno.h>
 
@@ -28,7 +29,7 @@ public:
     MulticastTransport() = default;
     ~MulticastTransport() { Close(); }
 
-    int Create(Type type, const char* groupAddr, uint16_t port)
+    int Create(Type type, const char* groupAddr, uint16_t port, const char* localInterface = "0.0.0.0")
     {
         m_type = type;
 
@@ -54,11 +55,21 @@ public:
                 return -1;
             }
 
+            // Set the interface for outgoing multicast data
+            struct in_addr localAddr;
+            inet_aton(localInterface, &localAddr);
+            if (setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_IF, &localAddr, sizeof(localAddr)) < 0) {
+                std::cerr << "IP_MULTICAST_IF failed." << std::endl;
+            }
+
             int ttl = 3;
             if (setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0) {
                 std::cerr << "IP_MULTICAST_TTL failed." << std::endl;
                 return -1;
             }
+
+            int loop = 1;
+            setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
         }
         else {
             m_addr.sin_addr.s_addr = INADDR_ANY;
@@ -69,7 +80,7 @@ public:
 
             struct ip_mreq mreq;
             mreq.imr_multiaddr.s_addr = inet_addr(groupAddr);
-            mreq.imr_interface.s_addr = INADDR_ANY;
+            mreq.imr_interface.s_addr = inet_addr(localInterface);
             if (setsockopt(m_socket, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) {
                 std::cerr << "IP_ADD_MEMBERSHIP failed: " << strerror(errno) << std::endl;
                 return -1;
