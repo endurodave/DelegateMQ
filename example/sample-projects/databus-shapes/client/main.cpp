@@ -21,8 +21,10 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include "predef/transport/win32-udp/MulticastTransport.h"
+#include "predef/util/NetworkConnect.h"
 #else
 #include "predef/transport/linux-udp/MulticastTransport.h"
+#include "predef/util/NetworkConnect.h"
 #endif
 
 using namespace ftxui;
@@ -57,22 +59,23 @@ int main() {
             std::lock_guard<std::mutex> lock(g_state.mutex);
             g_state.shapes[topic] = msg;
         }
-        // Data-Driven Refresh: Trigger UI redraw immediately on data arrival
         if (g_state.screen) {
             g_state.screen->PostEvent(Event::Custom);
         }
     };
 
-    group->RegisterHandler<ShapeMsg>(SystemTopic::SquareId, serializer, [&](ShapeMsg m) { shapeHandler(SystemTopic::Square, m); });
-    group->RegisterHandler<ShapeMsg>(SystemTopic::CircleId, serializer, [&](ShapeMsg m) { shapeHandler(SystemTopic::Circle, m); });
-    group->RegisterHandler<ShapeMsg>(SystemTopic::TriangleId, serializer, [&](ShapeMsg m) { shapeHandler(SystemTopic::Triangle, m); });
+    // Use explicit std::function to match RegisterHandler signature
+    using HandlerFunc = std::function<void(ShapeMsg)>;
+    group->RegisterHandler<ShapeMsg>(SystemTopic::SquareId, serializer, HandlerFunc([&](ShapeMsg m) { shapeHandler(SystemTopic::Square, m); }));
+    group->RegisterHandler<ShapeMsg>(SystemTopic::CircleId, serializer, HandlerFunc([&](ShapeMsg m) { shapeHandler(SystemTopic::Circle, m); }));
+    group->RegisterHandler<ShapeMsg>(SystemTopic::TriangleId, serializer, HandlerFunc([&](ShapeMsg m) { shapeHandler(SystemTopic::Triangle, m); }));
 
     // 3. Network processing thread
     std::atomic<bool> running{true};
     std::thread netThread([&]() {
         while (running) {
             group->ProcessIncoming();
-            std::this_thread::sleep_for(std::chrono::milliseconds(5)); // High-freq check
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     });
 
@@ -99,7 +102,7 @@ int main() {
             canvas(std::move(c)) | flex | border,
             hbox({
                 filler(),
-                text("Data-Driven Rendering (Sync with DataBus) | 'q' to quit") | dim,
+                text("Data-Driven Rendering | 'q' to quit") | dim,
                 filler()
             })
         });
@@ -123,6 +126,3 @@ int main() {
 
     return 0;
 }
-
-
-
