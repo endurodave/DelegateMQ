@@ -142,8 +142,20 @@ public:
     virtual int Receive(xstringstream& is, DmqHeader& header) override {
         if (m_type != Type::SUB) return -1;
 
-        int size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, NULL, NULL);
+        struct sockaddr_in fromAddr;
+        socklen_t addrLen = sizeof(fromAddr);
+        int size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, (struct sockaddr*)&fromAddr, &addrLen);
+        
+        if (size < 0) {
+            if (errno != EAGAIN && errno != EWOULDBLOCK) {
+                // std::cerr << "Multicast recvfrom error: " << strerror(errno) << std::endl;
+            }
+            return -1;
+        }
+
         if (size <= (int)DmqHeader::HEADER_SIZE) return -1;
+
+        // std::cout << "[Multicast] Received " << size << " bytes" << std::endl;
 
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
