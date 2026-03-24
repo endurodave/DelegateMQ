@@ -16,7 +16,6 @@
 #include <thread>
 
 #ifdef _WIN32
-#include "predef/util/NetworkConnect.h"
 #endif
 
 #ifdef DMQ_LOG
@@ -123,3 +122,5 @@ int main()
 
     return 0;
 }
+
+

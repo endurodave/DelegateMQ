@@ -6,8 +6,6 @@
 
 #include "sender.h"
 #include "receiver.h"
-#include "predef/util/NetworkConnect.h"
-
 std::atomic<bool> processTimerExit = false;
 static void ProcessTimers()
 {
@@ -49,3 +47,5 @@ int main()
 
     return 0;
 }
+
+

@@ -13,7 +13,6 @@
 #include "DelegateMQ.h"
 #include "SystemMessages.h"
 #include "SystemIds.h"
-
 #ifdef DMQ_DATABUS_SPY
 #include "SpyBridge.h"
 #endif
@@ -150,4 +149,6 @@ int main() {
 
     return 0;
 }
+
+
 

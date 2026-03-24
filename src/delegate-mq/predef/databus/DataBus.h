@@ -6,10 +6,7 @@
 #include "DataBusQos.h"
 #include "SpyPacket.h"
 #include "predef/util/Fault.h"
-
-#ifdef _WIN32
 #include "predef/util/NetworkConnect.h"
-#endif
 
 #include <string>
 #include <unordered_map>

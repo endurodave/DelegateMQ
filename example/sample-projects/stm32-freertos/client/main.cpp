@@ -16,10 +16,6 @@
 #include "ClientApp.h"
 #include <thread>
 
-#ifdef _WIN32
-#include "predef/util/NetworkConnect.h"
-#endif
-
 #ifdef DMQ_LOG
 #ifdef _WIN32
 // https://github.com/gabime/spdlog
@@ -134,3 +130,5 @@ int main()
 
     return 0;
 }
+
+
