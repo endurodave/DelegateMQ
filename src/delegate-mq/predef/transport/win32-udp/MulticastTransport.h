@@ -115,8 +115,6 @@ public:
         if (size == SOCKET_ERROR) return -1;
         if (size <= (int)DmqHeader::HEADER_SIZE) return -1;
 
-        std::cout << "[Multicast] Physical Receive: " << size << " bytes" << std::endl;
-
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
         headerStream.seekg(0);

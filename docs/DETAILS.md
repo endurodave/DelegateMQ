@@ -2159,6 +2159,7 @@ Three System Architecture build projects exist:
 * [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - builds on Windows or Linux. No external libraries required.
 * [databus](../example/sample-projects/databus/) - builds on Windows or Linux. Abstracted using the Data Bus. No external libraries required.
 * [databus-multicast](../example/sample-projects/databus-multicast/) - builds on Windows or Linux. Demonstrates one-to-many distribution using the Data Bus and Multicast transport. No external libraries required.
+* [databus-shapes](../example/sample-projects/databus-shapes/) - builds on Windows or Linux. Graphical TUI demonstration of DataBus features including Multicast and location transparency.
 * [system-architecture-python](../example/sample-projects/system-architecture-python/) - Python client communicates with C++ server using MessagePack and ZeroMQ external libraries.
 
 Follow the steps below to execute the first two projects. See `README.txt` within [system-architecture-python](../example/sample-projects/system-architecture-python/) for the Python example.
