@@ -13,7 +13,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include "predef/transport/win32-udp/MulticastTransport.h"
-#include "predef/util/WinsockConnect.h"
+#include "predef/util/NetworkConnect.h"
 #else
 #include "predef/transport/linux-udp/MulticastTransport.h"
 #endif
@@ -26,9 +26,9 @@
 int main() {
     std::cout << "Starting DataBus Multicast SERVER (Publisher)..." << std::endl;
 
-    WinsockContext winsock;
+    NetworkContext winsock;
     // Auto-detect physical IP for multicast interface
-    std::string localIP = WinsockContext::GetLocalAddress();
+    std::string localIP = NetworkContext::GetLocalAddress();
 
     std::cout << "Local Interface: " << localIP << std::endl;
 
@@ -85,3 +85,4 @@ int main() {
 
     return 0;
 }
+

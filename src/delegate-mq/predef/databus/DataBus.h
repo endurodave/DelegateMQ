@@ -8,7 +8,7 @@
 #include "predef/util/Fault.h"
 
 #ifdef _WIN32
-#include "predef/util/WinsockConnect.h"
+#include "predef/util/NetworkConnect.h"
 #endif
 
 #include <string>
@@ -317,3 +317,4 @@ private:
 } // namespace dmq
 
 #endif // DMQ_DATABUS_H
+

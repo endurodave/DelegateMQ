@@ -31,8 +31,8 @@ int main() {
     std::cout << "Starting System Architecture SERVER (Publisher)..." << std::endl;
 
 #ifdef _WIN32
-    // 1. Initialize Winsock (Windows only). WinsockContext defined in WinsockConnect.h.
-    WinsockContext winsock;
+    // 1. Initialize Winsock (Windows only). NetworkContext defined in NetworkConnect.h.
+    NetworkContext winsock;
 #endif
 
 #ifdef DMQ_DATABUS_SPY
@@ -150,3 +150,4 @@ int main() {
 
     return 0;
 }
+

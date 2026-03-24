@@ -16,7 +16,7 @@
 #include <thread>
 
 #ifdef _WIN32
-#include "predef/util/WinsockConnect.h"
+#include "predef/util/NetworkConnect.h"
 #endif
 
 #ifdef DMQ_LOG
@@ -79,7 +79,7 @@ int main()
 
 #ifdef _WIN32
     // Starts Winsock now; automatically cleans up when main exits.
-    WinsockContext wsContext;
+    NetworkContext wsContext;
 #endif
 
     std::cout << "Client start!" << std::endl;

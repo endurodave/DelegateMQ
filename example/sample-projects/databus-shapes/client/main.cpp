@@ -21,7 +21,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include "predef/transport/win32-udp/MulticastTransport.h"
-#include "predef/util/WinsockConnect.h"
+#include "predef/util/NetworkConnect.h"
 #else
 #include "predef/transport/linux-udp/MulticastTransport.h"
 #endif
@@ -36,8 +36,8 @@ struct GlobalState {
 } g_state;
 
 int main() {
-    WinsockContext winsock;
-    std::string localIP = WinsockContext::GetLocalAddress();
+    NetworkContext winsock;
+    std::string localIP = NetworkContext::GetLocalAddress();
 
     // 1. Initialize Multicast Transport (Group: 239.1.1.1, Port: 8000)
     MulticastTransport transport;
@@ -124,3 +124,4 @@ int main() {
 
     return 0;
 }
+

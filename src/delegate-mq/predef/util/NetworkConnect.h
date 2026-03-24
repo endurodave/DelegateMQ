@@ -1,7 +1,7 @@
-#ifndef WINSOCK_CONTEXT_H
-#define WINSOCK_CONTEXT_H
+#ifndef NETWORK_CONNECT_H
+#define NETWORK_CONNECT_H
 
-/// @brief RAII wrapper to initialize and cleanup Windows Sockets.
+/// @brief RAII wrapper to initialize and cleanup network stacks.
 /// Instantiate this ONCE at the top of main().
 
 #ifdef _WIN32
@@ -23,10 +23,10 @@
 #include <string>
 #include <vector>
 
-class WinsockContext
+class NetworkContext
 {
 public:
-    WinsockContext()
+    NetworkContext()
     {
 #ifdef _WIN32
         WSADATA wsaData;
@@ -38,7 +38,7 @@ public:
 #endif
     }
 
-    ~WinsockContext()
+    ~NetworkContext()
     {
 #ifdef _WIN32
         WSACleanup();
@@ -94,7 +94,6 @@ public:
             inet_ntop(AF_INET, addrPtr, ipStr, INET_ADDRSTRLEN);
 
             std::string current(ipStr);
-            // Skip loopback and return the first physical one
             if (current.find("127.") != 0) {
                 firstIp = current;
                 break;
@@ -107,4 +106,4 @@ public:
     }
 };
 
-#endif // WINSOCK_CONTEXT_H
+#endif // NETWORK_CONNECT_H
