@@ -38,6 +38,10 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [DataBus Spy](#databus-spy)
     - [Example: Local Pub/Sub](#example-local-pubsub)
     - [Example: Last Value Cache (LVC)](#example-last-value-cache-lvc)
+    - [Remote Distribution](#remote-distribution)
+      - [Unicast (Point-to-Point)](#unicast-point-to-point)
+      - [Multicast (One-to-Many)](#multicast-one-to-many)
+      - [Comparison Table](#comparison-table)
     - [Example: Remote Distribution](#example-remote-distribution)
     - [Last Value Cache (LVC)](#last-value-cache-lvc)
   - [Async Public API Pattern](#async-public-api-pattern)
@@ -625,6 +629,31 @@ auto conn = dmq::DataBus::Subscribe<float>("sensor/temp", [](float v) {
     std::cout << "Initial or updated temp: " << v << "\n";
 }, nullptr, qos);
 ```
+
+### Remote Distribution
+
+The `DataBus` supports two primary patterns for network distribution: **Unicast** and **Multicast**.
+
+#### Unicast (Point-to-Point)
+- **Transport**: `UdpTransport`, `TcpTransport`, `ZeroMqTransport`, etc.
+- **Behavior**: Data is sent to a specific IP address.
+- **Reliability**: Fully supported via the Reliability Layer (ACKs/Retries). The publisher knows if the specific remote node received the message.
+- **Use Case**: Critical commands, configuration updates, or small networks where specific node delivery confirmation is required.
+
+#### Multicast (One-to-Many)
+- **Transport**: `MulticastTransport`.
+- **Behavior**: Data is published to a multicast group (e.g., `239.1.1.1`). Any number of clients can "join" the group to receive the data stream simultaneously.
+- **Reliability**: "Best Effort." There are no individual ACKs from subscribers. If a packet is lost, it is not retransmitted.
+- **Use Case**: High-frequency sensor data, telemetry, discovery, and the [DelegateMQ Spy](#databus-spy) tool. Multicast is extremely efficient as the network hardware handles cloning the packets for all subscribers.
+
+#### Comparison Table
+
+| Feature | Unicast | Multicast |
+| :--- | :--- | :--- |
+| **Connectivity** | 1-to-1 | 1-to-Many |
+| **Network Traffic** | Increases with each subscriber | Constant (one packet for all) |
+| **Reliability** | Guaranteed (with ACKs) | Best Effort |
+| **Overhead** | Higher (Tracking state) | Lower (Fire-and-forget) |
 
 ### Example: Remote Distribution
 
@@ -2129,6 +2158,7 @@ Three System Architecture build projects exist:
 * [system-architecture](../example/sample-projects/system-architecture/) - builds on Windows and Linux. Requires MessagePack and ZeroMQ external libraries. See [Examples Setup](#examples-setup).
 * [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - builds on Windows or Linux. No external libraries required.
 * [databus](../example/sample-projects/databus/) - builds on Windows or Linux. Abstracted using the Data Bus. No external libraries required.
+* [databus-multicast](../example/sample-projects/databus-multicast/) - builds on Windows or Linux. Demonstrates one-to-many distribution using the Data Bus and Multicast transport. No external libraries required.
 * [system-architecture-python](../example/sample-projects/system-architecture-python/) - Python client communicates with C++ server using MessagePack and ZeroMQ external libraries.
 
 Follow the steps below to execute the first two projects. See `README.txt` within [system-architecture-python](../example/sample-projects/system-architecture-python/) for the Python example.
@@ -2178,6 +2208,7 @@ Interface implementation details.
 | **system-architecture** | System architecture example with dependencies. | `std::thread` | Various | Various |
 | **system-architecture-no-deps** | System architecture example (UDP) with no deps. | `std::thread` | `operator<<` / `operator>>` | UDP Socket |
 | **databus** | System architecture example using the Data Bus. | `std::thread` | `serialize` class | UDP Socket |
+| **databus-multicast** | One-to-many distribution using the Data Bus. | `std::thread` | `serialize` class | UDP Multicast |
 | **system-architecture-python** | Python binding example. | `std::thread` | N/A | Python Binding |
 | **win32-pipe-serializer** | Windows Named Pipe example. | `std::thread` | `serialize` class | Windows Pipe |
 | **win32-tcp-serializer** | Windows TCP Socket example. | `std::thread` | `serialize` class | Windows TCP Socket |
