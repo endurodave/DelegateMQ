@@ -55,6 +55,7 @@ int main() {
     static Serializer<void(ShapeMsg)> serializer;
 
     auto shapeHandler = [](const std::string& topic, ShapeMsg msg) {
+        // std::cout << "DEBUG: Received " << topic << " x=" << msg.x << " y=" << msg.y << std::endl;
         {
             std::lock_guard<std::mutex> lock(g_state.mutex);
             g_state.shapes[topic] = msg;

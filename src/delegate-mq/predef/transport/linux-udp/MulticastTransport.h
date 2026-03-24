@@ -20,11 +20,7 @@
 class MulticastTransport : public ITransport
 {
 public:
-    enum class Type
-    {
-        PUB,
-        SUB
-    };
+    enum class Type { PUB, SUB };
 
     MulticastTransport() = default;
     ~MulticastTransport() { Close(); }
@@ -32,84 +28,51 @@ public:
     int Create(Type type, const char* groupAddr, uint16_t port, const char* localInterface = "0.0.0.0")
     {
         m_type = type;
-
         m_socket = socket(AF_INET, SOCK_DGRAM, 0);
-        if (m_socket < 0) {
-            std::cerr << "Multicast socket creation failed: " << strerror(errno) << std::endl;
-            return -1;
-        }
+        if (m_socket < 0) return -1;
 
         int reuse = 1;
-        if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
-            std::cerr << "SO_REUSEADDR failed: " << strerror(errno) << std::endl;
-            return -1;
-        }
+        setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+
+        // ALWAYS enable loopback for testing convenience
+        int loop = 1;
+        setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
 
         memset(&m_addr, 0, sizeof(m_addr));
         m_addr.sin_family = AF_INET;
         m_addr.sin_port = htons(port);
 
         if (type == Type::PUB) {
-            if (inet_aton(groupAddr, &m_addr.sin_addr) == 0) {
-                std::cerr << "Invalid multicast group address." << std::endl;
-                return -1;
-            }
-
-            // Disable loopback so we don't receive our own packets
-            int loop = 0;
-            if (setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0) {
-                std::cerr << "IP_MULTICAST_LOOP failed." << std::endl;
-            }
-
-            // Set the interface for outgoing multicast data
-            struct in_addr localAddr;
-            inet_aton(localInterface, &localAddr);
-            if (setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_IF, &localAddr, sizeof(localAddr)) < 0) {
-                std::cerr << "IP_MULTICAST_IF failed." << std::endl;
-            }
+            m_addr.sin_addr.s_addr = inet_addr(groupAddr);
+            
+            struct in_addr interface_addr;
+            interface_addr.s_addr = inet_addr(localInterface);
+            setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_IF, &interface_addr, sizeof(interface_addr));
 
             int ttl = 3;
-            if (setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0) {
-                std::cerr << "IP_MULTICAST_TTL failed." << std::endl;
-                return -1;
-            }
-
-            loop = 0; // Disable loopback for PUB
-            setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
+            setsockopt(m_socket, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
         }
         else {
             m_addr.sin_addr.s_addr = INADDR_ANY;
-            if (bind(m_socket, (struct sockaddr*)&m_addr, sizeof(m_addr)) < 0) {
-                std::cerr << "Multicast bind failed: " << strerror(errno) << std::endl;
-                return -1;
-            }
+            if (bind(m_socket, (struct sockaddr*)&m_addr, sizeof(m_addr)) < 0) return -1;
 
             struct ip_mreq mreq;
             mreq.imr_multiaddr.s_addr = inet_addr(groupAddr);
-            if (strcmp(localInterface, "0.0.0.0") == 0) {
-                mreq.imr_interface.s_addr = INADDR_ANY;
-            } else {
-                mreq.imr_interface.s_addr = inet_addr(localInterface);
-            }
-            
+            mreq.imr_interface.s_addr = inet_addr(localInterface);
             if (setsockopt(m_socket, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) {
-                std::cerr << "IP_ADD_MEMBERSHIP failed: " << strerror(errno) << std::endl;
                 return -1;
             }
-            std::cout << "[Multicast] Joined group " << groupAddr << " on interface " << localInterface << std::endl;
 
             struct timeval timeout;
-            timeout.tv_sec = 2;
+            timeout.tv_sec = 1;
             timeout.tv_usec = 0;
             setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
         }
-
         return 0;
     }
 
     void Close() {
         if (m_socket != -1) {
-            shutdown(m_socket, SHUT_RDWR);
             close(m_socket);
             m_socket = -1;
         }
@@ -117,7 +80,6 @@ public:
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override {
         if (m_type != Type::PUB) return -1;
-
         std::string payload = os.str();
         DmqHeader headerCopy = header;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
@@ -135,27 +97,15 @@ public:
         ss.write(payload.data(), payload.size());
 
         std::string data = ss.str();
-        ssize_t sent = sendto(m_socket, data.c_str(), data.size(), 0, (struct sockaddr*)&m_addr, sizeof(m_addr));
-        return (sent == (ssize_t)data.size()) ? 0 : -1;
+        sendto(m_socket, data.c_str(), data.size(), 0, (struct sockaddr*)&m_addr, sizeof(m_addr));
+        return 0;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override {
         if (m_type != Type::SUB) return -1;
-
-        struct sockaddr_in fromAddr;
-        socklen_t addrLen = sizeof(fromAddr);
-        int size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, (struct sockaddr*)&fromAddr, &addrLen);
+        int size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, NULL, NULL);
         
-        if (size < 0) {
-            if (errno != EAGAIN && errno != EWOULDBLOCK) {
-                // std::cerr << "Multicast recvfrom error: " << strerror(errno) << std::endl;
-            }
-            return -1;
-        }
-
         if (size <= (int)DmqHeader::HEADER_SIZE) return -1;
-
-        // std::cout << "[Multicast] Received " << size << " bytes" << std::endl;
 
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
@@ -167,7 +117,10 @@ public:
         headerStream.read((char*)&val, 2); header.SetSeqNum(ntohs(val));
         headerStream.read((char*)&val, 2); header.SetLength(ntohs(val));
 
-        if (header.GetMarker() != DmqHeader::MARKER) return -1;
+        if (header.GetMarker() != DmqHeader::MARKER) {
+            // std::cerr << "[Multicast] Bad Marker: " << std::hex << header.GetMarker() << std::dec << std::endl;
+            return -1;
+        }
 
         is.write(m_buffer + DmqHeader::HEADER_SIZE, size - DmqHeader::HEADER_SIZE);
         return 0;
@@ -181,4 +134,4 @@ private:
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
 
-#endif // LINUX_MULTICAST_TRANSPORT_H
+#endif
