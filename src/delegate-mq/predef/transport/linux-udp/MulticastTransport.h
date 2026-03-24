@@ -86,11 +86,17 @@ public:
 
             struct ip_mreq mreq;
             mreq.imr_multiaddr.s_addr = inet_addr(groupAddr);
-            mreq.imr_interface.s_addr = inet_addr(localInterface);
+            if (strcmp(localInterface, "0.0.0.0") == 0) {
+                mreq.imr_interface.s_addr = INADDR_ANY;
+            } else {
+                mreq.imr_interface.s_addr = inet_addr(localInterface);
+            }
+            
             if (setsockopt(m_socket, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) {
                 std::cerr << "IP_ADD_MEMBERSHIP failed: " << strerror(errno) << std::endl;
                 return -1;
             }
+            std::cout << "[Multicast] Joined group " << groupAddr << " on interface " << localInterface << std::endl;
 
             struct timeval timeout;
             timeout.tv_sec = 2;

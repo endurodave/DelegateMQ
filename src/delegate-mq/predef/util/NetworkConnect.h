@@ -17,6 +17,7 @@
 #include <netdb.h>
 #include <ifaddrs.h>
 #include <cstring>
+#include <net/if.h>
 #endif
 
 #include <iostream>
@@ -89,12 +90,20 @@ public:
             if (ifa->ifa_addr == nullptr || ifa->ifa_addr->sa_family != AF_INET)
                 continue;
 
+            // Skip loopback interfaces
+            if (ifa->ifa_flags & IFF_LOOPBACK)
+                continue;
+
+            // Must be UP
+            if (!(ifa->ifa_flags & IFF_UP))
+                continue;
+
             char ipStr[INET_ADDRSTRLEN];
             void* addrPtr = &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr;
             inet_ntop(AF_INET, addrPtr, ipStr, INET_ADDRSTRLEN);
 
             std::string current(ipStr);
-            if (current.find("127.") != 0) {
+            if (current != "0.0.0.0" && current.find("127.") != 0) {
                 firstIp = current;
                 break;
             }
