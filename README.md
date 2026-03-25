@@ -239,7 +239,8 @@ public:
     MsgSender(ITransport& transport, ISerializer<void(std::string)>& ser)
         : m_channel(transport, ser)
     {
-        m_channel.Bind(std::function<void(std::string)>([](std::string){}), MSG_ID);
+        // Bind to a raw lambda (no std::function wrapper needed)
+        m_channel.Bind([](std::string msg) { MsgOut(msg); }, MSG_ID);
     }
 
     void Send(const std::string& msg) { m_channel(msg); }  // fire-and-forget

@@ -164,11 +164,9 @@ namespace Example
         monitor->Init(sensor, callback_thread);
 
         // 4. Setup Lambda (ScopedConnection)
-        std::function<void(int, const std::string&)> lambdaFunc =
-            [](int val, const std::string& src) {
+        auto lambdaConnection = sensor.OnData.Connect(MakeDelegate([](int val, const std::string& src) {
             cout << "[Lambda] Got " << val << " on thread " << Thread::GetCurrentThreadId() << endl;
-            };
-        auto lambdaConnection = sensor.OnData.Connect(MakeDelegate(lambdaFunc, callback_thread));
+        }, callback_thread));
 
         // 5. Produce Data
         cout << "\n--- Producing Batch 1 ---" << endl;

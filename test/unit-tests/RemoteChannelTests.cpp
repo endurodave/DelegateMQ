@@ -495,6 +495,64 @@ static void RemoteChannel_MakeDelegate_MatchesManualWiring()
     ASSERT_TRUE(transport.m_lastId == REMOTE_ID);
 }
 
+// ---- Raw lambda MakeDelegate ---------------------------------------------------
+
+static void RemoteChannel_MakeDelegate_RawLambda()
+{
+    MockTransport transport;
+    RCSerializer<void(int)> serializer;
+    RemoteChannel<void(int)> channel(transport, serializer);
+
+    // Inline raw lambda — no std::function wrapper
+    auto d1 = MakeDelegate([](int i) { ASSERT_TRUE(i == TEST_INT); }, REMOTE_ID, channel);
+    ASSERT_TRUE(!d1.Empty());
+    ASSERT_TRUE(d1.GetRemoteId() == REMOTE_ID);
+    d1(TEST_INT);
+    ASSERT_TRUE(transport.m_sendCount == 1);
+    ASSERT_TRUE(transport.m_lastId == REMOTE_ID);
+
+    // Named raw lambda (auto, not std::function)
+    auto rawLam = [](int i) { ASSERT_TRUE(i == TEST_INT); };
+    auto d2 = MakeDelegate(rawLam, REMOTE_ID, channel);
+    ASSERT_TRUE(!d2.Empty());
+    d2(TEST_INT);
+    ASSERT_TRUE(transport.m_sendCount == 2);
+
+    // Capturing lambda
+    int captured = TEST_INT;
+    auto d3 = MakeDelegate([captured](int i) { ASSERT_TRUE(i == captured); }, REMOTE_ID, channel);
+    ASSERT_TRUE(!d3.Empty());
+    d3(TEST_INT);
+    ASSERT_TRUE(transport.m_sendCount == 3);
+}
+
+// ---- Raw lambda Bind on receive side with round-trip ---------------------------
+
+static void RemoteChannel_Bind_RawLambda()
+{
+    MockTransport transport;
+    RCSerializer<void(int)> serializer;
+    RemoteChannel<void(int)> channel(transport, serializer);
+
+    g_invoked = false;
+    channel.Bind([](int i) {
+        g_invoked = true;
+        ASSERT_TRUE(i == TEST_INT);
+    }, REMOTE_ID);
+
+    // Send side: dispatch a value through the channel
+    auto sender = MakeDelegate(&FreeFuncInt, REMOTE_ID, channel);
+    sender(TEST_INT);
+    ASSERT_TRUE(transport.m_sendCount == 1);
+
+    // Receive side: invoke through the channel's endpoint
+    auto recvStream = transport.GetPayloadStream();
+    recvStream.seekg(0);
+    channel.GetEndpoint()->Invoke(recvStream);
+
+    ASSERT_TRUE(g_invoked);
+}
+
 // ---- Entry point ---------------------------------------------------------------
 
 void RemoteChannelTests()
@@ -506,6 +564,7 @@ void RemoteChannelTests()
     RemoteChannel_MakeDelegate_ConstMemberFunc();
     RemoteChannel_MakeDelegate_SharedPtrMemberFunc();
     RemoteChannel_MakeDelegate_StdFunction();
+    RemoteChannel_MakeDelegate_RawLambda();
 
     RemoteChannel_RoundTrip_FreeFunc_Int();
     RemoteChannel_RoundTrip_FreeFunc_IntRef();
@@ -518,4 +577,5 @@ void RemoteChannelTests()
 
     RemoteChannel_DispatchError_PropagatedToErrorHandler();
     RemoteChannel_MakeDelegate_MatchesManualWiring();
+    RemoteChannel_Bind_RawLambda();
 }

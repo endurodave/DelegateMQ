@@ -875,6 +875,32 @@ static void DelegateFunctionAsyncWaitTests()
         ASSERT_TRUE(del5() == 42);
         ASSERT_TRUE(del5() == 42);
     }
+
+    // MakeDelegate with raw lambda — no std::function wrapper required
+    {
+        // Inline raw lambda
+        auto d1 = MakeDelegate([](int i) { ASSERT_TRUE(i == TEST_INT); }, workerThread, WAIT_INFINITE);
+        ASSERT_TRUE(!d1.Empty());
+        d1(TEST_INT);
+        ASSERT_TRUE(d1.IsSuccess());
+
+        // Named raw lambda (auto, not std::function)
+        auto rawLam = [](int i) {};
+        auto d2 = MakeDelegate(rawLam, workerThread, WAIT_INFINITE);
+        ASSERT_TRUE(!d2.Empty());
+        d2(TEST_INT);
+
+        // Capturing lambda
+        int captured = TEST_INT;
+        auto d3 = MakeDelegate([captured](int i) {}, workerThread, WAIT_INFINITE);
+        ASSERT_TRUE(!d3.Empty());
+        d3(TEST_INT);
+
+        // Return value
+        auto d4 = MakeDelegate([]() -> int { return TEST_INT; }, workerThread, WAIT_INFINITE);
+        ASSERT_TRUE(!d4.Empty());
+        ASSERT_TRUE(d4() == TEST_INT);
+    }
 }
 
 void DelegateAsyncWaitTests()

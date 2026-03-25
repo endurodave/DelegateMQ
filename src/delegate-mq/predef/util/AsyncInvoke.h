@@ -44,10 +44,9 @@ auto AsyncInvoke(Func func, Thread& thread, const dmq::Duration& timeout, Args&&
     // Is the calling function executing on the requested thread?
     if (!thread.IsCurrentThread())
     {
-        // Explicitly convert lambda 'func' to std::function.
-        // MakeDelegate cannot deduce std::function from a raw lambda.
-        // We use the deduced argument types (Args...) to match the delegate signature.
-        std::function<RetType(Args...)> typedFunc = func;
+        // Internal type used to bridge raw lambda to DelegateFunctionAsyncWait.
+        // decay_t ensures that references and const qualifiers are removed for storage.
+        std::function<RetType(std::decay_t<Args>...)> typedFunc = func;
 
         // Create a delegate that points to func to invoke on thread
         auto delegate = dmq::MakeDelegate(typedFunc, thread, timeout);

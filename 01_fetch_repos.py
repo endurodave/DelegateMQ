@@ -87,18 +87,27 @@ def run():
     workspace_dir = os.path.abspath(os.path.join(script_dir, ".."))
     print(f"Target Workspace: {workspace_dir}\n")
 
+    # Suppress 'detached HEAD' advice to keep output clean
+    subprocess.run(["git", "config", "advice.detachedHead", "false"], check=False)
+
     # 1. Clone Repos
     for folder, (url, tag, use_submodules) in repos.items():
         target_path = os.path.join(workspace_dir, folder)
         if not os.path.exists(target_path):
             print(f"[CLONING] {folder} (Tag: {tag if tag else 'HEAD'})...")
-            cmd = ["git", "clone"]
+            # Use -c advice.detachedHead=false to silence the warning during clone
+            cmd = ["git", "-c", "advice.detachedHead=false", "clone", "--quiet"]
             if use_submodules: cmd.append("--recurse-submodules")
             if tag: cmd.extend(["--branch", tag])
             else: cmd.extend(["--depth", "1"])
             cmd.extend([url, target_path])
-            try: subprocess.run(cmd, check=True)
-            except: print(f"   [ERROR] Failed to clone {folder}")
+            try:
+                # Capture stderr to suppress normal output; printed only on failure
+                subprocess.run(cmd, check=True, stderr=subprocess.PIPE)
+            except subprocess.CalledProcessError as e:
+                print(f"   [ERROR] Failed to clone {folder}")
+                if e.stderr:
+                    print(e.stderr.decode(errors="replace"))
         else:
             print(f"[SKIP] {folder} exists.")
 

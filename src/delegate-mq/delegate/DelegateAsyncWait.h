@@ -1729,6 +1729,18 @@ auto MakeDelegate(std::function<RetType(Args...)> func, IThread& thread, Duratio
     return DelegateFunctionAsyncWait<RetType(Args...)>(func, thread, timeout);
 }
 
+/// @brief Creates an asynchronous delegate that binds to a raw lambda or functor with a wait and timeout.
+/// @tparam F The lambda or functor type.
+/// @param[in] func The lambda or functor to bind.
+/// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
+/// @param[in] timeout The duration to wait for the function to complete before returning.
+/// @return A `DelegateFunctionAsyncWait` object bound to the specified lambda or functor, thread, and timeout.
+template <typename F, typename = std::enable_if_t<trait::is_callable<F>::value>>
+auto MakeDelegate(F&& func, IThread& thread, Duration timeout) {
+    using Sig = typename trait::function_traits<decltype(&std::remove_reference_t<F>::operator())>::function_type;
+    return DelegateFunctionAsyncWait<Sig>(std::forward<F>(func), thread, timeout);
+}
+
 } 
 
 #endif

@@ -90,14 +90,13 @@ int main() {
     dmq::DataBus::RegisterSerializer<CommandMsg>(SystemTopic::CommandMsg, commandSerializer);
 
     // 7. Monitor reliability signal to detect server response status
-    using StatusSignal = std::function<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>;
-    auto statusConn = monitor.OnSendStatus.Connect(dmq::MakeDelegate(StatusSignal([](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
+    auto statusConn = monitor.OnSendStatus.Connect(dmq::MakeDelegate([](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
         if (status == TransportMonitor::Status::TIMEOUT) {
             std::cerr << "!!! ALERT: Server not responding to command (RemoteID: " << id << " Seq: " << seq << ")" << std::endl;
         } else {
             std::cout << "Command ACK received (Seq: " << seq << ")" << std::endl;
         }
-    })));
+    }));
 
     // 8. Local Subscription to DataBus
     auto conn = dmq::DataBus::Subscribe<DataMsg>(SystemTopic::DataMsg, [](DataMsg msg) {

@@ -1583,6 +1583,17 @@ auto MakeDelegate(std::function<RetType(Args...)> func, DelegateRemoteId id) {
     return DelegateFunctionRemote<RetType(Args...)>(func, id);
 }
 
+/// @brief Creates an asynchronous delegate that binds to a raw lambda or functor.
+/// @tparam F The lambda or functor type.
+/// @param[in] func The lambda or functor to bind.
+/// @param[in] id The delegate remote identifier.
+/// @return A `DelegateFunctionRemote` object bound to the specified lambda or functor and id.
+template <typename F, typename = std::enable_if_t<trait::is_callable<F>::value>>
+auto MakeDelegate(F&& func, DelegateRemoteId id) {
+    using Sig = typename trait::function_traits<decltype(&std::remove_reference_t<F>::operator())>::function_type;
+    return DelegateFunctionRemote<Sig>(std::forward<F>(func), id);
+}
+
 }
 
 #endif

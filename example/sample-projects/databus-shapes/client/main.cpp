@@ -55,7 +55,6 @@ int main() {
     static Serializer<void(ShapeMsg)> serializer;
 
     auto shapeHandler = [](const std::string& topic, ShapeMsg msg) {
-        // std::cout << "DEBUG: Received " << topic << " x=" << msg.x << " y=" << msg.y << std::endl;
         {
             std::lock_guard<std::mutex> lock(g_state.mutex);
             g_state.shapes[topic] = msg;
@@ -65,11 +64,9 @@ int main() {
         }
     };
 
-    // Use explicit std::function to match RegisterHandler signature
-    using HandlerFunc = std::function<void(ShapeMsg)>;
-    group->RegisterHandler<ShapeMsg>(SystemTopic::SquareId, serializer, HandlerFunc([&](ShapeMsg m) { shapeHandler(SystemTopic::Square, m); }));
-    group->RegisterHandler<ShapeMsg>(SystemTopic::CircleId, serializer, HandlerFunc([&](ShapeMsg m) { shapeHandler(SystemTopic::Circle, m); }));
-    group->RegisterHandler<ShapeMsg>(SystemTopic::TriangleId, serializer, HandlerFunc([&](ShapeMsg m) { shapeHandler(SystemTopic::Triangle, m); }));
+    group->RegisterHandler<ShapeMsg>(SystemTopic::SquareId, serializer, [&](ShapeMsg m) { shapeHandler(SystemTopic::Square, m); });
+    group->RegisterHandler<ShapeMsg>(SystemTopic::CircleId, serializer, [&](ShapeMsg m) { shapeHandler(SystemTopic::Circle, m); });
+    group->RegisterHandler<ShapeMsg>(SystemTopic::TriangleId, serializer, [&](ShapeMsg m) { shapeHandler(SystemTopic::Triangle, m); });
 
     // 3. Network processing thread
     std::atomic<bool> running{true};

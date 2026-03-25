@@ -1041,13 +1041,33 @@ static void DelegateFunctionRemoteTests()
     auto noErrorDel = MakeDelegate(NoError, REMOTE_ID);
     auto noErrorDel2 = MakeDelegate(NoError2, REMOTE_ID);
 #if 0
-    // Causes compiler error. shared_ptr references not allowed; undefined behavior 
+    // Causes compiler error. shared_ptr references not allowed; undefined behavior
     // in multi-threaded system.
     auto errorDel = MakeDelegate(Error, REMOTE_ID);
     auto errorDel2 = MakeDelegate(Error2, REMOTE_ID);
     auto errorDel3 = MakeDelegate(Error3, REMOTE_ID);
     auto errorDel4 = MakeDelegate(Error4, REMOTE_ID);
 #endif
+
+    // MakeDelegate with raw lambda — no std::function wrapper required
+    {
+        // Inline raw lambda
+        auto d1 = MakeDelegate([](int i) {}, REMOTE_ID);
+        ASSERT_TRUE(!d1.Empty());
+        ASSERT_TRUE(d1.GetRemoteId() == REMOTE_ID);
+
+        // Named raw lambda (auto, not std::function)
+        auto rawLam = [](int i) {};
+        auto d2 = MakeDelegate(rawLam, REMOTE_ID);
+        ASSERT_TRUE(!d2.Empty());
+        ASSERT_TRUE(d2.GetRemoteId() == REMOTE_ID);
+
+        // Capturing lambda
+        int captured = 0;
+        auto d3 = MakeDelegate([captured](int i) {}, REMOTE_ID);
+        ASSERT_TRUE(!d3.Empty());
+        ASSERT_TRUE(d3.GetRemoteId() == REMOTE_ID);
+    }
 
     std::function<void(DelegateRemoteId, DelegateError, DelegateErrorAux)> errorHandler = [](DelegateRemoteId id, DelegateError error, DelegateErrorAux code) {
         if (error != dmq::DelegateError::SUCCESS)

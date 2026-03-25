@@ -784,13 +784,33 @@ static void DelegateFunctionAsyncTests()
     auto noErrorDel = MakeDelegate(NoError, workerThread);
     auto noErrorDel2 = MakeDelegate(NoError2, workerThread);
 #if 0
-    // Causes compiler error. shared_ptr references not allowed; undefined behavior 
+    // Causes compiler error. shared_ptr references not allowed; undefined behavior
     // in multi-threaded system.
     auto errorDel = MakeDelegate(Error, workerThread);
     auto errorDel2 = MakeDelegate(Error2, workerThread);
     auto errorDel3 = MakeDelegate(Error3, workerThread);
     auto errorDel4 = MakeDelegate(Error4, workerThread);
 #endif
+
+    // MakeDelegate with raw lambda — no std::function wrapper required
+    {
+        // Inline raw lambda
+        auto d1 = MakeDelegate([](int i) {}, workerThread);
+        ASSERT_TRUE(!d1.Empty());
+        d1(TEST_INT);
+
+        // Named raw lambda (auto, not std::function)
+        auto rawLam = [](int i) {};
+        auto d2 = MakeDelegate(rawLam, workerThread);
+        ASSERT_TRUE(!d2.Empty());
+        d2(TEST_INT);
+
+        // Capturing lambda
+        int captured = TEST_INT;
+        auto d3 = MakeDelegate([captured](int i) {}, workerThread);
+        ASSERT_TRUE(!d3.Empty());
+        d3(TEST_INT);
+    }
 }
 
 void DelegateAsyncTests()

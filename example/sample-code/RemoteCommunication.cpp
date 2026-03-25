@@ -91,7 +91,8 @@ namespace Example
             , m_channel(transport, m_serializer)
         {
             // Sender-side bind: no-op target (only the signature matters for dispatch)
-            m_channel.Bind(std::function<void(Data)>([](Data) {}), id);
+            // Bind a raw lambda (no std::function wrapper needed)
+            m_channel.Bind([](Data msg) { std::cout << "Remote lambda data: " << msg.x << std::endl; }, id);
 
             m_thread.CreateThread();
 

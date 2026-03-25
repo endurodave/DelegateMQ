@@ -54,6 +54,38 @@ namespace trait
             std::is_pointer_v<RawT> &&
             std::is_pointer_v<std::remove_pointer_t<RawT>>;
     };
+
+    // Helper trait to detect std::function specializations.
+    template <typename T>
+    struct is_std_function : std::false_type {};
+
+    template <typename Sig>
+    struct is_std_function<std::function<Sig>> : std::true_type {};
+
+    // Helper trait to check if a type is a callable (lambda, functor)
+    // but NOT a function pointer or std::function (which have their own MakeDelegate overloads).
+    template <typename T, typename = void>
+    struct is_callable : std::false_type {};
+
+    template <typename T>
+    struct is_callable<T, std::void_t<decltype(&std::decay_t<T>::operator())>> :
+        std::integral_constant<bool,
+            !std::is_pointer_v<std::decay_t<T>> &&
+            !is_std_function<std::decay_t<T>>::value> {};
+
+    // Helper to deduce function signature from a member function pointer (like operator())
+    template <typename T>
+    struct function_traits;
+
+    template <typename ClassType, typename RetType, typename... Args>
+    struct function_traits<RetType(ClassType::*)(Args...) const> {
+        using function_type = RetType(Args...);
+    };
+
+    template <typename ClassType, typename RetType, typename... Args>
+    struct function_traits<RetType(ClassType::*)(Args...)> {
+        using function_type = RetType(Args...);
+    };
 }
 
 /// @brief Non-template base class for all delegates.
@@ -925,6 +957,17 @@ auto MakeDelegate(std::shared_ptr<TClass> object, RetType(TClass::* func)(Args..
 template <class RetType, class... Args>
 auto MakeDelegate(std::function<RetType(Args...)> func) {
     return DelegateFunction<RetType(Args...)>(func);
+}
+
+/// @brief Creates a delegate that binds to a raw lambda or functor.
+/// @tparam F The lambda or functor type.
+/// @param[in] func The lambda or functor to bind.
+/// @return A `DelegateFunction` object bound to the specified lambda or functor.
+template <typename F, typename = std::enable_if_t<trait::is_callable<F>::value>>
+auto MakeDelegate(F&& func) {
+    // Deduce the signature from the operator()
+    using Sig = typename trait::function_traits<decltype(&std::remove_reference_t<F>::operator())>::function_type;
+    return DelegateFunction<Sig>(std::forward<F>(func));
 }
 
 }

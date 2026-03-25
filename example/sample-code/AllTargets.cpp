@@ -43,15 +43,15 @@ namespace Example
         };
 
         int stackVal = 100;
-        std::function<void(int)> LambdaCapture = [stackVal](int i) {
+        auto LambdaCapture = [stackVal](int i) {
             std::cout << "LambdaCapture " << i + stackVal << " " << ++callCnt << endl;
         };
 
-        std::function<void(int)> LambdaNoCapture = [](int i) {
+        auto LambdaNoCapture = [](int i) {
             std::cout << "LambdaNoCapture " << i << " " << ++callCnt << endl;
         };
 
-        std::function<void(int)> LambdaForcedCapture = +[](int i) {
+        auto LambdaForcedCapture = +[](int i) {
             std::cout << "LambdaForcedCapture " << i << " " << ++callCnt << endl;
         };
 

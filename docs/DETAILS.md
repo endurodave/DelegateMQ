@@ -379,19 +379,19 @@ if (result.has_value())
 
 ### Lambdas
 
-Lambdas work the same way. Use `+` to convert a stateless lambda to a function pointer, or wrap capturing lambdas in `std::function`.
+Lambdas work the same way. Pass any lambda directly to `MakeDelegate()` — no `std::function` wrapper or `+` conversion needed.
 
 ```cpp
 // Stateless lambda — synchronous
-auto echo = MakeDelegate(+[](const std::string& s) { std::cout << s; });
+auto echo = MakeDelegate([](const std::string& s) { std::cout << s; });
 echo("hello");
 
 // Capturing lambda — asynchronous, fire-and-forget
 int threshold = 10;
 auto check = MakeDelegate(
-    std::function<void(int)>([threshold](int v) {
+    [threshold](int v) {
         if (v > threshold) std::cout << "Over threshold\n";
-    }),
+    },
     workerThread
 );
 check(15);
@@ -458,12 +458,12 @@ Button btn;
 
 // Subscriber A: synchronous (called on the emitting thread)
 dmq::ScopedConnection connA = btn.OnPressed.Connect(
-    MakeDelegate(+[](int id) { std::cout << "Sync: " << id; })
+    MakeDelegate([](int id) { std::cout << "Sync: " << id; })
 );
 
 // Subscriber B: asynchronous (called on workerThread)
 dmq::ScopedConnection connB = btn.OnPressed.Connect(
-    MakeDelegate(+[](int id) { std::cout << "Async: " << id; }, workerThread)
+    MakeDelegate([](int id) { std::cout << "Async: " << id; }, workerThread)
 );
 
 btn.Press(1);  // connA called synchronously, connB queued on workerThread
@@ -475,14 +475,14 @@ btn.Press(1);  // connA called synchronously, connB queued on workerThread
 dmq::Signal<void(int)> OnData;
 
 // Stateless lambda
-dmq::ScopedConnection c1 = OnData.Connect(MakeDelegate(+[](int v) {
+dmq::ScopedConnection c1 = OnData.Connect(MakeDelegate([](int v) {
     std::cout << "Got: " << v << "\n";
 }));
 
-// Capturing lambda
+// Capturing lambda — no std::function wrapper needed
 int factor = 3;
 dmq::ScopedConnection c2 = OnData.Connect(MakeDelegate(
-    std::function<void(int)>([factor](int v) { std::cout << v * factor; })
+    [factor](int v) { std::cout << v * factor; }
 ));
 
 OnData(10);  // both slots called
@@ -867,12 +867,10 @@ auto delegateMember = MakeDelegate(&testClass, &TestClass::MemberFunc);
 delegateMember(&testStruct);
 ```
 
-Bind a lambda function is easy using `std::function`.
+Bind a lambda directly — no `std::function` wrapper needed.
 
 ```cpp
-std::function<bool(int)> rangeLambda = MakeDelegate(
-    +[](int v) { return v > 2 && v <= 6; }
-);
+auto rangeLambda = MakeDelegate([](int v) { return v > 2 && v <= 6; });
 bool inRange = rangeLambda(6);
 ```
 
@@ -988,14 +986,14 @@ Stack arguments passed by pointer/reference do not be thread-safe. The reason is
 A blocking delegate must specify a timeout in milliseconds or `WAIT_INFINITE`. Unlike a non-blocking asynchronous delegate, which is guaranteed to be invoked, if the timeout expires on a blocking delegate, the function is not invoked. Use `IsSuccess()` to determine if the delegate succeeded or not.
 
 ```cpp
-std::function LambdaFunc1 = [](int i) -> int
-{
-    cout << "Called LambdaFunc1 " << i << std::endl;
-    return ++i;
-};
-
 // Asynchronously invoke lambda on workerThread1 and wait for the return value
-auto lambdaDelegate1 = MakeDelegate(LambdaFunc1, workerThread1, WAIT_INFINITE);
+auto lambdaDelegate1 = MakeDelegate(
+    [](int i) -> int {
+        cout << "Called LambdaFunc1 " << i << std::endl;
+        return ++i;
+    },
+    workerThread1, WAIT_INFINITE
+);
 int lambdaRetVal2 = lambdaDelegate1(123);
 ```
 
@@ -1004,7 +1002,7 @@ Delegates are callable and therefore may be passed to the standard library. The 
 ```cpp
 std::vector<int> v{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-auto CountLambda = +[](int v) -> int
+auto CountLambda = [](int v) -> int
 {
     return v > 2 && v <= 6;
 };
@@ -1549,12 +1547,11 @@ void TestFunc(TestStruct* data);
 Occasionally, you may not want the delegate library to copy your arguments. Instead, you just want the destination thread to have a pointer to the original copy. A `std::shared_ptr` function argument does not copy the object pointed to when using an asynchronous delegate target function. 
 
 ```cpp
-std::function lambFunc = [](std::shared_ptr<TestStruct> s) {};
-auto del = MakeDelegate(lambFunc, workerThread1);
+auto del = MakeDelegate([](std::shared_ptr<TestStruct> s) {}, workerThread1);
 std::shared_ptr<TestStruct> sp = std::make_shared<TestStruct>();
 
-// Invoke lambFunc and TestStruct instance is not copied
-del(sp);   
+// Invoke lambda and TestStruct instance is not copied
+del(sp);
 ```
 
 ### Array Argument Heap Copy

@@ -100,12 +100,11 @@ int main() {
     });
 
     // 8. Monitor reliability signal to detect client response status
-    using StatusSignal = std::function<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>;
-    auto statusConn = monitor.OnSendStatus.Connect(dmq::MakeDelegate(StatusSignal([](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
+    auto statusConn = monitor.OnSendStatus.Connect(dmq::MakeDelegate([](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
         if (status == TransportMonitor::Status::TIMEOUT) {
             std::cerr << "!!! ALERT: Client not acknowledging data (RemoteID: " << id << " Seq: " << seq << ")" << std::endl;
         }
-    })));
+    }));
 
     // 9. Background thread to process reliability timeouts and incoming network data
     std::atomic<bool> running{ true };

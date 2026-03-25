@@ -783,6 +783,46 @@ static void DelegateFunctionTests()
         ASSERT_TRUE(!del5.Empty());
         ASSERT_TRUE(del5() == 42);
     }
+
+    // MakeDelegate with raw lambda — no std::function wrapper required
+    {
+        // Inline raw lambda
+        auto d1 = MakeDelegate([](int i) { ASSERT_TRUE(i == TEST_INT); });
+        ASSERT_TRUE(!d1.Empty());
+        d1(TEST_INT);
+
+        // Named raw lambda (auto, not std::function)
+        auto rawLam = [](int i) { ASSERT_TRUE(i == TEST_INT); };
+        auto d2 = MakeDelegate(rawLam);
+        ASSERT_TRUE(!d2.Empty());
+        d2(TEST_INT);
+
+        // Capturing lambda
+        int expected = TEST_INT;
+        auto d3 = MakeDelegate([expected](int i) { ASSERT_TRUE(i == expected); });
+        ASSERT_TRUE(!d3.Empty());
+        d3(TEST_INT);
+
+        // Raw lambda with return value
+        auto d4 = MakeDelegate([]() -> int { return TEST_INT; });
+        ASSERT_TRUE(!d4.Empty());
+        ASSERT_TRUE(d4() == TEST_INT);
+    }
+
+    // Trait checks: is_callable excludes std::function and function pointers
+    {
+        auto lam = [](int) {};
+        static_assert(trait::is_callable<decltype(lam)>::value,
+            "raw lambda should satisfy is_callable");
+        static_assert(!trait::is_callable<std::function<void(int)>>::value,
+            "std::function should not satisfy is_callable");
+        static_assert(!trait::is_callable<void(*)(int)>::value,
+            "function pointer should not satisfy is_callable");
+        static_assert(trait::is_std_function<std::function<void(int)>>::value,
+            "should detect std::function specialization");
+        static_assert(!trait::is_std_function<decltype(lam)>::value,
+            "raw lambda should not match is_std_function");
+    }
 }
 
 void DelegateTests()

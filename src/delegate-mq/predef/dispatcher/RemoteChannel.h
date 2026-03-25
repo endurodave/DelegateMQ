@@ -143,6 +143,15 @@ public:
         m_delegate.SetStream(&m_stream);
     }
 
+    /// @brief Bind a raw lambda or functor as the receive-side handler.
+    template <typename F, typename = std::enable_if_t<trait::is_callable<F>::value>>
+    void Bind(F&& func, DelegateRemoteId id) {
+        m_delegate.Bind(std::forward<F>(func), id);
+        m_delegate.SetDispatcher(&m_dispatcher);
+        m_delegate.SetSerializer(m_serializer);
+        m_delegate.SetStream(&m_stream);
+    }
+
     /// @brief Invoke the channel (fire-and-forget send).
     /// @pre Bind() must have been called first.
     void operator()(Args... args) { m_delegate(args...); }
@@ -303,6 +312,17 @@ template <class RetType, class... Args>
 auto MakeDelegate(std::function<RetType(Args...)> func, DelegateRemoteId id, RemoteChannel<RetType(Args...)>& channel)
 {
     DelegateFunctionRemote<RetType(Args...)> d(func, id);
+    d.SetDispatcher(channel.GetDispatcher());
+    d.SetSerializer(channel.GetSerializer());
+    d.SetStream(&channel.GetStream());
+    return d;
+}
+
+/// @brief Creates a remote delegate bound to a raw lambda or functor via a RemoteChannel.
+template <typename F, typename Sig, typename = std::enable_if_t<trait::is_callable<F>::value>>
+auto MakeDelegate(F&& func, DelegateRemoteId id, RemoteChannel<Sig>& channel)
+{
+    DelegateFunctionRemote<Sig> d(std::forward<F>(func), id);
     d.SetDispatcher(channel.GetDispatcher());
     d.SetSerializer(channel.GetSerializer());
     d.SetStream(&channel.GetStream());

@@ -105,7 +105,7 @@ namespace Example
         subject.attach(MakeDelegate(observerB, &ConcreteObserverB::update));
         subject.attach(MakeDelegate(SubjectFree));
         subject.attach(MakeDelegate(SubjectLambda));
-        subject.attach(MakeDelegate(std::function(SubjectLambda2)));
+        subject.attach(MakeDelegate(SubjectLambda2));
 
         // Change the subject's state and notify observers
         std::cout << "Setting state to 20:" << std::endl;

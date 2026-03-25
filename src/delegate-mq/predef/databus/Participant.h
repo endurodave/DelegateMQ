@@ -65,8 +65,7 @@ public:
         }
     }
 
-    // Register a local handler for a remote topic.
-    // When this participant receives data with 'remoteId', it will call 'func'.
+    // Register a local handler for a remote topic using a `std::function`.
     template <typename T>
     void RegisterHandler(dmq::DelegateRemoteId remoteId, dmq::ISerializer<void(T)>& serializer, std::function<void(T)> func) {
         std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
@@ -75,6 +74,18 @@ public:
         // Use Bind() to register the callback for incoming calls.
         channel->Bind(func, remoteId);
         
+        m_channels[remoteId] = { channel, channel->GetEndpoint() };
+    }
+
+    // Register a local handler for a remote topic using a raw lambda or functor.
+    template <typename T, typename F, typename = std::enable_if_t<trait::is_callable<F>::value>>
+    void RegisterHandler(dmq::DelegateRemoteId remoteId, dmq::ISerializer<void(T)>& serializer, F&& func) {
+        std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+        auto channel = std::make_shared<dmq::RemoteChannel<void(T)>>(*m_transport, serializer);
+
+        // Use Bind() to register the callback for incoming calls.
+        channel->Bind(std::forward<F>(func), remoteId);
+
         m_channels[remoteId] = { channel, channel->GetEndpoint() };
     }
 

@@ -1246,6 +1246,17 @@ auto MakeDelegate(std::function<RetType(Args...)> func, IThread& thread) {
     return DelegateFunctionAsync<RetType(Args...)>(func, thread);
 }
 
+/// @brief Creates an asynchronous delegate that binds to a raw lambda or functor.
+/// @tparam F The lambda or functor type.
+/// @param[in] func The lambda or functor to bind.
+/// @param[in] thread The `IThread` on which the function will be invoked asynchronously.
+/// @return A `DelegateFunctionAsync` object bound to the specified lambda or functor and thread.
+template <typename F, typename = std::enable_if_t<trait::is_callable<F>::value>>
+auto MakeDelegate(F&& func, IThread& thread) {
+    using Sig = typename trait::function_traits<decltype(&std::remove_reference_t<F>::operator())>::function_type;
+    return DelegateFunctionAsync<Sig>(std::forward<F>(func), thread);
+}
+
 }
 
 #endif

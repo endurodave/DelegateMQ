@@ -59,7 +59,7 @@ namespace Example
         PropertyBinding() : workerThread("Example"), property1(0), property2(0), property3(0) {
             workerThread.CreateThread();
 
-            std::function<void(int)> lambda2 = [this](int new_value) {
+            auto lambda2 = [this](int new_value) {
                 // Whenever property1 changes, set property2 to double the value
                 property2.set(new_value * 2);
             };
@@ -67,7 +67,7 @@ namespace Example
             // Bind property2 to property1's changes (synchonous binding)
             property1.bind(MakeDelegate(lambda2));  
 
-            std::function<void(int)> lambda3 = [this](int new_value) {
+            auto lambda3 = [this](int new_value) {
                 const std::lock_guard<std::mutex> lk(lock);
                 // Whenever property1 changes, set property3 to triple the value
                 property3.set(new_value * 3);
