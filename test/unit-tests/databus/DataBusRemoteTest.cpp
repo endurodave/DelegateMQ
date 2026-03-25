@@ -13,7 +13,7 @@ public:
     };
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override {
-        std::string s = os.str();
+        xstring s = os.str();
         std::vector<char> data(s.begin(), s.end());
         m_queue.push({header, data});
         return 0;
