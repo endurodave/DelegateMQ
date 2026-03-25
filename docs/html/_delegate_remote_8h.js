@@ -20,6 +20,7 @@ var _delegate_remote_8h =
     ] ],
     [ "ArgValueOf", "_delegate_remote_8h.html#ab494047f3f6f52df9a9d5293449f316f", null ],
     [ "MakeDelegate", "_delegate_remote_8h.html#a0ceca83a90727c8bdbca0bcda518a54f", null ],
+    [ "MakeDelegate", "_delegate_remote_8h.html#acc2d545c2f87c23e1710b8e1755901c8", null ],
     [ "MakeDelegate", "_delegate_remote_8h.html#a7e10d3da6417daae31249960bcf72653", null ],
     [ "MakeDelegate", "_delegate_remote_8h.html#af89091ee0707305eaedc7eaa70a6d39f", null ],
     [ "MakeDelegate", "_delegate_remote_8h.html#a41671bfa280e086f8e27f914d43e57a4", null ],

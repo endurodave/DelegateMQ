@@ -159,6 +159,10 @@ Functions</h2></td></tr>
 <tr class="memitem:aa654d4c1cbf9179e9cdd3a8b7aac6c79"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#aa654d4c1cbf9179e9cdd3a8b7aac6c79">dmq::MakeDelegate</a> (std::function&lt; RetType(Args...)&gt; func, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread)</td></tr>
 <tr class="memdesc:aa654d4c1cbf9179e9cdd3a8b7aac6c79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a <code>std::function</code>.  <br /></td></tr>
 <tr class="separator:aa654d4c1cbf9179e9cdd3a8b7aac6c79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cb90b35fe33da844c691d5334cec01c" id="r_a4cb90b35fe33da844c691d5334cec01c"><td class="memTemplParams" colspan="2">template&lt;typename F , typename  = std::enable_if_t&lt;trait::is_callable&lt;F&gt;::value&gt;&gt; </td></tr>
+<tr class="memitem:a4cb90b35fe33da844c691d5334cec01c"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a4cb90b35fe33da844c691d5334cec01c">dmq::MakeDelegate</a> (F &amp;&amp;func, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread)</td></tr>
+<tr class="memdesc:a4cb90b35fe33da844c691d5334cec01c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a raw lambda or functor.  <br /></td></tr>
+<tr class="separator:a4cb90b35fe33da844c691d5334cec01c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Delegate "`Async`" series of classes used to invoke a function asynchronously. </p>

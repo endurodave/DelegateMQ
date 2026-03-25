@@ -10,6 +10,7 @@ var dir_56109d0ba843c5a0bae722c3feb08e89 =
     [ "FreeRTOSClock.h", "_free_r_t_o_s_clock_8h.html", "_free_r_t_o_s_clock_8h" ],
     [ "FreeRTOSConditionVariable.h", "_free_r_t_o_s_condition_variable_8h.html", "_free_r_t_o_s_condition_variable_8h" ],
     [ "FreeRTOSMutex.h", "_free_r_t_o_s_mutex_8h.html", "_free_r_t_o_s_mutex_8h" ],
+    [ "NetworkConnect.h", "_network_connect_8h.html", "_network_connect_8h" ],
     [ "NetworkEngine.cpp", "_network_engine_8cpp.html", null ],
     [ "NetworkEngine.h", "_network_engine_8h.html", null ],
     [ "ReliableTransport.h", "_reliable_transport_8h.html", "_reliable_transport_8h" ],
@@ -21,7 +22,6 @@ var dir_56109d0ba843c5a0bae722c3feb08e89 =
     [ "Timer.cpp", "_timer_8cpp.html", null ],
     [ "Timer.h", "_timer_8h.html", "_timer_8h" ],
     [ "TransportMonitor.h", "_transport_monitor_8h.html", "_transport_monitor_8h" ],
-    [ "WinsockConnect.h", "_winsock_connect_8h.html", "_winsock_connect_8h" ],
     [ "ZephyrClock.h", "_zephyr_clock_8h.html", "_zephyr_clock_8h" ],
     [ "ZephyrMutex.h", "_zephyr_mutex_8h.html", "_zephyr_mutex_8h" ]
 ];

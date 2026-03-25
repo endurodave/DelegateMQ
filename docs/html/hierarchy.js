@@ -61,7 +61,9 @@ var hierarchy =
     [ "std::false_type", null, [
       [ "dmq::is_shared_ptr< T >", "structdmq_1_1is__shared__ptr.html", null ],
       [ "dmq::is_unique_ptr< T >", "structdmq_1_1is__unique__ptr.html", null ],
+      [ "dmq::trait::is_callable< T, typename >", "structdmq_1_1trait_1_1is__callable.html", null ],
       [ "dmq::trait::is_shared_ptr_reference< T >", "structdmq_1_1trait_1_1is__shared__ptr__reference.html", null ],
+      [ "dmq::trait::is_std_function< T >", "structdmq_1_1trait_1_1is__std__function.html", null ],
       [ "serialize_traits::is_shared_ptr< T >", "structserialize__traits_1_1is__shared__ptr.html", null ],
       [ "serialize_traits::is_unsupported_container< U >", "structserialize__traits_1_1is__unsupported__container.html", null ]
     ] ],
@@ -69,6 +71,9 @@ var hierarchy =
     [ "dmq::FreeRTOSConditionVariable", "classdmq_1_1_free_r_t_o_s_condition_variable.html", null ],
     [ "dmq::FreeRTOSMutex", "classdmq_1_1_free_r_t_o_s_mutex.html", null ],
     [ "dmq::FreeRTOSRecursiveMutex", "classdmq_1_1_free_r_t_o_s_recursive_mutex.html", null ],
+    [ "dmq::trait::function_traits< T >", "structdmq_1_1trait_1_1function__traits.html", null ],
+    [ "dmq::trait::function_traits< RetType(ClassType::*)(Args...) const >", "structdmq_1_1trait_1_1function__traits_3_01_ret_type_07_class_type_1_1_5_08_07_args_8_8_8_08_01const_01_4.html", null ],
+    [ "dmq::trait::function_traits< RetType(ClassType::*)(Args...)>", "structdmq_1_1trait_1_1function__traits_3_01_ret_type_07_class_type_1_1_5_08_07_args_8_8_8_08_4.html", null ],
     [ "dmq::heap_arg_deleter_base", "classdmq_1_1heap__arg__deleter__base.html", [
       [ "dmq::heap_arg_deleter< T >", "classdmq_1_1heap__arg__deleter.html", null ],
       [ "dmq::heap_arg_deleter< T * >", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html", null ],
@@ -77,6 +82,9 @@ var hierarchy =
     [ "serialize::I", "classserialize_1_1_i.html", null ],
     [ "dmq::IDispatcher", "classdmq_1_1_i_dispatcher.html", [
       [ "Dispatcher", "class_dispatcher.html", null ]
+    ] ],
+    [ "std::integral_constant", null, [
+      [ "dmq::trait::is_callable< T, std::void_t< decltype(&std::decay_t< T >::operator())> >", "structdmq_1_1trait_1_1is__callable_3_01_t_00_01std_1_1void__t_3_01decltype_07_6std_1_1decay__t_3c5798a513aa3fd4538ac6c3926bc4a27.html", null ]
     ] ],
     [ "dmq::IRemoteInvoker", "classdmq_1_1_i_remote_invoker.html", [
       [ "dmq::DelegateFreeRemote< RetType(Args...)>", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
@@ -113,6 +121,8 @@ var hierarchy =
     ] ],
     [ "ITransport", "class_i_transport.html", [
       [ "MqttTransport", "class_mqtt_transport.html", null ],
+      [ "MulticastTransport", "class_multicast_transport.html", null ],
+      [ "MulticastTransport", "class_multicast_transport.html", null ],
       [ "NetXUdpTransport", "class_net_x_udp_transport.html", null ],
       [ "NetconnUdpTransport", "class_netconn_udp_transport.html", null ],
       [ "NngTransport", "class_nng_transport.html", null ],
@@ -145,6 +155,7 @@ var hierarchy =
       [ "dmq::MulticastDelegateSafe< RetType(Args...)>", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
     ] ],
     [ "dmq::MulticastDelegateSafe< R >", "classdmq_1_1_multicast_delegate_safe.html", null ],
+    [ "NetworkContext", "class_network_context.html", null ],
     [ "dmq::NullMutex", "structdmq_1_1_null_mutex.html", null ],
     [ "dmq::Participant", "classdmq_1_1_participant.html", null ],
     [ "QObject", null, [
@@ -169,10 +180,11 @@ var hierarchy =
     [ "Serializer< Func >", "struct_serializer.html", null ],
     [ "dmq::Signal< R >", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< RetType(Args...)>", "classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
-    [ "dmq::Signal< void(const std::string &, const std::string &)>", "classdmq_1_1_signal.html", null ],
+    [ "dmq::Signal< void(const dmq::SpyPacket &)>", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< void(dmq::DelegateRemoteId, uint16_t, Status)>", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< void(void)>", "classdmq_1_1_signal.html", null ],
+    [ "dmq::SpyPacket", "structdmq_1_1_spy_packet.html", null ],
     [ "stl_allocator< void >", "classstl__allocator_3_01void_01_4.html", null ],
     [ "ThreadMsg", "class_thread_msg.html", null ],
     [ "ThreadMsgComparator", "struct_thread_msg_comparator.html", null ],
@@ -191,6 +203,7 @@ var hierarchy =
       [ "dmq::trait::is_shared_ptr_reference< const std::shared_ptr< T > * >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01const_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
       [ "dmq::trait::is_shared_ptr_reference< std::shared_ptr< T > & >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
       [ "dmq::trait::is_shared_ptr_reference< std::shared_ptr< T > * >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
+      [ "dmq::trait::is_std_function< std::function< Sig > >", "structdmq_1_1trait_1_1is__std__function_3_01std_1_1function_3_01_sig_01_4_01_4.html", null ],
       [ "serialize_traits::is_shared_ptr< std::shared_ptr< T > >", "structserialize__traits_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html", null ],
       [ "serialize_traits::is_unsupported_container< std::deque< T, Alloc > >", "structserialize__traits_1_1is__unsupported__container_3_01std_1_1deque_3_01_t_00_01_alloc_01_4_01_4.html", null ],
       [ "serialize_traits::is_unsupported_container< std::forward_list< T, Alloc > >", "structserialize__traits_1_1is__unsupported__container_3_01std_1_1forward__list_3_01_t_00_01_alloc_01_4_01_4.html", null ],
@@ -211,7 +224,6 @@ var hierarchy =
     ] ],
     [ "dmq::UnicastDelegate< void(DelegateRemoteId, DelegateError, DelegateErrorAux)>", "classdmq_1_1_unicast_delegate.html", null ],
     [ "dmq::UnicastDelegateSafe< R >", "classdmq_1_1_unicast_delegate_safe.html", null ],
-    [ "WinsockContext", "class_winsock_context.html", null ],
     [ "dmq::ZephyrClock", "structdmq_1_1_zephyr_clock.html", null ],
     [ "dmq::ZephyrMutex", "classdmq_1_1_zephyr_mutex.html", null ]
 ];

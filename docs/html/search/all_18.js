@@ -15,6 +15,6 @@ var searchData=
   ['usage_12',['Usage',['../C:/Projects/DelegateMQWorkspace/DelegateMQ/src/delegate-mq/predef/transport/README.md#autotoc_md17',1,'Usage'],['../C:/Projects/DelegateMQWorkspace/DelegateMQ/src/delegate-mq/predef/util/README.md#autotoc_md25',1,'Usage']]],
   ['use_5fcrc_5ftable_13',['USE_CRC_TABLE',['../crc16_8h.html#a3010df5660a7bb91381b279881d7ce40',1,'crc16.h']]],
   ['user_5fdefined_14',['USER_DEFINED',['../classserialize.html#a9a6b840996a628f65126f216bafe3ab4a5123cb514ff95a726922950380866e00',1,'serialize']]],
-  ['using_20delegatemq_15',['Other Projects Using DelegateMQ',['../C:/Projects/DelegateMQWorkspace/DelegateMQ/README.md#autotoc_md46',1,'']]],
+  ['using_20delegatemq_15',['Other Projects Using DelegateMQ',['../C:/Projects/DelegateMQWorkspace/DelegateMQ/README.md#autotoc_md47',1,'']]],
   ['utilities_16',['5. System Utilities',['../C:/Projects/DelegateMQWorkspace/DelegateMQ/src/delegate-mq/predef/util/README.md#autotoc_md24',1,'']]]
 ];

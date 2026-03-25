@@ -163,6 +163,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a5b26bbea074f787e55f8197a6f9e82e3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a5b26bbea074f787e55f8197a6f9e82e3">dmq::MakeDelegate</a> (std::function&lt; RetType(Args...)&gt; func, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> timeout)</td></tr>
 <tr class="memdesc:a5b26bbea074f787e55f8197a6f9e82e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a <code>std::function</code> with a wait and timeout.  <br /></td></tr>
 <tr class="separator:a5b26bbea074f787e55f8197a6f9e82e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab46a253ed2135d0666eda7c31ae2109a" id="r_ab46a253ed2135d0666eda7c31ae2109a"><td class="memTemplParams" colspan="2">template&lt;typename F , typename  = std::enable_if_t&lt;trait::is_callable&lt;F&gt;::value&gt;&gt; </td></tr>
+<tr class="memitem:ab46a253ed2135d0666eda7c31ae2109a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#ab46a253ed2135d0666eda7c31ae2109a">dmq::MakeDelegate</a> (F &amp;&amp;func, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> timeout)</td></tr>
+<tr class="memdesc:ab46a253ed2135d0666eda7c31ae2109a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a raw lambda or functor with a wait and timeout.  <br /></td></tr>
+<tr class="separator:ab46a253ed2135d0666eda7c31ae2109a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

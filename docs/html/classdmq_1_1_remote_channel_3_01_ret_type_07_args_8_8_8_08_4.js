@@ -4,6 +4,7 @@ var classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "RemoteChannel", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#aedc8aaea43e85c7aa08d0fc62bdb28da", null ],
     [ "RemoteChannel", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a470bf58694cbfa7617b2897d43599a80", null ],
     [ "Bind", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a0aa3859da6160b525590547c7efb60b2", null ],
+    [ "Bind", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a05eb1e26c406aeb99bc68f41baa58e2a", null ],
     [ "Bind", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a3e012484e8997239ce19bc2b9670bb6f", null ],
     [ "Bind", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#accc5b32807f245e737a4097535927cef", null ],
     [ "GetDispatcher", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a7f9bcb6989b0a70536f8cc1d07984ee7", null ],

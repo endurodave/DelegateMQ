@@ -124,8 +124,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a50a817364768fe3ddaaa09cc4523f196" id="r_a50a817364768fe3ddaaa09cc4523f196"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a50a817364768fe3ddaaa09cc4523f196"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a50a817364768fe3ddaaa09cc4523f196">RegisterStringifier</a> (const std::string &amp;topic, std::function&lt; std::string(const T &amp;)&gt; func)</td></tr>
 <tr class="separator:a50a817364768fe3ddaaa09cc4523f196"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21d3dd09392a34a612dd8c36734a9937" id="r_a21d3dd09392a34a612dd8c36734a9937"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21d3dd09392a34a612dd8c36734a9937">Monitor</a> (std::function&lt; void(const std::string &amp;, const std::string &amp;)&gt; func)</td></tr>
-<tr class="separator:a21d3dd09392a34a612dd8c36734a9937"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6eee3befd7bcb1daa24f34ff5447917" id="r_ae6eee3befd7bcb1daa24f34ff5447917"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6eee3befd7bcb1daa24f34ff5447917">Monitor</a> (std::function&lt; void(const <a class="el" href="structdmq_1_1_spy_packet.html">SpyPacket</a> &amp;)&gt; func, <a class="el" href="classdmq_1_1_i_thread.html">dmq::IThread</a> *thread=nullptr, <a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a> priority=<a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a>)</td></tr>
+<tr class="separator:ae6eee3befd7bcb1daa24f34ff5447917"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2642ed65d730bc6f1f88161d3df83c1e" id="r_a2642ed65d730bc6f1f88161d3df83c1e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2642ed65d730bc6f1f88161d3df83c1e">ResetForTesting</a> ()</td></tr>
 <tr class="separator:a2642ed65d730bc6f1f88161d3df83c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -155,8 +155,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a21d3dd09392a34a612dd8c36734a9937" name="a21d3dd09392a34a612dd8c36734a9937"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a21d3dd09392a34a612dd8c36734a9937">&#9670;&#160;</a></span>Monitor()</h2>
+<a id="ae6eee3befd7bcb1daa24f34ff5447917" name="ae6eee3befd7bcb1daa24f34ff5447917"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6eee3befd7bcb1daa24f34ff5447917">&#9670;&#160;</a></span>Monitor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -167,8 +167,17 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">static <a class="el" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> dmq::DataBus::Monitor </td>
           <td>(</td>
-          <td class="paramtype">std::function&lt; void(const std::string &amp;, const std::string &amp;)&gt;</td>          <td class="paramname"><span class="paramname"><em>func</em></span></td><td>)</td>
+          <td class="paramtype">std::function&lt; void(const <a class="el" href="structdmq_1_1_spy_packet.html">SpyPacket</a> &amp;)&gt;</td>          <td class="paramname"><span class="paramname"><em>func</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="classdmq_1_1_i_thread.html">dmq::IThread</a> *</td>          <td class="paramname"><span class="paramname"><em>thread</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a></td>          <td class="paramname"><span class="paramname"><em>priority</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a></span>&#160;)</td>
         </tr>
       </table>
   </td>

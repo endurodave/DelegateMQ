@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['value_0',['value',['../structdmq_1_1trait_1_1is__double__pointer.html#a2ad4b08c6fed6690043b3f3ea92945fc',1,'dmq::trait::is_double_pointer']]]
+  ['timestamp_5fus_0',['timestamp_us',['../structdmq_1_1_spy_packet.html#a9cc645b339ebff564774dad510799c1a',1,'dmq::SpyPacket']]],
+  ['topic_1',['topic',['../structdmq_1_1_spy_packet.html#a5dd3f53344e89303512a0334bd1527b4',1,'dmq::SpyPacket']]]
 ];
