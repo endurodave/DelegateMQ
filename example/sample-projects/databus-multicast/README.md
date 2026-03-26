@@ -48,7 +48,7 @@ cmake --build build --config Release
 ```
 
 ### Monitoring Multicast Traffic
-Once built, start the `dmq-spy` application from the `DelegateMQ-Spy` project using the matching multicast group:
+Once built, start the `dmq-spy` application from the `DelegateMQ-Tools` project using the matching multicast group:
 
 ```bash
 # Start the spy console to join the multicast group

@@ -7,13 +7,13 @@
 // - Uses the DelegateMQ Reliability Layer (RetryMonitor/TransportMonitor) to track delivery.
 // 
 // NOTE: To monitor this application with the DelegateMQ Spy Console:
-// 1. Build with -DDMQ_DATABUS_SPY=ON.
+// 1. Build with -DDMQ_DATABUS_TOOLS=ON.
 // 2. Start dmq-spy.exe before running this application.
 
 #include "DelegateMQ.h"
 #include "SystemMessages.h"
 #include "SystemIds.h"
-#ifdef DMQ_DATABUS_SPY
+#ifdef DMQ_DATABUS_TOOLS
 #include "SpyBridge.h"
 #endif
 
@@ -34,7 +34,7 @@ int main() {
     NetworkContext winsock;
 #endif
 
-#ifdef DMQ_DATABUS_SPY
+#ifdef DMQ_DATABUS_TOOLS
     // Start Spy Bridge to export DataBus traffic to the Spy Console
     SpyBridge::Start("127.0.0.1", 9999);
 
@@ -142,7 +142,7 @@ int main() {
     transportData.Close();
     transportCmd.Close();
 
-#ifdef DMQ_DATABUS_SPY
+#ifdef DMQ_DATABUS_TOOLS
     SpyBridge::Stop();
 #endif
 

@@ -27,6 +27,10 @@
 #include "predef/util/NetworkConnect.h"
 #endif
 
+#ifdef DMQ_DATABUS_TOOLS
+#include "NodeBridge.h"
+#endif
+
 using namespace ftxui;
 
 // State shared between DataBus callbacks and UI thread
@@ -39,6 +43,10 @@ struct GlobalState {
 int main() {
     NetworkContext winsock;
     std::string localIP = NetworkContext::GetLocalAddress();
+
+#ifdef DMQ_DATABUS_TOOLS
+    NodeBridge::StartMulticast("ShapesClient", "239.1.1.1", 9998, localIP);
+#endif
 
     // 1. Initialize Multicast Transport (Group: 239.1.1.1, Port: 8000)
     MulticastTransport transport;
@@ -119,6 +127,9 @@ int main() {
     running = false;
     netThread.join();
     transport.Close();
+#ifdef DMQ_DATABUS_TOOLS
+    NodeBridge::Stop();
+#endif
 
     std::cout << "\r" << std::flush; 
 

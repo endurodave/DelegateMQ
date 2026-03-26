@@ -20,7 +20,7 @@ else()
 endif()
 set(DMQ_DATABUS "ON")
 set(DMQ_UTIL "ON")
-option(DMQ_DATABUS_SPY "Enable DataBus Spy support" OFF)
+option(DMQ_DATABUS_TOOLS "Enable DataBus Spy support" OFF)
 
 include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
 
@@ -36,9 +36,9 @@ file(GLOB SOURCES "*.cpp" "*.h")
 file(GLOB COMMON_SOURCES "${CMAKE_SOURCE_DIR}/../common/*.h" "${CMAKE_SOURCE_DIR}/../common/*.cpp")
 set_source_files_properties(${COMMON_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
-if (DMQ_DATABUS_SPY)
-    add_compile_definitions(DMQ_DATABUS_SPY)
-    set(SPY_BRIDGE_DIR "${CMAKE_SOURCE_DIR}/../../../../../DelegateMQ-Spy")
+if (DMQ_DATABUS_TOOLS)
+    add_compile_definitions(DMQ_DATABUS_TOOLS)
+    set(SPY_BRIDGE_DIR "${CMAKE_SOURCE_DIR}/../../../../../DelegateMQ-Tools")
     set(SPY_BRIDGE_SOURCES 
         "${SPY_BRIDGE_DIR}/bridge/SpyBridge.cpp"
         "${SPY_BRIDGE_DIR}/bridge/SpyBridge.h"

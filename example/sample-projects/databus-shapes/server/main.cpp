@@ -17,8 +17,9 @@
 #include "predef/transport/linux-udp/MulticastTransport.h"
 #endif
 
-#ifdef DMQ_DATABUS_SPY
+#ifdef DMQ_DATABUS_TOOLS
 #include "SpyBridge.h"
+#include "NodeBridge.h"
 #include <sstream>
 #endif
 
@@ -30,10 +31,13 @@ int main() {
 
     std::cout << "Local Interface: " << localIP << std::endl;
 
-#ifdef DMQ_DATABUS_SPY
+#ifdef DMQ_DATABUS_TOOLS
     // Start Spy Bridge to export DataBus traffic to the Spy Console via Multicast
     // Note: Use port 9999 to isolate spy traffic from app traffic on 8000.
     SpyBridge::StartMulticast("239.1.1.1", 9999, localIP);
+
+    // Start Node Bridge to broadcast node heartbeats to the Node Monitor via Multicast
+    NodeBridge::StartMulticast("ShapesServer", "239.1.1.1", 9998, localIP);
 
     dmq::DataBus::RegisterStringifier<ShapeMsg>(SystemTopic::Square, [](const ShapeMsg& m) {
         return "Square X=" + std::to_string(m.x) + " Y=" + std::to_string(m.y);
@@ -85,8 +89,9 @@ int main() {
     }
 
     transport.Close();
-#ifdef DMQ_DATABUS_SPY
+#ifdef DMQ_DATABUS_TOOLS
     SpyBridge::Stop();
+    NodeBridge::Stop();
 #endif
     return 0;
 }

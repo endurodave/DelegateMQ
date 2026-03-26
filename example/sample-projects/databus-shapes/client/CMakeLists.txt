@@ -19,7 +19,7 @@ else()
     message(FATAL_ERROR "Unsupported platform for DMQ_TRANSPORT")
 endif()
 set(DMQ_DATABUS "ON")
-option(DMQ_DATABUS_SPY "Enable DataBus Spy support" OFF)
+option(DMQ_DATABUS_TOOLS "Enable DataBus Spy support" OFF)
 
 include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
 
@@ -42,6 +42,21 @@ endif()
 
 # Collect all .cpp and *.h source files in this directory
 file(GLOB SOURCES "*.cpp" "*.h")
+
+if (DMQ_DATABUS_TOOLS)
+    add_compile_definitions(DMQ_DATABUS_TOOLS)
+    set(SPY_BRIDGE_DIR "${CMAKE_SOURCE_DIR}/../../../../../DelegateMQ-Tools")
+    set(SPY_BRIDGE_SOURCES
+        "${SPY_BRIDGE_DIR}/bridge/NodeBridge.cpp"
+        "${SPY_BRIDGE_DIR}/bridge/NodeBridge.h"
+    )
+    include_directories(
+        "${CMAKE_SOURCE_DIR}/../../../../../bitsery/include"
+        "${SPY_BRIDGE_DIR}/src"
+        "${SPY_BRIDGE_DIR}/bridge"
+    )
+    list(APPEND SOURCES ${SPY_BRIDGE_SOURCES})
+endif()
 
 # Collect Common files to show them in VS Solution Explorer
 file(GLOB COMMON_SOURCES "${CMAKE_SOURCE_DIR}/../common/*.h" "${CMAKE_SOURCE_DIR}/../common/*.cpp")

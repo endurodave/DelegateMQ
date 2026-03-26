@@ -19,7 +19,7 @@
 #include "predef/transport/linux-udp/MulticastTransport.h"
 #endif
 
-#ifdef DMQ_DATABUS_SPY
+#ifdef DMQ_DATABUS_TOOLS
 #include "SpyBridge.h"
 #include <sstream>
 #endif
@@ -33,7 +33,7 @@ int main() {
 
     std::cout << "Local Interface: " << localIP << std::endl;
 
-#ifdef DMQ_DATABUS_SPY
+#ifdef DMQ_DATABUS_TOOLS
     // Start Spy Bridge to export DataBus traffic to the Spy Console via Multicast
     SpyBridge::StartMulticast("239.1.1.1", 9999, localIP);
 
@@ -87,7 +87,7 @@ int main() {
     receiveThread.join();
     transport.Close();
 
-#ifdef DMQ_DATABUS_SPY
+#ifdef DMQ_DATABUS_TOOLS
     SpyBridge::Stop();
 #endif
 

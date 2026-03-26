@@ -301,7 +301,7 @@ auto conn2 = dmq::DataBus::Subscribe<int>("status", [](int s) {
 
 # DelegateMQ Spy
 
-**[DelegateMQ-Spy](https://github.com/endurodave/DelegateMQ-Spy)** is a standalone diagnostic tool and TUI (Terminal User Interface) dashboard for the DelegateMQ DataBus. It acts as a "Software Logic Analyzer," allowing you to visualize and monitor all bus traffic in real-time across threads and network boundaries.
+**[DelegateMQ-Tools](https://github.com/endurodave/DelegateMQ-Tools)** is a standalone diagnostic tool and TUI (Terminal User Interface) dashboard for the DelegateMQ DataBus. It acts as a "Software Logic Analyzer," allowing you to visualize and monitor all bus traffic in real-time across threads and network boundaries.
 
 **Key Features:**
 - **Live Traffic Feed**: Real-time display of all messages published to the DataBus.
@@ -311,7 +311,7 @@ auto conn2 = dmq::DataBus::Subscribe<int>("status", [](int s) {
 
 <img src="docs/dmq-spy-screenshot.png" alt="DelegateMQ Spy Screenshot" style="max-width: 800px; width: 100%;">
 
-To use the Spy tool, simply enable the `DMQ_DATABUS_SPY` option in your application's build and start the `dmq-spy` console. See the [DelegateMQ-Spy repository](https://github.com/endurodave/DelegateMQ-Spy) for implementation details.
+To use the Spy tool, simply enable the `DMQ_DATABUS_SPY` option in your application's build and start the `dmq-spy` console. See the [DelegateMQ-Tools repository](https://github.com/endurodave/DelegateMQ-Tools) for implementation details.
 
 # Modular Architecture
 

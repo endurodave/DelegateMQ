@@ -62,8 +62,8 @@ repos = {
     # FTXUI: v5.0.0 for modern C++ terminal UI components.
     "ftxui": ("https://github.com/ArthurSonzogni/FTXUI.git", "v5.0.0", False),
 
-    # DelegateMQ-Spy: Diagnostic tool for DataBus
-    "DelegateMQ-Spy": ("https://github.com/endurodave/DelegateMQ-Spy.git", "main", False),
+    # DelegateMQ-Tools: Diagnostic tool for DataBus
+    "DelegateMQ-Tools": ("https://github.com/endurodave/DelegateMQ-Tools.git", "main", False),
 
     # MsgPack: 'cpp-7.0.0' is required for the C++ headers structure
     "msgpack-c": ("https://github.com/msgpack/msgpack-c.git", "cpp-7.0.0", False),

@@ -184,7 +184,7 @@ DelegateMQWorkspace/
 ├── bitsery/
 ├── cereal/
 ├── DelegateMQ/
-├── DelegateMQ-Spy/
+├── DelegateMQ-Tools/
 ├── FreeRTOSv202212.00/
 ├── ftxui/
 ├── libserialport/
@@ -588,14 +588,14 @@ The sender calls `(*m_channel)(value)` or `RemoteInvokeWait(*m_channel, value)`.
 1. **Location Transparency**: Components subscribe to topics by name. They do not need to know if the publisher is in the same thread, a different thread, or on a completely different processor.
 2. **Dynamic Discovery (Manual)**: While not fully automatic like industrial DDS, `DataBus` allows adding `Participant` objects at runtime to bridge local buses across a network.
 3. **Type Safety**: Runtime checks ensure that if two components use the same topic name, they must use the same data type; otherwise, a fault is triggered.
-4. **Spy/Monitor Support**: Call `DataBus::Monitor()` to receive a callback for every single message published on the bus. This is the foundation for the [DelegateMQ Spy](https://github.com/endurodave/DelegateMQ-Spy) tool. The callback receives a `dmq::SpyPacket` containing:
+4. **Spy/Monitor Support**: Call `DataBus::Monitor()` to receive a callback for every single message published on the bus. This is the foundation for the [DelegateMQ Spy](https://github.com/endurodave/DelegateMQ-Tools) tool. The callback receives a `dmq::SpyPacket` containing:
     - **topic**: The unique string name of the data topic.
     - **value**: A stringified version of the data (provided by user-registered stringifiers).
     - **timestamp_us**: A high-resolution timestamp (microseconds since epoch) taken when the publisher called `DataBus::Publish`.
 
 ### DataBus Spy
 
-**[DelegateMQ Spy](https://github.com/endurodave/DelegateMQ-Spy)** is a standalone TUI diagnostic tool that provides a "Software Logic Analyzer" view of the DataBus. It captures, filters, and displays all bus traffic in real-time without blocking the main application thread. 
+**[DelegateMQ Spy](https://github.com/endurodave/DelegateMQ-Tools)** is a standalone TUI diagnostic tool that provides a "Software Logic Analyzer" view of the DataBus. It captures, filters, and displays all bus traffic in real-time without blocking the main application thread. 
 
 To enable spy support in a sample project, build with `-DDMQ_DATABUS_SPY=ON`. This activates an asynchronous "Spy Bridge" that exports packets over UDP to the standalone console.
 

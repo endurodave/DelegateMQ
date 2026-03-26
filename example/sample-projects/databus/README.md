@@ -40,7 +40,7 @@ This example demonstrates a distributed system using `dmq::DataBus` for inter-pr
 This project includes optional support for the **DelegateMQ Spy Console**. When enabled, the application exports all bus traffic to an external TUI dashboard for real-time monitoring.
 
 ### Prerequisites
-- The `DelegateMQ-Spy` repository must be located in the same parent workspace directory.
+- The `DelegateMQ-Tools` repository must be located in the same parent workspace directory.
 - `Bitsery` must be available in the workspace (fetched via `01_fetch_repos.py`).
 
 ### Enabling Spy
@@ -51,7 +51,7 @@ cmake -B build -DDMQ_DATABUS_SPY=ON .
 cmake --build build --config Release
 ```
 
-Once built, start the `dmq-spy` application from the `DelegateMQ-Spy` project before running the client/server.
+Once built, start the `dmq-spy` application from the `DelegateMQ-Tools` project before running the client/server.
 
 ## Key Features Shown
 
