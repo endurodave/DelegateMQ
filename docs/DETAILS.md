@@ -597,7 +597,7 @@ The sender calls `(*m_channel)(value)` or `RemoteInvokeWait(*m_channel, value)`.
 
 **[DelegateMQ Spy](https://github.com/endurodave/DelegateMQ-Tools)** is a standalone TUI diagnostic tool that provides a "Software Logic Analyzer" view of the DataBus. It captures, filters, and displays all bus traffic in real-time without blocking the main application thread. 
 
-To enable spy support in a sample project, build with `-DDMQ_DATABUS_SPY=ON`. This activates an asynchronous "Spy Bridge" that exports packets over UDP to the standalone console.
+To enable spy support in a sample project, build with `-DDMQ_DATABUS_TOOLS=ON`. This activates an asynchronous "Spy Bridge" that exports packets over UDP to the standalone console.
 
 ### Example: Local Pub/Sub
 

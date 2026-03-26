@@ -311,7 +311,7 @@ auto conn2 = dmq::DataBus::Subscribe<int>("status", [](int s) {
 
 <img src="docs/dmq-spy-screenshot.png" alt="DelegateMQ Spy Screenshot" style="max-width: 800px; width: 100%;">
 
-To use the Spy tool, simply enable the `DMQ_DATABUS_SPY` option in your application's build and start the `dmq-spy` console. See the [DelegateMQ-Tools repository](https://github.com/endurodave/DelegateMQ-Tools) for implementation details.
+To use the Spy tool, simply enable the `DMQ_DATABUS_TOOLS` option in your application's build and start the `dmq-spy` console. See the [DelegateMQ-Tools repository](https://github.com/endurodave/DelegateMQ-Tools) for implementation details.
 
 # Modular Architecture
 

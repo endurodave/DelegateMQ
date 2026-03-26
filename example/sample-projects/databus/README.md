@@ -44,10 +44,10 @@ This project includes optional support for the **DelegateMQ Spy Console**. When 
 - `Bitsery` must be available in the workspace (fetched via `01_fetch_repos.py`).
 
 ### Enabling Spy
-To enable the spy bridge, configure the project with the `DMQ_DATABUS_SPY` option set to `ON`:
+To enable the spy bridge, configure the project with the `DMQ_DATABUS_TOOLS` option set to `ON`:
 
 ```bash
-cmake -B build -DDMQ_DATABUS_SPY=ON .
+cmake -B build -DDMQ_DATABUS_TOOLS=ON .
 cmake --build build --config Release
 ```
 

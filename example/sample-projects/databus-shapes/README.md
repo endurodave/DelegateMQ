@@ -37,7 +37,7 @@ The **Shapes Demo** is a graphical demonstration of the **DelegateMQ DataBus** c
 This project is fully integrated with the **DelegateMQ Spy Console**. 
 
 ### Enabling the Spy Bridge
-The server-side bridge is enabled by default in the `CMakeLists.txt` via the `DMQ_DATABUS_SPY` option. To monitor the raw coordinate data flowing through the bus:
+The server-side bridge is enabled by default in the `CMakeLists.txt` via the `DMQ_DATABUS_TOOLS` option. To monitor the raw coordinate data flowing through the bus:
 
 1. Start the **Spy Console** from the `DelegateMQ-Tools` project:
    ```bash
