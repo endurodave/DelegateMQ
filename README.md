@@ -377,7 +377,6 @@ See [Example Projects](docs/DETAILS.md#example-projects) to build more project e
  - See [Design Details](docs/DETAILS.md) for a [porting guide](docs/DETAILS.md#porting-guide), design documentation and [more examples](docs/DETAILS.md#sample-projects).
  - See [Technology Comparison](docs/COMPARISON.md) for how DelegateMQ compares to DDS, gRPC, Qt signals, Boost.Signals2, `std::async`, and OS message queues.
  - See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation.
- - See [Unit Test Code Coverage](https://app.codecov.io/gh/DelegateMQ/DelegateMQ) test results.
 
 # Motivation
 
