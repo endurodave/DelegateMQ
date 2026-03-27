@@ -2,7 +2,7 @@
 #define LINUX_UDP_TRANSPORT_H
 
 /// @file LinuxUdpTransport.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// @brief Linux UDP transport implementation for DelegateMQ.

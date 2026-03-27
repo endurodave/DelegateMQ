@@ -2,7 +2,7 @@
 #define _THREAD_CMSIS_RTOS2_H
 
 /// @file Thread.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2026.
 ///
 /// @brief CMSIS-RTOS2 implementation of the DelegateMQ IThread interface.

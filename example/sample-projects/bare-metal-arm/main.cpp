@@ -1,5 +1,5 @@
 /// @file main.cpp
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2026.
 ///
 /// Example of a bare-metal ARM project using DelegateMQ with semihosting for output.

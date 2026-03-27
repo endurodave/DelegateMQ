@@ -1,5 +1,5 @@
 /// @file main.cpp
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// ClientApp and ServerApp communicate using Win32 UDP socket transport, msg_serialize

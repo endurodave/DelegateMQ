@@ -1,5 +1,5 @@
 // main.cpp
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // Main entry point for the DelegateMQ Spy Console TUI application.
 
 #include <ftxui/dom/elements.hpp>

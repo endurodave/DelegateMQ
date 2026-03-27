@@ -2,7 +2,7 @@
 #define _DELEGATE_MQ_H
 
 // Delegate.h
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // David Lafreniere, 2025.
 
 /// @file DelegateMQ.h
@@ -50,7 +50,7 @@
 /// All other delegate functions are `noexcept`.
 ///
 /// **Documentation & Source:**
-/// * Repository: https://github.com/endurodave/DelegateMQ
+/// * Repository: https://github.com/DelegateMQ/DelegateMQ
 /// * See `README.md`, `DETAILS.md`, and `EXAMPLES.md` for comprehensive guides.
 
 // -----------------------------------------------------------------------------

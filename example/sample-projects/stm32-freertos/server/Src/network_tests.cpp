@@ -1,7 +1,7 @@
 /**
  * @file network_tests.cpp
  * @brief STM32 Server Application for Network Integration Tests.
- * @see https://github.com/endurodave/DelegateMQ
+ * @see https://github.com/DelegateMQ/DelegateMQ
  * @author David Lafreniere, 2026.
  *
  * @details

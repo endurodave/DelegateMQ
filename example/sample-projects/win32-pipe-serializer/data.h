@@ -2,7 +2,7 @@
 #define DATA_H
 
 /// @file 
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// serialize class serializes data for transport using remote delegates.

@@ -2,7 +2,7 @@
 #define ARM_LWIP_NETCONN_UDP_TRANSPORT_H
 
 /// @file ArmLwipNetconnUdpTransport.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2026.
 /// 
 /// @brief ARM lwIP Netconn UDP transport implementation for DelegateMQ.

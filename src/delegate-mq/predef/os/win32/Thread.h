@@ -2,7 +2,7 @@
 #define _THREAD_WIN32_H
 
 /// @file Thread.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 ///
 /// @brief Win32 API implementation of the DelegateMQ IThread interface.

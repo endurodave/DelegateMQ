@@ -20,7 +20,7 @@
  * To ensure the internal delegate list also avoids the system heap, compile with
  * `DMQ_ALLOCATOR` to enable the fixed-block allocator for all library containers.
  *
- * @see https://github.com/endurodave/DelegateMQ
+ * @see https://github.com/DelegateMQ/DelegateMQ
  */
 
 #include "SignalSlotNoHeap.h"

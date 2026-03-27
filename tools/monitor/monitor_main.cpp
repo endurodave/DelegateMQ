@@ -1,5 +1,5 @@
 // monitor_main.cpp
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // Main entry point for the DelegateMQ Node Monitor Console TUI application.
 //
 // Listens for NodeInfoPacket heartbeats broadcast by NodeBridge instances

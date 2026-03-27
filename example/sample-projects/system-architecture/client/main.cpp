@@ -1,5 +1,5 @@
 /// @file main.cpp
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// @brief ZeroMQ and msgpack for C++ with remote delegates examples. 

@@ -2,7 +2,7 @@
 #define NETX_UDP_TRANSPORT_H
 
 /// @file NetXUdpTransport.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2026.
 ///
 /// @brief NetX (ThreadX) UDP transport implementation for DelegateMQ.

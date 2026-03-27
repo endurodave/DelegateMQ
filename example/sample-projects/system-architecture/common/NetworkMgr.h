@@ -1,6 +1,6 @@
 /// @file NetworkMgr.h
 /// @brief Application-specific network manager for Alarms, Commands, and Data.
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 
 #ifndef NETWORK_MGR_H

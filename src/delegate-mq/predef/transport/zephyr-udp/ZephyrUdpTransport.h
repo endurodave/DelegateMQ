@@ -2,7 +2,7 @@
 #define ZEPHYR_UDP_TRANSPORT_H
 
 /// @file ZephyrUdpTransport.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2026.
 /// 
 /// @brief Zephyr RTOS UDP transport implementation for DelegateMQ.

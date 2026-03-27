@@ -2,7 +2,7 @@
 #define ASYNC_INVOKE_H
 
 /// @file AsyncInvoke.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 ///
 /// @brief Helper functions for simplified, one-line asynchronous function invocation.

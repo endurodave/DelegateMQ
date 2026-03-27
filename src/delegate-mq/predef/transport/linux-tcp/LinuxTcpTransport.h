@@ -1,7 +1,7 @@
 #ifndef LINUX_TCP_TRANSPORT_H
 #define LINUX_TCP_TRANSPORT_H
 
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// @brief Linux TCP transport implementation for DelegateMQ.

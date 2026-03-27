@@ -3,7 +3,7 @@
 
 /// @file IThread.h
 /// @brief Interface for cross-thread delegate dispatching.
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 
 #include "DelegateMsg.h"

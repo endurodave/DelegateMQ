@@ -33,7 +33,7 @@
 /// routes its high-level `Send()` back into this monitor, the transport MUST implement 
 /// a reentrancy guard to prevent infinite recursion.
 ///
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 class RetryMonitor 
 {
 public:

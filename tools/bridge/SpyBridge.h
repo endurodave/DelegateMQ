@@ -1,5 +1,5 @@
 // SpyBridge.h
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // Asynchronous DataBus monitoring bridge interface.
 
 #ifndef SPY_BRIDGE_H

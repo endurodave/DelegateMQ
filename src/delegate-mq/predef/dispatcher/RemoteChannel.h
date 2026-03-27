@@ -2,7 +2,7 @@
 #define REMOTE_CHANNEL_H
 
 /// @file RemoteChannel.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2026.
 ///
 /// @brief Aggregates transport, serializer, dispatcher, and stream into a single

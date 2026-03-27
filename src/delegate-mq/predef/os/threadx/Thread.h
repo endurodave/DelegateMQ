@@ -2,7 +2,7 @@
 #define _THREAD_THREADX_H
 
 /// @file Thread.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2026.
 ///
 /// @brief ThreadX implementation of the DelegateMQ IThread interface.

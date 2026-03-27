@@ -2,7 +2,7 @@
 #define _DELEGATE_REMOTE_H
 
 // DelegateRemote.h
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // David Lafreniere, Aug 2025.
 
 /// @file

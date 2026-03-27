@@ -2,7 +2,7 @@
 #define WIN32_TCP_TRANSPORT_H
 
 /// @file Win32TcpTransport.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// @brief Win32 TCP transport implementation for DelegateMQ.

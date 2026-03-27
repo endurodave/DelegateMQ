@@ -1,7 +1,7 @@
 #ifndef _MAKE_TUPLE_HEAP_H
 #define _MAKE_TUPLE_HEAP_H
 
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // David Lafreniere, Aug 2020.
 
 /// @file

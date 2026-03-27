@@ -3,7 +3,7 @@
 #define MQTT_TRANSPORT_H
 
 /// @file 
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// Transport callable argument data to/from a remote using MQTT library. 

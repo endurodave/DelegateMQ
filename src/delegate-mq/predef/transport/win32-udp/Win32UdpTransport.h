@@ -1,7 +1,7 @@
 #ifndef WIN32_UDP_TRANSPORT_H
 #define WIN32_UDP_TRANSPORT_H
 
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// @brief Win32 UDP transport implementation for DelegateMQ.

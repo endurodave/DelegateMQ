@@ -2,7 +2,7 @@
 #define NNG_TRANSPORT_H
 
 /// @file NngTransport.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// @brief NNG transport implementation for DelegateMQ.

@@ -2,7 +2,7 @@
 #define _THREAD_FREERTOS_H
 
 /// @file Thread.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 ///
 /// @brief FreeRTOS implementation of the DelegateMQ IThread interface.

@@ -2,7 +2,7 @@
 #define _DELEGATE_H
 
 // Delegate.h
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // David Lafreniere, Aug 2020.
 
 /// @file

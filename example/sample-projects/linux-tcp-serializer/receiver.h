@@ -2,7 +2,7 @@
 #define RECEIVER_H
 
 /// @file Receiver.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// @brief TCP Receiver example. 

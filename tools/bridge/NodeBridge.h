@@ -1,5 +1,5 @@
 // NodeBridge.h
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // Opt-in node heartbeat bridge for the DelegateMQ Node Monitor.
 //
 // Usage (mirrors SpyBridge pattern — zero cost if never called):

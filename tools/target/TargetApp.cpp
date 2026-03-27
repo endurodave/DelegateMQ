@@ -1,5 +1,5 @@
 // TargetApp.cpp
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // Test application to generate sample DataBus traffic for the Spy tool.
 
 #include "predef/databus/DataBus.h"

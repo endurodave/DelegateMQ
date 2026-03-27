@@ -1,6 +1,6 @@
 /// @file NetworkEngine.h
 /// @brief Base class for handling network transport, threading, and synchronization.
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 
 #ifndef NETWORK_ENGINE_H

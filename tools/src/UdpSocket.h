@@ -1,5 +1,5 @@
 // UdpSocket.h
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // Minimal cross-platform UDP socket wrapper.
 
 #ifndef UDP_SOCKET_H

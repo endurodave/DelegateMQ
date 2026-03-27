@@ -2,7 +2,7 @@
 #define SERIALIZER_H
 
 /// @file
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// Serialize callable argument data using RapidJSON for transport

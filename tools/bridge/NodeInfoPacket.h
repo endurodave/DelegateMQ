@@ -1,5 +1,5 @@
 // NodeInfoPacket.h
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // Node heartbeat packet for the DelegateMQ Node Monitor.
 
 #ifndef NODE_INFO_PACKET_H

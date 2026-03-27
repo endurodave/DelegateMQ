@@ -13,7 +13,7 @@
 /// variable, class member, or static member. No shared_ptr management required.
 /// Disconnect() from any thread is always safe.
 ///
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 
 #include "DelegateMQ.h"
 #include <iostream>

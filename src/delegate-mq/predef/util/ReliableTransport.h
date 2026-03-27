@@ -2,7 +2,7 @@
 #define RELIABLE_TRANSPORT_H
 
 /// @file ReliableTransport.h
-/// @see https://github.com/endurodave/DelegateMQ
+/// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
 /// @brief Reliability adapter for the DelegateMQ transport layer.

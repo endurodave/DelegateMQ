@@ -1,7 +1,7 @@
 #ifndef _XNEW_H
 #define _XNEW_H
 
-// @see https://github.com/endurodave/DelegateMQ
+// @see https://github.com/DelegateMQ/DelegateMQ
 // David Lafreniere, 2026.
 
 /// @file xnew.h
