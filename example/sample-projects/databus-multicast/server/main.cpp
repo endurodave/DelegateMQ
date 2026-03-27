@@ -10,6 +10,8 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include <atomic>
+#include <csignal>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include "predef/transport/win32-udp/MulticastTransport.h"
@@ -22,7 +24,14 @@
 #include <sstream>
 #endif
 
+static std::atomic<bool> g_running(true);
+
+static void SignalHandler(int) { g_running = false; }
+
 int main() {
+    std::signal(SIGINT, SignalHandler);
+    std::signal(SIGTERM, SignalHandler);
+
     std::cout << "Starting DataBus Multicast SERVER (Publisher)..." << std::endl;
 
     NetworkContext winsock;
@@ -59,9 +68,11 @@ int main() {
     Serializer<void(DataMsg)> serializer;
     dmq::DataBus::RegisterSerializer<DataMsg>(SystemTopic::DataMsg, serializer);
 
+    std::cout << "Press Ctrl+C to quit." << std::endl;
+
     // 4. Main loop: Publish data to the multicast group every second
     int iteration = 0;
-    while (iteration < 120) {
+    while (g_running) {
         DataMsg msg;
         Actuator act; act.id = 1; act.position = 10.0f + (float)iteration;
         msg.actuators.push_back(act);
@@ -76,6 +87,7 @@ int main() {
         iteration++;
     }
 
+    std::cout << "\nShutting down..." << std::endl;
     transport.Close();
 
 #ifdef DMQ_DATABUS_TOOLS

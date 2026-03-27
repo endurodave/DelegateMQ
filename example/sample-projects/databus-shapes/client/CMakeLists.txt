@@ -45,7 +45,7 @@ file(GLOB SOURCES "*.cpp" "*.h")
 
 if (DMQ_DATABUS_TOOLS)
     add_compile_definitions(DMQ_DATABUS_TOOLS)
-    set(SPY_BRIDGE_DIR "${CMAKE_SOURCE_DIR}/../../../../../DelegateMQ-Tools")
+    set(SPY_BRIDGE_DIR "${CMAKE_SOURCE_DIR}/../../../../tools")
     set(SPY_BRIDGE_SOURCES
         "${SPY_BRIDGE_DIR}/bridge/NodeBridge.cpp"
         "${SPY_BRIDGE_DIR}/bridge/NodeBridge.h"

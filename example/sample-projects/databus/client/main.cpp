@@ -22,8 +22,16 @@
 #include <thread>
 #include <atomic>
 #include <sstream>
+#include <csignal>
+
+static std::atomic<bool> g_running(true);
+
+static void SignalHandler(int) { g_running = false; }
 
 int main() {
+    std::signal(SIGINT, SignalHandler);
+    std::signal(SIGTERM, SignalHandler);
+
     std::cout << "Starting System Architecture CLIENT (Subscriber)..." << std::endl;
 
 #ifdef _WIN32
@@ -118,22 +126,23 @@ int main() {
     int rateToggle = 0;
     auto lastCommandTime = std::chrono::steady_clock::now();
 
-    std::cout << "Client running. Sending speed commands every 5s..." << std::endl;
+    std::cout << "Client running. Sending speed commands every 5s... Press Ctrl+C to quit." << std::endl;
 
-    for (int i=0; i<120; ++i) {
+    while (g_running) {
         auto now = std::chrono::steady_clock::now();
         if (std::chrono::duration_cast<std::chrono::seconds>(now - lastCommandTime).count() >= 5) {
             CommandMsg cmd;
             cmd.pollingRateMs = (rateToggle % 2 == 0) ? 500 : 1000;
             std::cout << "Client sending command: set rate to " << cmd.pollingRateMs << "ms" << std::endl;
             dmq::DataBus::Publish<CommandMsg>(SystemTopic::CommandMsg, cmd);
-            
+
             rateToggle++;
             lastCommandTime = now;
         }
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
+    std::cout << "\nShutting down..." << std::endl;
     running = false;
     receiveThread.join();
 

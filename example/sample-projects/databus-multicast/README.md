@@ -39,6 +39,9 @@ This example demonstrates a distributed system using `dmq::DataBus` over **UDP M
 
 This project includes optional support for the **DelegateMQ Spy Console**. When enabled, the application exports all bus traffic to a multicast group, allowing multiple consoles to monitor the system at once.
 
+### Prerequisites
+- `Bitsery` must be available in the workspace (fetched via `01_fetch_repos.py`).
+
 ### Enabling Spy
 To enable the spy bridge, configure the project with the `DMQ_DATABUS_TOOLS` option set to `ON`:
 
@@ -48,7 +51,7 @@ cmake --build build --config Release
 ```
 
 ### Monitoring Multicast Traffic
-Once built, start the `dmq-spy` application from the `DelegateMQ-Tools` project using the matching multicast group:
+Once built, start the `dmq-spy` application (built from `tools/` with `-DDMQ_TOOLS=ON`) using the matching multicast group. See [tools/TOOLS.md](../../../../tools/TOOLS.md) for details.
 
 ```bash
 # Start the spy console to join the multicast group

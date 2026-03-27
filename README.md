@@ -299,19 +299,32 @@ auto conn2 = dmq::DataBus::Subscribe<int>("status", [](int s) {
 }, nullptr, qos);
 ```
 
-# DelegateMQ Spy
+# DelegateMQ Tools
 
-**[DelegateMQ-Tools](https://github.com/endurodave/DelegateMQ-Tools)** is a standalone diagnostic tool and TUI (Terminal User Interface) dashboard for the DelegateMQ DataBus. It acts as a "Software Logic Analyzer," allowing you to visualize and monitor all bus traffic in real-time across threads and network boundaries.
+DelegateMQ includes built-in diagnostic tools for monitoring and inspecting DataBus traffic and network topology in real-time. Two TUI (Terminal User Interface) consoles are provided:
+
+| Tool | Purpose |
+|------|---------|
+| **`dmq-spy`** | Real-time live feed of all DataBus messages — acts as a "Software Logic Analyzer" |
+| **`dmq-monitor`** | Live network topology view — shows all active nodes, status, uptime, and published topics |
+
+<img src="docs/dmq-spy-screenshot.png" alt="DelegateMQ Spy Screenshot" style="max-width: 800px; width: 100%;">
 
 **Key Features:**
 - **Live Traffic Feed**: Real-time display of all messages published to the DataBus.
 - **Regex Filtering**: Instantly filter topics using regular expressions to focus on specific data streams.
-- **Zero Impact**: Uses an asynchronous "Spy Bridge" to ensure that monitoring doesn't block or slow down your main application.
-- **Cross-Platform**: Built with modern C++ and FTXUI, providing a responsive dashboard in any terminal (Windows Terminal, PowerShell, Bash).
+- **Node Topology**: See every node on the network — hostname, IP, uptime, message count, and health status.
+- **Zero Impact**: Uses an asynchronous bridge to ensure monitoring never blocks or slows your application.
+- **Cross-Platform**: Built with [FTXUI](https://github.com/ArthurSonzogni/FTXUI), providing a responsive dashboard in any terminal.
 
-<img src="docs/dmq-spy-screenshot.png" alt="DelegateMQ Spy Screenshot" style="max-width: 800px; width: 100%;">
+To build the tools, enable `DMQ_TOOLS` during configuration:
 
-To use the Spy tool, simply enable the `DMQ_DATABUS_TOOLS` option in your application's build and start the `dmq-spy` console. See the [DelegateMQ-Tools repository](https://github.com/endurodave/DelegateMQ-Tools) for implementation details.
+```bash
+cmake -DDMQ_TOOLS=ON -B build .
+cmake --build build --config Release
+```
+
+To integrate monitoring into your application, enable `DMQ_DATABUS_TOOLS` in your app's build. See [tools/TOOLS.md](tools/TOOLS.md) for full integration and usage details.
 
 # Modular Architecture
 

@@ -22,11 +22,18 @@
 #include <thread>
 #include <sstream>
 #include <atomic>
+#include <csignal>
 
 // Global polling rate modified by CommandMsg
 std::atomic<int> g_pollingRateMs{ 1000 };
+static std::atomic<bool> g_running(true);
+
+static void SignalHandler(int) { g_running = false; }
 
 int main() {
+    std::signal(SIGINT, SignalHandler);
+    std::signal(SIGTERM, SignalHandler);
+
     std::cout << "Starting System Architecture SERVER (Publisher)..." << std::endl;
 
 #ifdef _WIN32
@@ -120,9 +127,11 @@ int main() {
         }
     });
 
+    std::cout << "Press Ctrl+C to quit." << std::endl;
+
     // 10. Main loop: Publish data at dynamic rate
     int iteration = 0;
-    while (iteration < 120) {
+    while (g_running) {
         DataMsg msg;
         Actuator act; act.id = 1; act.position = 10.0f + (float)iteration;
         msg.actuators.push_back(act);
@@ -137,6 +146,7 @@ int main() {
         iteration++;
     }
 
+    std::cout << "\nShutting down..." << std::endl;
     running = false;
     netThread.join();
     transportData.Close();

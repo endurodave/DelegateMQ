@@ -32,19 +32,40 @@ The **Shapes Demo** is a graphical demonstration of the **DelegateMQ DataBus** c
    ./client/build/Release/delegate_databus_shapes_client.exe
    ```
 
-## DataBus Spy Integration
+## DelegateMQ Tools Integration
 
-This project is fully integrated with the **DelegateMQ Spy Console**. 
+This project integrates with both **dmq-spy** (DataBus message monitor) and **dmq-monitor** (network node monitor). Both tools are built from `tools/` with `-DDMQ_TOOLS=ON`. See [tools/TOOLS.md](../../../../tools/TOOLS.md) for details.
 
-### Enabling the Spy Bridge
-The server-side bridge is enabled by default in the `CMakeLists.txt` via the `DMQ_DATABUS_TOOLS` option. To monitor the raw coordinate data flowing through the bus:
+### Prerequisites
+- `Bitsery` must be available in the workspace (fetched via `01_fetch_repos.py`).
 
-1. Start the **Spy Console** from the `DelegateMQ-Tools` project:
+### Enabling the Tool Bridges
+Build the client and server with `DMQ_DATABUS_TOOLS=ON` to enable the bridge components:
+
+```bash
+cmake -B build -DDMQ_DATABUS_TOOLS=ON .
+cmake --build build --config Release
+```
+
+### dmq-spy (DataBus Message Feed)
+The **server** publishes all DataBus traffic to `dmq-spy` via `SpyBridge`. To view the raw coordinate data flowing through the bus:
+
+1. Start the **Spy Console**:
    ```bash
    ./dmq-spy 9999 --multicast 239.1.1.1
    ```
 2. Run the Shapes Demo server.
-3. Observe the `Shape/Square` and `Shape/Circle` coordinate updates in real-time on the spy dashboard.
+3. Observe the `Shape/Square` and `Shape/Circle` coordinate updates in real-time.
+
+### dmq-monitor (Node Topology View)
+Both the **server** and **client** send periodic heartbeats to `dmq-monitor` via `NodeBridge`, reporting uptime, message counts, and active topics.
+
+1. Start the **Monitor Console**:
+   ```bash
+   ./dmq-monitor
+   ```
+2. Run the Shapes Demo server and client(s).
+3. Each running process appears as a separate row in the live node table.
 
 ## Technical Details
 

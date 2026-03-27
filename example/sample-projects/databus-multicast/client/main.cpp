@@ -12,6 +12,7 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+#include <csignal>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include "predef/transport/win32-udp/MulticastTransport.h"
@@ -24,7 +25,14 @@
 #include <sstream>
 #endif
 
+static std::atomic<bool> g_running(true);
+
+static void SignalHandler(int) { g_running = false; }
+
 int main() {
+    std::signal(SIGINT, SignalHandler);
+    std::signal(SIGTERM, SignalHandler);
+
     std::cout << "Starting DataBus Multicast CLIENT (Subscriber)..." << std::endl;
 
     NetworkContext winsock;
@@ -76,13 +84,13 @@ int main() {
         }
     });
 
-    std::cout << "Client joined multicast group 239.1.1.1:8000. Waiting for data..." << std::endl;
-    
-    // Run for a while
-    for (int i=0; i<120; ++i) {
+    std::cout << "Client joined multicast group 239.1.1.1:8000. Waiting for data... Press Ctrl+C to quit." << std::endl;
+
+    while (g_running) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
+    std::cout << "\nShutting down..." << std::endl;
     running = false;
     receiveThread.join();
     transport.Close();

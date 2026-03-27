@@ -16,3 +16,11 @@ project(DelegateProject VERSION 1.0 LANGUAGES CXX)
 
 # Add subdirectory for building delegate_app
 add_subdirectory(test ${CMAKE_BINARY_DIR}/delegate_app)
+
+# Optional: build diagnostic tools (dmq-spy, dmq-monitor, dmq-target)
+# Requires FTXUI, spdlog, and bitsery in the workspace.
+# Enable with: cmake -DDMQ_TOOLS=ON ...
+option(DMQ_TOOLS "Build DelegateMQ diagnostic tools (dmq-spy, dmq-monitor)" OFF)
+if(DMQ_TOOLS)
+    add_subdirectory(tools ${CMAKE_BINARY_DIR}/dmq-tools)
+endif()

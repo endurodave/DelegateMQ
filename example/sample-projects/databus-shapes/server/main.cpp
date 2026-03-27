@@ -10,6 +10,8 @@
 #include <vector>
 #include <thread>
 #include <cmath>
+#include <atomic>
+#include <csignal>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include "predef/transport/win32-udp/MulticastTransport.h"
@@ -23,7 +25,16 @@
 #include <sstream>
 #endif
 
+static std::atomic<bool> g_running(true);
+
+static void SignalHandler(int) {
+    g_running = false;
+}
+
 int main() {
+    std::signal(SIGINT, SignalHandler);
+    std::signal(SIGTERM, SignalHandler);
+
     std::cout << "Starting DataBus Shapes Demo SERVER (Publisher)..." << std::endl;
 
     NetworkContext winsock;
@@ -67,9 +78,11 @@ int main() {
     dmq::DataBus::RegisterSerializer<ShapeMsg>(SystemTopic::Circle, serializer);
     dmq::DataBus::RegisterSerializer<ShapeMsg>(SystemTopic::Triangle, serializer);
 
+    std::cout << "Press Ctrl+C to quit." << std::endl;
+
     // 4. Animation loop
     float angle = 0;
-    while (true) {
+    while (g_running) {
         // Move Square in a rectangle
         ShapeMsg square;
         square.x = 20 + (int)(20 * std::cos(angle));
@@ -88,6 +101,7 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(33));
     }
 
+    std::cout << "\nShutting down..." << std::endl;
     transport.Close();
 #ifdef DMQ_DATABUS_TOOLS
     SpyBridge::Stop();

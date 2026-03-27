@@ -38,8 +38,8 @@ set_source_files_properties(${COMMON_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 if (DMQ_DATABUS_TOOLS)
     add_compile_definitions(DMQ_DATABUS_TOOLS)
-    set(SPY_BRIDGE_DIR "${CMAKE_SOURCE_DIR}/../../../../../DelegateMQ-Tools")
-    set(SPY_BRIDGE_SOURCES 
+    set(SPY_BRIDGE_DIR "${CMAKE_SOURCE_DIR}/../../../../tools")
+    set(SPY_BRIDGE_SOURCES
         "${SPY_BRIDGE_DIR}/bridge/SpyBridge.cpp"
         "${SPY_BRIDGE_DIR}/bridge/SpyBridge.h"
     )

@@ -108,14 +108,14 @@ int main() {
             canvas(std::move(c)) | flex | border,
             hbox({
                 filler(),
-                text("Data-Driven Rendering | 'q' to quit") | dim,
+                text("Data-Driven Rendering | 'q' or Ctrl+C to quit") | dim,
                 filler()
             })
         });
     });
 
     auto component = CatchEvent(renderer, [&](Event event) {
-        if (event == Event::Character('q')) {
+        if (event == Event::Character('q') || event == Event::Character('\x03')) {
             screen.Exit();
             return true;
         }
