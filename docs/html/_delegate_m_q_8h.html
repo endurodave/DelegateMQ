@@ -145,7 +145,7 @@ Macros</h2></td></tr>
 <p><b>Asynchronous Safety:</b> Asynchronous variants automatically copy argument data into the event queue. This provides true 'fire and forget' functionality, ensuring that out-of-scope stack variables in the caller do not cause data races or corruption in the target thread.</p>
 <p><b>Error Handling:</b> The <code>Async</code> and <code>AsyncWait</code> variants may throw <code>std::bad_alloc</code> if heap allocation fails during invocation. Alternatively, defining <code>DMQ_ASSERTS</code> switches error handling to assertions. All other delegate functions are <code>noexcept</code>.</p>
 <p><b>Documentation &amp; Source:</b></p><ul>
-<li>Repository: <a href="https://github.com/endurodave/DelegateMQ">https://github.com/endurodave/DelegateMQ</a></li>
+<li>Repository: <a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a></li>
 <li>See <code>README.md</code>, <code>DETAILS.md</code>, and <code>EXAMPLES.md</code> for comprehensive guides. </li>
 </ul>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
