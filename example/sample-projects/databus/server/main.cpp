@@ -30,7 +30,10 @@ static std::atomic<bool> g_running(true);
 
 static void SignalHandler(int) { g_running = false; }
 
-int main() {
+int main(int argc, char* argv[]) {
+    int duration = 0;
+    if (argc > 1) duration = atoi(argv[1]);
+
     std::signal(SIGINT, SignalHandler);
     std::signal(SIGTERM, SignalHandler);
 
@@ -127,7 +130,14 @@ int main() {
         }
     });
 
-    std::cout << "Press Ctrl+C to quit." << std::endl;
+    if (duration > 0) {
+        std::thread([duration]() {
+            std::this_thread::sleep_for(std::chrono::seconds(duration));
+            g_running = false;
+        }).detach();
+    } else {
+        std::cout << "Press Ctrl+C to quit." << std::endl;
+    }
 
     // 10. Main loop: Publish data at dynamic rate
     int iteration = 0;

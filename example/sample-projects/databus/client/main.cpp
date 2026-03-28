@@ -28,7 +28,10 @@ static std::atomic<bool> g_running(true);
 
 static void SignalHandler(int) { g_running = false; }
 
-int main() {
+int main(int argc, char* argv[]) {
+    int duration = 0;
+    if (argc > 1) duration = atoi(argv[1]);
+
     std::signal(SIGINT, SignalHandler);
     std::signal(SIGTERM, SignalHandler);
 
@@ -126,7 +129,14 @@ int main() {
     int rateToggle = 0;
     auto lastCommandTime = std::chrono::steady_clock::now();
 
-    std::cout << "Client running. Sending speed commands every 5s... Press Ctrl+C to quit." << std::endl;
+    if (duration > 0) {
+        std::thread([duration]() {
+            std::this_thread::sleep_for(std::chrono::seconds(duration));
+            g_running = false;
+        }).detach();
+    } else {
+        std::cout << "Client running. Sending speed commands every 5s... Press Ctrl+C to quit." << std::endl;
+    }
 
     while (g_running) {
         auto now = std::chrono::steady_clock::now();

@@ -14,11 +14,14 @@
 #
 # See DETAILS.md for more information.
 
+import sys
 import time
 import threading
 from messages import AlarmMsg, CommandMsg, DataMsg, ActuatorMsg, AlarmNote
 from config import RemoteId
 from network_client import NetworkClient
+
+DURATION = int(sys.argv[1]) if len(sys.argv) > 1 else 30
 
 # ------------------------------------------------------------------------------
 # Main Application Handlers
@@ -96,16 +99,16 @@ if __name__ == "__main__":
         cmd = CommandMsg(action=CommandMsg.Action.START, pollTime=500)
         client.send(RemoteId.COMMAND, cmd)
 
-        print("\n--- Running (Will auto-exit in 30 seconds) ---")
-        
-        # 2. Keep Main Thread Alive for 30 seconds
-        for i in range(30):
+        print(f"\n--- Running (Will auto-exit in {DURATION} seconds) ---")
+
+        # 2. Keep Main Thread Alive for DURATION seconds
+        for i in range(DURATION):
             # Check if interrupted during sleep (optional safety)
             if stop_event.is_set():
                 break
             time.sleep(1)
             
-        print("\n30 seconds elapsed. Exiting application...")
+        print(f"\n{DURATION} seconds elapsed. Exiting application...")
 
     except KeyboardInterrupt:
         print("\nStopping via KeyboardInterrupt...")

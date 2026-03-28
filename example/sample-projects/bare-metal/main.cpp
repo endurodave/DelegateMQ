@@ -291,8 +291,11 @@ private:
     DelegateMemberRemote<Receiver, void(Data&)> m_recvDelegate;
 };
 
-int main() 
+int main(int argc, char* argv[])
 {
+    int duration = 5;
+    if (argc > 1) duration = atoi(argv[1]);
+
     DelegateRemoteId id = 1;
 
     // Start the thread that will run ProcessTimers
@@ -302,7 +305,7 @@ int main()
     Receiver receiver(id);
 
     // Wait here while sender and receiver communicate
-    this_thread::sleep_for(chrono::seconds(5));
+    this_thread::sleep_for(chrono::seconds(duration));
 
     // Ensure the timer thread completes before main exits
     processTimerExit.store(true);

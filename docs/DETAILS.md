@@ -175,6 +175,8 @@ Most remote delegate example projects depend on external libraries. Scripts are 
 3. Run `01_fetch_repos.py`. Fetches all dependent libraries from GitHub.
 4. Run `02_build_libs.py`. Builds dependent libraries.
 5. Run `03_generate_samples.py`. Creates project build files using CMake.
+6. Run `04_build_samples.py`. Compiles all sample projects (Windows or Linux, platform-appropriate).
+7. Run `05_run_samples.py`. Executes all built samples and reports pass/fail.
 
 All dependent libraries—along with **DelegateMQ**—are now organized within a single parent directory. 
 

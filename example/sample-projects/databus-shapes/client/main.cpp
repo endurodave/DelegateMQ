@@ -40,7 +40,10 @@ struct GlobalState {
     ScreenInteractive* screen = nullptr;
 } g_state;
 
-int main() {
+int main(int argc, char* argv[]) {
+    int duration = 0;
+    if (argc > 1) duration = atoi(argv[1]);
+
     NetworkContext winsock;
     std::string localIP = NetworkContext::GetLocalAddress();
 
@@ -121,6 +124,13 @@ int main() {
         }
         return false;
     });
+
+    if (duration > 0) {
+        std::thread([&screen, duration]() {
+            std::this_thread::sleep_for(std::chrono::seconds(duration));
+            screen.Exit();
+        }).detach();
+    }
 
     screen.Loop(component);
 

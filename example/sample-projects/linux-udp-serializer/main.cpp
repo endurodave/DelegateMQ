@@ -18,8 +18,11 @@ static void ProcessTimers()
     }
 }
 
-int main() 
+int main(int argc, char* argv[])
 {
+    int duration = 5;
+    if (argc > 1) duration = atoi(argv[1]);
+
     const DelegateRemoteId id = 1;
 
     // Start the thread that will run ProcessTimers
@@ -33,7 +36,7 @@ int main()
     receiver.Start();
 
     // Let sender and receiver communicate
-    this_thread::sleep_for(chrono::seconds(5));
+    this_thread::sleep_for(chrono::seconds(duration));
 
     receiver.Stop();
     sender.Stop();

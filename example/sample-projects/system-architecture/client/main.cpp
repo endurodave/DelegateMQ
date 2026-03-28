@@ -57,8 +57,11 @@ void DataMsgRecv(DataMsg& data)
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    int duration = 30;
+    if (argc > 1) duration = atoi(argv[1]);
+
 #ifdef DMQ_LOG
 #ifdef _WIN32
     // Create the MSVC sink (multi-threaded)
@@ -104,7 +107,7 @@ int main()
         std::cout << "ClientApp::Start() failed!" << std::endl;
 
     // Let client and server communicate
-    std::this_thread::sleep_for(std::chrono::seconds(30));
+    std::this_thread::sleep_for(std::chrono::seconds(duration));
 
     ClientApp::Instance().Stop();
     NetworkMgr::Instance().Stop();

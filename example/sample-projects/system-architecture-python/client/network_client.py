@@ -51,9 +51,13 @@ class NetworkClient:
         self._running = False
         if self._recv_thread:
             self._recv_thread.join()
-        
-        if self._send_socket: self._send_socket.close()
-        if self._recv_socket: self._recv_socket.close()
+
+        if self._send_socket:
+            self._send_socket.setsockopt(zmq.LINGER, 0)
+            self._send_socket.close()
+        if self._recv_socket:
+            self._recv_socket.setsockopt(zmq.LINGER, 0)
+            self._recv_socket.close()
         self._context.term()
 
     def register_callback(self, remote_id: int, func: Callable):
