@@ -206,8 +206,8 @@ def build_samples():
                     print(f"   {line}")
                 project_failed = True
 
-        # Build any dotnet sub-projects (e.g. C# interop clients)
-        for subdir_name in DOTNET_BUILDS.get(project_name, []):
+        # Build any dotnet sub-projects (e.g. C# interop clients) — Windows only
+        for subdir_name in (DOTNET_BUILDS.get(project_name, []) if IS_WINDOWS else []):
             subdir = os.path.join(project_dir, subdir_name)
             tag = f"{project_name}/{subdir_name}"
             print(f"[BUILDING] {tag}  (dotnet)")
