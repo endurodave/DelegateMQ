@@ -56,6 +56,12 @@ LINUX_ONLY = {
     "linux-udp-serializer",
 }
 
+# Projects that contain dotnet sub-projects requiring 'dotnet build' in addition
+# to any cmake targets.  Keys are project names; values are subdirectory names.
+DOTNET_BUILDS = {
+    "databus-interop": ["csharp-client"],
+}
+
 IS_WINDOWS = platform.system() == "Windows"
 BUILD_CONFIG = "Release"
 
@@ -75,6 +81,27 @@ def build_project(build_dir, label):
     try:
         result = subprocess.run(
             cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        if result.returncode != 0:
+            return False, result.stdout
+        return True, ""
+    except Exception as exc:
+        return False, str(exc)
+
+
+def build_dotnet(project_subdir, label):
+    """
+    Run 'dotnet build' in a directory containing a .csproj file.
+    Returns (success, error_output).
+    """
+    cmd = ["dotnet", "build", "--configuration", BUILD_CONFIG]
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=project_subdir,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -174,6 +201,21 @@ def build_samples():
             else:
                 print(f"   FAILED")
                 # Print the last 15 lines of compiler output for context
+                lines = err.strip().splitlines()
+                for line in lines[-15:]:
+                    print(f"   {line}")
+                project_failed = True
+
+        # Build any dotnet sub-projects (e.g. C# interop clients)
+        for subdir_name in DOTNET_BUILDS.get(project_name, []):
+            subdir = os.path.join(project_dir, subdir_name)
+            tag = f"{project_name}/{subdir_name}"
+            print(f"[BUILDING] {tag}  (dotnet)")
+            success, err = build_dotnet(subdir, subdir_name)
+            if success:
+                print(f"   ok")
+            else:
+                print(f"   FAILED")
                 lines = err.strip().splitlines()
                 for line in lines[-15:]:
                     print(f"   {line}")

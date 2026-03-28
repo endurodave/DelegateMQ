@@ -21,7 +21,10 @@ Skip List (always excluded):
     - stm32-freertos          Embedded STM32 target, cannot run on host
     - mqtt-rapidjson          Requires an external MQTT broker
     - serialport-serializer   Requires physical serial port hardware
-    - system-architecture-python  Python-only client, no C++ counterpart
+
+Cross-language pairs (server from one project, non-C++ client):
+    - system-architecture-python  C++ server (system-architecture), Python client
+    - databus-interop             C++ DataBus server, Python client (msgpack required)
 
 Usage:
     Run this script FIFTH, after building all sample projects.
@@ -65,6 +68,12 @@ CROSS_PAIRS = {
         "client_cmd":     [sys.executable, "-u", "main.py"],
         "client_cwd":     "client",
     },
+    "databus-interop": {
+        "server_project": "databus-interop",
+        "server_subdir":  "server",
+        "client_cmd":     [sys.executable, "-u", "main.py"],
+        "client_cwd":     "python-client",
+    },
 }
 
 WINDOWS_ONLY = {
@@ -96,6 +105,7 @@ REQUIRED_OUTPUT = {
     "system-architecture":         {"client": "Actuators:"},
     "system-architecture-no-deps": {"client": "Actuators:"},
     "system-architecture-python":  {"client": "[RECV] Data:"},
+    "databus-interop":             {"client": "[RECV] DataMsg"},
 }
 
 IS_WINDOWS = platform.system() == "Windows"
