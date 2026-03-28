@@ -593,6 +593,31 @@ The sender calls `(*m_channel)(value)` or `RemoteInvokeWait(*m_channel, value)`.
     - **value**: A stringified version of the data (provided by user-registered stringifiers).
     - **timestamp_us**: A high-resolution timestamp (microseconds since epoch) taken when the publisher called `DataBus::Publish`.
 
+### Threading Model
+
+The `DataBus` library itself has **no internal threads**. All threading responsibility belongs to the application.
+
+**Publish** (`DataBus::Publish`) is synchronous. It runs on the calling thread and delivers to all local subscribers before returning. If a subscriber was registered with a worker thread argument, the delivery is an async delegate post and returns immediately; otherwise the subscriber's callback runs inline on the publisher's thread.
+
+**Receive** (incoming network data) requires the application to call `Participant::ProcessIncoming()` in a polling loop. A typical pattern is one dedicated background thread that polls all participants:
+
+```cpp
+std::thread receiveThread([&]() {
+    while (running) {
+        commandParticipant->ProcessIncoming();  // blocks briefly on transport receive
+        dataParticipant->ProcessIncoming();
+        monitor.Process();                      // drive ACK/retry timeouts
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+});
+```
+
+`ProcessIncoming()` blocks inside the transport's `Receive()` call (typically 10–100 ms depending on the transport timeout). When a message arrives, it deserializes and invokes the registered handler **synchronously on the polling thread**, which may then re-publish to the local `DataBus` to fan out to other local subscribers.
+
+`Participant` protects its internal channel map with a `RecursiveMutex`. The handler callback is intentionally invoked **outside** that lock to prevent deadlock if the handler itself calls back into the same `Participant`. `ProcessIncoming()` is therefore safe to call from a single dedicated thread while the main thread calls `Publish`, `Subscribe`, or `AddParticipant` concurrently. Calling `ProcessIncoming()` simultaneously from multiple threads on the same `Participant` is not safe; transport thread-safety is transport-implementation dependent.
+
+**Contrast with NetworkMgr**: `NetworkEngine` (used by the `system-architecture` samples) creates two threads internally — a dedicated receive thread and a marshal/dispatch thread — so the application never calls `ProcessIncoming()`. DataBus trades that automation for explicit control, making it a better fit for embedded or RTOS environments where every thread must be accounted for.
+
 ### DataBus Spy
 
 **[DelegateMQ Tools](../tools/TOOLS.md)** provides standalone TUI diagnostic consoles (`dmq-spy`, `dmq-monitor`) for the DataBus. `dmq-spy` acts as a "Software Logic Analyzer" — it captures, filters, and displays all bus traffic in real-time without blocking the main application thread.
