@@ -2183,6 +2183,7 @@ Three System Architecture build projects exist:
 * [databus-multicast](../example/sample-projects/databus-multicast/) - builds on Windows or Linux. Demonstrates one-to-many distribution using the Data Bus and Multicast transport. No external libraries required.
 * [databus-shapes](../example/sample-projects/databus-shapes/) - builds on Windows or Linux. Graphical TUI demonstration of DataBus features including Multicast and location transparency.
 * [system-architecture-python](../example/sample-projects/system-architecture-python/) - Python client communicates with C++ server using MessagePack and ZeroMQ external libraries.
+* [databus-interop](../example/sample-projects/databus-interop/) - Python and C# clients communicate with a C++ DataBus server over UDP using MessagePack. No ZeroMQ required. Uses the generic interop libraries in `interop/`.
 
 Follow the steps below to execute the first two projects. See `README.txt` within [system-architecture-python](../example/sample-projects/system-architecture-python/) for the Python example.
 
@@ -2215,6 +2216,24 @@ Interface implementation details.
 | `ITransport` | `ZeroMqTransport` | ZeroMQ message transport |
 | `ITransportMonitor` | `TransportMonitor` | Monitor message timeouts |
 
+### Interop Libraries
+
+The `interop/` directory at the repository root contains reusable client libraries that let non-C++ applications communicate with any DelegateMQ DataBus application over UDP. They implement the `DmqHeader` wire protocol and MessagePack serialization — no DelegateMQ C++ code is needed on the client side.
+
+| Library | Location | Requirements |
+| --- | --- | --- |
+| Python | [`interop/python/`](../interop/python/) | `pip install msgpack` |
+| C# | [`interop/csharp/`](../interop/csharp/) | .NET 8+, `MessagePack` NuGet package |
+
+Both libraries expose the same conceptual API:
+
+- **`DmqDataBus`** — UDP socket manager. Call `start()`/`stop()`, register callbacks per remote ID with `register_callback()` / `RegisterCallback()`, and send messages with `send()` / `Send()`.
+- **`Serializer` / `pack` + `unpack`** — Encode and decode MessagePack arrays whose element order matches the C++ `MSGPACK_DEFINE` field order.
+
+The `databus-interop` sample project (`example/sample-projects/databus-interop/`) is a complete working demonstration: a C++ DataBus server publishes sensor/actuator data (`DataMsg`) on port 8000 and receives a polling-rate command (`CommandMsg`) on port 8001. The Python and C# clients each subscribe to the data and send the command using their respective `DmqDataBus` libraries.
+
+See [`interop/README.md`](../interop/README.md) for the full wire protocol specification, and [`example/sample-projects/databus-interop/README.md`](../example/sample-projects/databus-interop/README.md) for build and run instructions.
+
 ### Sample Projects Comparison
 
 | Project Name | Description | Threading (`IThread`) | Serialization (`ISerializer`) | Transport (`IDispatcher`) |
@@ -2232,7 +2251,8 @@ Interface implementation details.
 | **system-architecture-no-deps** | System architecture example (UDP) with no deps. | `std::thread` | `operator<<` / `operator>>` | UDP Socket |
 | **databus** | System architecture example using the Data Bus. | `std::thread` | `serialize` class | UDP Socket |
 | **databus-multicast** | One-to-many distribution using the Data Bus. | `std::thread` | `serialize` class | UDP Multicast |
-| **system-architecture-python** | Python binding example. | `std::thread` | N/A | Python Binding |
+| **system-architecture-python** | Python binding example (ZeroMQ). | `std::thread` | N/A | Python / ZeroMQ |
+| **databus-interop** | Python and C# clients interop with a C++ DataBus server over UDP. | `std::thread` | MessagePack | UDP Socket |
 | **win32-pipe-serializer** | Windows Named Pipe example. | `std::thread` | `serialize` class | Windows Pipe |
 | **win32-tcp-serializer** | Windows TCP Socket example. | `std::thread` | `serialize` class | Windows TCP Socket |
 | **win32-udp-serializer** | Windows UDP Socket example. | `std::thread` | `serialize` class | Windows UDP Socket |

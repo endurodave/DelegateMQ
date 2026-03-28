@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>databus_interop_csharp_client</AssemblyName>
+  </PropertyGroup>
+
+  <!-- MessagePack serialization library -->
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="2.5.192" />
+  </ItemGroup>
+
+  <!-- Shared interop library files from interop/csharp/ -->
+  <ItemGroup>
+    <Compile Include="../../../../interop/csharp/DmqDataBus.cs" />
+    <Compile Include="../../../../interop/csharp/Serializer.cs" />
+  </ItemGroup>
+
+</Project>
