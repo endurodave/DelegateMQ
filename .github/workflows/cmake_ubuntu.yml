@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2  # Checkout the repository code
+      uses: actions/checkout@v4  # Checkout the repository code
 
     - name: Install lcov
       run: sudo apt-get update && sudo apt-get install -y lcov  # Install lcov tool
@@ -37,7 +37,7 @@ jobs:
         lcov --remove coverage.info '/usr/*' '*/Serializer.h' '*/msg_serialize.h' --output-file coverage_filtered.info
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2  # Upload coverage report to Codecov
+      uses: codecov/codecov-action@v5  # Upload coverage report to Codecov
       with:
         token: ${{ secrets.CODECOV_TOKEN }}  # GitHub repository secret for authentication with Codecov
         files: build/coverage_filtered.info  # Path to the filtered coverage file
