@@ -163,12 +163,14 @@
 #elif defined(DMQ_TRANSPORT_WIN32_UDP)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/win32-udp/Win32UdpTransport.h"
+    #include "predef/transport/win32-udp/MulticastTransport.h"
 #elif defined(DMQ_TRANSPORT_WIN32_TCP)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/win32-tcp/Win32TcpTransport.h"
 #elif defined(DMQ_TRANSPORT_LINUX_UDP)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/linux-udp/LinuxUdpTransport.h"
+    #include "predef/transport/linux-udp/MulticastTransport.h"
 #elif defined(DMQ_TRANSPORT_LINUX_TCP)
     #include "predef/dispatcher/Dispatcher.h"
     #include "predef/transport/linux-tcp/LinuxTcpTransport.h"

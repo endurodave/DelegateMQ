@@ -62,6 +62,18 @@ public:
         GetInstance().InternalRegisterSerializer<T>(topic, serializer);
     }
 
+    // Register an incoming remote topic and automatically republish received data to the local bus.
+    // Replaces the boilerplate RegisterHandler lambda pattern:
+    //   participant.RegisterHandler<T>(remoteId, serializer, [topic](T msg) {
+    //       DataBus::Publish<T>(topic, std::move(msg));
+    //   });
+    template <typename T>
+    static void AddIncomingTopic(const std::string& topic, dmq::DelegateRemoteId remoteId, Participant& participant, dmq::ISerializer<void(T)>& serializer) {
+        participant.RegisterHandler<T>(remoteId, serializer, [topic](T msg) {
+            DataBus::Publish<T>(topic, std::move(msg));
+        });
+    }
+
     // Register a stringifier for a topic to enable spying/logging.
     template <typename T>
     static void RegisterStringifier(const std::string& topic, std::function<std::string(const T&)> func) {

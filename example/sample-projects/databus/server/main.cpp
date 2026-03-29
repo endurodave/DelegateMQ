@@ -1,11 +1,11 @@
 // main.cpp
 // DataBus System Architecture Server (Publisher) Example.
-// 
+//
 // This sample demonstrates a distributed publisher using dmq::DataBus over UDP.
 // - Publishes simulated sensor/actuator data (DataMsg) to the client.
 // - Subscribes to incoming commands (CommandMsg) to dynamically adjust the polling rate.
 // - Uses the DelegateMQ Reliability Layer (RetryMonitor/TransportMonitor) to track delivery.
-// 
+//
 // NOTE: To monitor this application with the DelegateMQ Spy Console:
 // 1. Build with -DDMQ_DATABUS_TOOLS=ON.
 // 2. Start dmq-spy.exe before running this application.
@@ -18,6 +18,7 @@
 #endif
 
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <thread>
 #include <sstream>
@@ -30,6 +31,71 @@ static std::atomic<bool> g_running(true);
 
 static void SignalHandler(int) { g_running = false; }
 
+// Holds all network and DataBus infrastructure for the server.
+struct ServerState {
+    UdpTransport transportData;
+    UdpTransport transportCmd;
+    TransportMonitor monitor{ std::chrono::seconds(1) };
+    std::unique_ptr<RetryMonitor> retry;
+    std::unique_ptr<ReliableTransport> reliableTransport;
+    std::shared_ptr<dmq::Participant> dataParticipant;
+    std::shared_ptr<dmq::Participant> commandParticipant;
+    Serializer<void(DataMsg)> dataSerializer;
+    Serializer<void(CommandMsg)> commandSerializer;
+    dmq::ScopedConnection commandConn;
+    dmq::ScopedConnection statusConn;
+};
+
+// Create UDP transports: PUB for outgoing data, SUB for incoming commands.
+static bool SetupTransports(ServerState& s) {
+    if (s.transportData.Create(UdpTransport::Type::PUB, "127.0.0.1", 8000) != 0) {
+        std::cerr << "Failed to create Data transport" << std::endl;
+        return false;
+    }
+    if (s.transportCmd.Create(UdpTransport::Type::SUB, "127.0.0.1", 8001) != 0) {
+        std::cerr << "Failed to create Command transport" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+// Wrap the data transport with a reliability layer and cross-wire ACKs.
+static void SetupReliability(ServerState& s) {
+    s.retry = std::make_unique<RetryMonitor>(s.transportData, s.monitor, 0);
+    s.reliableTransport = std::make_unique<ReliableTransport>(s.transportData, *s.retry);
+
+    s.transportData.SetTransportMonitor(&s.monitor);
+    s.transportCmd.SetTransportMonitor(&s.monitor);
+    s.transportCmd.SetSendTransport(&s.transportData); // Allow SUB to send ACKs via PUB
+}
+
+// Register participants and serializers with the DataBus.
+static void SetupDataBus(ServerState& s) {
+    // Outgoing DataMsg via reliable transport
+    s.dataParticipant = std::make_shared<dmq::Participant>(*s.reliableTransport);
+    s.dataParticipant->AddRemoteTopic(SystemTopic::DataMsg, SystemTopic::DataMsgId);
+    dmq::DataBus::AddParticipant(s.dataParticipant);
+    dmq::DataBus::RegisterSerializer<DataMsg>(SystemTopic::DataMsg, s.dataSerializer);
+
+    // Incoming CommandMsg republished to local bus
+    s.commandParticipant = std::make_shared<dmq::Participant>(s.transportCmd);
+    dmq::DataBus::AddIncomingTopic<CommandMsg>(SystemTopic::CommandMsg, SystemTopic::CommandMsgId, *s.commandParticipant, s.commandSerializer);
+}
+
+// Connect local DataBus subscribers and reliability status callbacks.
+static void RegisterSubscriptions(ServerState& s) {
+    s.commandConn = dmq::DataBus::Subscribe<CommandMsg>(SystemTopic::CommandMsg, [](const CommandMsg& msg) {
+        std::cout << "Server received CommandMsg: Changing polling rate to " << msg.pollingRateMs << "ms" << std::endl;
+        g_pollingRateMs = msg.pollingRateMs;
+    });
+
+    s.statusConn = s.monitor.OnSendStatus.Connect(dmq::MakeDelegate([](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
+        if (status == TransportMonitor::Status::TIMEOUT) {
+            std::cerr << "!!! ALERT: Client not acknowledging data (RemoteID: " << id << " Seq: " << seq << ")" << std::endl;
+        }
+    }));
+}
+
 int main(int argc, char* argv[]) {
     int duration = 0;
     if (argc > 1) duration = atoi(argv[1]);
@@ -40,92 +106,34 @@ int main(int argc, char* argv[]) {
     std::cout << "Starting System Architecture SERVER (Publisher)..." << std::endl;
 
 #ifdef _WIN32
-    // 1. Initialize Winsock (Windows only). NetworkContext defined in NetworkConnect.h.
     NetworkContext winsock;
 #endif
 
 #ifdef DMQ_DATABUS_TOOLS
-    // Start Spy Bridge to export DataBus traffic to the Spy Console
     SpyBridge::Start("127.0.0.1", 9999);
-
-    // Register stringifier so Spy Console can display the DataMsg content
     dmq::DataBus::RegisterStringifier<DataMsg>(SystemTopic::DataMsg, [](const DataMsg& msg) {
         std::ostringstream ss;
         ss << "Actuators: " << msg.actuators.size() << ", Sensors: " << msg.sensors.size();
         return ss.str();
     });
-
     dmq::DataBus::RegisterStringifier<CommandMsg>(SystemTopic::CommandMsg, [](const CommandMsg& msg) {
         return "Set Polling Rate: " + std::to_string(msg.pollingRateMs) + "ms";
     });
 #endif
 
-    // 2. Initialize Transports
-    // Send to Client on localhost:8000
-    UdpTransport transportData;
-    if (transportData.Create(UdpTransport::Type::PUB, "127.0.0.1", 8000) != 0) {
-        std::cerr << "Failed to create Data transport" << std::endl;
-        return -1;
-    }
+    ServerState s;
+    if (!SetupTransports(s)) return -1;
+    SetupReliability(s);
+    SetupDataBus(s);
+    RegisterSubscriptions(s);
 
-    // Listen for Commands on localhost:8001
-    UdpTransport transportCmd;
-    if (transportCmd.Create(UdpTransport::Type::SUB, "127.0.0.1", 8001) != 0) {
-        std::cerr << "Failed to create Command transport" << std::endl;
-        return -1;
-    }
-
-    // 3. Setup Reliability Layer
-    // Use a 1s timeout and 0 retries for immediate feedback
-    TransportMonitor monitor(std::chrono::seconds(1));
-    RetryMonitor retry(transportData, monitor, 0);
-    ReliableTransport reliableTransport(transportData, retry);
-
-    // Configure transports to work together for ACKs
-    transportData.SetTransportMonitor(&monitor);
-    transportCmd.SetTransportMonitor(&monitor);
-    transportCmd.SetSendTransport(&transportData); // Allow SUB to send ACKs via PUB
-
-    // 4. Setup Participant for Data (Outgoing via reliable transport)
-    auto dataParticipant = std::make_shared<dmq::Participant>(reliableTransport);
-    dataParticipant->AddRemoteTopic(SystemTopic::DataMsg, SystemTopic::DataMsgId);
-    dmq::DataBus::AddParticipant(dataParticipant);
-
-    // 5. Setup Participant for Commands (Incoming via standard transport)
-    auto commandParticipant = std::make_shared<dmq::Participant>(transportCmd);
-    Serializer<void(CommandMsg)> commandSerializer;
-    commandParticipant->RegisterHandler<CommandMsg>(SystemTopic::CommandMsgId, commandSerializer, [](CommandMsg msg) {
-        // Republish to local bus so local components can subscribe and monitor sees it
-        dmq::DataBus::Publish<CommandMsg>(SystemTopic::CommandMsg, std::move(msg));
-    });
-
-    // 6. Register Data Serializer
-    Serializer<void(DataMsg)> dataSerializer;
-    dmq::DataBus::RegisterSerializer<DataMsg>(SystemTopic::DataMsg, dataSerializer);
-
-    // 7. Handle incoming CommandMsg (now arrives via local bus)
-    auto commandConn = dmq::DataBus::Subscribe<CommandMsg>(SystemTopic::CommandMsg, [](const CommandMsg& msg) {
-        std::cout << "Server received CommandMsg: Changing polling rate to " << msg.pollingRateMs << "ms" << std::endl;
-        g_pollingRateMs = msg.pollingRateMs;
-    });
-
-    // 8. Monitor reliability signal to detect client response status
-    auto statusConn = monitor.OnSendStatus.Connect(dmq::MakeDelegate([](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
-        if (status == TransportMonitor::Status::TIMEOUT) {
-            std::cerr << "!!! ALERT: Client not acknowledging data (RemoteID: " << id << " Seq: " << seq << ")" << std::endl;
-        }
-    }));
-
-    // 9. Background thread to process reliability timeouts and incoming network data
+    // Background thread: process ACKs, incoming commands, and reliability timeouts
     std::atomic<bool> running{ true };
     std::thread netThread([&]() {
         while (running) {
-            // Process incoming ACKs on data transport
-            dataParticipant->ProcessIncoming();
-            // Process incoming Commands on command transport
-            commandParticipant->ProcessIncoming();
-            // Process reliability timeouts
-            monitor.Process();
+            s.dataParticipant->ProcessIncoming();
+            s.commandParticipant->ProcessIncoming();
+            s.monitor.Process();
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     });
@@ -139,7 +147,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Press Ctrl+C to quit." << std::endl;
     }
 
-    // 10. Main loop: Publish data at dynamic rate
+    // Main loop: publish data at the dynamically adjustable rate
     int iteration = 0;
     while (g_running) {
         DataMsg msg;
@@ -159,8 +167,8 @@ int main(int argc, char* argv[]) {
     std::cout << "\nShutting down..." << std::endl;
     running = false;
     netThread.join();
-    transportData.Close();
-    transportCmd.Close();
+    s.transportData.Close();
+    s.transportCmd.Close();
 
 #ifdef DMQ_DATABUS_TOOLS
     SpyBridge::Stop();
@@ -168,6 +176,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
-
-

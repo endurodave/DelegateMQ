@@ -196,7 +196,7 @@ public:
         DmqHeader headerCopy = header;
 
         // Get payload and set length on the copy
-        std::string payload = os.str();
+        auto payload = os.str();
         if (payload.length() > UINT16_MAX) {
             std::cerr << "Error: Payload too large for 16-bit length." << std::endl;
             return -1;
@@ -221,7 +221,7 @@ public:
         // Insert delegate arguments (payload)
         ss.write(payload.data(), payload.size());
 
-        std::string fullPacket = ss.str();
+        auto fullPacket = ss.str();
 
         if (headerCopy.GetId() != dmq::ACK_REMOTE_ID)
         {

@@ -118,7 +118,7 @@ public:
     {
         if (m_connFd < 0) return -1;
 
-        std::string payload = os.str();
+        auto payload = os.str();
         DmqHeader headerCopy = header;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
@@ -136,7 +136,7 @@ public:
         ss.write((char*)&length, 2);
         ss.write(payload.data(), payload.size());
 
-        std::string packet = ss.str();
+        auto packet = ss.str();
 
         // Always track the message (unless it is an ACK)
         // Use Host Byte Order for ID check

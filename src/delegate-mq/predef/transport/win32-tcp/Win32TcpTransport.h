@@ -121,7 +121,7 @@ public:
         if (m_clientSocket == INVALID_SOCKET) return -1;
 
         DmqHeader headerCopy = header;
-        std::string payload = os.str();
+        auto payload = os.str();
         if (payload.length() > UINT16_MAX) return -1;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
@@ -139,7 +139,7 @@ public:
         ss.write((char*)&len, 2);
         ss.write(payload.data(), payload.size());
 
-        std::string data = ss.str();
+        auto data = ss.str();
         const char* ptr = data.c_str();
         int remaining = (int)data.length();
 

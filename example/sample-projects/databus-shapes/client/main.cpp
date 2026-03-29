@@ -1,6 +1,6 @@
 // main.cpp
 // DataBus Shapes Demo Client (Subscriber).
-// 
+//
 // Receives shape positions via Multicast and renders them in a TUI using FTXUI.
 
 #include <ftxui/dom/elements.hpp>
@@ -13,19 +13,14 @@
 #include "SystemMessages.h"
 #include "SystemIds.h"
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <thread>
 #include <mutex>
 #include <map>
 #include <atomic>
 
-#if defined(_WIN32) || defined(_WIN64)
-#include "predef/transport/win32-udp/MulticastTransport.h"
 #include "predef/util/NetworkConnect.h"
-#else
-#include "predef/transport/linux-udp/MulticastTransport.h"
-#include "predef/util/NetworkConnect.h"
-#endif
 
 #ifdef DMQ_DATABUS_TOOLS
 #include "NodeBridge.h"
@@ -33,12 +28,48 @@
 
 using namespace ftxui;
 
-// State shared between DataBus callbacks and UI thread
+// State shared between DataBus callbacks and the UI thread.
 struct GlobalState {
     std::mutex mutex;
     std::map<std::string, ShapeMsg> shapes;
     ScreenInteractive* screen = nullptr;
 } g_state;
+
+// Holds all network and DataBus infrastructure for the client.
+struct ClientState {
+    MulticastTransport transport;
+    std::shared_ptr<dmq::Participant> group;
+    Serializer<void(ShapeMsg)> serializer;
+};
+
+// Create the multicast SUB transport.
+static bool SetupTransport(ClientState& s, const std::string& localIP) {
+    if (s.transport.Create(MulticastTransport::Type::SUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
+        std::cerr << "Failed to create Multicast transport" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+// Register participant and per-shape handlers that update g_state and trigger a UI redraw.
+// NOTE: g_state.screen must be assigned before calling this so the PostEvent call is valid.
+static void SetupDataBus(ClientState& s) {
+    s.group = std::make_shared<dmq::Participant>(s.transport);
+
+    auto shapeHandler = [](const std::string& topic, ShapeMsg msg) {
+        {
+            std::lock_guard<std::mutex> lock(g_state.mutex);
+            g_state.shapes[topic] = msg;
+        }
+        if (g_state.screen) {
+            g_state.screen->PostEvent(Event::Custom);
+        }
+    };
+
+    s.group->RegisterHandler<ShapeMsg>(SystemTopic::SquareId,   s.serializer, [shapeHandler](ShapeMsg m) { shapeHandler(SystemTopic::Square,   m); });
+    s.group->RegisterHandler<ShapeMsg>(SystemTopic::CircleId,   s.serializer, [shapeHandler](ShapeMsg m) { shapeHandler(SystemTopic::Circle,   m); });
+    s.group->RegisterHandler<ShapeMsg>(SystemTopic::TriangleId, s.serializer, [shapeHandler](ShapeMsg m) { shapeHandler(SystemTopic::Triangle, m); });
+}
 
 int main(int argc, char* argv[]) {
     int duration = 0;
@@ -51,53 +82,34 @@ int main(int argc, char* argv[]) {
     NodeBridge::StartMulticast("ShapesClient", "239.1.1.1", 9998, localIP);
 #endif
 
-    // 1. Initialize Multicast Transport (Group: 239.1.1.1, Port: 8000)
-    MulticastTransport transport;
-    if (transport.Create(MulticastTransport::Type::SUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
-        std::cerr << "Failed to create Multicast transport" << std::endl;
-        return -1;
-    }
+    ClientState s;
+    if (!SetupTransport(s, localIP)) return -1;
 
+    // Assign screen pointer before SetupDataBus so handlers can post UI events.
     auto screen = ScreenInteractive::Fullscreen();
     g_state.screen = &screen;
 
-    // 2. Setup Participant and Handlers
-    auto group = std::make_shared<dmq::Participant>(transport);
-    static Serializer<void(ShapeMsg)> serializer;
+    SetupDataBus(s);
 
-    auto shapeHandler = [](const std::string& topic, ShapeMsg msg) {
-        {
-            std::lock_guard<std::mutex> lock(g_state.mutex);
-            g_state.shapes[topic] = msg;
-        }
-        if (g_state.screen) {
-            g_state.screen->PostEvent(Event::Custom);
-        }
-    };
-
-    group->RegisterHandler<ShapeMsg>(SystemTopic::SquareId, serializer, [&](ShapeMsg m) { shapeHandler(SystemTopic::Square, m); });
-    group->RegisterHandler<ShapeMsg>(SystemTopic::CircleId, serializer, [&](ShapeMsg m) { shapeHandler(SystemTopic::Circle, m); });
-    group->RegisterHandler<ShapeMsg>(SystemTopic::TriangleId, serializer, [&](ShapeMsg m) { shapeHandler(SystemTopic::Triangle, m); });
-
-    // 3. Network processing thread
-    std::atomic<bool> running{true};
+    // Background thread: process incoming multicast shape data
+    std::atomic<bool> running{ true };
     std::thread netThread([&]() {
         while (running) {
-            group->ProcessIncoming();
+            s.group->ProcessIncoming();
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     });
 
-    // 4. FTXUI Render Loop
+    // FTXUI render loop
     auto renderer = Renderer([&] {
         auto c = Canvas(200, 100);
-        
+
         {
             std::lock_guard<std::mutex> lock(g_state.mutex);
             for (auto const& [topic, shape] : g_state.shapes) {
                 if (topic == SystemTopic::Square) {
-                    for(int x=0; x<10; ++x) 
-                        for(int y=0; y<10; ++y) c.DrawBlock(shape.x * 2 + x, shape.y * 2 + y, true, Color::Blue);
+                    for (int x = 0; x < 10; ++x)
+                        for (int y = 0; y < 10; ++y) c.DrawBlock(shape.x * 2 + x, shape.y * 2 + y, true, Color::Blue);
                 } else if (topic == SystemTopic::Circle) {
                     c.DrawBlockCircle(shape.x * 2, shape.y * 2, 10, Color::Red);
                 }
@@ -136,12 +148,13 @@ int main(int argc, char* argv[]) {
 
     running = false;
     netThread.join();
-    transport.Close();
+    s.transport.Close();
+
 #ifdef DMQ_DATABUS_TOOLS
     NodeBridge::Stop();
 #endif
 
-    std::cout << "\r" << std::flush; 
+    std::cout << "\r" << std::flush;
 
     return 0;
 }

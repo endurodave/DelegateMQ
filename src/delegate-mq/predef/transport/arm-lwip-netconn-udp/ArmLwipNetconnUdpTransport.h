@@ -119,7 +119,7 @@ public:
         }
 
         DmqHeader headerCopy = header;
-        std::string payload = os.str();
+        auto payload = os.str();
         if (payload.length() > UINT16_MAX) {
             return -1;
         }

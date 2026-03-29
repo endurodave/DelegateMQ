@@ -151,7 +151,7 @@ public:
         DmqHeader headerCopy = header;
 
         // Calculate payload size and set it
-        std::string payload = os.str();
+        auto payload = os.str();
         if (payload.length() > UINT16_MAX) {
             std::cerr << "Error: Payload too large." << std::endl;
             return -1;
@@ -174,7 +174,7 @@ public:
         // Append Payload
         ss.write(payload.data(), payload.size());
 
-        std::string data = ss.str();
+        auto data = ss.str();
 
         // Always track the message (unless it is an ACK)
         // Use Host Byte Order for ID check

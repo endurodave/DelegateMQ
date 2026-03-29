@@ -147,7 +147,7 @@ public:
 
         // Create a local copy to modify the length
         DmqHeader headerCopy = header;
-        std::string payload = os.str();
+        auto payload = os.str();
         if (payload.length() > UINT16_MAX) {
             std::cerr << "Payload too large." << std::endl;
             return -1;
@@ -170,7 +170,7 @@ public:
         // Append Payload
         ss.write(payload.data(), payload.size());
 
-        std::string fullPacket = ss.str();
+        auto fullPacket = ss.str();
 
         MQTTClient_message pubmsg = MQTTClient_message_initializer;
         MQTTClient_deliveryToken token;

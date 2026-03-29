@@ -195,7 +195,7 @@ public:
         DmqHeader headerCopy = header;
 
         // Calculate payload size and set it on the copy
-        std::string payload = os.str();
+        auto payload = os.str();
         if (payload.length() > UINT16_MAX) {
             std::cerr << "Error: Payload too large for 16-bit length." << std::endl;
             return -1;

@@ -80,7 +80,7 @@ public:
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override {
         if (m_type != Type::PUB) return -1;
-        std::string payload = os.str();
+        auto payload = os.str();
         DmqHeader headerCopy = header;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
@@ -96,7 +96,7 @@ public:
         ss.write((const char*)&length, 2);
         ss.write(payload.data(), payload.size());
 
-        std::string data = ss.str();
+        auto data = ss.str();
         sendto(m_socket, data.c_str(), data.size(), 0, (struct sockaddr*)&m_addr, sizeof(m_addr));
         return 0;
     }

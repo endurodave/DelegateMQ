@@ -76,10 +76,7 @@ int main(int argc, char* argv[])
     // 4. DataBus participant for incoming CommandMsg
     auto commandParticipant = std::make_shared<dmq::Participant>(transportCmd);
     Serializer<void(CommandMsg)> commandSerializer;
-    commandParticipant->RegisterHandler<CommandMsg>(
-        SystemTopic::CommandMsgId, commandSerializer, [](CommandMsg msg) {
-            dmq::DataBus::Publish<CommandMsg>(SystemTopic::CommandMsg, std::move(msg));
-        });
+    dmq::DataBus::AddIncomingTopic<CommandMsg>(SystemTopic::CommandMsg, SystemTopic::CommandMsgId, *commandParticipant, commandSerializer);
 
     // 5. Register DataMsg serializer
     Serializer<void(DataMsg)> dataSerializer;

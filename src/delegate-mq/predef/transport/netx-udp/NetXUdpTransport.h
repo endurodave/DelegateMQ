@@ -150,7 +150,7 @@ public:
             return -1;
         }
 
-        std::string payload = os.str();
+        auto payload = os.str();
         if (payload.length() > UINT16_MAX) {
             tx_mutex_put(&m_mutex);
             return -1;

@@ -206,6 +206,7 @@ def run_process(cmd, cwd, label, results):
         proc = subprocess.Popen(
             cmd,
             cwd=cwd,
+            stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",

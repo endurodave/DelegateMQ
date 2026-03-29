@@ -1,23 +1,18 @@
 // main.cpp
 // DataBus Multicast Server (Publisher) Example.
-// 
-// This sample demonstrates a distributed publisher using dmq::DataBus 
+//
+// This sample demonstrates a distributed publisher using dmq::DataBus
 // over UDP Multicast for one-to-many "Best Effort" distribution.
 
 #include "DelegateMQ.h"
 #include "SystemMessages.h"
 #include "SystemIds.h"
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <thread>
 #include <atomic>
 #include <csignal>
-
-#if defined(_WIN32) || defined(_WIN64)
-#include "predef/transport/win32-udp/MulticastTransport.h"
-#else
-#include "predef/transport/linux-udp/MulticastTransport.h"
-#endif
 
 #ifdef DMQ_DATABUS_TOOLS
 #include "SpyBridge.h"
@@ -27,6 +22,30 @@
 static std::atomic<bool> g_running(true);
 
 static void SignalHandler(int) { g_running = false; }
+
+// Holds all network and DataBus infrastructure for the server.
+struct ServerState {
+    MulticastTransport transport;
+    std::shared_ptr<dmq::Participant> group;
+    Serializer<void(DataMsg)> serializer;
+};
+
+// Create the multicast PUB transport.
+static bool SetupTransport(ServerState& s, const std::string& localIP) {
+    if (s.transport.Create(MulticastTransport::Type::PUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
+        std::cerr << "Failed to create Multicast transport" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+// Register participant and serializer with the DataBus.
+static void SetupDataBus(ServerState& s) {
+    s.group = std::make_shared<dmq::Participant>(s.transport);
+    s.group->AddRemoteTopic(SystemTopic::DataMsg, SystemTopic::DataMsgId);
+    dmq::DataBus::AddParticipant(s.group);
+    dmq::DataBus::RegisterSerializer<DataMsg>(SystemTopic::DataMsg, s.serializer);
+}
 
 int main(int argc, char* argv[]) {
     int duration = 0;
@@ -38,16 +57,11 @@ int main(int argc, char* argv[]) {
     std::cout << "Starting DataBus Multicast SERVER (Publisher)..." << std::endl;
 
     NetworkContext winsock;
-    // Auto-detect physical IP for multicast interface
     std::string localIP = NetworkContext::GetLocalAddress();
-
     std::cout << "Local Interface: " << localIP << std::endl;
 
 #ifdef DMQ_DATABUS_TOOLS
-    // Start Spy Bridge to export DataBus traffic to the Spy Console via Multicast
     SpyBridge::StartMulticast("239.1.1.1", 9999, localIP);
-
-    // Register stringifier so Spy Console can display the DataMsg content
     dmq::DataBus::RegisterStringifier<DataMsg>(SystemTopic::DataMsg, [](const DataMsg& msg) {
         std::ostringstream ss;
         ss << "Multicast Data: " << msg.actuators.size() << " actuators, " << msg.sensors.size() << " sensors";
@@ -55,21 +69,9 @@ int main(int argc, char* argv[]) {
     });
 #endif
 
-    // 1. Initialize Multicast Transport (Group: 239.1.1.1, Port: 8000)
-    MulticastTransport transport;
-    if (transport.Create(MulticastTransport::Type::PUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
-        std::cerr << "Failed to create Multicast transport" << std::endl;
-        return -1;
-    }
-
-    // 2. Setup Remote Participant
-    auto group = std::make_shared<dmq::Participant>(transport);
-    group->AddRemoteTopic(SystemTopic::DataMsg, SystemTopic::DataMsgId);
-    dmq::DataBus::AddParticipant(group);
-
-    // 3. Register Serializer
-    Serializer<void(DataMsg)> serializer;
-    dmq::DataBus::RegisterSerializer<DataMsg>(SystemTopic::DataMsg, serializer);
+    ServerState s;
+    if (!SetupTransport(s, localIP)) return -1;
+    SetupDataBus(s);
 
     if (duration > 0) {
         std::thread([duration]() {
@@ -80,7 +82,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Press Ctrl+C to quit." << std::endl;
     }
 
-    // 4. Main loop: Publish data to the multicast group every second
+    // Main loop: publish data to the multicast group every second
     int iteration = 0;
     while (g_running) {
         DataMsg msg;
@@ -98,7 +100,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << "\nShutting down..." << std::endl;
-    transport.Close();
+    s.transport.Close();
 
 #ifdef DMQ_DATABUS_TOOLS
     SpyBridge::Stop();
@@ -106,6 +108,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
-
-

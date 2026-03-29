@@ -100,7 +100,7 @@ public:
         DmqHeader headerCopy = header;
 
         // Calculate payload size and set it on the copy
-        std::string payload = os.str();
+        auto payload = os.str();
         if (payload.length() > UINT16_MAX) {
             std::cerr << "Error: Payload too large for 16-bit length." << std::endl;
             return -1;
@@ -123,7 +123,7 @@ public:
         // Insert delegate arguments (payload)
         ss.write(payload.data(), payload.size());
 
-        std::string fullPacket = ss.str();
+        auto fullPacket = ss.str();
 
         DWORD sentLen = 0;
         BOOL success = WriteFile(m_hPipe, fullPacket.c_str(), (DWORD)fullPacket.length(), &sentLen, NULL);
