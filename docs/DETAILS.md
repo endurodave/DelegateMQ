@@ -202,6 +202,8 @@ See `bare-metal-arm\README.md` for a minimal ARM embedded build without OS suppo
 
 See `keil-bare-metal\README.md` for a Keil MDK bare-metal example targeting ARM Cortex-M4 (ARMCLANG, no CMake).
 
+See `atfe-armv7m-bare-metal\README.md` for a bare-metal Armv7-M example using the Arm Toolchain for Embedded (ATfE/Clang + picolibc, runs on QEMU).
+
 ### Examples Build
 
 Build and execute any remote delegate example within the `\DelegateMQ\example\sample-projects` directory. Each projects build files are located within a `build` subdirectory.
@@ -2241,7 +2243,8 @@ See [`interop/README.md`](../interop/README.md) for the full wire protocol speci
 | Project Name | Description | Threading (`IThread`) | Serialization (`ISerializer`) | Transport (`IDispatcher`) |
 | :--- | :--- | :--- | :--- | :--- |
 | **bare-metal** | Simple remote delegate example with no external libraries. | `std::thread` | `operator<<` / `operator>>` | `std::stringstream` |
-| **bare-metal-arm** | ARM compiler example with no external libs, threads, or mutexes. | None | None | None |
+| **atfe-armv7m-bare-metal** | ATfE (Clang/picolibc) bare-metal example for Armv7-M, runs on QEMU. | None | None | None |
+| **bare-metal-arm** | ARM GCC bare-metal example for Cortex-M4, runs on QEMU. | None | None | None |
 | **keil-bare-metal** | Keil MDK (ARMCLANG) bare-metal example for ARM Cortex-M4. | None | None | None |
 | **freertos-bare-metal** | FreeRTOS Windows port example (32-bit build). | FreeRTOS | `operator<<` / `operator>>` | `std::stringstream` |
 | **linux-tcp-serializer** | Simple TCP remote delegate app on Linux. | `std::thread` | `serialize` class | Linux TCP Socket |

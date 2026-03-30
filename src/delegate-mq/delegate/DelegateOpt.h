@@ -192,7 +192,11 @@ namespace dmq
     typedef std::basic_stringstream<char, std::char_traits<char>> xstringstream;
 
     typedef std::string xstring;
+// Not all C libraries support wide characters (e.g. picolibc used by ATfE bare-metal toolchain).
+// xwstring is unused by DelegateMQ; guard here for reference if ever needed.
+#if !defined(_LIBCPP_HAS_WIDE_CHARACTERS) || (_LIBCPP_HAS_WIDE_CHARACTERS != 0)
     typedef std::wstring xwstring;
+#endif
 
     // Fallback xmake_shared — uses std::make_shared when fixed-block allocator is disabled
     template <typename T, typename... Args>

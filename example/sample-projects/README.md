@@ -9,7 +9,8 @@ Each sample project focuses on a transport-serialization pair, but you can freel
 The following remote delegate sample projects have no external library dependencies. They rely only on the standard system APIs (Windows API, POSIX, etc.) or headers included within the repository.
 
 * [bare-metal](./bare-metal/) - simple remote delegate app on Windows and Linux.
-* [bare-metal-arm](./bare-metal-arm/) - ARM compiler example with no external libraries.
+* [atfe-armv7m-bare-metal](./atfe-armv7m-bare-metal/) - Arm Toolchain for Embedded (ATfE/Clang) bare-metal example for Armv7-M, runs on QEMU.
+* [bare-metal-arm](./bare-metal-arm/) - ARM GCC bare-metal example, runs on QEMU.
 * [freertos-bare-metal](./freertos-bare-metal/) - FreeRTOS example on Windows (32-bit).
 * [linux-tcp-serializer](./linux-tcp-serializer/) - simple TCP remote delegate app on Linux.
 * [linux-udp-serializer](./linux-udp-serializer/) - simple UDP remote delegate app on Linux.

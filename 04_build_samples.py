@@ -16,6 +16,7 @@ Key Features:
     4. Summary Report: Prints a final pass/fail/skipped table.
 
 Skip List (always excluded):
+    - atfe-armv7m-bare-metal  Embedded ARM target, requires ATfE toolchain + QEMU
     - bare-metal-arm          Embedded ARM target, requires cross-compiler
     - stm32-freertos          Embedded STM32 target, requires cross-compiler
     - mqtt-rapidjson          Requires external MQTT broker (excluded from run)
@@ -37,6 +38,7 @@ import subprocess
 # ---------------------------------------------------------------------------
 
 SKIP_ALWAYS = {
+    "atfe-armv7m-bare-metal",
     "bare-metal-arm",
     "stm32-freertos",
     "mqtt-rapidjson",
