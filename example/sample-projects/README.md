@@ -8,10 +8,13 @@ Each sample project focuses on a transport-serialization pair, but you can freel
 
 The following remote delegate sample projects have no external library dependencies. They rely only on the standard system APIs (Windows API, POSIX, etc.) or headers included within the repository.
 
-* [bare-metal](./bare-metal/) - simple remote delegate app on Windows and Linux.
 * [atfe-armv7m-bare-metal](./atfe-armv7m-bare-metal/) - Arm Toolchain for Embedded (ATfE/Clang) bare-metal example for Armv7-M, runs on QEMU.
+* [bare-metal](./bare-metal/) - simple remote delegate app on Windows and Linux.
 * [bare-metal-arm](./bare-metal-arm/) - ARM GCC bare-metal example, runs on QEMU.
+* [databus](./databus/) - distributed sensor/actuator system using `dmq::DataBus` over UDP.
+* [databus-multicast](./databus-multicast/) - distributed sensor/actuator system using `dmq::DataBus` over UDP Multicast.
 * [freertos-bare-metal](./freertos-bare-metal/) - FreeRTOS example on Windows (32-bit).
+* [keil-bare-metal](./keil-bare-metal/) - Keil MDK project on bare-metal ARM Cortex-M4.
 * [linux-tcp-serializer](./linux-tcp-serializer/) - simple TCP remote delegate app on Linux.
 * [linux-udp-serializer](./linux-udp-serializer/) - simple UDP remote delegate app on Linux.
 * [system-architecture-no-deps](./system-architecture-no-deps/) - complex remote delegate client/server apps using UDP on Windows or Linux.
@@ -23,6 +26,8 @@ The following remote delegate sample projects have no external library dependenc
 
 The following projects require external 3rd party library support (e.g., STM32 Firmware, ZeroMQ, MQTT, RapidJSON, etc.). See [Examples Setup](../../docs/DETAILS.md#examples-setup) for external library installation setup.
 
+* [databus-interop](./databus-interop/) - cross-language communication between C++ server and Python/C# clients using `dmq::DataBus` and MessagePack.
+* [databus-shapes](./databus-shapes/) - graphical TUI Shapes Demo using `dmq::DataBus`, UDP Multicast, and FTXUI.
 * [mqtt-rapidjson](./mqtt-rapidjson/) - Remote delegate example with MQTT and RapidJSON.
 * [nnq-bitsery](./nnq-bitsery/) - Remote delegate example using NNG and Bitsery libraries.
 * [serialport-serializer](./serialport-serializer/) - Remote delegate example using libserialport.
