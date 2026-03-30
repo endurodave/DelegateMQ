@@ -339,3 +339,14 @@ org.eclipse.ui.prefs
 # Eclipse/STM32 Internal Metadata
 **/.metadata/
 **/.mxproject
+
+# ---------------------------------
+# Keil MDK Specifics
+# ---------------------------------
+
+# User-specific GUI layout (contains username in extension)
+*.uvguix.*
+
+# Keil build output directories
+**/Listings/
+**/Objects/

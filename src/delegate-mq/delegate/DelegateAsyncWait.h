@@ -1,6 +1,9 @@
 #ifndef _DELEGATE_ASYNC_WAIT_H
 #define _DELEGATE_ASYNC_WAIT_H
 
+#include "DelegateOpt.h"
+#ifdef DMQ_HAS_CV
+
 // DelegateAsyncWait.h
 // @see https://github.com/DelegateMQ/DelegateMQ
 // David Lafreniere, Aug 2020.
@@ -344,14 +347,14 @@ public:
                 // Wait for destination thread to execute the delegate function and get return value
                 if (msg->GetSema().Wait(m_timeout)) {
                     // Wait succeeded. Now acquire lock to safely read the value.
-                    const std::lock_guard<Mutex> lock(msg->GetLock());
+                    const dmq::LockGuard<Mutex> lock(msg->GetLock());
                     m_success = true;
                     m_retVal = delegate->m_retVal;
                 }
             }
 
             // Protect data shared between source and destination threads
-            const std::lock_guard<Mutex> lock(msg->GetLock());
+            const dmq::LockGuard<Mutex> lock(msg->GetLock());
 
             // Set flag that source is not waiting anymore
             msg->SetInvokerWaiting(false);
@@ -406,7 +409,7 @@ public:
             return false;
 
         // Protect data shared between source and destination threads
-        const std::lock_guard<Mutex> lock(delegateMsg->GetLock());
+        const dmq::LockGuard<Mutex> lock(delegateMsg->GetLock());
 
         // Is the source thread waiting for the target function invoke to complete?
         if (delegateMsg->GetInvokerWaiting()) {
@@ -780,14 +783,14 @@ public:
                 // Wait for destination thread to execute the delegate function and get return value
                 if (msg->GetSema().Wait(m_timeout)) {
                     // Wait succeeded. Now acquire lock to safely read the value.
-                    const std::lock_guard<Mutex> lock(msg->GetLock());
+                    const dmq::LockGuard<Mutex> lock(msg->GetLock());
                     m_success = true;
                     m_retVal = delegate->m_retVal;
                 }
             }
 
             // Protect data shared between source and destination threads
-            const std::lock_guard<Mutex> lock(msg->GetLock());
+            const dmq::LockGuard<Mutex> lock(msg->GetLock());
 
             // Set flag that source is not waiting anymore
             msg->SetInvokerWaiting(false);
@@ -842,7 +845,7 @@ public:
             return false;
 
         // Protect data shared between source and destination threads
-        const std::lock_guard<Mutex> lock(delegateMsg->GetLock());
+        const dmq::LockGuard<Mutex> lock(delegateMsg->GetLock());
 
         // Is the source thread waiting for the target function invoke to complete?
         if (delegateMsg->GetInvokerWaiting()) {
@@ -1133,14 +1136,14 @@ public:
                 // Wait for destination thread to execute the delegate function and get return value
                 if (msg->GetSema().Wait(m_timeout)) {
                     // Wait succeeded. Now acquire lock to safely read the value.
-                    const std::lock_guard<Mutex> lock(msg->GetLock());
+                    const dmq::LockGuard<Mutex> lock(msg->GetLock());
                     m_success = true;
                     m_retVal = delegate->m_retVal;
                 }
             }
 
             // Protect data shared between source and destination threads
-            const std::lock_guard<Mutex> lock(msg->GetLock());
+            const dmq::LockGuard<Mutex> lock(msg->GetLock());
 
             // Set flag that source is not waiting anymore
             msg->SetInvokerWaiting(false);
@@ -1195,7 +1198,7 @@ public:
             return false;
 
         // Protect data shared between source and destination threads
-        const std::lock_guard<Mutex> lock(delegateMsg->GetLock());
+        const dmq::LockGuard<Mutex> lock(delegateMsg->GetLock());
 
         // Is the source thread waiting for the target function invoke to complete?
         if (delegateMsg->GetInvokerWaiting()) {
@@ -1488,14 +1491,14 @@ public:
                 // Wait for destination thread to execute the delegate function and get return value
                 if (msg->GetSema().Wait(m_timeout)) {
                     // Wait succeeded. Now acquire lock to safely read the value.
-                    const std::lock_guard<Mutex> lock(msg->GetLock());
+                    const dmq::LockGuard<Mutex> lock(msg->GetLock());
                     m_success = true;
                     m_retVal = delegate->m_retVal;
                 }
             }
 
             // Protect data shared between source and destination threads
-            const std::lock_guard<Mutex> lock(msg->GetLock());
+            const dmq::LockGuard<Mutex> lock(msg->GetLock());
 
             // Set flag that source is not waiting anymore
             msg->SetInvokerWaiting(false);
@@ -1550,7 +1553,7 @@ public:
             return false;
 
         // Protect data shared between source and destination threads
-        const std::lock_guard<Mutex> lock(delegateMsg->GetLock());
+        const dmq::LockGuard<Mutex> lock(delegateMsg->GetLock());
 
         // Is the source thread waiting for the target function invoke to complete?
         if (delegateMsg->GetInvokerWaiting()) {
@@ -1741,6 +1744,8 @@ auto MakeDelegate(F&& func, IThread& thread, Duration timeout) {
     return DelegateFunctionAsyncWait<Sig>(std::forward<F>(func), thread, timeout);
 }
 
-} 
+}
+
+#endif // DMQ_HAS_CV
 
 #endif

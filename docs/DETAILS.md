@@ -198,7 +198,9 @@ DelegateMQWorkspace/
 
 ### Embedded Example Setup
 
-See `bare-metal-arm\README.md` for an minimal ARM embedded build without OS support.
+See `bare-metal-arm\README.md` for a minimal ARM embedded build without OS support (CMake + ARM GCC + QEMU).
+
+See `keil-bare-metal\README.md` for a Keil MDK bare-metal example targeting ARM Cortex-M4 (ARMCLANG, no CMake).
 
 ### Examples Build
 
@@ -2240,6 +2242,7 @@ See [`interop/README.md`](../interop/README.md) for the full wire protocol speci
 | :--- | :--- | :--- | :--- | :--- |
 | **bare-metal** | Simple remote delegate example with no external libraries. | `std::thread` | `operator<<` / `operator>>` | `std::stringstream` |
 | **bare-metal-arm** | ARM compiler example with no external libs, threads, or mutexes. | None | None | None |
+| **keil-bare-metal** | Keil MDK (ARMCLANG) bare-metal example for ARM Cortex-M4. | None | None | None |
 | **freertos-bare-metal** | FreeRTOS Windows port example (32-bit build). | FreeRTOS | `operator<<` / `operator>>` | `std::stringstream` |
 | **linux-tcp-serializer** | Simple TCP remote delegate app on Linux. | `std::thread` | `serialize` class | Linux TCP Socket |
 | **linux-udp-serializer** | Simple UDP remote delegate app on Linux. | `std::thread` | `serialize` class | Linux UDP Socket |

@@ -47,7 +47,7 @@ public:
     /// A void return value is used since multiple targets invoked.
     /// @param[in] args The arguments used when invoking the target functions
     void operator()(Args... args) {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         BaseType::operator ()(args...);
     }
 
@@ -55,35 +55,35 @@ public:
     /// since multiple targets invoked.
     /// @param[in] args The arguments used when invoking the target functions
     void Broadcast(Args... args) {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         BaseType::Broadcast(args...);
     }
 
     /// Insert a delegate into the container.
     /// @param[in] delegate A delegate target to insert
     void operator+=(const Delegate<RetType(Args...)>& delegate) {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         BaseType::operator +=(delegate);
     }
 
     /// Insert a delegate into the container.
     /// @param[in] delegate A delegate target to insert
     void operator+=(Delegate<RetType(Args...)>&& delegate) {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         BaseType::operator +=(delegate);
     }
 
     /// Remove a delegate from the container.
     /// @param[in] delegate A delegate target to remove
     void operator-=(const Delegate<RetType(Args...)>& delegate) {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         BaseType::operator -=(delegate);
     }
 
     /// Remove a delegate from the container.
     /// @param[in] delegate A delegate target to remove
     void operator-=(Delegate<RetType(Args...)>&& delegate) {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         BaseType::operator -=(delegate);
     }
 
@@ -112,48 +112,48 @@ public:
 
     /// @brief Clear the all target functions.
     virtual void operator=(std::nullptr_t) noexcept { 
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         BaseType::Clear(); 
     }
 
     /// Insert a delegate into the container.
     /// @param[in] delegate A delegate target to insert
     void PushBack(const DelegateType& delegate) {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         BaseType::PushBack(delegate);
     }
 
     /// Remove a delegate into the container.
     /// @param[in] delegate The delegate target to remove.
     void Remove(const DelegateType& delegate) {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         BaseType::Remove(delegate);
     }
 
     /// Any registered delegates?
     /// @return `true` if delegate container is empty.
     bool Empty() const {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         return BaseType::Empty();
     }
 
     /// Removal all registered delegates.
     void Clear() {
-       const std::lock_guard<RecursiveMutex> lock(m_lock);
+       const dmq::LockGuard<RecursiveMutex> lock(m_lock);
        BaseType::Clear();
     }
 
     /// Get the number of delegates stored.
     /// @return The number of delegates stored.
     std::size_t Size() const { 
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         return BaseType::Size(); 
     }
 
     /// @brief Implicit conversion operator to `bool`.
     /// @return `true` if the container is not empty, `false` if the container is empty.
     explicit operator bool() const {
-        const std::lock_guard<RecursiveMutex> lock(m_lock);
+        const dmq::LockGuard<RecursiveMutex> lock(m_lock);
         return BaseType::operator bool();
     }
 

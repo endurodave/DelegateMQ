@@ -148,7 +148,7 @@ public:
         // Mark the shared state dead under the lock. Any concurrent Disconnect()
         // that races with this will either complete its removal first (holding the
         // lock) or see alive=false and skip removal. Either way, no UAF.
-        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+        dmq::LockGuard<RecursiveMutex> lock(m_state->mtx);
         m_state->alive = false;
         m_state->delegates.clear();
     }
@@ -169,13 +169,13 @@ public:
             BAD_ALLOC();
         auto state = m_state;
         {
-            std::lock_guard<RecursiveMutex> lock(state->mtx);
+            dmq::LockGuard<RecursiveMutex> lock(state->mtx);
             state->delegates.push_back(copy);
         }
         return ScopedConnection(detail::Connection(
             std::weak_ptr<void>(state),
             [state, copy]() {
-                std::lock_guard<RecursiveMutex> lock(state->mtx);
+                dmq::LockGuard<RecursiveMutex> lock(state->mtx);
                 if (state->alive)
                     state->delegates.remove(copy);  // shared_ptr identity comparison
             }
@@ -188,7 +188,7 @@ public:
         // deadlocks when a callback itself connects or disconnects.
         xlist<std::shared_ptr<DelegateType>> snapshot;
         {
-            std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+            dmq::LockGuard<RecursiveMutex> lock(m_state->mtx);
             snapshot = m_state->delegates;
         }
         for (auto& d : snapshot)
@@ -197,7 +197,7 @@ public:
 
     /// @brief Number of currently connected subscribers.
     std::size_t Size() const {
-        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+        dmq::LockGuard<RecursiveMutex> lock(m_state->mtx);
         return m_state->delegates.size();
     }
 
@@ -205,7 +205,7 @@ public:
 
     /// @brief Disconnect all subscribers.
     void Clear() {
-        std::lock_guard<RecursiveMutex> lock(m_state->mtx);
+        dmq::LockGuard<RecursiveMutex> lock(m_state->mtx);
         m_state->delegates.clear();
     }
 

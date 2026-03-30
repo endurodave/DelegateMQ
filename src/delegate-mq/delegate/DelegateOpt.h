@@ -5,7 +5,9 @@
 /// @brief Delegate library options header file.
 
 #include <chrono>
-#include <mutex>
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT)
+    #include <mutex>
+#endif
 
 // RTTI Detection Check
 #if !defined(__cpp_rtti) && !defined(__GXX_RTTI) && !defined(_CPPRTTI)
@@ -16,10 +18,12 @@
     // Windows / Linux / macOS / Qt (Standard Library)
     #include <condition_variable>
 #elif defined(DMQ_THREAD_FREERTOS)
+    #include <mutex>
     #include "predef/util/FreeRTOSClock.h"
     #include "predef/util/FreeRTOSMutex.h"
     #include "predef/util/FreeRTOSConditionVariable.h"
 #elif defined(DMQ_THREAD_THREADX)
+    #include <mutex>
     #include "predef/util/ThreadXClock.h"
     #include "predef/util/ThreadXMutex.h"
     #include "predef/util/ThreadXConditionVariable.h"
@@ -35,6 +39,18 @@
 
 namespace dmq
 {
+    // --- PORTABLE LOCK GUARD ---
+    // Does not require <mutex>. Works with any BasicLockable type (lock/unlock).
+    template<typename T>
+    class PortableLockGuard {
+        T& m_mutex;
+    public:
+        explicit PortableLockGuard(T& m) noexcept : m_mutex(m) { m_mutex.lock(); }
+        ~PortableLockGuard() noexcept { m_mutex.unlock(); }
+        PortableLockGuard(const PortableLockGuard&) = delete;
+        PortableLockGuard& operator=(const PortableLockGuard&) = delete;
+    };
+
     // @TODO: Change aliases to switch clock type globally if necessary
 
     // --- CLOCK SELECTION ---
@@ -73,37 +89,50 @@ namespace dmq
     using Mutex = std::mutex;
     using RecursiveMutex = std::recursive_mutex;
     using ConditionVariable = std::condition_variable;
+    template<typename T> using LockGuard = std::lock_guard<T>;
+    template<typename T> using UniqueLock = std::unique_lock<T>;
+    #define DMQ_HAS_CV
 
 #elif defined(DMQ_THREAD_FREERTOS)
     // Use the custom FreeRTOS wrapper
     using Mutex = dmq::FreeRTOSMutex;
     using RecursiveMutex = dmq::FreeRTOSRecursiveMutex;
     using ConditionVariable = dmq::FreeRTOSConditionVariable;
+    template<typename T> using LockGuard = PortableLockGuard<T>;
+    template<typename T> using UniqueLock = std::unique_lock<T>;
+    #define DMQ_HAS_CV
 
 #elif defined(DMQ_THREAD_THREADX)
     // Use the custom ThreadX wrapper
     using Mutex = dmq::ThreadXMutex;
     using RecursiveMutex = dmq::ThreadXRecursiveMutex;
     using ConditionVariable = dmq::ThreadXConditionVariable;
+    template<typename T> using LockGuard = PortableLockGuard<T>;
+    template<typename T> using UniqueLock = std::unique_lock<T>;
+    #define DMQ_HAS_CV
 
 #elif defined(DMQ_THREAD_ZEPHYR)
     // Use the custom Zephyr wrapper
     using Mutex = dmq::ZephyrMutex;
     using RecursiveMutex = dmq::ZephyrRecursiveMutex;
+    template<typename T> using LockGuard = PortableLockGuard<T>;
 
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
     using Mutex = dmq::CmsisRtos2Mutex;
     using RecursiveMutex = dmq::CmsisRtos2RecursiveMutex;
+    template<typename T> using LockGuard = PortableLockGuard<T>;
 
 #else
     // Bare metal has no threads, so no locking is required.
-    // We define a dummy "No-Op" mutex.
+    // NullMutex satisfies BasicLockable; PortableLockGuard compiles to nothing meaningful.
     struct NullMutex {
         void lock() {}
         void unlock() {}
     };
     using Mutex = NullMutex;
     using RecursiveMutex = NullMutex;
+    template<typename T> using LockGuard = PortableLockGuard<T>;
+    // No DMQ_HAS_CV — Semaphore and DelegateAsyncWait are unavailable on bare metal
 #endif
 }
 
