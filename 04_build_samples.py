@@ -28,7 +28,9 @@ Usage:
     > python 04_build_samples.py
 """
 
+import argparse
 import os
+import shutil
 import sys
 import platform
 import subprocess
@@ -115,40 +117,61 @@ def build_dotnet(project_subdir, label):
         return False, str(exc)
 
 
-def collect_build_dirs(project_dir):
+def collect_build_dirs(project_dir, use_clang=False):
     """
     Return a list of (label, build_dir) tuples for a project.
     Client/server projects yield two entries; standalone yields one.
+    When use_clang=True, also includes 'build-clang' variants if they exist.
     """
-    client_build = os.path.join(project_dir, "client", "build")
-    server_build = os.path.join(project_dir, "server", "build")
+    suffixes = ["build", "build-clang"] if use_clang else ["build"]
 
-    if os.path.isdir(client_build) or os.path.isdir(server_build):
+    client_dir = os.path.join(project_dir, "client")
+    server_dir = os.path.join(project_dir, "server")
+
+    client_builds = [(s, os.path.join(client_dir, s)) for s in suffixes]
+    server_builds = [(s, os.path.join(server_dir, s)) for s in suffixes]
+
+    client_exist = [(s, p) for s, p in client_builds if os.path.isdir(p)]
+    server_exist = [(s, p) for s, p in server_builds if os.path.isdir(p)]
+
+    if client_exist or server_exist:
         targets = []
-        if os.path.isdir(client_build):
-            targets.append(("client", client_build))
-        if os.path.isdir(server_build):
-            targets.append(("server", server_build))
+        for suffix, path in client_exist:
+            label = "client" if suffix == "build" else "client (clang)"
+            targets.append((label, path))
+        for suffix, path in server_exist:
+            label = "server" if suffix == "build" else "server (clang)"
+            targets.append((label, path))
         return targets
 
-    top_build = os.path.join(project_dir, "build")
-    if os.path.isdir(top_build):
-        return [("", top_build)]
-
-    return []
+    targets = []
+    for suffix in suffixes:
+        path = os.path.join(project_dir, suffix)
+        if os.path.isdir(path):
+            label = "" if suffix == "build" else "clang"
+            targets.append((label, path))
+    return targets
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
-def build_samples():
+def build_samples(use_clang=False):
     repo_root   = os.path.dirname(os.path.abspath(__file__))
     samples_dir = os.path.join(repo_root, "example", "sample-projects")
 
     if not os.path.isdir(samples_dir):
         print(f"Error: sample-projects directory not found: {samples_dir}")
         return False
+
+    clang_found = shutil.which("clang++") is not None
+    if use_clang and IS_WINDOWS:
+        print("NOTE: --clang is only supported on Linux. Clang builds skipped on Windows.\n")
+        use_clang = False
+    elif use_clang and not clang_found:
+        print("WARNING: --clang requested but clang++ not found in PATH. Clang builds skipped.\n")
+        use_clang = False
 
     os_label = "Windows" if IS_WINDOWS else "Linux"
 
@@ -157,6 +180,8 @@ def build_samples():
     print("=" * 60)
     print(f"  Platform : {os_label}")
     print(f"  Config   : {BUILD_CONFIG}")
+    if use_clang:
+        print(f"  Clang    : enabled (build-clang/ variants included)")
     print()
     print("  WARNING: This will build all sample projects.")
     print("  Compilation may take several minutes depending on")
@@ -188,7 +213,7 @@ def build_samples():
             skipped.append((project_name, "Linux only"))
             continue
 
-        targets = collect_build_dirs(project_dir)
+        targets = collect_build_dirs(project_dir, use_clang=use_clang)
         if not targets:
             skipped.append((project_name, "not configured — run 03_generate_samples.py first"))
             continue
@@ -249,5 +274,11 @@ def build_samples():
 
 
 if __name__ == "__main__":
-    success = build_samples()
+    parser = argparse.ArgumentParser(description="Build all DelegateMQ sample projects.")
+    parser.add_argument(
+        "--clang", action="store_true",
+        help="Also build build-clang/ directories configured by 03_generate_samples.py --clang (Linux only)."
+    )
+    args = parser.parse_args()
+    success = build_samples(use_clang=args.clang)
     sys.exit(0 if success else 1)

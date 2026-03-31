@@ -2,9 +2,9 @@
 Script: 03_generate_samples.py
 Description:
     Configuration runner for all DelegateMQ sample projects.
-    This script recursively finds every example project and generates the 
+    This script recursively finds every example project and generates the
     Visual Studio solutions (or Makefiles) required to browse or compile them.
-    
+
     IMPORTANT: It does NOT compile the code. It only prepares the build directory.
 
     See Examples Setup within DETAILS.md before running script.
@@ -18,17 +18,32 @@ Key Features:
     5. Special Handling:
        - FreeRTOS projects are automatically configured for 'Win32' architecture.
        - Standard projects use the default generator (x64 on modern Windows).
+    6. Optional Clang builds (--clang): On Linux, also configures a 'build-clang'
+       directory using clang++ for projects that support it. Requires clang++ in PATH.
 
 Usage:
     Run this script THIRD to generate project files for your IDE.
     > python 03_generate_samples.py
+    > python 03_generate_samples.py --clang
 """
 
+import argparse
 import os
+import platform
 import shutil
 import subprocess
 
-def build_samples():
+IS_WINDOWS = platform.system() == "Windows"
+
+def build_samples(use_clang=False):
+    clang_exe = shutil.which("clang++") if (use_clang and not IS_WINDOWS) else None
+    if use_clang and IS_WINDOWS:
+        print("NOTE: --clang is only supported on Linux. Clang builds skipped on Windows.\n")
+    elif use_clang and not clang_exe:
+        print("WARNING: --clang requested but clang++ not found in PATH. Clang builds skipped.\n")
+    elif use_clang and clang_exe:
+        print(f"NOTE: --clang enabled. Using {clang_exe} for additional 'build-clang' directories.\n")
+
     repo_root = os.path.dirname(os.path.abspath(__file__))
     target_dir = os.path.join(repo_root, "example", "sample-projects")
 
@@ -48,24 +63,31 @@ def build_samples():
 
         if "CMakeLists.txt" in files:
             project_name = os.path.basename(dirpath)
-            
+            parent_name  = os.path.basename(os.path.dirname(dirpath))
+
             # --- SKIP COMMON/SHARED FOLDERS ---
             if project_name in ["common", "include", "src", "bare-metal-arm"]:
                 # These are sub-libraries or skipped platforms, not standalone apps
                 continue
 
+            # Build a display label that includes the parent for client/server sub-dirs
+            if project_name in ("client", "server"):
+                display_name = f"{parent_name}/{project_name}"
+            else:
+                display_name = project_name
+
             # 2. CLEAN: Delete existing build folder
             build_path = os.path.join(dirpath, "build")
             if os.path.exists(build_path):
                 try: shutil.rmtree(build_path)
-                except: pass 
+                except: pass
 
             # 3. CONFIGURE
             if "freertos" in project_name.lower():
-                print(f"[CONFIGURING] {project_name} (Win32)")
+                print(f"[CONFIGURING] {display_name} (Win32)")
                 cmd = ["cmake", "-B", "build", "-A", "Win32", "."]
             else:
-                print(f"[CONFIGURING] {project_name}")
+                print(f"[CONFIGURING] {display_name}")
                 cmd = ["cmake", "-B", "build", "."]
 
             try:
@@ -93,5 +115,29 @@ def build_samples():
                             if i+1 < len(lines): print(f"          {lines[i+1].strip()}")
                             break
 
+            # --- CLANG CONFIGURE (optional, Linux only) ---
+            if clang_exe and "freertos" not in project_name.lower():
+                build_clang_path = os.path.join(dirpath, "build-clang")
+                if os.path.exists(build_clang_path):
+                    try: shutil.rmtree(build_clang_path)
+                    except: pass
+                print(f"[CONFIGURING] {display_name} (clang)")
+                cmd_clang = ["cmake", "-B", "build-clang",
+                             f"-DCMAKE_CXX_COMPILER={clang_exe}", "."]
+                try:
+                    subprocess.run(
+                        cmd_clang, cwd=dirpath, check=True,
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+                    )
+                    print("   Success!")
+                except subprocess.CalledProcessError:
+                    print(f"   FAILED (clang)")
+
 if __name__ == "__main__":
-    build_samples()
+    parser = argparse.ArgumentParser(description="Configure all DelegateMQ sample projects.")
+    parser.add_argument(
+        "--clang", action="store_true",
+        help="Also configure a build-clang/ directory using clang++ (Linux only)."
+    )
+    args = parser.parse_args()
+    build_samples(use_clang=args.clang)

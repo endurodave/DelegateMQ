@@ -2164,7 +2164,7 @@ Each project focuses on a transport and serialization pair, but you can freely m
 
 The following remote delegate sample projects have no external library dependencies:
 
-* [bare-metal](../example/sample-projects/bare-metal/) - simple remote delegate app on Windows and Linux.
+* [bare-metal-remote](../example/sample-projects/bare-metal-remote/) - simple remote delegate app on Windows and Linux.
 * [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - complex remote delegate client/server apps using UDP on Windows or Linux.
 
 All other projects require external 3rd party library support. See [Examples Setup](#examples-setup) for external library installation setup.
@@ -2240,19 +2240,31 @@ See [`interop/README.md`](../interop/README.md) for the full wire protocol speci
 
 ### Sample Projects Comparison
 
+#### Feature & Toolchain Demos
+
+Demonstrate DelegateMQ delegate types (sync, async, asyncwait, multicast, signal) on specific platforms or compilers. No remote transport involved.
+
+| Project Name | Description | Threading (`IThread`) | Platform / Toolchain |
+| :--- | :--- | :--- | :--- |
+| **clang-native** | All-features demo: sync, async, asyncwait, multicast, signal. Windows or Linux. | `std::thread` | Any C++17 compiler (Clang, GCC, MSVC) |
+| **atfe-armv7m-bare-metal** | ATfE (Clang/picolibc) bare-metal example for Armv7-M, runs on QEMU. | None | ATfE Clang, picolibc |
+| **bare-metal-arm** | ARM GCC bare-metal example for Cortex-M4, runs on QEMU. | None | ARM GCC |
+| **keil-bare-metal** | Bare-metal example for ARM Cortex-M4. | None | Keil MDK (ARMCLANG) |
+| **stm32-freertos** | Embedded FreeRTOS example for STM32F4 Discovery. | FreeRTOS | STM32Cube / ARM GCC |
+
+#### Remote Delegate Examples
+
+Invoke a target function running in a separate process or processor. Each project focuses on a transport-serialization pair.
+
 | Project Name | Description | Threading (`IThread`) | Serialization (`ISerializer`) | Transport (`IDispatcher`) |
 | :--- | :--- | :--- | :--- | :--- |
-| **bare-metal** | Simple remote delegate example with no external libraries. | `std::thread` | `operator<<` / `operator>>` | `std::stringstream` |
-| **atfe-armv7m-bare-metal** | ATfE (Clang/picolibc) bare-metal example for Armv7-M, runs on QEMU. | None | None | None |
-| **bare-metal-arm** | ARM GCC bare-metal example for Cortex-M4, runs on QEMU. | None | None | None |
-| **keil-bare-metal** | Keil MDK (ARMCLANG) bare-metal example for ARM Cortex-M4. | None | None | None |
+| **bare-metal-remote** | Simple remote delegate example with no external libraries. | `std::thread` | `operator<<` / `operator>>` | `std::stringstream` |
 | **freertos-bare-metal** | FreeRTOS Windows port example (32-bit build). | FreeRTOS | `operator<<` / `operator>>` | `std::stringstream` |
 | **linux-tcp-serializer** | Simple TCP remote delegate app on Linux. | `std::thread` | `serialize` class | Linux TCP Socket |
 | **linux-udp-serializer** | Simple UDP remote delegate app on Linux. | `std::thread` | `serialize` class | Linux UDP Socket |
 | **mqtt-rapidjson** | Remote delegate using MQTT and RapidJSON (Client/Server). | `std::thread` | RapidJSON | MQTT |
 | **nng-bitsery** | Remote delegate using NNG and Bitsery. | `std::thread` | Bitsery | NNG |
 | **serialport-serializer** | Remote delegate using libserialport. | `std::thread` | `serialize` class | `libserialport` |
-| **stm32-freertos** | Embedded FreeRTOS example for STM32F4 Discovery. | FreeRTOS | None | None |
 | **system-architecture** | System architecture example with dependencies. | `std::thread` | Various | Various |
 | **system-architecture-no-deps** | System architecture example (UDP) with no deps. | `std::thread` | `operator<<` / `operator>>` | UDP Socket |
 | **databus** | System architecture example using the Data Bus. | `std::thread` | `serialize` class | UDP Socket |

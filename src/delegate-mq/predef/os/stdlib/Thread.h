@@ -84,7 +84,7 @@ public:
     /// Dispatch and invoke a delegate target on the destination thread.
     /// @param[in] msg - Delegate message containing target function 
     /// arguments.
-    virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg);
+    virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg) override;
 
 private:
     Thread(const Thread&) = delete;

@@ -32,7 +32,9 @@ Usage:
     > python 05_run_samples.py
 """
 
+import argparse
 import os
+import shutil
 import sys
 import platform
 import signal
@@ -282,6 +284,35 @@ def run_pair(server_cmd, client_cmd, server_cwd, client_cwd):
 # Main
 # ---------------------------------------------------------------------------
 
+def try_run_clang(project_name, project_dir, is_pair, client_dir, server_dir):
+    """
+    Attempt to run the clang-built variant of a project (build-clang/ directories).
+    Returns (ran, did_fail, results). ran=False means no clang build was found.
+    Cross-pair projects are not supported and return (False, False, {}).
+    """
+    if is_pair:
+        client_name = get_exe_name(os.path.join(client_dir, "CMakeLists.txt"))
+        server_name = get_exe_name(os.path.join(server_dir, "CMakeLists.txt"))
+        client_exe  = find_executable(os.path.join(client_dir, "build-clang"), client_name)
+        server_exe  = find_executable(os.path.join(server_dir, "build-clang"), server_name)
+        if not client_exe or not server_exe:
+            return False, False, {}
+        did_fail, results = run_pair(
+            [server_exe, str(APP_DURATION)],
+            [client_exe, str(APP_DURATION)],
+            server_dir, client_dir,
+        )
+        return True, did_fail, results
+    else:
+        cmake_file = os.path.join(project_dir, "CMakeLists.txt")
+        exe_name   = get_exe_name(cmake_file)
+        exe_path   = find_executable(os.path.join(project_dir, "build-clang"), exe_name)
+        if not exe_path:
+            return False, False, {}
+        did_fail, results = run_standalone(exe_path, project_dir)
+        return True, did_fail, results
+
+
 def print_result_detail(label, r):
     rc   = r.get("returncode", "?")
     tout = " [timeout]" if r.get("timed_out") else ""
@@ -294,13 +325,21 @@ def print_result_detail(label, r):
         print(f"         {snippet}")
 
 
-def run_samples():
+def run_samples(use_clang=False):
     repo_root   = os.path.dirname(os.path.abspath(__file__))
     samples_dir = os.path.join(repo_root, "example", "sample-projects")
 
     if not os.path.isdir(samples_dir):
         print(f"Error: sample-projects directory not found: {samples_dir}")
         return False
+
+    clang_found = shutil.which("clang++") is not None
+    if use_clang and IS_WINDOWS:
+        print("NOTE: --clang is only supported on Linux. Clang builds skipped on Windows.\n")
+        use_clang = False
+    elif use_clang and not clang_found:
+        print("WARNING: --clang requested but clang++ not found in PATH. Clang builds skipped.\n")
+        use_clang = False
 
     os_label = "Windows" if IS_WINDOWS else "Linux"
 
@@ -309,6 +348,8 @@ def run_samples():
     print("=" * 60)
     print(f"  Platform : {os_label}")
     print(f"  Timeout  : {APP_TIMEOUT}s per project")
+    if use_clang:
+        print(f"  Clang    : enabled (build-clang/ variants will also run)")
     print()
     print("  WARNING: This will run all built sample projects.")
     print("  Each sample runs for up to 25 seconds. Total")
@@ -344,6 +385,8 @@ def run_samples():
         client_dir = os.path.join(project_dir, "client")
         server_dir = os.path.join(project_dir, "server")
         is_pair    = os.path.isdir(client_dir) and os.path.isdir(server_dir)
+        did_fail   = False
+        results    = {}
 
         if project_name in CROSS_PAIRS:
             spec        = CROSS_PAIRS[project_name]
@@ -427,6 +470,38 @@ def run_samples():
             print(f"   passed{tout_note}")
             passed.append(project_name)
 
+        # --- CLANG RUN (optional) ---
+        # Cross-pair projects are skipped; their server lives in a different project dir.
+        if use_clang and project_name not in CROSS_PAIRS:
+            clang_label = f"{project_name} (clang)"
+            ran, clang_fail, clang_results = try_run_clang(
+                project_name, project_dir, is_pair, client_dir, server_dir
+            )
+            if not ran:
+                skipped.append((clang_label, "build-clang/ not found — run 03 --clang first"))
+            else:
+                print(f"[RUNNING] {clang_label}")
+                if clang_fail and project_name in SUCCESS_OVERRIDES:
+                    combined = "".join(r.get("output", "") for r in clang_results.values())
+                    if SUCCESS_OVERRIDES[project_name] in combined:
+                        clang_fail = False
+                if not clang_fail and project_name in REQUIRED_OUTPUT:
+                    for role, required_str in REQUIRED_OUTPUT[project_name].items():
+                        role_result = clang_results.get(role)
+                        if role_result and required_str not in role_result.get("output", ""):
+                            role_result["failed"] = True
+                            clang_fail = True
+                if clang_fail:
+                    print(f"   FAILED")
+                    for label, r in clang_results.items():
+                        if r.get("failed"):
+                            print_result_detail(label, r)
+                    failed.append(clang_label)
+                else:
+                    tout_note = " (killed after timeout)" if any(r.get("timed_out") for r in clang_results.values()) else ""
+                    print(f"   passed{tout_note}")
+                    passed.append(clang_label)
+
     # --- Summary ---
     total = len(passed) + len(failed)
     print("\n" + "=" * 60)
@@ -448,5 +523,11 @@ def run_samples():
 
 
 if __name__ == "__main__":
-    success = run_samples()
+    parser = argparse.ArgumentParser(description="Run all built DelegateMQ sample projects.")
+    parser.add_argument(
+        "--clang", action="store_true",
+        help="Also run build-clang/ variants built by 04_build_samples.py --clang (Linux only)."
+    )
+    args = parser.parse_args()
+    success = run_samples(use_clang=args.clang)
     sys.exit(0 if success else 1)
