@@ -33,7 +33,11 @@ endif()
 
 # --- Serialization Defaults ---
 if(NOT DEFINED DMQ_SERIALIZE)
-    set(DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")
+    if(WIN32 OR UNIX)
+        set(DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")
+    else()
+        set(DMQ_SERIALIZE "DMQ_SERIALIZE_NONE")
+    endif()
 endif()
 
 # --- Utility Class Defaults ---
@@ -43,7 +47,20 @@ endif()
 
 # --- DataBus Defaults ---
 if(NOT DEFINED DMQ_DATABUS)
-    set(DMQ_DATABUS "ON")
+    if(WIN32 OR UNIX)
+        set(DMQ_DATABUS "ON")
+    else()
+        set(DMQ_DATABUS "OFF")
+    endif()
+endif()
+
+# --- DataBus Tools Defaults ---
+if(NOT DEFINED DMQ_DATABUS_TOOLS)
+    if(DMQ_DATABUS STREQUAL "ON" AND (WIN32 OR UNIX))
+        set(DMQ_DATABUS_TOOLS "ON")
+    else()
+        set(DMQ_DATABUS_TOOLS "OFF")
+    endif()
 endif()
 
 # --- Allocator Defaults ---

@@ -199,7 +199,7 @@ namespace Main
     void TimerExpiredCb(void)
     {
         static int count = 0;
-        cout << "TimerExpiredCb " << count++ << endl;
+        //cout << "TimerExpiredCb " << count++ << endl;
     }
 
     class Base {

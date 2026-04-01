@@ -4,23 +4,11 @@ cmake_minimum_required(VERSION 3.16)
 set(DELEGATE_APP "delegate_databus_interop_server")
 project(DataBusInteropServer VERSION 1.0 LANGUAGES CXX)
 
-# Disable Boost dependency for msgpack-c
-add_compile_definitions(MSGPACK_NO_BOOST)
-
-# Set build options
-set(DMQ_ALLOCATOR "OFF")
-set(DMQ_UTIL      "ON")
-set(DMQ_THREAD    "DMQ_THREAD_STDLIB")
+# @TODO: Set build options (see Predef.cmake). 
+# Rerun cmake configuration and clean/rebuild if you change these settings
+# The DelegateMQ library auto-selects defaults based on the target platform.
+# Override defaults by setting the variables below before including DelegateMQ.cmake.
 set(DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")
-set(DMQ_DATABUS   "ON")
-
-if (WIN32)
-    set(DMQ_TRANSPORT "DMQ_TRANSPORT_WIN32_UDP")
-elseif (UNIX AND NOT APPLE)
-    set(DMQ_TRANSPORT "DMQ_TRANSPORT_LINUX_UDP")
-else()
-    message(FATAL_ERROR "Unsupported platform for DMQ_TRANSPORT")
-endif()
 
 include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
 

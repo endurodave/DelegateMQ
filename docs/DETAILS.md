@@ -13,7 +13,12 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Build](#build)
+  - [Configuration and Overrides](#configuration-and-overrides)
+    - [1. Command Line (Highest Precedence)](#1-command-line-highest-precedence)
+    - [2. CMakeLists.txt](#2-cmakeliststxt)
+    - [3. Auto-Detection (Default)](#3-auto-detection-default)
   - [Example Projects](#example-projects)
+  - [Example Projects](#example-projects-1)
     - [Examples Setup](#examples-setup)
     - [Embedded Example Setup](#embedded-example-setup)
     - [Examples Build](#examples-build)
@@ -34,6 +39,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [DataBus](#databus)
     - [Core Concepts](#core-concepts)
     - [Features](#features)
+    - [Threading Model](#threading-model)
     - [DataBus Spy](#databus-spy)
     - [Example: Local Pub/Sub](#example-local-pubsub)
     - [Example: Last Value Cache (LVC)](#example-last-value-cache-lvc)
@@ -102,7 +108,10 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Sample Projects](#sample-projects)
     - [External Dependencies](#external-dependencies)
     - [system-architecture](#system-architecture)
+    - [Interop Libraries](#interop-libraries)
     - [Sample Projects Comparison](#sample-projects-comparison)
+      - [Feature \& Toolchain Demos](#feature--toolchain-demos)
+      - [Remote Delegate Examples](#remote-delegate-examples)
 - [Tests](#tests)
   - [Unit Tests](#unit-tests)
   - [Valgrind Memory Tests](#valgrind-memory-tests)
@@ -208,7 +217,7 @@ DelegateMQWorkspace/
 ├── bitsery/
 ├── cereal/
 ├── DelegateMQ/
-├── FreeRTOSv202212.00/
+├── FreeRTOS/
 ├── ftxui/
 ├── libserialport/
 ├── msgpack-c/

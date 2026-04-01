@@ -64,7 +64,7 @@ def build_samples(use_clang=False):
             if "install" in dirnames: dirnames.remove("install")
             
             # SKIP: Explicitly skip directories to prevent processing as standalone apps
-            skip_dirs = ["bare-metal-arm", "unit-tests"]
+            skip_dirs = ["bare-metal-arm", "unit-tests", "atfe-armv7m-bare-metal"]
             for sd in skip_dirs:
                 if sd in dirnames: dirnames.remove(sd)
 
@@ -73,7 +73,7 @@ def build_samples(use_clang=False):
                 parent_name  = os.path.basename(os.path.dirname(dirpath))
 
                 # --- SKIP COMMON/SHARED FOLDERS ---
-                if project_name in ["common", "include", "src", "bare-metal-arm"]:
+                if project_name in ["common", "include", "src", "bare-metal-arm", "atfe-armv7m-bare-metal"]:
                     # These are sub-libraries or skipped platforms, not standalone apps
                     continue
 
@@ -93,9 +93,6 @@ def build_samples(use_clang=False):
                 if "freertos" in project_name.lower():
                     print(f"[CONFIGURING] {display_name} (Win32)")
                     cmd = ["cmake", "-B", "build", "-A", "Win32", "."]
-                elif "databus" == project_name.lower():
-                    print(f"[CONFIGURING] {display_name} (with tools)")
-                    cmd = ["cmake", "-B", "build", "-DDMQ_DATABUS_TOOLS=ON", "."]
                 else:
                     print(f"[CONFIGURING] {display_name}")
                     cmd = ["cmake", "-B", "build", "."]

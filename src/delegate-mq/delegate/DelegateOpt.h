@@ -32,17 +32,30 @@
     #endif
 #endif
 
-// If no serialization model is defined, default to SERIALIZE
+// If no serialization model is defined, attempt to auto-select a default
 #if !defined(DMQ_SERIALIZE_SERIALIZE) && !defined(DMQ_SERIALIZE_RAPIDJSON) && \
     !defined(DMQ_SERIALIZE_MSGPACK) && !defined(DMQ_SERIALIZE_CEREAL) && \
     !defined(DMQ_SERIALIZE_BITSERY) && !defined(DMQ_SERIALIZE_NONE)
 
-    #define DMQ_SERIALIZE_SERIALIZE
+    #if defined(_WIN32) || defined(__linux__) || defined(__APPLE__) || defined(__unix__)
+        #define DMQ_SERIALIZE_SERIALIZE
+    #else
+        #define DMQ_SERIALIZE_NONE
+    #endif
 #endif
 
-// Default to DataBus ON if not explicitly disabled
+// Default to DataBus ON on Desktop if not explicitly disabled
 #if !defined(DMQ_DATABUS) && !defined(DMQ_DATABUS_OFF)
-    #define DMQ_DATABUS
+    #if defined(_WIN32) || defined(__linux__) || defined(__APPLE__) || defined(__unix__)
+        #define DMQ_DATABUS
+    #endif
+#endif
+
+// Default to DataBus Tools ON on Desktop if DataBus is active and not explicitly disabled
+#if defined(DMQ_DATABUS) && !defined(DMQ_DATABUS_TOOLS) && !defined(DMQ_DATABUS_TOOLS_OFF)
+    #if defined(_WIN32) || defined(__linux__) || defined(__APPLE__) || defined(__unix__)
+        #define DMQ_DATABUS_TOOLS
+    #endif
 #endif
 
 #include <chrono>
@@ -74,6 +87,8 @@
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
     #include "predef/util/CmsisRtos2Clock.h"
     #include "predef/util/CmsisRtos2Mutex.h"
+#elif defined(DMQ_THREAD_NONE)
+    #include "predef/util/BareMetalClock.h"
 #else
     #include "predef/util/BareMetalClock.h"
 #endif

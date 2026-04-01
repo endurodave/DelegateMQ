@@ -65,8 +65,8 @@ repos = {
     # MsgPack: 'cpp-7.0.0' is required for the C++ headers structure
     "msgpack-c": ("https://github.com/msgpack/msgpack-c.git", "cpp-7.0.0", False),
 
-    # FreeRTOS: 202212.00 LTS
-    "FreeRTOSv202212.00": ("https://github.com/FreeRTOS/FreeRTOS.git", "202212.00", True)
+    # FreeRTOS: Kernel only (much smaller than distribution)
+    "FreeRTOS": ("https://github.com/FreeRTOS/FreeRTOS-Kernel.git", "V11.1.0", False)
 }
 
 def fix_zeromq_conflict(workspace_dir):
@@ -93,10 +93,10 @@ def run():
         if not os.path.exists(target_path):
             print(f"[CLONING] {folder} (Tag: {tag if tag else 'HEAD'})...")
             # Use -c advice.detachedHead=false to silence the warning during clone
-            cmd = ["git", "-c", "advice.detachedHead=false", "clone", "--quiet"]
+            # Use --depth 1 for shallow clone to save space/time
+            cmd = ["git", "-c", "advice.detachedHead=false", "clone", "--quiet", "--depth", "1"]
             if use_submodules: cmd.append("--recurse-submodules")
             if tag: cmd.extend(["--branch", tag])
-            else: cmd.extend(["--depth", "1"])
             cmd.extend([url, target_path])
             try:
                 # Capture stderr to suppress normal output; printed only on failure

@@ -193,16 +193,16 @@ endif()
 # FreeRTOS
 # ---------------------------------------------------------------------------
 if(DMQ_THREAD STREQUAL "DMQ_THREAD_FREERTOS")
-    set_and_check(FREERTOS_ROOT_DIR "${DMQ_ROOT_DIR}/../../../FreeRTOSv202212.00")
+    set_and_check(FREERTOS_ROOT_DIR "${DMQ_ROOT_DIR}/../../../FreeRTOS")
     
     file(GLOB FREERTOS_SOURCES 
-        "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/*.c"
-        "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/include/*.h"
+        "${FREERTOS_ROOT_DIR}/*.c"
+        "${FREERTOS_ROOT_DIR}/include/*.h"
     )
     
     list(APPEND FREERTOS_SOURCES
-        "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW/port.c"
-        "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MemMang/heap_5.c"
+        "${FREERTOS_ROOT_DIR}/portable/MSVC-MingW/port.c"
+        "${FREERTOS_ROOT_DIR}/portable/MemMang/heap_5.c"
     )
 endif()
 

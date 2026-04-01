@@ -102,14 +102,14 @@ private:
     // Run loop called by Process
     void Run();
 
+    const std::string THREAD_NAME;
+    size_t m_queueSize;
+    int m_priority;
+
     TaskHandle_t m_thread = nullptr;
     QueueHandle_t m_queue = nullptr;
     SemaphoreHandle_t m_exitSem = nullptr; // Synchronization for safe destruction
     std::atomic<bool> m_exit = false;
-
-    const std::string THREAD_NAME;
-    size_t m_queueSize;
-    int m_priority;
 
     // Static allocation support
     StackType_t* m_stackBuffer = nullptr;

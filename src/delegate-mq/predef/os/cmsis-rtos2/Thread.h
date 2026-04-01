@@ -81,18 +81,17 @@ private:
     static void Process(void* argument);
     void Run();
 
+    const std::string THREAD_NAME;
+    size_t m_queueSize;
+    osPriority_t m_priority;
+
     osThreadId_t m_thread = NULL;
     osMessageQueueId_t m_msgq = NULL;
     osSemaphoreId_t m_exitSem = NULL; // Semaphore to signal thread completion
     std::atomic<bool> m_exit = false;
     
-    const std::string THREAD_NAME;
-    
     // Configurable sizes
     static const uint32_t STACK_SIZE = 2048; // Bytes
-    
-    size_t m_queueSize;
-    osPriority_t m_priority;
 };
 
 #endif // _THREAD_CMSIS_RTOS2_H

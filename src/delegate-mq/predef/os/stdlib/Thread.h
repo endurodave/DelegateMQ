@@ -108,6 +108,8 @@ private:
     void ThreadCheck();
 
     std::optional<std::thread> m_thread;
+    std::atomic<bool> m_exit;
+
 #ifdef DMQ_ALLOCATOR
     std::priority_queue<std::shared_ptr<ThreadMsg>,
         std::vector<std::shared_ptr<ThreadMsg>, stl_allocator<std::shared_ptr<ThreadMsg>>>,
@@ -131,8 +133,6 @@ private:
     // Promise and future to synchronize thread start (constructed lazily in CreateThread)
     std::optional<std::promise<void>> m_threadStartPromise;
     std::optional<std::future<void>> m_threadStartFuture;
-
-    std::atomic<bool> m_exit;
 
     // Watchdog related members
     std::atomic<dmq::TimePoint> m_lastAliveTime;

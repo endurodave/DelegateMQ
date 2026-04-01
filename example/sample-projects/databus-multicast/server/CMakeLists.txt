@@ -4,23 +4,12 @@ cmake_minimum_required(VERSION 3.16)
 set(DELEGATE_APP "delegate_databus_multicast_server")
 project(DelegateDataBusMulticastServer VERSION 1.0 LANGUAGES CXX)
 
-# Set build options
-set(DMQ_ASSERTS "ON")
-set(DMQ_ALLOCATOR "OFF")
-set(DMQ_LOG "OFF")
-set(DMQ_UTIL "ON")
-set(DMQ_THREAD "DMQ_THREAD_STDLIB")
-set(DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")
-if (WIN32)
-    set(DMQ_TRANSPORT "DMQ_TRANSPORT_WIN32_UDP")
-elseif (UNIX AND NOT APPLE)
-    set(DMQ_TRANSPORT "DMQ_TRANSPORT_LINUX_UDP")
-else()
-    message(FATAL_ERROR "Unsupported platform for DMQ_TRANSPORT")
-endif()
-set(DMQ_DATABUS "ON")
-set(DMQ_UTIL "ON")
-option(DMQ_DATABUS_TOOLS "Enable DataBus Spy support" OFF)
+# @TODO: Set build options (see Predef.cmake). 
+# Rerun cmake configuration and clean/rebuild if you change these settings
+# The DelegateMQ library auto-selects defaults based on the target platform.
+# Override defaults by setting the variables below before including DelegateMQ.cmake.
+# set(DMQ_ASSERTS "ON")
+# set(DMQ_DATABUS_TOOLS "OFF")
 
 include("${CMAKE_SOURCE_DIR}/../../../../src/delegate-mq/DelegateMQ.cmake")
 
@@ -44,7 +33,7 @@ if (DMQ_DATABUS_TOOLS)
         "${SPY_BRIDGE_DIR}/bridge/SpyBridge.h"
     )
     include_directories(
-        "${CMAKE_SOURCE_DIR}/../../../../../bitsery/include"
+        "${CMAKE_SOURCE_DIR}/../../../../../../bitsery/include"
         "${SPY_BRIDGE_DIR}/src"
         "${SPY_BRIDGE_DIR}/bridge"
     )

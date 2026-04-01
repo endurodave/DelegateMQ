@@ -93,6 +93,10 @@ private:
     // Run loop called by Process
     void Run();
 
+    const std::string THREAD_NAME;
+    size_t m_queueSize; // Stored queue size
+    UINT m_priority;    // Stored priority
+
     // ThreadX Control Blocks
     TX_THREAD m_thread;
     TX_QUEUE m_queue;
@@ -104,13 +108,8 @@ private:
     std::unique_ptr<ULONG[]> m_stackMemory;
     std::unique_ptr<ULONG[]> m_queueMemory;
     
-    const std::string THREAD_NAME;
-    
     // Configurable stack size (bytes)
     static const ULONG STACK_SIZE = 2048; 
-    
-    size_t m_queueSize; // Stored queue size
-    UINT m_priority;    // Stored priority
 };
 
 #endif // _THREAD_THREADX_H

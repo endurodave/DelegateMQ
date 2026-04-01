@@ -57,6 +57,10 @@ private:
     static void Process(void* p1, void* p2, void* p3);
     void Run();
 
+    const std::string THREAD_NAME;
+    size_t m_queueSize;
+    int m_priority;
+
     // Zephyr Kernel Objects
     struct k_thread m_thread;
     struct k_msgq m_msgq;
@@ -74,10 +78,6 @@ private:
     std::unique_ptr<char, ZephyrDeleter> m_stackMemory{nullptr, k_free};
     std::unique_ptr<char, ZephyrDeleter> m_msgqBuffer{nullptr, k_free};
 
-    const std::string THREAD_NAME;
-    size_t m_queueSize;
-    int m_priority;
-    
     // Stack size in bytes
     static const size_t STACK_SIZE = 2048;
     // Size of one message item (the pointer)

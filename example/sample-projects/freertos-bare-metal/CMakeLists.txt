@@ -43,9 +43,8 @@ source_group("FreeRTOS Files" FILES ${FREERTOS_SOURCES})
 include_directories(
     .
     ${DMQ_INCLUDE_DIR}
-    ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/include
-    ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW
-    ${FREERTOS_ROOT_DIR}/FreeRTOS/Common/include
+    ${FREERTOS_ROOT_DIR}/include
+    ${FREERTOS_ROOT_DIR}/portable/MSVC-MingW
 )
 
 # Add an executable target
