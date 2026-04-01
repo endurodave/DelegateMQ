@@ -33,7 +33,7 @@ if (DMQ_DATABUS_TOOLS)
         "${SPY_BRIDGE_DIR}/bridge/SpyBridge.h"
     )
     include_directories(
-        "${CMAKE_SOURCE_DIR}/../../../../../../bitsery/include"
+        "${CMAKE_SOURCE_DIR}/../../../../../bitsery/include"
         "${SPY_BRIDGE_DIR}/src"
         "${SPY_BRIDGE_DIR}/bridge"
     )
