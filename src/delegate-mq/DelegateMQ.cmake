@@ -9,15 +9,9 @@
 #
 # Set DMQ build options:
 #
-#   # Set DMQ build options. Update as necessary.
-#   set(DMQ_ASSERTS "OFF")
-#   set(DMQ_ALLOCATOR "OFF")
-#   set(DMQ_LOG "OFF")
-#   set(DMQ_UTIL "ON")
+#   # Optional: Set DMQ build options to override defaults.
 #   set(DMQ_THREAD "DMQ_THREAD_STDLIB")
-#   set(DMQ_SERIALIZE "DMQ_SERIALIZE_NONE")
-#   set(DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")
-#   include("${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/DelegateMQ.cmake")
+#   include("${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.cmake")
 #
 # Use variables to build:
 #
@@ -40,6 +34,9 @@ endmacro()
 
 set_and_check(DMQ_ROOT_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set_and_check(DMQ_INCLUDE_DIR "${DMQ_ROOT_DIR}")
+
+check("${DMQ_ROOT_DIR}/Defaults.cmake")
+include ("${DMQ_ROOT_DIR}/Defaults.cmake")
 
 check("${DMQ_ROOT_DIR}/Macros.cmake")
 include ("${DMQ_ROOT_DIR}/Macros.cmake")

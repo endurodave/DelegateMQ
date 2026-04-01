@@ -6,17 +6,19 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 
 # @TODO: Set build options (see Predef.cmake). 
 # Rerun cmake configuration and clean/rebuild if you change these settings
-set(DMQ_ASSERTS "OFF")                        # ON for assert faults
-set(DMQ_ALLOCATOR "OFF")                      # ON for fixed-block allocator
-set(DMQ_LOG "OFF")                            # ON for spglog output
-set(DMQ_DATABUS "ON")                         # ON for DataBus support
-set(DMQ_UTIL "ON")                            # ON for delegate utility classes
-set(DMQ_THREAD "DMQ_THREAD_STDLIB")           # Set thread support library or none
-set(DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")  # Set serialization support library or none
-set(DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")       # Set transport support library or none
+# The DelegateMQ library auto-selects defaults based on the target platform.
+# Override defaults by setting the variables below before including DelegateMQ.cmake.
+# set(DMQ_ASSERTS "ON")
+# set(DMQ_ALLOCATOR "ON")
+# set(DMQ_LOG "ON")
+# set(DMQ_DATABUS "OFF")
+# set(DMQ_UTIL "OFF")
+# set(DMQ_THREAD "DMQ_THREAD_NONE")
+# set(DMQ_SERIALIZE "DMQ_SERIALIZE_BITSERY")
+# set(DMQ_TRANSPORT "DMQ_TRANSPORT_WIN32_UDP")
 
 # Include master delegate cmake build options
-include("${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../src/delegate-mq/DelegateMQ.cmake")
 
 if (MSVC)
     add_compile_options("/utf-8")   # Required by spdlog
@@ -24,7 +26,7 @@ if (MSVC)
 endif()
 
 # Collect all .cpp and *.h source files 
-file(GLOB SOURCES "*.cpp" "*.h")
+file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 
 # Collect DelegateMQ predef source files
 list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
@@ -48,13 +50,13 @@ endif()
 include_directories( 
     ${DMQ_INCLUDE_DIR}
     ${SPDLOG_INCLUDE_DIR}
-    test/unit-tests
+    ${CMAKE_CURRENT_SOURCE_DIR}/unit-tests
 )
 
 # Add subdirectories for unit tests and sample code
 # NOTE: Added before target creation so libraries are defined for linking
 add_subdirectory(unit-tests)
-add_subdirectory(${CMAKE_SOURCE_DIR}/example/sample-code ${CMAKE_BINARY_DIR}/sample-code)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../example/sample-code ${CMAKE_BINARY_DIR}/sample-code)
 
 # Add an executable target
 add_executable(${DELEGATE_APP} ${SOURCES} ${DMQ_LIB_SOURCES})
@@ -66,7 +68,7 @@ add_executable(${DELEGATE_APP} ${SOURCES} ${DMQ_LIB_SOURCES})
 # in the target, significantly speeding up compilation.
 # -----------------------------------------------------------------------------
 target_precompile_headers(${DELEGATE_APP} PRIVATE 
-    "${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/delegate-mq/DelegateMQ.h"
 )
 
 target_link_libraries(${DELEGATE_APP} PRIVATE 

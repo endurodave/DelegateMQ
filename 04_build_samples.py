@@ -158,12 +158,12 @@ def collect_build_dirs(project_dir, use_clang=False):
 # ---------------------------------------------------------------------------
 
 def build_samples(use_clang=False):
-    repo_root   = os.path.dirname(os.path.abspath(__file__))
-    samples_dir = os.path.join(repo_root, "example", "sample-projects")
-
-    if not os.path.isdir(samples_dir):
-        print(f"Error: sample-projects directory not found: {samples_dir}")
-        return False
+    repo_root    = os.path.dirname(os.path.abspath(__file__))
+    target_dirs = [
+        os.path.join(repo_root, "example", "sample-projects"),
+        os.path.join(repo_root, "test"),
+        os.path.join(repo_root, "tools")
+    ]
 
     clang_found = shutil.which("clang++") is not None
     if use_clang and IS_WINDOWS:
@@ -183,7 +183,7 @@ def build_samples(use_clang=False):
     if use_clang:
         print(f"  Clang    : enabled (build-clang/ variants included)")
     print()
-    print("  WARNING: This will build all sample projects.")
+    print("  WARNING: This will build all projects in samples, test, and tools.")
     print("  Compilation may take several minutes depending on")
     print("  the number of projects and machine speed.")
     print("=" * 60)
@@ -197,61 +197,98 @@ def build_samples(use_clang=False):
     failed  = []
     skipped = []
 
-    for project_name in sorted(os.listdir(samples_dir)):
-        project_dir = os.path.join(samples_dir, project_name)
-        if not os.path.isdir(project_dir):
+    for target_dir in target_dirs:
+        if not os.path.isdir(target_dir):
+            print(f"Warning: directory not found: {target_dir}")
             continue
 
-        # --- Skip checks ---
-        if project_name in SKIP_ALWAYS:
-            skipped.append((project_name, "excluded"))
-            continue
-        if project_name in WINDOWS_ONLY and not IS_WINDOWS:
-            skipped.append((project_name, "Windows only"))
-            continue
-        if project_name in LINUX_ONLY and IS_WINDOWS:
-            skipped.append((project_name, "Linux only"))
-            continue
-
-        targets = collect_build_dirs(project_dir, use_clang=use_clang)
-        if not targets:
-            skipped.append((project_name, "not configured — run 03_generate_samples.py first"))
-            continue
-
-        project_failed = False
-        for label, build_dir in targets:
-            tag = f"{project_name}/{label}" if label else project_name
-            print(f"[BUILDING] {tag}")
-            success, err = build_project(build_dir, label)
-            if success:
-                print(f"   ok")
+        # 1. Check if the target_dir ITSELF is a configured project
+        targets = collect_build_dirs(target_dir, use_clang=use_clang)
+        if targets:
+            project_name = os.path.basename(target_dir)
+            project_failed = False
+            for label, build_dir in targets:
+                tag = f"{project_name}/{label}" if label else project_name
+                print(f"[BUILDING] {tag}")
+                success, err = build_project(build_dir, label)
+                if success:
+                    print(f"   ok")
+                else:
+                    print(f"   FAILED")
+                    lines = err.strip().splitlines()
+                    for line in lines[-15:]:
+                        print(f"   {line}")
+                    project_failed = True
+            if project_failed:
+                failed.append(project_name)
             else:
-                print(f"   FAILED")
-                # Print the last 15 lines of compiler output for context
-                lines = err.strip().splitlines()
-                for line in lines[-15:]:
-                    print(f"   {line}")
-                project_failed = True
+                passed.append(project_name)
 
-        # Build any dotnet sub-projects (e.g. C# interop clients) — Windows only
-        for subdir_name in (DOTNET_BUILDS.get(project_name, []) if IS_WINDOWS else []):
-            subdir = os.path.join(project_dir, subdir_name)
-            tag = f"{project_name}/{subdir_name}"
-            print(f"[BUILDING] {tag}  (dotnet)")
-            success, err = build_dotnet(subdir, subdir_name)
-            if success:
-                print(f"   ok")
+        # 2. Iterate through subdirectories
+        for project_name in sorted(os.listdir(target_dir)):
+            project_dir = os.path.join(target_dir, project_name)
+            if not os.path.isdir(project_dir):
+                continue
+
+            # Skip common folders within test/tools that are not projects
+            # Also skip 'unit-tests' as it is built as part of the 'test' project.
+            if project_name in ["common", "include", "src", "unit-tests"]:
+                continue
+
+            # --- Skip checks ---
+            if project_name in SKIP_ALWAYS:
+                skipped.append((project_name, "excluded"))
+                continue
+            if project_name in WINDOWS_ONLY and not IS_WINDOWS:
+                skipped.append((project_name, "Windows only"))
+                continue
+            if project_name in LINUX_ONLY and IS_WINDOWS:
+                skipped.append((project_name, "Linux only"))
+                continue
+
+            targets = collect_build_dirs(project_dir, use_clang=use_clang)
+            if not targets:
+                # If it's a directory but has no build dir, it might not be a cmake project
+                # or just hasn't been configured. 
+                # Check if it has a CMakeLists.txt to decide if we should skip silently
+                if os.path.isfile(os.path.join(project_dir, "CMakeLists.txt")):
+                    skipped.append((project_name, "not configured — run 03_generate_samples.py first"))
+                continue
+
+            project_failed = False
+            for label, build_dir in targets:
+                tag = f"{project_name}/{label}" if label else project_name
+                print(f"[BUILDING] {tag}")
+                success, err = build_project(build_dir, label)
+                if success:
+                    print(f"   ok")
+                else:
+                    print(f"   FAILED")
+                    # Print the last 15 lines of compiler output for context
+                    lines = err.strip().splitlines()
+                    for line in lines[-15:]:
+                        print(f"   {line}")
+                    project_failed = True
+
+            # Build any dotnet sub-projects (e.g. C# interop clients) — Windows only
+            for subdir_name in (DOTNET_BUILDS.get(project_name, []) if IS_WINDOWS else []):
+                subdir = os.path.join(project_dir, subdir_name)
+                tag = f"{project_name}/{subdir_name}"
+                print(f"[BUILDING] {tag}  (dotnet)")
+                success, err = build_dotnet(subdir, subdir_name)
+                if success:
+                    print(f"   ok")
+                else:
+                    print(f"   FAILED")
+                    lines = err.strip().splitlines()
+                    for line in lines[-15:]:
+                        print(f"   {line}")
+                    project_failed = True
+
+            if project_failed:
+                failed.append(project_name)
             else:
-                print(f"   FAILED")
-                lines = err.strip().splitlines()
-                for line in lines[-15:]:
-                    print(f"   {line}")
-                project_failed = True
-
-        if project_failed:
-            failed.append(project_name)
-        else:
-            passed.append(project_name)
+                passed.append(project_name)
 
     # --- Summary ---
     total = len(passed) + len(failed)
@@ -282,3 +319,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     success = build_samples(use_clang=args.clang)
     sys.exit(0 if success else 1)
+
+# Post-Build Executable Locations (Windows Release):
+# 1. Main test executable: 
+#    DelegateMQ/test/build/Release/delegate_app.exe
+# 2. Tools executables (dmq-spy, dmq-monitor, dmq-target):
+#    DelegateMQ/tools/build/Release/
+# 3. Sample project executables:
+#    DelegateMQ/example/sample-projects/<project_name>/build/Release/
+#    (Note: For client/server samples, they are in the 'client' and 'server' sub-folders)

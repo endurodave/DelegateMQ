@@ -13,6 +13,7 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 Thread::Thread(const std::string& threadName, size_t maxQueueSize)
     : THREAD_NAME(threadName)
+    , m_exit(false)
 {
     m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
     m_priority = configMAX_PRIORITIES > 2 ? configMAX_PRIORITIES - 2 : tskIDLE_PRIORITY + 1;
@@ -46,8 +47,8 @@ void Thread::SetStackMem(StackType_t* stackBuffer, uint32_t stackSizeInWords)
 //----------------------------------------------------------------------------
 bool Thread::CreateThread()
 {
-    //if (IsThreadCreated())
-    //    return true;
+    if (IsThreadCreated())
+        return true;
 
     // 1. Create Synchronization Semaphore (Critical for cleanup)
     if (!m_exitSem) {
@@ -109,10 +110,17 @@ bool Thread::CreateThread()
 void Thread::ExitThread()
 {
     if (m_queue) {
+        m_exit.store(true);
+
         ThreadMsg* msg = new (std::nothrow) ThreadMsg(MSG_EXIT_THREAD);
 
-        if (msg && xQueueSend(m_queue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
-            delete msg;
+        if (msg) {
+            // Block until message is sent. This ensures the thread WILL receive it.
+            // If the thread is deadlocked, we hang here, which is better than 
+            // hanging at the semaphore after dropping the message.
+            if (xQueueSend(m_queue, &msg, portMAX_DELAY) != pdPASS) {
+                delete msg;
+            }
         }
 
         if (xTaskGetCurrentTaskHandle() != m_thread && m_exitSem) {
@@ -132,7 +140,21 @@ void Thread::ExitThread()
 //----------------------------------------------------------------------------
 TaskHandle_t Thread::GetThreadId() { return m_thread; }
 TaskHandle_t Thread::GetCurrentThreadId() { return xTaskGetCurrentTaskHandle(); }
-bool Thread::IsCurrentThread() { return GetThreadId() == GetCurrentThreadId(); }
+bool Thread::IsCurrentThread()
+{
+    return GetThreadId() == GetCurrentThreadId();
+}
+
+//----------------------------------------------------------------------------
+// GetQueueSize
+//----------------------------------------------------------------------------
+size_t Thread::GetQueueSize()
+{
+    if (m_queue) {
+        return (size_t)uxQueueMessagesWaiting(m_queue);
+    }
+    return 0;
+}
 
 void Thread::SetThreadPriority(int priority) {
     m_priority = priority;
@@ -185,15 +207,14 @@ void Thread::Process(void* instance)
 void Thread::Run()
 {
     ThreadMsg* msg = nullptr;
-    while (true)
+    while (!m_exit.load())
     {
         if (xQueueReceive(m_queue, &msg, portMAX_DELAY) == pdPASS)
         {
             if (!msg) continue;
 
-            switch (msg->GetId())
-            {
-            case MSG_DISPATCH_DELEGATE:
+            int msgId = msg->GetId();
+            if (msgId == MSG_DISPATCH_DELEGATE)
             {
                 auto delegateMsg = msg->GetData();
                 if (delegateMsg) {
@@ -202,19 +223,17 @@ void Thread::Run()
                         invoker->Invoke(delegateMsg);
                     }
                 }
+            }
+            
+            delete msg;
+
+            if (msgId == MSG_EXIT_THREAD) {
                 break;
             }
-            case MSG_EXIT_THREAD:
-            {
-                delete msg;
-                if (m_exitSem) {
-                    xSemaphoreGive(m_exitSem);
-                }
-                return;
-            }
-            default: break;
-            }
-            delete msg;
         }
+    }
+
+    if (m_exitSem) {
+        xSemaphoreGive(m_exitSem);
     }
 }

@@ -4,6 +4,8 @@
 /// @brief RAII wrapper to initialize and cleanup network stacks.
 /// Instantiate this ONCE at the top of main().
 
+#include "delegate/DelegateOpt.h"
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>

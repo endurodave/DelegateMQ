@@ -42,13 +42,10 @@ source_group("FreeRTOS Files" FILES ${FREERTOS_SOURCES})
 # Add subdirectories to include path
 include_directories(
     .
-    ./Trace_Recorder_Configuration
     ${DMQ_INCLUDE_DIR}
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/include
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW
     ${FREERTOS_ROOT_DIR}/FreeRTOS/Common/include
-    ${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/include
-    ${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/FreeRTOS/include
 )
 
 # Add an executable target

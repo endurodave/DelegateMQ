@@ -11,5 +11,5 @@ add_library(sample_code_lib STATIC ${SUBDIR_SOURCES} ${SUBDIR_HEADERS})
 target_include_directories(sample_code_lib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_precompile_headers(sample_code_lib PRIVATE 
-    "${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../src/delegate-mq/DelegateMQ.h"
 )

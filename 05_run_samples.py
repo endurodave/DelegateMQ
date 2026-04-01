@@ -60,6 +60,8 @@ SKIP_ALWAYS = {
     "stm32-freertos",
     "mqtt-rapidjson",
     "serialport-serializer",
+    "test",
+    "tools",
 }
 
 # Projects that pair with a server from a *different* project directory.

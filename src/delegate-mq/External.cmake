@@ -200,9 +200,7 @@ if(DMQ_THREAD STREQUAL "DMQ_THREAD_FREERTOS")
         "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/include/*.h"
     )
     
-    list(APPEND FREERTOS_SOURCES 
-        "${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/trcKernelPort.c"
-        "${FREERTOS_ROOT_DIR}/FreeRTOS-Plus/Source/FreeRTOS-Plus-Trace/trcSnapshotRecorder.c"
+    list(APPEND FREERTOS_SOURCES
         "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MSVC-MingW/port.c"
         "${FREERTOS_ROOT_DIR}/FreeRTOS/Source/portable/MemMang/heap_5.c"
     )

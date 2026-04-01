@@ -16,5 +16,5 @@ if (MSVC)
 endif()
 
 target_precompile_headers(unit_tests_lib PRIVATE 
-    "${CMAKE_SOURCE_DIR}/src/delegate-mq/DelegateMQ.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../src/delegate-mq/DelegateMQ.h"
 )

@@ -4,6 +4,47 @@
 /// @file
 /// @brief Delegate library options header file.
 
+#if defined(_WIN32) || defined(_WIN64)
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
+
+    // If networking is active, include winsock2.h here to prevent macro 
+    // redefinitions when windows.h is included later (e.g. by FreeRTOS or stdlib).
+    #if defined(DMQ_DATABUS) || defined(DMQ_TRANSPORT_ZEROMQ) || \
+        defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_WIN32_TCP) || \
+        defined(DMQ_TRANSPORT_WIN32_PIPE) || defined(DMQ_TRANSPORT_NNG) || \
+        defined(DMQ_TRANSPORT_MQTT)
+        #include <winsock2.h>
+        #include <ws2tcpip.h>
+    #endif
+#endif
+
+// --- PLATFORM AUTO-DETECTION ---
+// If no threading model is defined, attempt to auto-select a default
+#if !defined(DMQ_THREAD_STDLIB) && !defined(DMQ_THREAD_WIN32) && \
+    !defined(DMQ_THREAD_FREERTOS) && !defined(DMQ_THREAD_THREADX) && \
+    !defined(DMQ_THREAD_ZEPHYR) && !defined(DMQ_THREAD_CMSIS_RTOS2) && \
+    !defined(DMQ_THREAD_QT) && !defined(DMQ_THREAD_NONE)
+
+    #if defined(_WIN32) || defined(__linux__) || defined(__APPLE__) || defined(__unix__)
+        #define DMQ_THREAD_STDLIB
+    #endif
+#endif
+
+// If no serialization model is defined, default to SERIALIZE
+#if !defined(DMQ_SERIALIZE_SERIALIZE) && !defined(DMQ_SERIALIZE_RAPIDJSON) && \
+    !defined(DMQ_SERIALIZE_MSGPACK) && !defined(DMQ_SERIALIZE_CEREAL) && \
+    !defined(DMQ_SERIALIZE_BITSERY) && !defined(DMQ_SERIALIZE_NONE)
+
+    #define DMQ_SERIALIZE_SERIALIZE
+#endif
+
+// Default to DataBus ON if not explicitly disabled
+#if !defined(DMQ_DATABUS) && !defined(DMQ_DATABUS_OFF)
+    #define DMQ_DATABUS
+#endif
+
 #include <chrono>
 #if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT)
     #include <mutex>

@@ -12,6 +12,13 @@
 /// FreeRTOS primitives (Tasks and Queues). It enables DelegateMQ to dispatch 
 /// asynchronous delegates to a dedicated FreeRTOS task.
 ///
+/// @note This implementation is a basic port. For reference, the stdlib and win32
+/// implementations provide additional features:
+/// 1. Priority Support: Uses a priority queue to respect dmq::Priority.
+/// 2. Back Pressure: DispatchDelegate() blocks if the queue is full.
+/// 3. Watchdog: Includes a ThreadCheck() heartbeat mechanism.
+/// 4. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
+///
 /// **Key Features:**
 /// * **Task Integration:** Wraps a FreeRTOS `xTaskCreate` call to establish a
 ///   dedicated worker loop.
@@ -29,6 +36,7 @@
 #include "semphr.h"
 #include <string>
 #include <memory>
+#include <atomic>
 
 class ThreadMsg;
 
@@ -50,6 +58,9 @@ public:
     /// @return TRUE if thread is created. FALSE otherwise. 
     bool CreateThread();
 
+    /// Returns true if the thread is created
+    bool IsThreadCreated() const { return m_thread != nullptr; }
+
     /// Terminate the thread gracefully
     void ExitThread();
 
@@ -64,6 +75,9 @@ public:
 
     /// Get thread name
     std::string GetThreadName() { return THREAD_NAME; }
+
+    /// Get current queue size
+    size_t GetQueueSize();
 
     /// Set the FreeRTOS Task Priority.
     /// Can be called before or after CreateThread().
@@ -91,6 +105,7 @@ private:
     TaskHandle_t m_thread = nullptr;
     QueueHandle_t m_queue = nullptr;
     SemaphoreHandle_t m_exitSem = nullptr; // Synchronization for safe destruction
+    std::atomic<bool> m_exit = false;
 
     const std::string THREAD_NAME;
     size_t m_queueSize;

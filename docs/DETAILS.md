@@ -144,12 +144,35 @@ It unifies function calls across threads or systems via a simple delegate interf
 # Build
 
 To build and run DelegateMQ, follow these simple steps. The library uses <a href="https://www.cmake.org">CMake</a> to generate build files and supports Visual Studio, GCC, and Clang toolchains.
-
 1. Clone the repository.
 2. From the repository root, run the following CMake command:   
    `cmake -B build .`
 3. Build and run the project within the `build` directory. 
 
+## Configuration and Overrides
+
+DelegateMQ is designed for "zero-config" out of the box. When you include `DelegateMQ.cmake`, it automatically detects your platform and selects sensible defaults for threading, transport, and serialization.
+
+You can customize these behaviors using three methods (in order of precedence):
+
+### 1. Command Line (Highest Precedence)
+Override any setting directly when generating the build files:
+`cmake -B build -DDMQ_THREAD=DMQ_THREAD_NONE -DDMQ_ALLOCATOR=ON .`
+
+### 2. CMakeLists.txt
+Set variables **before** including `DelegateMQ.cmake`:
+```cmake
+set(DMQ_THREAD "DMQ_THREAD_FREERTOS")
+include("path/to/delegate-mq/DelegateMQ.cmake")
+```
+
+### 3. Auto-Detection (Default)
+If no variables are set, DelegateMQ uses `Defaults.cmake` to guess the best settings:
+- **Windows/Linux**: `STDLIB` threading, `UDP` transport.
+- **RTOS (FreeRTOS/ThreadX/Zephyr)**: Native threading, `NONE` transport.
+- **All Platforms**: `SERIALIZE` serialization, `DataBus` enabled, `Allocator` disabled.
+
+## Example Projects
 To build and run the client/server [system architecture](#system-architecture) projects, follow these steps.
 
 1. From `example/sample-projects/system-architecture-no-deps`, execute CMake command within `client` and `server` subdirectories.  
@@ -223,21 +246,15 @@ Follow these steps to integrate DelegateMQ into a project.
 
 ### CMake
 
-Set the desired DMQ build options and include `DelegateMQ.cmake` within your `CMakeLists.txt` file. See `Predef.cmake` for all available DMQ build configuration variables.
+DelegateMQ auto-selects sensible defaults for your platform. Simply include `DelegateMQ.cmake` to get started. See `Defaults.cmake` for the auto-selection logic and `Predef.cmake` for all available configuration variables.
 
-```
-# Set build options (see Predef.cmake)
-set(DMQ_ASSERTS "OFF")                      # ON for assert faults
-set(DMQ_ALLOCATOR "OFF")                    # ON for fixed-block allocator
-set(DMQ_LOG "OFF")                          # ON for spglog debug output
-set(DMQ_DATABUS "OFF")                      # ON for DataBus support
-set(DMQ_UTIL "ON")                          # ON for delegate utility classes
-set(DMQ_THREAD "DMQ_THREAD_STDLIB")         # Set thread support library or none
-set(DMQ_SERIALIZE "DMQ_SERIALIZE_MSGPACK")  # Set serialization support library or none
-set(DMQ_TRANSPORT "DMQ_TRANSPORT_ZEROMQ")   # Set transport support library or none
+```cmake
+# Optional: Set DMQ build options to override defaults
+set(DMQ_ASSERTS "ON")                      # ON for assert faults
+set(DMQ_THREAD "DMQ_THREAD_STDLIB")        # Explicitly set thread library
 
 # Include master delegate cmake build options
-include("${CMAKE_SOURCE_DIR}/../../src/delegate-mq/DelegateMQ.cmake")
+include("${CMAKE_SOURCE_DIR}/path/to/delegate-mq/DelegateMQ.cmake")
 ```
 
 Update `External.cmake` external library paths if necessary.

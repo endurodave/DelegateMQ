@@ -13,9 +13,13 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread Constructor
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName) 
+Thread::Thread(const std::string& threadName, size_t maxQueueSize) 
     : THREAD_NAME(threadName)
+    , m_exit(false)
 {
+    m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
+    m_priority = K_PRIO_PREEMPT(5); // Default priority
+
     // Initialize objects to zero
     memset(&m_thread, 0, sizeof(m_thread));
     memset(&m_msgq, 0, sizeof(m_msgq));
@@ -42,13 +46,13 @@ bool Thread::CreateThread()
     {
         // 1. Create Message Queue
         // We use k_aligned_alloc to ensure buffer meets strict alignment requirements
-        size_t qBufferSize = MSG_SIZE * MSGQ_MAX_MSGS;
+        size_t qBufferSize = MSG_SIZE * m_queueSize;
         char* qBuf = (char*)k_aligned_alloc(sizeof(void*), qBufferSize);
         ASSERT_TRUE(qBuf != nullptr);
         
         m_msgqBuffer.reset(qBuf); // Ownership passed to unique_ptr
 
-        k_msgq_init(&m_msgq, m_msgqBuffer.get(), MSG_SIZE, MSGQ_MAX_MSGS);
+        k_msgq_init(&m_msgq, m_msgqBuffer.get(), MSG_SIZE, m_queueSize);
 
         // 2. Create Thread
         // CRITICAL: Stacks must be aligned to Z_KERNEL_STACK_OBJ_ALIGN for MPU/Arch reasons.
@@ -65,7 +69,7 @@ bool Thread::CreateThread()
                                       STACK_SIZE,
                                       (k_thread_entry_t)Thread::Process,
                                       this, NULL, NULL,
-                                      K_PRIO_PREEMPT(5), // Priority 5 (Adjust as needed)
+                                      m_priority,
                                       0, 
                                       K_NO_WAIT);
         
@@ -84,17 +88,16 @@ void Thread::ExitThread()
 {
     if (m_stackMemory) 
     {
+        m_exit.store(true);
+
         // Send exit message
         ThreadMsg* msg = new (std::nothrow) ThreadMsg(MSG_EXIT_THREAD);
         if (msg)
         {
-            // Send pointer to queue. 100ms timeout
-            if (k_msgq_put(&m_msgq, &msg, K_MSEC(100)) != 0) 
+            // Wait forever to ensure message is sent
+            if (k_msgq_put(&m_msgq, &msg, K_FOREVER) != 0) 
             {
-                // If queue is full, we must delete msg to prevent leak, 
-                // but this means the thread might not exit if it was the only attempt.
                 delete msg; 
-                // Log error here if logging available
             }
         }
         
@@ -112,6 +115,17 @@ void Thread::ExitThread()
 
         // Note: k_thread_abort is not needed because the thread will
         // return from Run() and terminate naturally.
+    }
+}
+
+//----------------------------------------------------------------------------
+// SetThreadPriority
+//----------------------------------------------------------------------------
+void Thread::SetThreadPriority(int priority)
+{
+    m_priority = priority;
+    if (m_stackMemory) {
+        k_thread_priority_set(&m_thread, m_priority);
     }
 }
 
@@ -137,6 +151,17 @@ k_tid_t Thread::GetCurrentThreadId()
 bool Thread::IsCurrentThread()
 {
     return GetThreadId() == GetCurrentThreadId();
+}
+
+//----------------------------------------------------------------------------
+// GetQueueSize
+//----------------------------------------------------------------------------
+size_t Thread::GetQueueSize()
+{
+    if (m_stackMemory) {
+        return (size_t)k_msgq_num_used_get(&m_msgq);
+    }
+    return 0;
 }
 
 //----------------------------------------------------------------------------
@@ -177,16 +202,15 @@ void Thread::Process(void* p1, void* p2, void* p3)
 void Thread::Run()
 {
     ThreadMsg* msg = nullptr;
-    while (true)
+    while (!m_exit.load())
     {
         // Block forever waiting for a message
         if (k_msgq_get(&m_msgq, &msg, K_FOREVER) == 0)
         {
             if (!msg) continue;
 
-            switch (msg->GetId())
-            {
-            case MSG_DISPATCH_DELEGATE:
+            int msgId = msg->GetId();
+            if (msgId == MSG_DISPATCH_DELEGATE)
             {
                 auto delegateMsg = msg->GetData();
                 if (delegateMsg) {
@@ -195,22 +219,16 @@ void Thread::Run()
                         invoker->Invoke(delegateMsg);
                     }
                 }
-                break;
             }
-
-            case MSG_EXIT_THREAD:
-            {
-                delete msg;
-                // Signal that we are about to exit
-                k_sem_give(&m_exitSem);
-                return; 
-            }
-
-            default:
-                break;
-            }
-
+            
             delete msg;
+
+            if (msgId == MSG_EXIT_THREAD) {
+                break;
+            }
         }
     }
+
+    // Signal that we are about to exit
+    k_sem_give(&m_exitSem);
 }

@@ -45,93 +45,103 @@ def build_samples(use_clang=False):
         print(f"NOTE: --clang enabled. Using {clang_exe} for additional 'build-clang' directories.\n")
 
     repo_root = os.path.dirname(os.path.abspath(__file__))
-    target_dir = os.path.join(repo_root, "example", "sample-projects")
+    target_dirs = [
+        os.path.join(repo_root, "example", "sample-projects"),
+        os.path.join(repo_root, "test"),
+        os.path.join(repo_root, "tools")
+    ]
 
-    if not os.path.exists(target_dir):
-        print(f"Error: Could not find directory: {target_dir}")
-        return
+    for target_dir in target_dirs:
+        if not os.path.exists(target_dir):
+            print(f"Warning: Could not find directory: {target_dir}")
+            continue
 
-    print(f"Cleaning and Building ALL projects in: {target_dir}\n")
+        print(f"Cleaning and Generating ALL projects in: {target_dir}\n")
 
-    for dirpath, dirnames, files in os.walk(target_dir):
-        # 1. CLEANUP: Avoid recursing into build/install folders
-        if "build" in dirnames: dirnames.remove("build")
-        if "install" in dirnames: dirnames.remove("install")
-        
-        # SKIP: Explicitly skip bare-metal-arm directory to prevent processing
-        if "bare-metal-arm" in dirnames: dirnames.remove("bare-metal-arm")
+        for dirpath, dirnames, files in os.walk(target_dir):
+            # 1. CLEANUP: Avoid recursing into build/install folders
+            if "build" in dirnames: dirnames.remove("build")
+            if "install" in dirnames: dirnames.remove("install")
+            
+            # SKIP: Explicitly skip directories to prevent processing as standalone apps
+            skip_dirs = ["bare-metal-arm", "unit-tests"]
+            for sd in skip_dirs:
+                if sd in dirnames: dirnames.remove(sd)
 
-        if "CMakeLists.txt" in files:
-            project_name = os.path.basename(dirpath)
-            parent_name  = os.path.basename(os.path.dirname(dirpath))
+            if "CMakeLists.txt" in files:
+                project_name = os.path.basename(dirpath)
+                parent_name  = os.path.basename(os.path.dirname(dirpath))
 
-            # --- SKIP COMMON/SHARED FOLDERS ---
-            if project_name in ["common", "include", "src", "bare-metal-arm"]:
-                # These are sub-libraries or skipped platforms, not standalone apps
-                continue
+                # --- SKIP COMMON/SHARED FOLDERS ---
+                if project_name in ["common", "include", "src", "bare-metal-arm"]:
+                    # These are sub-libraries or skipped platforms, not standalone apps
+                    continue
 
-            # Build a display label that includes the parent for client/server sub-dirs
-            if project_name in ("client", "server"):
-                display_name = f"{parent_name}/{project_name}"
-            else:
-                display_name = project_name
+                # Build a display label that includes the parent for client/server sub-dirs
+                if project_name in ("client", "server"):
+                    display_name = f"{parent_name}/{project_name}"
+                else:
+                    display_name = project_name
 
-            # 2. CLEAN: Delete existing build folder
-            build_path = os.path.join(dirpath, "build")
-            if os.path.exists(build_path):
-                try: shutil.rmtree(build_path)
-                except: pass
-
-            # 3. CONFIGURE
-            if "freertos" in project_name.lower():
-                print(f"[CONFIGURING] {display_name} (Win32)")
-                cmd = ["cmake", "-B", "build", "-A", "Win32", "."]
-            else:
-                print(f"[CONFIGURING] {display_name}")
-                cmd = ["cmake", "-B", "build", "."]
-
-            try:
-                subprocess.run(
-                    cmd, cwd=dirpath, check=True,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
-                )
-                print("   Success!")
-                
-            except subprocess.CalledProcessError as e:
-                print(f"   FAILED: {project_name}")
-
-                # --- SPECIAL HANDLING FOR SERIALPORT ---
-                if "serialport-serializer" in project_name:
-                    print(f"   >> NOTICE: This project requires manual dependency setup.")
-                    print(f"   >> Please read: {os.path.join(dirpath, 'README.md')}")
-                    print(f"   >> You likely need to build 'libserialport' manually first.\n")
-
-                if e.stderr:
-                    lines = e.stderr.split('\n')
-                    for i, line in enumerate(lines):
-                        if "CMake Error" in line or "Could not find" in line or "FATAL_ERROR" in line:
-                            print(f"   Reason: {line.strip()}")
-                            # Print a bit of context
-                            if i+1 < len(lines): print(f"          {lines[i+1].strip()}")
-                            break
-
-            # --- CLANG CONFIGURE (optional, Linux only) ---
-            if clang_exe and "freertos" not in project_name.lower():
-                build_clang_path = os.path.join(dirpath, "build-clang")
-                if os.path.exists(build_clang_path):
-                    try: shutil.rmtree(build_clang_path)
+                # 2. CLEAN: Delete existing build folder
+                build_path = os.path.join(dirpath, "build")
+                if os.path.exists(build_path):
+                    try: shutil.rmtree(build_path)
                     except: pass
-                print(f"[CONFIGURING] {display_name} (clang)")
-                cmd_clang = ["cmake", "-B", "build-clang",
-                             f"-DCMAKE_CXX_COMPILER={clang_exe}", "."]
+
+                # 3. CONFIGURE
+                if "freertos" in project_name.lower():
+                    print(f"[CONFIGURING] {display_name} (Win32)")
+                    cmd = ["cmake", "-B", "build", "-A", "Win32", "."]
+                elif "databus" == project_name.lower():
+                    print(f"[CONFIGURING] {display_name} (with tools)")
+                    cmd = ["cmake", "-B", "build", "-DDMQ_DATABUS_TOOLS=ON", "."]
+                else:
+                    print(f"[CONFIGURING] {display_name}")
+                    cmd = ["cmake", "-B", "build", "."]
+
                 try:
                     subprocess.run(
-                        cmd_clang, cwd=dirpath, check=True,
+                        cmd, cwd=dirpath, check=True,
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
                     )
                     print("   Success!")
-                except subprocess.CalledProcessError:
-                    print(f"   FAILED (clang)")
+                    
+                except subprocess.CalledProcessError as e:
+                    print(f"   FAILED: {project_name}")
+
+                    # --- SPECIAL HANDLING FOR SERIALPORT ---
+                    if "serialport-serializer" in project_name:
+                        print(f"   >> NOTICE: This project requires manual dependency setup.")
+                        print(f"   >> Please read: {os.path.join(dirpath, 'README.md')}")
+                        print(f"   >> You likely need to build 'libserialport' manually first.\n")
+
+                    if e.stderr:
+                        lines = e.stderr.split('\n')
+                        for i, line in enumerate(lines):
+                            if "CMake Error" in line or "Could not find" in line or "FATAL_ERROR" in line:
+                                print(f"   Reason: {line.strip()}")
+                                # Print a bit of context
+                                if i+1 < len(lines): print(f"          {lines[i+1].strip()}")
+                                break
+
+                # --- CLANG CONFIGURE (optional, Linux only) ---
+                if clang_exe and "freertos" not in project_name.lower():
+                    build_clang_path = os.path.join(dirpath, "build-clang")
+                    if os.path.exists(build_clang_path):
+                        try: shutil.rmtree(build_clang_path)
+                        except: pass
+                    print(f"[CONFIGURING] {display_name} (clang)")
+                    cmd_clang = ["cmake", "-B", "build-clang",
+                                 f"-DCMAKE_CXX_COMPILER={clang_exe}", "."]
+                    try:
+                        subprocess.run(
+                            cmd_clang, cwd=dirpath, check=True,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+                        )
+                        print("   Success!")
+                    except subprocess.CalledProcessError:
+                        print(f"   FAILED (clang)")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Configure all DelegateMQ sample projects.")

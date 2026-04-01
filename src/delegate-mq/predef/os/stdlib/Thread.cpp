@@ -98,6 +98,9 @@ std::thread::id Thread::GetCurrentThreadId()
 //----------------------------------------------------------------------------
 bool Thread::IsCurrentThread()
 {
+    if (!m_thread.has_value())
+        return false;
+
     return GetThreadId() == GetCurrentThreadId();
 }
 

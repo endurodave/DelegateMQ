@@ -15,6 +15,7 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 Thread::Thread(const std::string& threadName, size_t maxQueueSize) 
     : THREAD_NAME(threadName)
+    , m_exit(false)
 {
     // If 0 is passed, use the default size
     m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
@@ -93,12 +94,14 @@ void Thread::ExitThread()
 {
     if (m_msgq != NULL) 
     {
+        m_exit.store(true);
+
         // Send exit message
         ThreadMsg* msg = new (std::nothrow) ThreadMsg(MSG_EXIT_THREAD);
         if (msg)
         {
-            // Send pointer, wait 100 ticks max
-            if (osMessageQueuePut(m_msgq, &msg, 0, 100) != osOK) 
+            // Send pointer, wait forever to ensure it gets in.
+            if (osMessageQueuePut(m_msgq, &msg, 0, osWaitForever) != osOK) 
             {
                 delete msg; // Failed to send
             }
@@ -112,12 +115,7 @@ void Thread::ExitThread()
         }
 
         // Thread has finished Run(). Now we can safely clean up resources.
-        
-        // Terminate ensures the thread is in INACTIVE state and resources are reclaimed.
-        if (m_thread) {
-             osThreadTerminate(m_thread);
-             m_thread = NULL;
-        }
+        m_thread = NULL;
 
         if (m_msgq) {
              osMessageQueueDelete(m_msgq);
@@ -148,6 +146,17 @@ osThreadId_t Thread::GetCurrentThreadId()
 bool Thread::IsCurrentThread()
 {
     return GetThreadId() == GetCurrentThreadId();
+}
+
+//----------------------------------------------------------------------------
+// GetQueueSize
+//----------------------------------------------------------------------------
+size_t Thread::GetQueueSize()
+{
+    if (m_msgq != NULL) {
+        return (size_t)osMessageQueueGetCount(m_msgq);
+    }
+    return 0;
 }
 
 //----------------------------------------------------------------------------
@@ -192,7 +201,7 @@ void Thread::Run()
 {
     ThreadMsg* msg = nullptr;
     
-    while (true)
+    while (!m_exit.load())
     {
         // Block forever waiting for a message
         // msg is a pointer to ThreadMsg*. The queue holds the pointer.
@@ -200,9 +209,8 @@ void Thread::Run()
         {
             if (!msg) continue;
 
-            switch (msg->GetId())
-            {
-            case MSG_DISPATCH_DELEGATE:
+            int msgId = msg->GetId();
+            if (msgId == MSG_DISPATCH_DELEGATE)
             {
                 auto delegateMsg = msg->GetData();
                 if (delegateMsg) {
@@ -211,24 +219,18 @@ void Thread::Run()
                         invoker->Invoke(delegateMsg);
                     }
                 }
-                break;
             }
-
-            case MSG_EXIT_THREAD:
-            {
-                delete msg;
-                // Signal ExitThread() that we are done
-                if (m_exitSem) {
-                    osSemaphoreRelease(m_exitSem);
-                }
-                return; 
-            }
-
-            default:
-                break;
-            }
-
+            
             delete msg;
+
+            if (msgId == MSG_EXIT_THREAD) {
+                break;
+            }
         }
+    }
+
+    // Signal ExitThread() that we are done
+    if (m_exitSem) {
+        osSemaphoreRelease(m_exitSem);
     }
 }

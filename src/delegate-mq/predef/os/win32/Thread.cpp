@@ -92,7 +92,7 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     if (m_exit.load() || m_hThread == NULL) return;
 
     // If using XALLOCATOR explicit operator new required. See xallocator.h.
-    std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_DISPATCH_DELEGATE, msg));
+    auto threadMsg = xmake_shared<ThreadMsg>(MSG_DISPATCH_DELEGATE, msg);
 
     EnterCriticalSection(&m_cs);
 
@@ -221,7 +221,7 @@ void Thread::ExitThread()
 
     // Explicitly allow Exit message to bypass the MAX_QUEUE_SIZE limit.
     // We do not wait on m_cvNotFull here to prevent deadlock during shutdown.
-    m_queue.push(std::make_shared<ThreadMsg>(MSG_EXIT_THREAD, nullptr));
+    m_queue.push(xmake_shared<ThreadMsg>(MSG_EXIT_THREAD, nullptr));
 
     // Wake up consumers
     WakeConditionVariable(&m_cvNotEmpty);

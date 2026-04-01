@@ -3,7 +3,14 @@
 
 /// @file QtThread.h
 /// @brief Qt implementation of the DelegateMQ IThread interface.
-
+///
+/// @note This implementation is a basic port. For reference, the stdlib and win32
+/// implementations provide additional features:
+/// 1. Priority Support: Uses a priority queue to respect dmq::Priority.
+/// 2. Back Pressure: DispatchDelegate() blocks if the queue is full.
+/// 3. Watchdog: Includes a ThreadCheck() heartbeat mechanism.
+/// 4. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
+///
 #include "delegate/IThread.h"
 #include <QThread>
 #include <QObject>
@@ -46,12 +53,18 @@ public:
 
     std::string GetThreadName() const { return m_threadName; }
 
+    /// Get current queue size
+    size_t GetQueueSize() const { return m_queueSize.load(); }
+
     // IThread Interface Implementation
     virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg) override;
 
 signals:
     // Internal signal to bridge threads
     void SignalDispatch(std::shared_ptr<dmq::DelegateMsg> msg);
+
+private slots:
+    void OnMessageProcessed() { m_queueSize--; }
 
 private:
     Thread(const Thread&) = delete;
@@ -60,6 +73,7 @@ private:
     std::string m_threadName;
     QThread* m_thread = nullptr;
     Worker* m_worker = nullptr;
+    std::atomic<size_t> m_queueSize{0};
 };
 
 // ----------------------------------------------------------------------------
@@ -69,6 +83,9 @@ private:
 class Worker : public QObject
 {
     Q_OBJECT
+signals:
+    void MessageProcessed();
+
 public slots:
     void OnDispatch(std::shared_ptr<dmq::DelegateMsg> msg)
     {
@@ -78,6 +95,7 @@ public slots:
                 invoker->Invoke(msg);
             }
         }
+        emit MessageProcessed();
     }
 };
 

@@ -41,6 +41,10 @@ bool Thread::CreateThread()
                 m_worker, &Worker::OnDispatch, 
                 Qt::QueuedConnection);
 
+        // Track when message is processed to decrement m_queueSize
+        connect(m_worker, &Worker::MessageProcessed,
+                this, &Thread::OnMessageProcessed);
+
         // Ensure worker is deleted when thread finishes
         connect(m_thread, &QThread::finished, m_worker, &QObject::deleteLater);
         
@@ -102,6 +106,7 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
     // Safety check: Don't emit if thread is tearing down
     if (m_thread && m_thread->isRunning()) {
+        m_queueSize++;
         emit SignalDispatch(msg);
     }
 }
