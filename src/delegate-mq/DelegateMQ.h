@@ -54,6 +54,18 @@
 /// * See `README.md`, `DETAILS.md`, and `EXAMPLES.md` for comprehensive guides.
 
 // -----------------------------------------------------------------------------
+// 0. Platform Configuration
+// -----------------------------------------------------------------------------
+#if defined(_WIN32) || defined(_WIN64)
+    #ifndef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN
+    #endif
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+#endif
+
+// -----------------------------------------------------------------------------
 // 1. Core Non-Thread-Safe Delegates
 // (Always available: Bare Metal, FreeRTOS, Windows, Linux)
 // -----------------------------------------------------------------------------
