@@ -1,8 +1,6 @@
 name: Windows
 
 on:
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   push:
     branches:
       - master  # Trigger on push 
@@ -10,11 +8,12 @@ env:
     branches:
       - master  # Trigger on pull 
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: windows-latest  # Use Windows environment for the build
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - name: Checkout code

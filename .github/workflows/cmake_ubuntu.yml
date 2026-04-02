@@ -1,8 +1,6 @@
 name: Ubuntu
 
 on:
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   push:
     branches:
       - master  # Trigger on push to master
@@ -10,11 +8,12 @@ env:
     branches:
       - master  # Trigger on pull request to master
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest  # Use Ubuntu environment for the build
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
     - name: Checkout code
