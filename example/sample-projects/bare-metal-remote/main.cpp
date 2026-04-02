@@ -114,7 +114,7 @@ template<class RetType, class... Args>
 class Serializer<RetType(Args...)> : public ISerializer<RetType(Args...)>
 {
 public:
-    virtual std::ostream& Write(std::ostream& os, Args... args) override {
+    virtual std::ostream& Write(std::ostream& os, const Args&... args) override {
         make_serialized(os, args...);
         return os;
     }

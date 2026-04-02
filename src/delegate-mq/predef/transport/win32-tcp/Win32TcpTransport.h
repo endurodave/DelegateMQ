@@ -57,6 +57,7 @@ public:
 
     int Create(Type type, LPCSTR addr, USHORT port)
     {
+        m_type = type;
         sockaddr_in service;
         service.sin_family = AF_INET;
         service.sin_port = htons(port);

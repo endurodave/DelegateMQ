@@ -30,19 +30,6 @@
 #include <mutex>
 #include <condition_variable>
 
-//#define MQTT_ADDRESS     "tcp://test.mosquitto.org:1883"
-#define MQTT_ADDRESS     "tcp://broker.hivemq.com:1883"
-#define MQTT_TOPIC       "Delegate_MQTT"
-#define MQTT_QOS         1
-#define MQTT_TIMEOUT     10000L
-
-#define MQTT_PUB_CLIENTID    "DelegatePub"
-#define MQTT_SUB_CLIENTID    "DelegateSub"
-
-static void debugTrace(enum MQTTCLIENT_TRACE_LEVELS level, char* message) {
-    //printf("TRACE [%d]: %s\n", level, message);
-}
-
 /// @brief MQTT transport example.
 class MqttTransport : public ITransport
 {
@@ -52,6 +39,13 @@ public:
         PUB,
         SUB
     };
+
+    static constexpr const char* ADDRESS       = "tcp://broker.hivemq.com:1883";
+    static constexpr const char* TOPIC         = "Delegate_MQTT";
+    static constexpr int         QOS           = 1;
+    static constexpr long        TIMEOUT_MS    = 10000L;
+    static constexpr const char* PUB_CLIENTID  = "DelegatePub";
+    static constexpr const char* SUB_CLIENTID  = "DelegateSub";
 
     MqttTransport() = default;
 
@@ -63,13 +57,13 @@ public:
     int Create(Type type)
     {
         int rc = EXIT_FAILURE;
-        printf("Using server at %s\n", MQTT_ADDRESS);
+        printf("Using server at %s\n", ADDRESS);
 
         MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
         m_type = type;
         if (m_type == Type::PUB)
         {
-            if ((rc = MQTTClient_create(&m_client, MQTT_ADDRESS, MQTT_PUB_CLIENTID,
+            if ((rc = MQTTClient_create(&m_client, ADDRESS, PUB_CLIENTID,
                 MQTTCLIENT_PERSISTENCE_NONE, NULL)) != MQTTCLIENT_SUCCESS)
             {
                 // printf("Failed to create client, return code %d\n", rc);
@@ -86,7 +80,7 @@ public:
         }
         else if (m_type == Type::SUB)
         {
-            if ((rc = MQTTClient_create(&m_client, MQTT_ADDRESS, MQTT_SUB_CLIENTID,
+            if ((rc = MQTTClient_create(&m_client, ADDRESS, SUB_CLIENTID,
                 MQTTCLIENT_PERSISTENCE_NONE, NULL)) != MQTTCLIENT_SUCCESS)
             {
                 // printf("Failed to create client, return code %d\n", rc);
@@ -110,7 +104,7 @@ public:
                 return rc;
             }
 
-            if ((rc = MQTTClient_subscribe(m_client, MQTT_TOPIC, MQTT_QOS)) != MQTTCLIENT_SUCCESS)
+            if ((rc = MQTTClient_subscribe(m_client, TOPIC, QOS)) != MQTTCLIENT_SUCCESS)
             {
                 // printf("Failed to subscribe, return code %d\n", rc);
                 return rc;
@@ -125,7 +119,7 @@ public:
         {
             if (m_type == Type::SUB)
             {
-                MQTTClient_unsubscribe(m_client, MQTT_TOPIC);
+                MQTTClient_unsubscribe(m_client, TOPIC);
             }
             MQTTClient_disconnect(m_client, 1000);
             MQTTClient_destroy(&m_client);
@@ -177,11 +171,11 @@ public:
         
         pubmsg.payload = (void*)fullPacket.data();
         pubmsg.payloadlen = (int)fullPacket.size();
-        pubmsg.qos = MQTT_QOS;
+        pubmsg.qos = QOS;
         pubmsg.retained = 0;
 
         int rc;
-        if ((rc = MQTTClient_publishMessage(m_client, MQTT_TOPIC, &pubmsg, &token)) != MQTTCLIENT_SUCCESS)
+        if ((rc = MQTTClient_publishMessage(m_client, TOPIC, &pubmsg, &token)) != MQTTCLIENT_SUCCESS)
         {
             // printf("Failed to publish message, return code %d\n", rc);
             return EXIT_FAILURE;

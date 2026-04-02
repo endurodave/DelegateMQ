@@ -53,6 +53,7 @@ public:
 
     ~UdpTransport()
     {
+        Close();
     }
 
     int Create(Type type, LPCSTR addr, USHORT port)
@@ -165,22 +166,15 @@ public:
         ss.write((char*)&len, 2);
         ss.write(payload.data(), payload.size());
 
-        size_t length = ss.str().length();
+        auto data = ss.str();
+
+        int err = sendto(m_socket, data.c_str(), (int)data.size(), 0, (sockaddr*)&m_addr, sizeof(m_addr));
 
         // Always track the message (unless it is an ACK)
         // Use Host Byte Order for ID check
-        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor) {
+        if (err != SOCKET_ERROR && headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor) {
             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
         }
-
-        char* sendBuf = (char*)malloc(length);
-        if (!sendBuf)
-            return -1;
-
-        ss.rdbuf()->sgetn(sendBuf, length);
-
-        int err = sendto(m_socket, sendBuf, (int)length, 0, (sockaddr*)&m_addr, sizeof(m_addr));
-        free(sendBuf);
 
         return (err == SOCKET_ERROR) ? -1 : 0;
     }
@@ -272,7 +266,7 @@ public:
 
 private:
     SOCKET m_socket = INVALID_SOCKET;
-    sockaddr_in m_addr;
+    sockaddr_in m_addr{};
 
     Type m_type = Type::PUB;
 

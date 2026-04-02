@@ -190,22 +190,22 @@ public:
         if (nx_packet_data_append(packet_ptr, (VOID*)payload.data(), payload.size(), m_pool, NX_NO_WAIT) != NX_SUCCESS) 
             goto cleanup_and_fail;
 
-        // 4. Track Reliability
-        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
-            m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
-
-        // 5. Send
+        // 4. Send
         // nx_udp_socket_send typically releases the packet on internal errors.
         // However, if it fails due to binding issues (before driver), it might not.
         ret = nx_udp_socket_send(&m_socket, packet_ptr, m_targetIp, m_port);
-        
+
         if (ret != NX_SUCCESS) {
             // Defensive release: Verify if your specific NetX version auto-releases on specific errors.
             // Standard practice is often to release if send fails.
-            nx_packet_release(packet_ptr); 
+            nx_packet_release(packet_ptr);
             tx_mutex_put(&m_mutex);
             return -1;
         }
+
+        // 5. Track Reliability (after successful send only)
+        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
+            m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
 
         tx_mutex_put(&m_mutex);
         return 0;

@@ -176,15 +176,16 @@ public:
 
         auto data = ss.str();
 
+        ssize_t sent = sendto(m_socket, data.c_str(), data.size(), 0,
+            (struct sockaddr*)&m_addr, sizeof(m_addr));
+        if (sent != (ssize_t)data.size()) return -1;
+
         // Always track the message (unless it is an ACK)
         // Use Host Byte Order for ID check
         if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
 
-        ssize_t sent = sendto(m_socket, data.c_str(), data.size(), 0,
-            (struct sockaddr*)&m_addr, sizeof(m_addr));
-
-        return (sent == (ssize_t)data.size()) ? 0 : -1;
+        return 0;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override

@@ -103,9 +103,9 @@ public:
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override {
         if (m_type != Type::SUB) return -1;
-        int size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, NULL, NULL);
-        
-        if (size <= (int)DmqHeader::HEADER_SIZE) return -1;
+        ssize_t size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, NULL, NULL);
+
+        if (size <= (ssize_t)DmqHeader::HEADER_SIZE) return -1;
 
         xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);

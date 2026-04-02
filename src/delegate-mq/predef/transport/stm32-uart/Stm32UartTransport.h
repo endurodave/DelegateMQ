@@ -151,10 +151,6 @@ public:
         val = to_net(headerCopy.GetSeqNum()); memcpy(&packet[4], &val, 2);
         val = to_net(headerCopy.GetLength()); memcpy(&packet[6], &val, 2);
 
-        // Register with Monitor for Reliability (ACK tracking)
-        if (header.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
-             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
-
         // 2. Send Header
         if (HAL_UART_Transmit(m_huart, packet, DmqHeader::HEADER_SIZE, 100) != HAL_OK) {
             xSemaphoreGiveRecursive(m_mutex); return -1;
@@ -175,6 +171,10 @@ public:
             xSemaphoreGiveRecursive(m_mutex); return -1;
         }
 
+        // Register with Monitor for Reliability (ACK tracking) after successful send
+        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
+             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
+
         xSemaphoreGiveRecursive(m_mutex);
         return 0;
     }
@@ -192,9 +192,8 @@ public:
         // 1. Sync Loop
         // Reads from Ring Buffer. If empty, sleeps efficiently on Semaphore.
         while (true) {
-            if (ReadByteBlocked(b)) {
-                if (b == markerHigh) { headerBuf[0] = b; break; }
-            }
+            if (!ReadByteBlocked(b)) return -1;
+            if (b == markerHigh) { headerBuf[0] = b; break; }
         }
         
         // 2. Read Rest of Header

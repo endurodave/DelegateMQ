@@ -81,7 +81,7 @@ public:
     }
 
     // Helper: Swap Little Endian <-> Big Endian
-    uint16_t swap16(uint16_t v) { return (v << 8) | (v >> 8); }
+    static uint16_t swap16(uint16_t v) { return (v << 8) | (v >> 8); }
 
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
@@ -120,12 +120,14 @@ public:
 
         xstring packetData = ss.str();
 
-        if (header.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor) {
+        int result = sp_blocking_write(m_port, packetData.c_str(), packetData.length(), 1000);
+        if (result != (int)packetData.length()) return -1;
+
+        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor) {
             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
         }
 
-        int result = sp_blocking_write(m_port, packetData.c_str(), packetData.length(), 1000);
-        return (result == (int)packetData.length()) ? 0 : -1;
+        return 0;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override

@@ -21,8 +21,10 @@ class Serializer<RetType(Args...)> : public dmq::ISerializer<RetType(Args...)>
 {
 public:
     // Write arguments to a stream
-    virtual std::ostream& Write(std::ostream& os, Args... args) override {
+    virtual std::ostream& Write(std::ostream& os, const Args&... args) override {
         os.seekp(0, std::ios::beg);
+        if (auto* ss = dynamic_cast<xostringstream*>(&os))
+            ss->str("");
         serialize ser;
 #if defined(__cpp_exceptions)
         try {

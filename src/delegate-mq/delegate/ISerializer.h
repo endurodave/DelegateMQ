@@ -39,7 +39,7 @@ namespace dmq {
         /// @param[out] os The output stream (buffer) to write data to.
         /// @param[in] args The actual arguments passed to the delegate invocation.
         /// @return Reference to the output stream.
-        virtual std::ostream& Write(std::ostream& os, Args... args) = 0;
+        virtual std::ostream& Write(std::ostream& os, const Args&... args) = 0;
 
         /// @brief Deserializes data from the input stream into function arguments.
         /// 

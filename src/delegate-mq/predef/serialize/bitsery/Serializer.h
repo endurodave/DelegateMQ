@@ -42,7 +42,7 @@ public:
 
             // Clear stringstreams explicitly to avoid appending new data to old data.
             // DelegateMQ often reuses the stream object.
-            if (auto* ss = dynamic_cast<std::ostringstream*>(&os)) {
+            if (auto* ss = dynamic_cast<xostringstream*>(&os)) {
                 ss->str("");
             }
 

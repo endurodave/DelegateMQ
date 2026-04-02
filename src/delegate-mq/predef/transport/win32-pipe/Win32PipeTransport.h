@@ -41,6 +41,7 @@ public:
 
     int Create(Type type, LPCSTR pipeName)
     {
+        m_type = type;
         if (type == Type::PUB)
         {
             // Connect to an existing pipe (Client)
@@ -79,11 +80,13 @@ public:
         return 0;
     }
 
-    void Close() 
+    void Close()
     {
         if (m_hPipe != INVALID_HANDLE_VALUE)
         {
-            DisconnectNamedPipe(m_hPipe); // Good practice for server pipes
+            // DisconnectNamedPipe is a server (SUB) only API; skip for client (PUB)
+            if (m_type == Type::SUB)
+                DisconnectNamedPipe(m_hPipe);
             CloseHandle(m_hPipe);
             m_hPipe = INVALID_HANDLE_VALUE;
         }
@@ -193,9 +196,10 @@ public:
 
 private:
     // Increase buffer to Max Packet Size (64KB) to avoid truncation
-    static const int BUFFER_SIZE = 65536; 
+    static const int BUFFER_SIZE = 65536;
     char m_buffer[BUFFER_SIZE];
 
+    Type m_type = Type::PUB;
     HANDLE m_hPipe = INVALID_HANDLE_VALUE;
 };
 

@@ -30,7 +30,7 @@ class Serializer<RetType(Args...)> : public dmq::ISerializer<RetType(Args...)>
 {
 public:
     // Write arguments to a stream
-    virtual std::ostream& Write(std::ostream& os, Args... args) override {
+    virtual std::ostream& Write(std::ostream& os, const Args&... args) override {
         try {
             // Reset stream position. DelegateMQ reuses the stream instance.
             // If we don't reset, we append new data to old data, sending [Old][New] 
@@ -41,7 +41,7 @@ public:
             // sending "tail garbage" if the new packet is smaller than the previous one.
             // (Note: Even with garbage tail, msgpack works because it stops reading 
             // after the valid object, but clearing saves network bandwidth).
-            auto* ss = dynamic_cast<std::ostringstream*>(&os);
+            auto* ss = dynamic_cast<xostringstream*>(&os);
             if (ss) {
                 ss->str("");
             }

@@ -138,14 +138,16 @@ public:
 
         auto packet = ss.str();
 
+        // write() is thread-safe on Linux sockets
+        ssize_t sent = write(m_connFd, packet.data(), packet.size());
+        if (sent != (ssize_t)packet.size()) return -1;
+
         // Always track the message (unless it is an ACK)
         // Use Host Byte Order for ID check
         if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
 
-        // write() is thread-safe on Linux sockets
-        ssize_t sent = write(m_connFd, packet.data(), packet.size());
-        return (sent == (ssize_t)packet.size()) ? 0 : -1;
+        return 0;
     }
 
     virtual int Receive(xstringstream& is, DmqHeader& header) override

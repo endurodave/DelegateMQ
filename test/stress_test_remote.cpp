@@ -92,7 +92,7 @@ class TestSerializer;
 template<typename Ret, typename... Args>
 class TestSerializer<Ret(Args...)> : public ISerializer<Ret(Args...)> {
 public:
-    virtual std::ostream& Write(std::ostream& os, Args... args) override {
+    virtual std::ostream& Write(std::ostream& os, const Args&... args) override {
         (void)std::initializer_list<int>{ (os << args, 0)... };
         return os;
     }

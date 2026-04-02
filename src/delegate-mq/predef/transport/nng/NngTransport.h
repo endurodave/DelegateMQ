@@ -92,7 +92,7 @@ public:
             }
             // Set recv timeout to avoid blocking forever
             nng_duration timeout = 100; // 100ms
-            nng_setopt_ms(m_nngSocket, NNG_OPT_RECVTIMEO, timeout);
+            nng_socket_set_ms(m_nngSocket, NNG_OPT_RECVTIMEO, timeout);
         }
         else if (m_type == Type::PAIR_SERVER)
         {
@@ -108,7 +108,7 @@ public:
             }
             // Set recv timeout
             nng_duration timeout = 100; // 100ms
-            nng_setopt_ms(m_nngSocket, NNG_OPT_RECVTIMEO, timeout);
+            nng_socket_set_ms(m_nngSocket, NNG_OPT_RECVTIMEO, timeout);
         }
         else if (m_type == Type::PUB)
         {
@@ -137,7 +137,7 @@ public:
             }
 
             // Subscribe to all messages
-            rc = nng_setopt(m_nngSocket, NNG_OPT_SUB_SUBSCRIBE, "", 0);
+            rc = nng_socket_set(m_nngSocket, NNG_OPT_SUB_SUBSCRIBE, "", 0);
             if (rc != 0) {
                 std::cerr << "Failed to set subscription filter: " << nng_strerror(rc) << std::endl;
                 return rc;
@@ -145,7 +145,7 @@ public:
             
             // Set recv timeout
             nng_duration timeout = 100; // 100ms
-            nng_setopt_ms(m_nngSocket, NNG_OPT_RECVTIMEO, timeout);
+            nng_socket_set_ms(m_nngSocket, NNG_OPT_RECVTIMEO, timeout);
         }
         else
         {
@@ -223,12 +223,6 @@ public:
 
         auto fullPacket = ss.str();
 
-        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID)
-        {
-            if (m_transportMonitor)
-                m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
-        }
-
         // Send data using NNG
         // Use NNG_FLAG_NONBLOCK to prevent deadlocks if peer is gone
         int err = nng_send(m_nngSocket, (void*)fullPacket.data(), fullPacket.size(), NNG_FLAG_NONBLOCK);
@@ -239,6 +233,12 @@ public:
                 // std::cerr << "nng_send failed with error: " << nng_strerror(err) << std::endl;
             }
             return -1;
+        }
+
+        if (headerCopy.GetId() != dmq::ACK_REMOTE_ID)
+        {
+            if (m_transportMonitor)
+                m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
         }
 
         return 0;

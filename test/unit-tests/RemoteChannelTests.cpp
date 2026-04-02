@@ -126,7 +126,7 @@ namespace RemoteChannelTest
     template<class RetType, class... Args>
     class RCSerializer<RetType(Args...)> : public ISerializer<RetType(Args...)> {
     public:
-        std::ostream& Write(std::ostream& os, Args... args) override {
+        std::ostream& Write(std::ostream& os, const Args&... args) override {
             serialize_args(os, args...);
             return os;
         }

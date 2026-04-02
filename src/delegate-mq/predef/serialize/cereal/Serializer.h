@@ -13,12 +13,7 @@
 #include <cereal/types/vector.hpp>
 #include "delegate/ISerializer.h"
 #include <iostream>
-#include <type_traits>
 #include <sstream>
-
-// Type trait to check if a type is const
-template <typename T>
-using is_const_type = std::is_const<std::remove_reference_t<T>>;
 
 template <class R>
 struct Serializer; // Not defined
@@ -29,9 +24,11 @@ class Serializer<RetType(Args...)> : public dmq::ISerializer<RetType(Args...)>
 {
 public:
     // Write arguments to a stream
-    virtual std::ostream& Write(std::ostream& os, Args... args) override {
+    virtual std::ostream& Write(std::ostream& os, const Args&... args) override {
         try {
             os.seekp(0);
+            if (auto* ss = dynamic_cast<xostringstream*>(&os))
+                ss->str("");
             cereal::BinaryOutputArchive archive(os);
             (archive(args), ...); // C++17 fold expression to serialize each argument
         }

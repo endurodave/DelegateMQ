@@ -220,7 +220,15 @@ public:
         // Insert delegate arguments (payload)
         ss.write(payload.data(), payload.size());
 
-        size_t length = ss.str().length();
+        auto fullPacket = ss.str();
+
+        // Send delegate argument data using ZeroMQ
+        int err = zmq_send(m_zmq, fullPacket.c_str(), fullPacket.size(), ZMQ_DONTWAIT);
+        if (err == -1)
+        {
+            // EAGAIN is common if queue is full, treat as error so RetryMonitor retries
+            return zmq_errno();
+        }
 
         if (headerCopy.GetId() != dmq::ACK_REMOTE_ID)
         {
@@ -228,13 +236,6 @@ public:
                 m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
         }
 
-        // Send delegate argument data using ZeroMQ
-        int err = zmq_send(m_zmq, ss.str().c_str(), length, ZMQ_DONTWAIT);
-        if (err == -1)
-        {
-            // EAGAIN is common if queue is full, treat as error so RetryMonitor retries
-            return zmq_errno();
-        }
         return 0;
     }
 
