@@ -14,7 +14,6 @@ While the core library (`namespace dmq`) provides the fundamental mechanism for 
 
 ### 2. Timing & Scheduling
 * **`Timer.h`**: A complete software timer system capable of one-shot and periodic callbacks via delegates.
-* **`BareMetalClock.h` / `FreeRTOSClock.h`**: Platform-specific system tick abstractions used by the `Timer` class.
 
 ### 3. Reliability Layer (QoS)
 These classes provide transport-layer reliability (ACKs and Retries) over unreliable media (like UDP or Serial).
@@ -28,7 +27,6 @@ These classes provide transport-layer reliability (ACKs and Retries) over unreli
 
 ### 5. System Utilities
 * **`Fault.h`**: Assertions and fault trapping macros (`ASSERT_TRUE`, `FAULT_Handler`) used throughout the library examples.
-* **`FreeRTOSMutex.h`**: Recursive mutex wrapper for FreeRTOS synchronization.
 * **`crc16.h`**: Checksum utility for data integrity in serial/UDP headers.
 
 ## Usage

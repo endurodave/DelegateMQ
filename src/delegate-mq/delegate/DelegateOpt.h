@@ -73,24 +73,24 @@
     #include <condition_variable>
 #elif defined(DMQ_THREAD_FREERTOS)
     #include <mutex>
-    #include "extras/util/FreeRTOSClock.h"
-    #include "extras/util/FreeRTOSMutex.h"
-    #include "extras/util/FreeRTOSConditionVariable.h"
+    #include "port/os/freertos/FreeRTOSClock.h"
+    #include "port/os/freertos/FreeRTOSMutex.h"
+    #include "port/os/freertos/FreeRTOSConditionVariable.h"
 #elif defined(DMQ_THREAD_THREADX)
     #include <mutex>
-    #include "extras/util/ThreadXClock.h"
-    #include "extras/util/ThreadXMutex.h"
-    #include "extras/util/ThreadXConditionVariable.h"
+    #include "port/os/threadx/ThreadXClock.h"
+    #include "port/os/threadx/ThreadXMutex.h"
+    #include "port/os/threadx/ThreadXConditionVariable.h"
 #elif defined(DMQ_THREAD_ZEPHYR)
-    #include "extras/util/ZephyrClock.h"
-    #include "extras/util/ZephyrMutex.h"
+    #include "port/os/zephyr/ZephyrClock.h"
+    #include "port/os/zephyr/ZephyrMutex.h"
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
-    #include "extras/util/CmsisRtos2Clock.h"
-    #include "extras/util/CmsisRtos2Mutex.h"
+    #include "port/os/cmsis-rtos2/CmsisRtos2Clock.h"
+    #include "port/os/cmsis-rtos2/CmsisRtos2Mutex.h"
 #elif defined(DMQ_THREAD_NONE)
-    #include "extras/util/BareMetalClock.h"
+    #include "port/os/bare-metal/BareMetalClock.h"
 #else
-    #include "extras/util/BareMetalClock.h"
+    #include "port/os/bare-metal/BareMetalClock.h"
 #endif
 
 namespace dmq
