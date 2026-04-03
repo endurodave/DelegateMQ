@@ -10,7 +10,7 @@
 /// * **MockTransport:** Implements `ITransport` — `Send()` stores the serialized payload
 ///   and `DmqHeader` in a shared buffer; `Receive()` retrieves them for the polling side.
 /// * **Data:** User-defined type inheriting `serialize::I` — binary serialization
-///   handled by `msg_serialize` via the predef `Serializer<>`.
+///   handled by `msg_serialize` via the predefined `Serializer<>`.
 /// * **RemoteChannel<Sig>:** Single setup object per message signature — owns the
 ///   `Dispatcher`, stream, and serializer. `Bind()` wires everything in one call.
 /// * **Active Objects:** Both `Sender` and `Receiver` run on their own `Thread` and

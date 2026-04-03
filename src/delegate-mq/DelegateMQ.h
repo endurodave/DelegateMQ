@@ -120,26 +120,26 @@
 #endif
 
 #if defined(DMQ_THREAD_STDLIB)
-    #include "predef/os/stdlib/Thread.h"
-    #include "predef/os/stdlib/ThreadMsg.h"
+    #include "port/os/stdlib/Thread.h"
+    #include "port/os/stdlib/ThreadMsg.h"
 #elif defined(DMQ_THREAD_WIN32)
-    #include "predef/os/win32/Thread.h"
-    #include "predef/os/win32/ThreadMsg.h"
+    #include "port/os/win32/Thread.h"
+    #include "port/os/win32/ThreadMsg.h"
 #elif defined(DMQ_THREAD_FREERTOS)
-    #include "predef/os/freertos/Thread.h"
-    #include "predef/os/freertos/ThreadMsg.h"
+    #include "port/os/freertos/Thread.h"
+    #include "port/os/freertos/ThreadMsg.h"
 #elif defined(DMQ_THREAD_THREADX)
-    #include "predef/os/threadx/Thread.h"
-    #include "predef/os/threadx/ThreadMsg.h"
+    #include "port/os/threadx/Thread.h"
+    #include "port/os/threadx/ThreadMsg.h"
 #elif defined(DMQ_THREAD_ZEPHYR)
-    #include "predef/os/zephyr/Thread.h"
-    #include "predef/os/zephyr/ThreadMsg.h"
+    #include "port/os/zephyr/Thread.h"
+    #include "port/os/zephyr/ThreadMsg.h"
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
-    #include "predef/os/cmsis-rtos2/Thread.h"
-    #include "predef/os/cmsis-rtos2/ThreadMsg.h"
+    #include "port/os/cmsis-rtos2/Thread.h"
+    #include "port/os/cmsis-rtos2/ThreadMsg.h"
 #elif defined(DMQ_THREAD_QT)
-    #include "predef/os/qt/Thread.h"
-    #include "predef/os/qt/ThreadMsg.h"
+    #include "port/os/qt/Thread.h"
+    #include "port/os/qt/ThreadMsg.h"
 #elif defined(DMQ_THREAD_NONE)
     // Bare metal: User must implement their own polling/interrupt logic
 #else
@@ -148,15 +148,15 @@
 #endif
 
 #if defined(DMQ_SERIALIZE_MSGPACK)
-    #include "predef/serialize/msgpack/Serializer.h"
+    #include "port/serialize/msgpack/Serializer.h"
 #elif defined(DMQ_SERIALIZE_CEREAL)
-    #include "predef/serialize/cereal/Serializer.h"
+    #include "port/serialize/cereal/Serializer.h"
 #elif defined(DMQ_SERIALIZE_BITSERY)
-    #include "predef/serialize/bitsery/Serializer.h"
+    #include "port/serialize/bitsery/Serializer.h"
 #elif defined(DMQ_SERIALIZE_RAPIDJSON)
-    #include "predef/serialize/rapidjson/Serializer.h"
+    #include "port/serialize/rapidjson/Serializer.h"
 #elif defined(DMQ_SERIALIZE_SERIALIZE)
-    #include "predef/serialize/serialize/Serializer.h"
+    #include "port/serialize/serialize/Serializer.h"
 #elif defined(DMQ_SERIALIZE_NONE)
     // Create a custom application-specific serializer
 #else
@@ -164,54 +164,54 @@
 #endif
 
 #if defined(DMQ_TRANSPORT_ZEROMQ)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/zeromq/ZeroMqTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/zeromq/ZeroMqTransport.h"
 #elif defined(DMQ_TRANSPORT_NNG)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/nng/NngTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/nng/NngTransport.h"
 #elif defined(DMQ_TRANSPORT_WIN32_PIPE)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/win32-pipe/Win32PipeTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/win32-pipe/Win32PipeTransport.h"
 #elif defined(DMQ_TRANSPORT_WIN32_UDP)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/win32-udp/Win32UdpTransport.h"
-    #include "predef/transport/win32-udp/MulticastTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/win32-udp/Win32UdpTransport.h"
+    #include "port/transport/win32-udp/MulticastTransport.h"
 #elif defined(DMQ_TRANSPORT_WIN32_TCP)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/win32-tcp/Win32TcpTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/win32-tcp/Win32TcpTransport.h"
 #elif defined(DMQ_TRANSPORT_LINUX_UDP)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/linux-udp/LinuxUdpTransport.h"
-    #include "predef/transport/linux-udp/MulticastTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/linux-udp/LinuxUdpTransport.h"
+    #include "port/transport/linux-udp/MulticastTransport.h"
 #elif defined(DMQ_TRANSPORT_LINUX_TCP)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/linux-tcp/LinuxTcpTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/linux-tcp/LinuxTcpTransport.h"
 #elif defined(DMQ_TRANSPORT_MQTT)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/mqtt/MqttTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/mqtt/MqttTransport.h"
 #elif defined(DMQ_TRANSPORT_SERIAL_PORT)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/serial/SerialTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/serial/SerialTransport.h"
 #elif defined(DMQ_TRANSPORT_ARM_LWIP_UDP)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/arm-lwip-udp/ArmLwipUdpTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/arm-lwip-udp/ArmLwipUdpTransport.h"
 #elif defined(DMQ_TRANSPORT_ARM_LWIP_NETCONN_UDP)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/arm-lwip-netconn-udp/ArmLwipNetconnUdpTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/arm-lwip-netconn-udp/ArmLwipNetconnUdpTransport.h"
 #elif defined(DMQ_TRANSPORT_THREADX_UDP)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/threadx-udp/NetXUdpTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/threadx-udp/NetXUdpTransport.h"
 #elif defined(DMQ_TRANSPORT_STM32_UART)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/stm32-uart/Stm32UartTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/stm32-uart/Stm32UartTransport.h"
 #elif defined(DMQ_TRANSPORT_ZEPHYR_UDP)
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/zephyr-udp/ZephyrUdpTransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/zephyr-udp/ZephyrUdpTransport.h"
 #elif defined(DMQ_TRANSPORT_NONE)
     // No built-in transport. Include the interface and dispatcher so application code
     // can implement a custom ITransport and use RemoteChannel with a mock or stub.
-    #include "predef/dispatcher/Dispatcher.h"
-    #include "predef/transport/ITransport.h"
+    #include "extras/dispatcher/Dispatcher.h"
+    #include "port/transport/ITransport.h"
 #else
     #warning "Transport implementation not found."
 #endif
@@ -228,28 +228,28 @@
     defined(DMQ_TRANSPORT_ARM_LWIP_NETCONN_UDP) || defined(DMQ_TRANSPORT_THREADX_UDP) || \
     defined(DMQ_TRANSPORT_STM32_UART) || defined(DMQ_TRANSPORT_ZEPHYR_UDP) || \
     defined(DMQ_TRANSPORT_NONE)
-    #include "predef/dispatcher/RemoteChannel.h"
+    #include "extras/dispatcher/RemoteChannel.h"
 #endif
 
-#include "predef/util/Fault.h"
+#include "extras/util/Fault.h"
 
 // Only include Timer and AsyncInvoke if threads exist
 #if !defined(DMQ_THREAD_NONE)
-    #include "predef/util/Timer.h"
-    #include "predef/util/AsyncInvoke.h"
-    #include "predef/util/TransportMonitor.h"
+    #include "extras/util/Timer.h"
+    #include "extras/util/AsyncInvoke.h"
+    #include "extras/util/TransportMonitor.h"
 #endif
 
 // Only include NetworkEngine if a transport that uses it is active
 #if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || \
     defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART) || \
     defined(DMQ_TRANSPORT_SERIAL_PORT)
-    #include "predef/util/NetworkEngine.h"
+    #include "extras/util/NetworkEngine.h"
 #endif
 
 #if defined(DMQ_DATABUS)
-    #include "predef/databus/DataBus.h"
-    #include "predef/databus/Participant.h"
+    #include "extras/databus/DataBus.h"
+    #include "extras/databus/Participant.h"
 #endif
 
 #endif

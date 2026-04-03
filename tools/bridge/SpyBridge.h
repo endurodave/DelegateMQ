@@ -5,8 +5,8 @@
 #ifndef SPY_BRIDGE_H
 #define SPY_BRIDGE_H
 
-#include "predef/databus/DataBus.h"
-#include "predef/databus/SpyPacket.h"
+#include "extras/databus/DataBus.h"
+#include "extras/databus/SpyPacket.h"
 #include <string>
 #include <thread>
 #include <atomic>

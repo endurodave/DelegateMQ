@@ -19,7 +19,7 @@
 #include <algorithm>
 
 #include "UdpSocket.h"
-#include "predef/databus/SpyPacket.h"
+#include "extras/databus/SpyPacket.h"
 #include <bitsery/bitsery.h>
 #include <bitsery/adapter/buffer.h>
 #include <bitsery/traits/vector.h>
@@ -28,7 +28,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include "predef/util/NetworkConnect.h"
+#include "extras/util/NetworkConnect.h"
 
 using namespace ftxui;
 

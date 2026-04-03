@@ -14,7 +14,7 @@ MessagePack serialization — the same protocol spoken by the C++ DataBus librar
 ## Wire Protocol
 
 All implementations speak the same 8-byte header protocol defined in
-`src/delegate-mq/predef/transport/DmqHeader.h`.
+`src/delegate-mq/port/transport/DmqHeader.h`.
 
 ### DmqHeader (8 bytes, Network Byte Order / Big Endian)
 

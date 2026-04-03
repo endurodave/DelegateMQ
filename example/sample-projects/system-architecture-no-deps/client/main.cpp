@@ -13,7 +13,7 @@
 #include "AlarmMgr.h"
 #include "DataMgr.h"
 #include "ClientApp.h"
-#include "predef/util/NetworkConnect.h"
+#include "extras/util/NetworkConnect.h"
 #include <thread>
 
 #ifdef _WIN32

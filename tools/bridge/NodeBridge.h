@@ -16,7 +16,7 @@
 #ifndef NODE_BRIDGE_H
 #define NODE_BRIDGE_H
 
-#include "predef/databus/DataBus.h"
+#include "extras/databus/DataBus.h"
 #include "NodeInfoPacket.h"
 #include <string>
 #include <thread>

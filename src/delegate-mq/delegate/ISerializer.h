@@ -21,7 +21,7 @@ namespace dmq {
     /// into a byte stream (for network transport) and back again. 
     ///
     /// Users must implement this interface for the specific function signatures they intend to call 
-    /// remotely, OR use one of the pre-defined serializers provided in `predef/serialize` 
+    /// remotely, OR use one of the pre-defined serializers provided in `port/serialize`
     /// (e.g., MessagePack, JSON, Cereal).
     /// 
     /// @tparam RetType The return type of the function signature.

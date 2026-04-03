@@ -261,8 +261,8 @@ if(DMQ_THREAD STREQUAL "DMQ_THREAD_QT")
 
     # Collect the source files
     file(GLOB THREAD_SOURCES 
-        "${DMQ_ROOT_DIR}/predef/os/qt/*.cpp" 
-        "${DMQ_ROOT_DIR}/predef/os/qt/*.h" 
+        "${DMQ_ROOT_DIR}/port/os/qt/*.cpp" 
+        "${DMQ_ROOT_DIR}/port/os/qt/*.h" 
     )
     
     # Important: Enable CMAKE_AUTOMOC for the Qt Meta-Object system 

@@ -268,11 +268,11 @@ include("${CMAKE_SOURCE_DIR}/path/to/delegate-mq/DelegateMQ.cmake")
 
 Update `External.cmake` external library paths if necessary.
 
-Add `DMQ_PREDEF_SOURCES` to your sources if using the predefined supporting DelegateMQ classes (e.g. `Thread`, `Serialize`, ...).
+Add `DMQ_PORT_SOURCES` to your sources if using the predefined supporting DelegateMQ classes (e.g. `Thread`, `Serialize`, ...).
 
 ```
-# Collect DelegateMQ predef source files
-list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+# Collect DelegateMQ port/extras source files
+list(APPEND SOURCES ${DMQ_PORT_SOURCES})
 ```
 
 Add external library include paths defined within `External.cmake` as necessary.
@@ -303,7 +303,7 @@ using namespace dmq;
 // Your DelegateMQ code...
 ```
 
-**Note:** If using utility features (like `Thread` or `Timer`), ensure you compile and link the corresponding `.cpp` files found in the `delegate-mq/predef` directory.
+**Note:** If using utility features (like `Thread` or `Timer`), ensure you compile and link the corresponding `.cpp` files found in the `delegate-mq/port` and `delegate-mq/extras` directories.
 
 # Quick Start
 

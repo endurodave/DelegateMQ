@@ -1,5 +1,5 @@
 #include "DelegateMQ.h"
-#include "predef/dispatcher/RemoteChannel.h"
+#include "extras/dispatcher/RemoteChannel.h"
 #include "UnitTestCommon.h"
 #include <iostream>
 #include <sstream>
@@ -118,7 +118,7 @@ namespace RemoteChannelTest
         deserialize_args(is, rest...);
     }
 
-    // ---- test serializer (named RCSerializer to avoid clash with predef Serializer) ---
+    // ---- test serializer (named RCSerializer to avoid clash with predefined Serializer) ---
 
     template <class R>
     struct RCSerializer; // Not defined

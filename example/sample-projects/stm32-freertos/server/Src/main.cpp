@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 // Include the Transport Header to define the Global Instance + Callback
-#include "../../src/delegate-mq/predef/transport/stm32-uart/Stm32UartTransport.h"
+#include "../../src/delegate-mq/port/transport/stm32-uart/Stm32UartTransport.h"
 
 // ============================================================================
 // TEST SELECTION

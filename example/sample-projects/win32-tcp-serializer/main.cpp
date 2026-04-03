@@ -6,7 +6,7 @@
 
 #include "sender.h"
 #include "receiver.h"
-#include "predef/util/NetworkConnect.h"
+#include "extras/util/NetworkConnect.h"
 
 std::atomic<bool> processTimerExit = false;
 static void ProcessTimers()

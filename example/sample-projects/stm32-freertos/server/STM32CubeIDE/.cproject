@@ -122,7 +122,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="delegate-mq/predef/os/win32|delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="delegate-mq/port|delegate-mq/port/os|delegate-mq/predef/os/win32|delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="delegate-mq/port/os/freertos"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -224,7 +225,8 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="delegate-mq/predef/os/win32|delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="delegate-mq/port|delegate-mq/port/os|delegate-mq/predef/os/win32|delegate-mq/predef/os/zephyr|delegate-mq/predef/os/threadx|delegate-mq/predef/os/stdlib|delegate-mq/predef/os/qt|delegate-mq/predef/os/cmsis-rtos2" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="delegate-mq/port/os/freertos"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

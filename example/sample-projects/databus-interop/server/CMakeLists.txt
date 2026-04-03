@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 set(DELEGATE_APP "delegate_databus_interop_server")
 project(DataBusInteropServer VERSION 1.0 LANGUAGES CXX)
 
-# @TODO: Set build options (see Predef.cmake). 
+# @TODO: Set build options (see Port.cmake). 
 # Rerun cmake configuration and clean/rebuild if you change these settings
 # The DelegateMQ library auto-selects defaults based on the target platform.
 # Override defaults by setting the variables below before including DelegateMQ.cmake.
@@ -19,11 +19,12 @@ endif()
 
 # Collect source files
 file(GLOB SOURCES "*.cpp" "*.h")
-list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+list(APPEND SOURCES ${DMQ_PORT_SOURCES})
 
 # Organize in IDE
 source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
-source_group("Predef Files"   FILES ${DMQ_PREDEF_SOURCES})
+source_group("Port Files" FILES ${DMQ_PORT_ONLY_SOURCES})
+source_group("Extras Files" FILES ${DMQ_EXTRAS_SOURCES})
 
 # Include paths
 include_directories(

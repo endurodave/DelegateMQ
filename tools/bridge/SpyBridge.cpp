@@ -11,9 +11,9 @@
 #include <iostream>
 
 #if defined(_WIN32) || defined(_WIN64)
-#include "predef/transport/win32-udp/MulticastTransport.h"
+#include "port/transport/win32-udp/MulticastTransport.h"
 #else
-#include "predef/transport/linux-udp/MulticastTransport.h"
+#include "port/transport/linux-udp/MulticastTransport.h"
 #endif
 
 void SpyBridge::Start(const std::string& address, uint16_t port) {

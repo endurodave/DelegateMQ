@@ -25,8 +25,8 @@ include("${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/DelegateMQ.cmake")
 # Collect all .cpp and .h source files in this directory
 file(GLOB SOURCES "*.cpp" "*.h")
 
-# Collect DelegateMQ predef source files
-list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+# Collect DelegateMQ port/extras source files
+list(APPEND SOURCES ${DMQ_PORT_SOURCES})
 
 # Add subdirectories to include path
 include_directories(${DMQ_INCLUDE_DIR})

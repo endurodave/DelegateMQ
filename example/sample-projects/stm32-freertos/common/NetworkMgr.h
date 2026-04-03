@@ -13,7 +13,7 @@
 #include "CommandMsg.h"
 #include "ActuatorMsg.h"
 
-#include "predef/util/NetworkEngine.h"
+#include "extras/util/NetworkEngine.h"
 
 /// @brief NetworkMgr sends and receives data using a DelegateMQ transport implemented
 /// with Windows UDP sockets and msg_serialize. Class is thread safe. All public APIs are

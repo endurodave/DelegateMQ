@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 set(DELEGATE_APP "delegate_databus_shapes_client")
 project(DelegateDataBusShapesClient VERSION 1.0 LANGUAGES CXX)
 
-# @TODO: Set build options (see Predef.cmake). 
+# @TODO: Set build options (see Port.cmake). 
 # Rerun cmake configuration and clean/rebuild if you change these settings
 # The DelegateMQ library auto-selects defaults based on the target platform.
 # Override defaults by setting the variables below before including DelegateMQ.cmake.
@@ -52,12 +52,13 @@ endif()
 file(GLOB COMMON_SOURCES "${CMAKE_SOURCE_DIR}/../common/*.h" "${CMAKE_SOURCE_DIR}/../common/*.cpp")
 set_source_files_properties(${COMMON_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
-# Collect DelegateMQ predef source files
-list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+# Collect DelegateMQ port/extras source files
+list(APPEND SOURCES ${DMQ_PORT_SOURCES})
 
 # Organize source files within IDE (Visual Studio)
 source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
-source_group("Predef Files" FILES ${DMQ_PREDEF_SOURCES})
+source_group("Port Files" FILES ${DMQ_PORT_ONLY_SOURCES})
+source_group("Extras Files" FILES ${DMQ_EXTRAS_SOURCES})
 source_group("Common Files" FILES ${COMMON_SOURCES})
 
 # Add subdirectories to include path

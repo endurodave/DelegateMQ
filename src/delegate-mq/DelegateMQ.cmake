@@ -4,7 +4,7 @@
 #
 #   DMQ_INCLUDE_DIR - the directory containing DelegateMQ headers.
 #   DMQ_LIB_SOURCES - the core DelegateMQ delegate library files.
-#   DMQ_PREDEF_SOURCES - the predefined supporting source code files 
+#   DMQ_PORT_SOURCES - the predefined supporting source code files 
 #   based on the DMQ build options.
 #
 # Set DMQ build options:
@@ -15,8 +15,8 @@
 #
 # Use variables to build:
 #
-#   # Collect DelegateMQ predef source files
-#   list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+#   # Collect DelegateMQ port/extras source files
+#   list(APPEND SOURCES ${DMQ_PORT_SOURCES})
 #
 #   # Add include directory
 #   include_directories(${DMQ_INCLUDE_DIR})
@@ -44,8 +44,8 @@ include ("${DMQ_ROOT_DIR}/Macros.cmake")
 check("${DMQ_ROOT_DIR}/Common.cmake")
 include ("${DMQ_ROOT_DIR}/Common.cmake")
 
-check("${DMQ_ROOT_DIR}/Predef.cmake")
-include ("${DMQ_ROOT_DIR}/Predef.cmake")
+check("${DMQ_ROOT_DIR}/Port.cmake")
+include ("${DMQ_ROOT_DIR}/Port.cmake")
 
 check("${DMQ_ROOT_DIR}/External.cmake")
 include ("${DMQ_ROOT_DIR}/External.cmake")

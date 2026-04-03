@@ -1,7 +1,7 @@
 #ifndef SYSTEM_MESSAGES_H
 #define SYSTEM_MESSAGES_H
 
-#include "predef/serialize/serialize/msg_serialize.h"
+#include "port/serialize/serialize/msg_serialize.h"
 #include <string>
 
 // Message representing a shape's position and color

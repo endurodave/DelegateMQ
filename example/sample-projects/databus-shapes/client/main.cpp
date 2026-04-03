@@ -20,7 +20,7 @@
 #include <map>
 #include <atomic>
 
-#include "predef/util/NetworkConnect.h"
+#include "extras/util/NetworkConnect.h"
 
 #ifdef DMQ_DATABUS_TOOLS
 #include "NodeBridge.h"

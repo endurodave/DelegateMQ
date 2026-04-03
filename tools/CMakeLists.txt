@@ -35,11 +35,6 @@ else()
     message(FATAL_ERROR "spdlog not found at ${SPDLOG_DIR}. Run 01_fetch_repos.py first.")
 endif()
 
-if(MSVC)
-    add_compile_options("/utf-8")
-    add_compile_definitions(_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
-endif()
-
 set(COMMON_INCLUDES
     ${DMQ_INCLUDE_DIR}
     "${BITSERY_DIR}/include"
@@ -51,7 +46,7 @@ set(COMMON_INCLUDES
 add_executable(dmq-spy
     spy/main.cpp
     ${DMQ_LIB_SOURCES}
-    ${DMQ_PREDEF_SOURCES}
+    ${DMQ_PORT_SOURCES}
 )
 target_include_directories(dmq-spy PRIVATE ${COMMON_INCLUDES})
 target_link_libraries(dmq-spy PRIVATE
@@ -65,7 +60,7 @@ target_link_libraries(dmq-spy PRIVATE
 add_executable(dmq-monitor
     monitor/monitor_main.cpp
     ${DMQ_LIB_SOURCES}
-    ${DMQ_PREDEF_SOURCES}
+    ${DMQ_PORT_SOURCES}
 )
 target_include_directories(dmq-monitor PRIVATE
     ${COMMON_INCLUDES}
@@ -83,7 +78,7 @@ add_executable(dmq-target
     bridge/SpyBridge.cpp
     bridge/NodeBridge.cpp
     ${DMQ_LIB_SOURCES}
-    ${DMQ_PREDEF_SOURCES}
+    ${DMQ_PORT_SOURCES}
 )
 target_include_directories(dmq-target PRIVATE
     ${COMMON_INCLUDES}

@@ -73,24 +73,24 @@
     #include <condition_variable>
 #elif defined(DMQ_THREAD_FREERTOS)
     #include <mutex>
-    #include "predef/util/FreeRTOSClock.h"
-    #include "predef/util/FreeRTOSMutex.h"
-    #include "predef/util/FreeRTOSConditionVariable.h"
+    #include "extras/util/FreeRTOSClock.h"
+    #include "extras/util/FreeRTOSMutex.h"
+    #include "extras/util/FreeRTOSConditionVariable.h"
 #elif defined(DMQ_THREAD_THREADX)
     #include <mutex>
-    #include "predef/util/ThreadXClock.h"
-    #include "predef/util/ThreadXMutex.h"
-    #include "predef/util/ThreadXConditionVariable.h"
+    #include "extras/util/ThreadXClock.h"
+    #include "extras/util/ThreadXMutex.h"
+    #include "extras/util/ThreadXConditionVariable.h"
 #elif defined(DMQ_THREAD_ZEPHYR)
-    #include "predef/util/ZephyrClock.h"
-    #include "predef/util/ZephyrMutex.h"
+    #include "extras/util/ZephyrClock.h"
+    #include "extras/util/ZephyrMutex.h"
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
-    #include "predef/util/CmsisRtos2Clock.h"
-    #include "predef/util/CmsisRtos2Mutex.h"
+    #include "extras/util/CmsisRtos2Clock.h"
+    #include "extras/util/CmsisRtos2Mutex.h"
 #elif defined(DMQ_THREAD_NONE)
-    #include "predef/util/BareMetalClock.h"
+    #include "extras/util/BareMetalClock.h"
 #else
-    #include "predef/util/BareMetalClock.h"
+    #include "extras/util/BareMetalClock.h"
 #endif
 
 namespace dmq
@@ -199,32 +199,32 @@ namespace dmq
     #endif
 #endif
 
-// @TODO: Select the desired software fault handling (see Predef.cmake).
+// @TODO: Select the desired software fault handling (see Port.cmake).
 #ifdef DMQ_ASSERTS
-    #include "predef/util/Fault.h"
+    #include "extras/util/Fault.h"
     #include <cassert>
     // Use assert error handling. Change assert to a different error 
     // handler as required by the target application.
     #define BAD_ALLOC() assert(false && "Memory allocation failed!")
 #else
-    #include "predef/util/Fault.h"
+    #include "extras/util/Fault.h"
     #include <new>
     // Use exception error handling
     #define BAD_ALLOC() throw std::bad_alloc()
 #endif
 
-// @TODO: Select the desired heap allocation (see Predef.cmake).
+// @TODO: Select the desired heap allocation (see Port.cmake).
 // If DMQ_ASSERTS defined above, consider defining DMQ_ALLOCATOR to prevent 
 // std::list usage within delegate library from throwing a std::bad_alloc 
 // exception. The std_allocator calls assert if out of memory. 
 // See master CMakeLists.txt for info on enabling the fixed-block allocator.
 #ifdef DMQ_ALLOCATOR
     // Use stl_allocator fixed-block allocator for dynamic storage allocation
-    #include "predef/allocator/xstring.h"
-    #include "predef/allocator/xlist.h"
-    #include "predef/allocator/xsstream.h"
-    #include "predef/allocator/stl_allocator.h"
-    #include "predef/allocator/xnew.h"
+    #include "extras/allocator/xstring.h"
+    #include "extras/allocator/xlist.h"
+    #include "extras/allocator/xsstream.h"
+    #include "extras/allocator/stl_allocator.h"
+    #include "extras/allocator/xnew.h"
 #else
     #include <string>
     #include <list>
@@ -268,7 +268,7 @@ namespace dmq
     }
 #endif
 
-// @TODO: Select the desired logging (see Predef.cmake).
+// @TODO: Select the desired logging (see Port.cmake).
 #ifdef DMQ_LOG
     #include <spdlog/spdlog.h>
     #define LOG_INFO(...)    spdlog::info(__VA_ARGS__)

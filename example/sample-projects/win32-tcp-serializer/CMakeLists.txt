@@ -16,12 +16,13 @@ include("${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/DelegateMQ.cmake")
 # Collect all .cpp and *.h source files in the src directory
 file(GLOB SOURCES "*.cpp" "*.h")
 
-# Collect DelegateMQ predef source files
-list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+# Collect DelegateMQ port/extras source files
+list(APPEND SOURCES ${DMQ_PORT_SOURCES})
 
 # Organize delegate source files within IDE (Visual Studio)
 source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
-source_group("Predef Files" FILES ${DMQ_PREDEF_SOURCES})
+source_group("Port Files" FILES ${DMQ_PORT_ONLY_SOURCES})
+source_group("Extras Files" FILES ${DMQ_EXTRAS_SOURCES})
 
 # Add subdirectories to include path
 include_directories( 

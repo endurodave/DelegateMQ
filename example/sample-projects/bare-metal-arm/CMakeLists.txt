@@ -24,7 +24,7 @@ set(DMQ_SERIALIZE "DMQ_SERIALIZE_NONE")
 set(DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")
 
 include("${CMAKE_SOURCE_DIR}/../../../src/delegate-mq/DelegateMQ.cmake")
-list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+list(APPEND SOURCES ${DMQ_PORT_SOURCES})
 include_directories(${DMQ_INCLUDE_DIR})
 
 # Create executable

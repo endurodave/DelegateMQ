@@ -17,7 +17,7 @@
 #include "DelegateMQ.h"
 #include "SystemMessages.h"
 #include "SystemIds.h"
-#include "predef/util/NetworkConnect.h"
+#include "extras/util/NetworkConnect.h"
 
 #include <iostream>
 #include <thread>

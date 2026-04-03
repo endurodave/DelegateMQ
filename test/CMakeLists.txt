@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.16)
 set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
 
-# @TODO: Set build options (see Predef.cmake). 
+# @TODO: Set build options (see Port.cmake). 
 # Rerun cmake configuration and clean/rebuild if you change these settings
 # The DelegateMQ library auto-selects defaults based on the target platform.
 # Override defaults by setting the variables below before including DelegateMQ.cmake.
@@ -20,20 +20,16 @@ project(Delegate VERSION 1.0 LANGUAGES CXX)
 # Include master delegate cmake build options
 include("${CMAKE_CURRENT_SOURCE_DIR}/../src/delegate-mq/DelegateMQ.cmake")
 
-if (MSVC)
-    add_compile_options("/utf-8")   # Required by spdlog
-    add_compile_definitions(_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
-endif()
-
 # Collect all .cpp and *.h source files 
 file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 
-# Collect DelegateMQ predef source files
-list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+# Collect DelegateMQ port/extras source files
+list(APPEND SOURCES ${DMQ_PORT_SOURCES})
 
 # Organize delegate source files within IDE (Visual Studio)
 source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
-source_group("Predef Files" FILES ${DMQ_PREDEF_SOURCES})
+source_group("Port Files" FILES ${DMQ_PORT_ONLY_SOURCES})
+source_group("Extras Files" FILES ${DMQ_EXTRAS_SOURCES})
 
 # Check if the TEST_COVERAGE argument is passed
 option(TEST_COVERAGE "Enable code coverage" OFF)

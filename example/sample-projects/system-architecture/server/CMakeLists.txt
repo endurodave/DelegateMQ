@@ -8,7 +8,7 @@ add_compile_definitions(SERVER_APP)
 # Disable Boost dependency for msgpack
 add_compile_definitions(MSGPACK_NO_BOOST)
 
-# Set build options (see Predef.cmake)
+# Set build options (see Port.cmake)
 set(DMQ_ASSERTS "OFF")
 set(DMQ_ALLOCATOR "OFF")
 set(DMQ_LOG "OFF")
@@ -34,12 +34,13 @@ file(GLOB COMMON_SOURCES "${CMAKE_SOURCE_DIR}/../common/*.h" "${CMAKE_SOURCE_DIR
 # The actual compilation happens inside 'common_lib', preventing linker errors.
 set_source_files_properties(${COMMON_SOURCES} PROPERTIES HEADER_FILE_ONLY TRUE)
 
-# Collect DelegateMQ predef source files
-list(APPEND SOURCES ${DMQ_PREDEF_SOURCES})
+# Collect DelegateMQ port/extras source files
+list(APPEND SOURCES ${DMQ_PORT_SOURCES})
 
 # Organize delegate source files within IDE (Visual Studio)
 source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
-source_group("Predef Files" FILES ${DMQ_PREDEF_SOURCES})
+source_group("Port Files" FILES ${DMQ_PORT_ONLY_SOURCES})
+source_group("Extras Files" FILES ${DMQ_EXTRAS_SOURCES})
 
 # 2. Create a specific filter/folder for Common files in the IDE
 source_group("Common Files" FILES ${COMMON_SOURCES})
