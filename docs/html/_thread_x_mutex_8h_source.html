@@ -117,7 +117,7 @@ $(function(){initNavTree('_thread_x_mutex_8h_source.html',''); initResizable(tru
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classdmq_1_1_thread_x_mutex.html#a8e7c99abdce3e36d54efcd59892ec5d4">   14</a></span>        <a class="code hl_function" href="classdmq_1_1_thread_x_mutex.html#a8e7c99abdce3e36d54efcd59892ec5d4">ThreadXMutex</a>() {</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            <span class="comment">// Cast string literal to (CHAR*) for strict compliance</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>            UINT status = tx_mutex_create(&amp;m_mutex, (CHAR*)<span class="stringliteral">&quot;DMQ_Mutex&quot;</span>, TX_INHERIT);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            <a class="code hl_define" href="cmsis-rtos2_2_thread_8cpp.html#a0b8af275eb03ef66766aa89546edc85d">ASSERT_TRUE</a>(status == TX_SUCCESS);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            <a class="code hl_define" href="_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a>(status == TX_SUCCESS);</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        }</div>
 </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
@@ -159,6 +159,7 @@ $(function(){initNavTree('_thread_x_mutex_8h_source.html',''); initResizable(tru
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#endif </span><span class="comment">// THREADX_MUTEX_H</span></div>
+<div class="ttc" id="a_fault_8h_html_ae9244bfbda562e8b798789b001993fa5"><div class="ttname"><a href="_fault_8h.html#ae9244bfbda562e8b798789b001993fa5">ASSERT_TRUE</a></div><div class="ttdeci">#define ASSERT_TRUE(condition)</div><div class="ttdef"><b>Definition</b> Fault.h:11</div></div>
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html">dmq::ThreadXMutex</a></div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:12</div></div>
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html_a2bacb126f9d838d49f3e4e03d990ff58"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html#a2bacb126f9d838d49f3e4e03d990ff58">dmq::ThreadXMutex::try_lock</a></div><div class="ttdeci">bool try_lock()</div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:29</div></div>
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html_a65cf930b5309460255f086069cb6e16a"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html#a65cf930b5309460255f086069cb6e16a">dmq::ThreadXMutex::unlock</a></div><div class="ttdeci">void unlock()</div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:33</div></div>
@@ -167,14 +168,13 @@ $(function(){initNavTree('_thread_x_mutex_8h_source.html',''); initResizable(tru
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html_aab8f2b35dce578b5190d9bc20746ef04"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html#aab8f2b35dce578b5190d9bc20746ef04">dmq::ThreadXMutex::ThreadXMutex</a></div><div class="ttdeci">ThreadXMutex(const ThreadXMutex &amp;)=delete</div></div>
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html_aaca1ab6303654aa80db604783e922a3d"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html#aaca1ab6303654aa80db604783e922a3d">dmq::ThreadXMutex::~ThreadXMutex</a></div><div class="ttdeci">~ThreadXMutex()</div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:20</div></div>
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html_aace25d60fd7f4ac3958d3b0af783842e"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html#aace25d60fd7f4ac3958d3b0af783842e">dmq::ThreadXMutex::lock</a></div><div class="ttdeci">void lock()</div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:24</div></div>
-<div class="ttc" id="acmsis-rtos2_2_thread_8cpp_html_a0b8af275eb03ef66766aa89546edc85d"><div class="ttname"><a href="cmsis-rtos2_2_thread_8cpp.html#a0b8af275eb03ef66766aa89546edc85d">ASSERT_TRUE</a></div><div class="ttdeci">#define ASSERT_TRUE(x)</div><div class="ttdef"><b>Definition</b> cmsis-rtos2/Thread.cpp:8</div></div>
 <div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_18b86b2e3f1aa2f223a127151285ad7d.html">predef</a></li><li class="navelem"><a class="el" href="dir_56109d0ba843c5a0bae722c3feb08e89.html">util</a></li><li class="navelem"><a class="el" href="_thread_x_mutex_8h.html">ThreadXMutex.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_b0dae459d6d18633b7684a65d7046871.html">extras</a></li><li class="navelem"><a class="el" href="dir_d2e00b0ddc7b230738aa0cf0d7deec06.html">util</a></li><li class="navelem"><a class="el" href="_thread_x_mutex_8h.html">ThreadXMutex.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

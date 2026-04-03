@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['g_5fticks_0',['g_ticks',['../_bare_metal_clock_8h.html#a9d4c3dc4d688d7d3e76a53c46722fc4a',1,'BareMetalClock.h']]],
-  ['g_5fuarttransportinstance_1',['g_uartTransportInstance',['../_stm32_uart_transport_8h.html#a1508122476a57c80ad02468959ada2d8',1,'Stm32UartTransport.h']]]
+  ['default_5fqueue_5fsize_0',['DEFAULT_QUEUE_SIZE',['../class_thread.html#a825deb6d144b8252b9a9eddbdc870af9',1,'Thread::DEFAULT_QUEUE_SIZE'],['../class_thread.html#a8506593e6e152cd42db7361130f0f8af',1,'Thread::DEFAULT_QUEUE_SIZE'],['../class_thread.html#ad6c5b0891ccfbe51e9c978ec1f866e7c',1,'Thread::DEFAULT_QUEUE_SIZE']]]
 ];

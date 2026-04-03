@@ -102,17 +102,14 @@ $(function(){initNavTree('crc16_8h_source.html',''); initResizable(true); });
 <a href="crc16_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef CRC16_H</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define CRC16_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// Define USE_CRC_TABLE to use the faster table-based calculation.</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// If commented out, the smaller loop-based calculation is used.</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="crc16_8h.html#a3010df5660a7bb91381b279881d7ce40">   11</a></span><span class="preprocessor">#define USE_CRC_TABLE</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">// Define USE_CRC_TABLE to use the faster table-based calculation.</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">// If commented out, the smaller loop-based calculation is used.</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="crc16_8h.html#a3010df5660a7bb91381b279881d7ce40">   15</a></span><span class="preprocessor">#define USE_CRC_TABLE</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#ifdef USE_CRC_TABLE</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> crcccitt_table[] = {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#ifdef USE_CRC_TABLE</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="crc16_8h.html#a62c53f953347fadeac108760b505c964">   22</a></span><span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> <a class="code hl_variable" href="crc16_8h.html#a62c53f953347fadeac108760b505c964">crcccitt_table</a>[] = {</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129,</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef, 0x1231, 0x0210, 0x3273, 0x2252,</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    0x52b5, 0x4294, 0x72f7, 0x62d6, 0x9339, 0x8318, 0xb37b, 0xa35a, 0xd3bd, 0xc39c,</div>
@@ -140,52 +137,48 @@ $(function(){initNavTree('crc16_8h_source.html',''); initResizable(true); });
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8, 0x6e17, 0x7e36,</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
+</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
 <div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="crc16_8h.html#a94217223af71df1943831091db8c12c7">   54</a></span><span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> <a class="code hl_function" href="crc16_8h.html#a94217223af71df1943831091db8c12c7">Crc16CalcBlock</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* crc_msg, <span class="keywordtype">int</span> len, <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> crc = 0xFFFF) </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>{ </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">while</span> (len--) </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        crc = (crc &lt;&lt; 8) ^ crcccitt_table[(crc &gt;&gt; 8) ^ *crc_msg++];</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="crc16_8h.html#a9ee65408fcb775aa80f4060e704c9fce">   54</a></span><span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> <a class="code hl_function" href="crc16_8h.html#a9ee65408fcb775aa80f4060e704c9fce">Crc16CalcBlock</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* crc_msg, <span class="keywordtype">int</span> len, <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> crc = 0xFFFF)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">while</span> (len--)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        crc = (crc &lt;&lt; 8) ^ <a class="code hl_variable" href="crc16_8h.html#a62c53f953347fadeac108760b505c964">crcccitt_table</a>[(crc &gt;&gt; 8) ^ *crc_msg++];</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> crc;</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
 </div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="preprocessor">#define CRCCCITT 0x1021</span></div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> <a class="code hl_function" href="crc16_8h.html#a94217223af71df1943831091db8c12c7">Crc16CalcBlock</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *crc_msg, <span class="keywordtype">int</span> len, <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> crc = 0xFFFF) {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">int</span> i;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> data;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">while</span> (len--) {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        data = *crc_msg++;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        data &lt;&lt;= 8;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">for</span> (i = 8; i &gt; 0; i--) {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">if</span> ((data ^ crc) &amp; 0x8000)</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                crc = (crc &lt;&lt; 1) ^ CRCCCITT;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                crc &lt;&lt;= 1;</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            data &lt;&lt;= 1;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        }</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    }</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> crc;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> <a class="code hl_function" href="crc16_8h.html#a9ee65408fcb775aa80f4060e704c9fce">Crc16CalcBlock</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span>* crc_msg, <span class="keywordtype">int</span> len, <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> crc = 0xFFFF)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>{</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">constexpr</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> POLY = 0x1021;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">short</span> data;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">while</span> (len--) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        data = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">short</span><span class="keyword">&gt;</span>(*crc_msg++ &lt;&lt; 8);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 8; i &gt; 0; i--) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">if</span> ((data ^ crc) &amp; 0x8000)</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                crc = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">short</span><span class="keyword">&gt;</span>((crc &lt;&lt; 1) ^ POLY);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                crc = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">short</span><span class="keyword">&gt;</span>(crc &lt;&lt; 1);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            data = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">short</span><span class="keyword">&gt;</span>(data &lt;&lt; 1);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> crc;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">#endif </span><span class="comment">// USE_CRC_TABLE</span></div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#endif </span><span class="comment">// USE_CRC_TABLE</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="preprocessor">#endif </span><span class="comment">// CRC16_H</span></div>
-<div class="ttc" id="acrc16_8h_html_a94217223af71df1943831091db8c12c7"><div class="ttname"><a href="crc16_8h.html#a94217223af71df1943831091db8c12c7">Crc16CalcBlock</a></div><div class="ttdeci">unsigned short Crc16CalcBlock(unsigned char *crc_msg, int len, unsigned short crc=0xFFFF)</div><div class="ttdoc">Calculates a 16-bit CRC using the table-based method.</div><div class="ttdef"><b>Definition</b> crc16.h:54</div></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#endif </span><span class="comment">// CRC16_H</span></div>
+<div class="ttc" id="acrc16_8h_html_a62c53f953347fadeac108760b505c964"><div class="ttname"><a href="crc16_8h.html#a62c53f953347fadeac108760b505c964">crcccitt_table</a></div><div class="ttdeci">constexpr unsigned short crcccitt_table[]</div><div class="ttdoc">CRC-CCITT lookup table based on x^16 + x^12 + x^5 + 1 (0x1021).</div><div class="ttdef"><b>Definition</b> crc16.h:22</div></div>
+<div class="ttc" id="acrc16_8h_html_a9ee65408fcb775aa80f4060e704c9fce"><div class="ttname"><a href="crc16_8h.html#a9ee65408fcb775aa80f4060e704c9fce">Crc16CalcBlock</a></div><div class="ttdeci">unsigned short Crc16CalcBlock(const unsigned char *crc_msg, int len, unsigned short crc=0xFFFF)</div><div class="ttdoc">Calculates a 16-bit CRC using the table-based method.</div><div class="ttdef"><b>Definition</b> crc16.h:54</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_18b86b2e3f1aa2f223a127151285ad7d.html">predef</a></li><li class="navelem"><a class="el" href="dir_56109d0ba843c5a0bae722c3feb08e89.html">util</a></li><li class="navelem"><a class="el" href="crc16_8h.html">crc16.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_b0dae459d6d18633b7684a65d7046871.html">extras</a></li><li class="navelem"><a class="el" href="dir_d2e00b0ddc7b230738aa0cf0d7deec06.html">util</a></li><li class="navelem"><a class="el" href="crc16_8h.html">crc16.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

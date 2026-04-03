@@ -98,7 +98,8 @@ $(function(){initNavTree('crc16_8h.html',''); initResizable(true); });
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">crc16.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -115,9 +116,15 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a94217223af71df1943831091db8c12c7" id="r_a94217223af71df1943831091db8c12c7"><td class="memItemLeft" align="right" valign="top">unsigned short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94217223af71df1943831091db8c12c7">Crc16CalcBlock</a> (unsigned char *crc_msg, int len, unsigned short crc=0xFFFF)</td></tr>
-<tr class="memdesc:a94217223af71df1943831091db8c12c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates a 16-bit CRC using the table-based method.  <br /></td></tr>
-<tr class="separator:a94217223af71df1943831091db8c12c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ee65408fcb775aa80f4060e704c9fce" id="r_a9ee65408fcb775aa80f4060e704c9fce"><td class="memItemLeft" align="right" valign="top">unsigned short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ee65408fcb775aa80f4060e704c9fce">Crc16CalcBlock</a> (const unsigned char *crc_msg, int len, unsigned short crc=0xFFFF)</td></tr>
+<tr class="memdesc:a9ee65408fcb775aa80f4060e704c9fce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates a 16-bit CRC using the table-based method.  <br /></td></tr>
+<tr class="separator:a9ee65408fcb775aa80f4060e704c9fce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a62c53f953347fadeac108760b505c964" id="r_a62c53f953347fadeac108760b505c964"><td class="memItemLeft" align="right" valign="top">constexpr unsigned short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a62c53f953347fadeac108760b505c964">crcccitt_table</a> []</td></tr>
+<tr class="memdesc:a62c53f953347fadeac108760b505c964"><td class="mdescLeft">&#160;</td><td class="mdescRight">CRC-CCITT lookup table based on x^16 + x^12 + x^5 + 1 (0x1021).  <br /></td></tr>
+<tr class="separator:a62c53f953347fadeac108760b505c964"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Header-only 16-bit CRC-CCITT implementation (Polynomial 0x1021). </p>
@@ -137,8 +144,8 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a94217223af71df1943831091db8c12c7" name="a94217223af71df1943831091db8c12c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a94217223af71df1943831091db8c12c7">&#9670;&#160;</a></span>Crc16CalcBlock()</h2>
+<a id="a9ee65408fcb775aa80f4060e704c9fce" name="a9ee65408fcb775aa80f4060e704c9fce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ee65408fcb775aa80f4060e704c9fce">&#9670;&#160;</a></span>Crc16CalcBlock()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -149,7 +156,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">unsigned short Crc16CalcBlock </td>
           <td>(</td>
-          <td class="paramtype">unsigned char *</td>          <td class="paramname"><span class="paramname"><em>crc_msg</em></span>, </td>
+          <td class="paramtype">const unsigned char *</td>          <td class="paramname"><span class="paramname"><em>crc_msg</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -173,12 +180,66 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a62c53f953347fadeac108760b505c964" name="a62c53f953347fadeac108760b505c964"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62c53f953347fadeac108760b505c964">&#9670;&#160;</a></span>crcccitt_table</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned short crcccitt_table[]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= {</div>
+<div class="line">    0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129,</div>
+<div class="line">    0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef, 0x1231, 0x0210, 0x3273, 0x2252,</div>
+<div class="line">    0x52b5, 0x4294, 0x72f7, 0x62d6, 0x9339, 0x8318, 0xb37b, 0xa35a, 0xd3bd, 0xc39c,</div>
+<div class="line">    0xf3ff, 0xe3de, 0x2462, 0x3443, 0x0420, 0x1401, 0x64e6, 0x74c7, 0x44a4, 0x5485,</div>
+<div class="line">    0xa56a, 0xb54b, 0x8528, 0x9509, 0xe5ee, 0xf5cf, 0xc5ac, 0xd58d, 0x3653, 0x2672,</div>
+<div class="line">    0x1611, 0x0630, 0x76d7, 0x66f6, 0x5695, 0x46b4, 0xb75b, 0xa77a, 0x9719, 0x8738,</div>
+<div class="line">    0xf7df, 0xe7fe, 0xd79d, 0xc7bc, 0x48c4, 0x58e5, 0x6886, 0x78a7, 0x0840, 0x1861,</div>
+<div class="line">    0x2802, 0x3823, 0xc9cc, 0xd9ed, 0xe98e, 0xf9af, 0x8948, 0x9969, 0xa90a, 0xb92b,</div>
+<div class="line">    0x5af5, 0x4ad4, 0x7ab7, 0x6a96, 0x1a71, 0x0a50, 0x3a33, 0x2a12, 0xdbfd, 0xcbdc,</div>
+<div class="line">    0xfbbf, 0xeb9e, 0x9b79, 0x8b58, 0xbb3b, 0xab1a, 0x6ca6, 0x7c87, 0x4ce4, 0x5cc5,</div>
+<div class="line">    0x2c22, 0x3c03, 0x0c60, 0x1c41, 0xedae, 0xfd8f, 0xcdec, 0xddcd, 0xad2a, 0xbd0b,</div>
+<div class="line">    0x8d68, 0x9d49, 0x7e97, 0x6eb6, 0x5ed5, 0x4ef4, 0x3e13, 0x2e32, 0x1e51, 0x0e70,</div>
+<div class="line">    0xff9f, 0xefbe, 0xdfdd, 0xcffc, 0xbf1b, 0xaf3a, 0x9f59, 0x8f78, 0x9188, 0x81a9,</div>
+<div class="line">    0xb1ca, 0xa1eb, 0xd10c, 0xc12d, 0xf14e, 0xe16f, 0x1080, 0x00a1, 0x30c2, 0x20e3,</div>
+<div class="line">    0x5004, 0x4025, 0x7046, 0x6067, 0x83b9, 0x9398, 0xa3fb, 0xb3da, 0xc33d, 0xd31c,</div>
+<div class="line">    0xe37f, 0xf35e, 0x02b1, 0x1290, 0x22f3, 0x32d2, 0x4235, 0x5214, 0x6277, 0x7256,</div>
+<div class="line">    0xb5ea, 0xa5cb, 0x95a8, 0x8589, 0xf56e, 0xe54f, 0xd52c, 0xc50d, 0x34e2, 0x24c3,</div>
+<div class="line">    0x14a0, 0x0481, 0x7466, 0x6447, 0x5424, 0x4405, 0xa7db, 0xb7fa, 0x8799, 0x97b8,</div>
+<div class="line">    0xe75f, 0xf77e, 0xc71d, 0xd73c, 0x26d3, 0x36f2, 0x0691, 0x16b0, 0x6657, 0x7676,</div>
+<div class="line">    0x4615, 0x5634, 0xd94c, 0xc96d, 0xf90e, 0xe92f, 0x99c8, 0x89e9, 0xb98a, 0xa9ab,</div>
+<div class="line">    0x5844, 0x4865, 0x7806, 0x6827, 0x18c0, 0x08e1, 0x3882, 0x28a3, 0xcb7d, 0xdb5c,</div>
+<div class="line">    0xeb3f, 0xfb1e, 0x8bf9, 0x9bd8, 0xabbb, 0xbb9a, 0x4a75, 0x5a54, 0x6a37, 0x7a16,</div>
+<div class="line">    0x0af1, 0x1ad0, 0x2ab3, 0x3a92, 0xfd2e, 0xed0f, 0xdd6c, 0xcd4d, 0xbdaa, 0xad8b,</div>
+<div class="line">    0x9de8, 0x8dc9, 0x7c26, 0x6c07, 0x5c64, 0x4c45, 0x3ca2, 0x2c83, 0x1ce0, 0x0cc1,</div>
+<div class="line">    0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8, 0x6e17, 0x7e36,</div>
+<div class="line">    0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0</div>
+<div class="line">}</div>
+</div><!-- fragment -->
+<p>CRC-CCITT lookup table based on x^16 + x^12 + x^5 + 1 (0x1021). </p>
+<p>Declared constexpr (C++17) so the compiler emits a single shared definition across all translation units, avoiding the per-TU duplication that a 'static const' array in a header would cause. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_18b86b2e3f1aa2f223a127151285ad7d.html">predef</a></li><li class="navelem"><a class="el" href="dir_56109d0ba843c5a0bae722c3feb08e89.html">util</a></li><li class="navelem"><a class="el" href="crc16_8h.html">crc16.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_b0dae459d6d18633b7684a65d7046871.html">extras</a></li><li class="navelem"><a class="el" href="dir_d2e00b0ddc7b230738aa0cf0d7deec06.html">util</a></li><li class="navelem"><a class="el" href="crc16_8h.html">crc16.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

@@ -114,9 +114,9 @@ $(function(){initNavTree('_linux_tcp_transport_8h_source.html',''); initResizabl
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_opt_8h.html">delegate/DelegateOpt.h</a>&quot;</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_8h.html">predef/transport/ITransport.h</a>&quot;</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &quot;<a class="code" href="_dmq_header_8h.html">predef/transport/DmqHeader.h</a>&quot;</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_monitor_8h.html">predef/transport/ITransportMonitor.h</a>&quot;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_8h.html">port/transport/ITransport.h</a>&quot;</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &quot;<a class="code" href="_dmq_header_8h.html">port/transport/DmqHeader.h</a>&quot;</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_monitor_8h.html">port/transport/ITransportMonitor.h</a>&quot;</span></div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
 <div class="foldopen" id="foldopen00040" data-start="{" data-end="};">
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="class_tcp_transport.html">   40</a></span><span class="keyword">class </span><a class="code hl_class" href="class_tcp_transport.html">TcpTransport</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_i_transport.html">ITransport</a></div>
@@ -207,7 +207,7 @@ $(function(){initNavTree('_linux_tcp_transport_8h_source.html',''); initResizabl
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">if</span> (m_connFd &lt; 0) <span class="keywordflow">return</span> -1;</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        std::string payload = os.str();</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keyword">auto</span> payload = os.str();</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a> headerCopy = header;</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        headerCopy.<a class="code hl_function" href="class_dmq_header.html#ad1bba8bd03e90673a58cd7bebdbb4488">SetLength</a>(<span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(payload.length()));</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
@@ -225,136 +225,138 @@ $(function(){initNavTree('_linux_tcp_transport_8h_source.html',''); initResizabl
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        ss.write((<span class="keywordtype">char</span>*)&amp;length, 2);</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        ss.write(payload.data(), payload.size());</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        std::string packet = ss.str();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keyword">auto</span> packet = ss.str();</div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="comment">// Always track the message (unless it is an ACK)</span></div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="comment">// Use Host Byte Order for ID check</span></div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">if</span> (headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>() != <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a> &amp;&amp; m_transportMonitor)</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a457ff7ca9a3ba3be3ff1cf2a34b63972">Add</a>(headerCopy.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>(), headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>());</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="comment">// write() is thread-safe on Linux sockets</span></div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        ssize_t sent = write(m_connFd, packet.data(), packet.size());</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">return</span> (sent == (ssize_t)packet.size()) ? 0 : -1;</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="comment">// write() is thread-safe on Linux sockets</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        ssize_t sent = write(m_connFd, packet.data(), packet.size());</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">if</span> (sent != (ssize_t)packet.size()) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="comment">// Always track the message (unless it is an ACK)</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="comment">// Use Host Byte Order for ID check</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordflow">if</span> (headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>() != <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a> &amp;&amp; m_transportMonitor)</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a457ff7ca9a3ba3be3ff1cf2a34b63972">Add</a>(headerCopy.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>(), headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>());</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    }</div>
 </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
-<div class="foldopen" id="foldopen00151" data-start="{" data-end="}">
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="class_tcp_transport.html#ac4ee132440b48e2fc8bbf3e3d4eed813">  151</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_tcp_transport.html#ac4ee132440b48e2fc8bbf3e3d4eed813">Receive</a>(<a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>&amp; is, <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a>&amp; header)<span class="keyword"> override</span></div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="comment">// Lazy Accept Logic (Server Mode)</span></div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">if</span> (m_type == <a class="code hl_enumvalue" href="class_tcp_transport.html#a70c7b1cf76c16ba403d7ab69bfe06f32a3d27c95bfdbea691b250894d96852844">Type::SERVER</a> &amp;&amp; m_connFd &lt; 0) {</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            fd_set fds;</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            FD_ZERO(&amp;fds);</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            FD_SET(m_socket, &amp;fds);</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>            <span class="keyword">struct </span>timeval tv = { 0, 1000 }; <span class="comment">// 1ms poll</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            <span class="keywordflow">if</span> (select(m_socket + 1, &amp;fds, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>, &amp;tv) &gt; 0) {</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                m_connFd = accept(m_socket, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>                <span class="keywordflow">if</span> (m_connFd &gt;= 0) {</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                    <span class="comment">// Set timeout on new socket</span></div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                    <span class="keyword">struct </span>timeval t; t.tv_sec = 2; t.tv_usec = 0;</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                    setsockopt(m_connFd, SOL_SOCKET, SO_RCVTIMEO, (<span class="keyword">const</span> <span class="keywordtype">char</span>*)&amp;t, <span class="keyword">sizeof</span>(t));</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                }</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            }</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        }</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordflow">if</span> (m_connFd &lt; 0) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="foldopen" id="foldopen00153" data-start="{" data-end="}">
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="class_tcp_transport.html#ac4ee132440b48e2fc8bbf3e3d4eed813">  153</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="class_tcp_transport.html#ac4ee132440b48e2fc8bbf3e3d4eed813">Receive</a>(<a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>&amp; is, <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a>&amp; header)<span class="keyword"> override</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="comment">// Lazy Accept Logic (Server Mode)</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keywordflow">if</span> (m_type == <a class="code hl_enumvalue" href="class_tcp_transport.html#a70c7b1cf76c16ba403d7ab69bfe06f32a3d27c95bfdbea691b250894d96852844">Type::SERVER</a> &amp;&amp; m_connFd &lt; 0) {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            fd_set fds;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>            FD_ZERO(&amp;fds);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            FD_SET(m_socket, &amp;fds);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            <span class="keyword">struct </span>timeval tv = { 0, 1000 }; <span class="comment">// 1ms poll</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="keywordflow">if</span> (select(m_socket + 1, &amp;fds, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>, &amp;tv) &gt; 0) {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                m_connFd = accept(m_socket, <span class="keyword">nullptr</span>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                <span class="keywordflow">if</span> (m_connFd &gt;= 0) {</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                    <span class="comment">// Set timeout on new socket</span></div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                    <span class="keyword">struct </span>timeval t; t.tv_sec = 2; t.tv_usec = 0;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                    setsockopt(m_connFd, SOL_SOCKET, SO_RCVTIMEO, (<span class="keyword">const</span> <span class="keywordtype">char</span>*)&amp;t, <span class="keyword">sizeof</span>(t));</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>            }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        }</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="comment">// --- Poll check to prevent blocking if no data is waiting ---</span></div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        fd_set readfds;</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        FD_ZERO(&amp;readfds);</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        FD_SET(m_connFd, &amp;readfds);</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keyword">struct </span>timeval tv;</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        tv.tv_sec = 1; <span class="comment">// Increased to 1s to prevent busy loop</span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        tv.tv_usec = 0; </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="comment">// If no data is waiting, return -1 immediately so Sender loop continues</span></div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keywordflow">if</span> (select(m_connFd + 1, &amp;readfds, NULL, NULL, &amp;tv) &lt;= 0) {</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        }</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="comment">// 1. Read Fixed-Size Header for Framing</span></div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keywordtype">char</span> headerBuf[<a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>];</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">if</span> (!ReadExact(headerBuf, <a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>)) <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> ss(std::ios::in | std::ios::out | std::ios::binary);</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        ss.write(headerBuf, <a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>);</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        ss.seekg(0);</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        uint16_t val;</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="comment">// Read Marker (Convert Network -&gt; Host)</span></div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        ss.read((<span class="keywordtype">char</span>*)&amp;val, 2); header.<a class="code hl_function" href="class_dmq_header.html#acc1ac5a791de0d5e28ef5c1e7e74e865">SetMarker</a>(ntohs(val));</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keywordflow">if</span> (header.<a class="code hl_function" href="class_dmq_header.html#a21812fc54a4d21b163200ce3e67ec4cf">GetMarker</a>() != <a class="code hl_variable" href="class_dmq_header.html#a8f1df2f501e483dc7e6490eae1085a58">DmqHeader::MARKER</a>) <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        ss.read((<span class="keywordtype">char</span>*)&amp;val, 2); header.<a class="code hl_function" href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">SetId</a>(ntohs(val));</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        ss.read((<span class="keywordtype">char</span>*)&amp;val, 2); header.<a class="code hl_function" href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">SetSeqNum</a>(ntohs(val));</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        ss.read((<span class="keywordtype">char</span>*)&amp;val, 2); header.<a class="code hl_function" href="class_dmq_header.html#ad1bba8bd03e90673a58cd7bebdbb4488">SetLength</a>(ntohs(val));</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="comment">// 2. Read Payload based on Header Length</span></div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        uint16_t length = header.<a class="code hl_function" href="class_dmq_header.html#a34ffb53a7d4920170c0b1ffc996ccc33">GetLength</a>();</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keywordflow">if</span> (length &gt; 0) {</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            std::vector&lt;char&gt; payload(length);</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            <span class="keywordflow">if</span> (!ReadExact(payload.data(), length)) <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            is.write(payload.data(), length);</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        }</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="comment">// 3. Reliability Logic</span></div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">if</span> (header.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>() == <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a>) {</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            <span class="keywordflow">if</span> (m_transportMonitor) m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a64b5f2d1c3688410e3d084a8d67b7669">Remove</a>(header.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>());</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        }</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (m_sendTransport) {</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> ss_ack;</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a> ack;</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            ack.<a class="code hl_function" href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">SetId</a>(<a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a>);</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            ack.<a class="code hl_function" href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">SetSeqNum</a>(header.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>());</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            m_sendTransport-&gt;<a class="code hl_function" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">Send</a>(ss_ack, ack);</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        }</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    }</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordflow">if</span> (m_connFd &lt; 0) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="comment">// --- Poll check to prevent blocking if no data is waiting ---</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        fd_set readfds;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        FD_ZERO(&amp;readfds);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        FD_SET(m_connFd, &amp;readfds);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keyword">struct </span>timeval tv;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        tv.tv_sec = 1; <span class="comment">// Increased to 1s to prevent busy loop</span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        tv.tv_usec = 0; </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="comment">// If no data is waiting, return -1 immediately so Sender loop continues</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keywordflow">if</span> (select(m_connFd + 1, &amp;readfds, NULL, NULL, &amp;tv) &lt;= 0) {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        }</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="comment">// 1. Read Fixed-Size Header for Framing</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordtype">char</span> headerBuf[<a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>];</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">if</span> (!ReadExact(headerBuf, <a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>)) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> ss(std::ios::in | std::ios::out | std::ios::binary);</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        ss.write(headerBuf, <a class="code hl_variable" href="class_dmq_header.html#ae749177d98fed705191cd55541cbf3ae">DmqHeader::HEADER_SIZE</a>);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        ss.seekg(0);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        uint16_t val;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="comment">// Read Marker (Convert Network -&gt; Host)</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        ss.read((<span class="keywordtype">char</span>*)&amp;val, 2); header.<a class="code hl_function" href="class_dmq_header.html#acc1ac5a791de0d5e28ef5c1e7e74e865">SetMarker</a>(ntohs(val));</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordflow">if</span> (header.<a class="code hl_function" href="class_dmq_header.html#a21812fc54a4d21b163200ce3e67ec4cf">GetMarker</a>() != <a class="code hl_variable" href="class_dmq_header.html#a8f1df2f501e483dc7e6490eae1085a58">DmqHeader::MARKER</a>) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        ss.read((<span class="keywordtype">char</span>*)&amp;val, 2); header.<a class="code hl_function" href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">SetId</a>(ntohs(val));</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        ss.read((<span class="keywordtype">char</span>*)&amp;val, 2); header.<a class="code hl_function" href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">SetSeqNum</a>(ntohs(val));</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        ss.read((<span class="keywordtype">char</span>*)&amp;val, 2); header.<a class="code hl_function" href="class_dmq_header.html#ad1bba8bd03e90673a58cd7bebdbb4488">SetLength</a>(ntohs(val));</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="comment">// 2. Read Payload based on Header Length</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        uint16_t length = header.<a class="code hl_function" href="class_dmq_header.html#a34ffb53a7d4920170c0b1ffc996ccc33">GetLength</a>();</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keywordflow">if</span> (length &gt; 0) {</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            std::vector&lt;char&gt; payload(length);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            <span class="keywordflow">if</span> (!ReadExact(payload.data(), length)) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            is.write(payload.data(), length);</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        }</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="comment">// 3. Reliability Logic</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keywordflow">if</span> (header.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>() == <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a>) {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keywordflow">if</span> (m_transportMonitor) m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a64b5f2d1c3688410e3d084a8d67b7669">Remove</a>(header.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>());</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        }</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (m_sendTransport) {</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> ss_ack;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            <a class="code hl_class" href="class_dmq_header.html">DmqHeader</a> ack;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            ack.<a class="code hl_function" href="class_dmq_header.html#a11ab4032850ac8ad22cf172e965c9070">SetId</a>(<a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a>);</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            ack.<a class="code hl_function" href="class_dmq_header.html#a265f36cb0b508e8cf75744ff4730a6cf">SetSeqNum</a>(header.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>());</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            m_sendTransport-&gt;<a class="code hl_function" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">Send</a>(ss_ack, ack);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        }</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    }</div>
 </div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
-<div class="foldopen" id="foldopen00225" data-start="{" data-end="}">
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="class_tcp_transport.html#ac34b43390ecc9265e79de7ddeb7e32fd">  225</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_tcp_transport.html#ac34b43390ecc9265e79de7ddeb7e32fd">SetTransportMonitor</a>(<a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a>* tm) {</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        m_transportMonitor = tm;</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
+<div class="foldopen" id="foldopen00227" data-start="{" data-end="}">
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno"><a class="line" href="class_tcp_transport.html#ac34b43390ecc9265e79de7ddeb7e32fd">  227</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_tcp_transport.html#ac34b43390ecc9265e79de7ddeb7e32fd">SetTransportMonitor</a>(<a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a>* tm) {</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        m_transportMonitor = tm;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    }</div>
 </div>
-<div class="foldopen" id="foldopen00228" data-start="{" data-end="}">
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno"><a class="line" href="class_tcp_transport.html#adcf5853a67d17741dfdbf30e0b5b5393">  228</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_tcp_transport.html#adcf5853a67d17741dfdbf30e0b5b5393">SetSendTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* st) {</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        m_sendTransport = st;</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    }</div>
+<div class="foldopen" id="foldopen00230" data-start="{" data-end="}">
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno"><a class="line" href="class_tcp_transport.html#adcf5853a67d17741dfdbf30e0b5b5393">  230</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_tcp_transport.html#adcf5853a67d17741dfdbf30e0b5b5393">SetSendTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* st) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        m_sendTransport = st;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    }</div>
 </div>
-<div class="foldopen" id="foldopen00231" data-start="{" data-end="}">
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno"><a class="line" href="class_tcp_transport.html#aa0d7aaf4ee8a179d40fce8d43e77b55c">  231</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_tcp_transport.html#aa0d7aaf4ee8a179d40fce8d43e77b55c">SetRecvTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* rt) {</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        m_recvTransport = rt;</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    }</div>
+<div class="foldopen" id="foldopen00233" data-start="{" data-end="}">
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno"><a class="line" href="class_tcp_transport.html#aa0d7aaf4ee8a179d40fce8d43e77b55c">  233</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="class_tcp_transport.html#aa0d7aaf4ee8a179d40fce8d43e77b55c">SetRecvTransport</a>(<a class="code hl_class" href="class_i_transport.html">ITransport</a>* rt) {</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        m_recvTransport = rt;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    }</div>
 </div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordtype">bool</span> ReadExact(<span class="keywordtype">char</span>* buf, <span class="keywordtype">size_t</span> len)</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    {</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="keywordtype">size_t</span> total = 0;</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="keywordflow">while</span> (total &lt; len) {</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>            ssize_t r = read(m_connFd, buf + total, len - total);</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            <span class="keywordflow">if</span> (r &lt;= 0) <span class="keywordflow">return</span> <span class="keyword">false</span>; <span class="comment">// Connection closed or error</span></div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            total += r;</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        }</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    }</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keywordtype">int</span> m_socket = -1;</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keywordtype">int</span> m_connFd = -1;</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <a class="code hl_enumeration" href="class_tcp_transport.html#a70c7b1cf76c16ba403d7ab69bfe06f32">Type</a> m_type = <a class="code hl_enumvalue" href="class_tcp_transport.html#a70c7b1cf76c16ba403d7ab69bfe06f32a3d27c95bfdbea691b250894d96852844">Type::SERVER</a>;</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <a class="code hl_class" href="class_i_transport.html">ITransport</a>* m_sendTransport, * m_recvTransport;</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a>* m_transportMonitor = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>};</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keywordtype">bool</span> ReadExact(<span class="keywordtype">char</span>* buf, <span class="keywordtype">size_t</span> len)</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    {</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <span class="keywordtype">size_t</span> total = 0;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">while</span> (total &lt; len) {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            ssize_t r = read(m_connFd, buf + total, len - total);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            <span class="keywordflow">if</span> (r &lt;= 0) <span class="keywordflow">return</span> <span class="keyword">false</span>; <span class="comment">// Connection closed or error</span></div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            total += r;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        }</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    }</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keywordtype">int</span> m_socket = -1;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordtype">int</span> m_connFd = -1;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <a class="code hl_enumeration" href="class_tcp_transport.html#a70c7b1cf76c16ba403d7ab69bfe06f32">Type</a> m_type = <a class="code hl_enumvalue" href="class_tcp_transport.html#a70c7b1cf76c16ba403d7ab69bfe06f32a3d27c95bfdbea691b250894d96852844">Type::SERVER</a>;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <a class="code hl_class" href="class_i_transport.html">ITransport</a>* m_sendTransport, * m_recvTransport;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <a class="code hl_class" href="class_i_transport_monitor.html">ITransportMonitor</a>* m_transportMonitor = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>};</div>
 </div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="preprocessor">#endif </span><span class="comment">// LINUX_TCP_TRANSPORT_H</span></div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span><span class="preprocessor">#endif </span><span class="comment">// LINUX_TCP_TRANSPORT_H</span></div>
 <div class="ttc" id="a_delegate_opt_8h_html"><div class="ttname"><a href="_delegate_opt_8h.html">DelegateOpt.h</a></div><div class="ttdoc">Delegate library options header file.</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:162</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:163</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:247</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:248</div></div>
 <div class="ttc" id="a_dmq_header_8h_html"><div class="ttname"><a href="_dmq_header_8h.html">DmqHeader.h</a></div></div>
 <div class="ttc" id="a_i_transport_8h_html"><div class="ttname"><a href="_i_transport_8h.html">ITransport.h</a></div></div>
 <div class="ttc" id="a_i_transport_monitor_8h_html"><div class="ttname"><a href="_i_transport_monitor_8h.html">ITransportMonitor.h</a></div></div>
@@ -381,11 +383,11 @@ $(function(){initNavTree('_linux_tcp_transport_8h_source.html',''); initResizabl
 <div class="ttc" id="aclass_tcp_transport_html_a70c7b1cf76c16ba403d7ab69bfe06f32"><div class="ttname"><a href="class_tcp_transport.html#a70c7b1cf76c16ba403d7ab69bfe06f32">TcpTransport::Type</a></div><div class="ttdeci">Type</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:43</div></div>
 <div class="ttc" id="aclass_tcp_transport_html_a70c7b1cf76c16ba403d7ab69bfe06f32a3d27c95bfdbea691b250894d96852844"><div class="ttname"><a href="class_tcp_transport.html#a70c7b1cf76c16ba403d7ab69bfe06f32a3d27c95bfdbea691b250894d96852844">TcpTransport::Type::SERVER</a></div><div class="ttdeci">@ SERVER</div></div>
 <div class="ttc" id="aclass_tcp_transport_html_a70c7b1cf76c16ba403d7ab69bfe06f32aef10c650df47bffd6399e5e78da2a9b1"><div class="ttname"><a href="class_tcp_transport.html#a70c7b1cf76c16ba403d7ab69bfe06f32aef10c650df47bffd6399e5e78da2a9b1">TcpTransport::Type::CLIENT</a></div><div class="ttdeci">@ CLIENT</div></div>
-<div class="ttc" id="aclass_tcp_transport_html_aa0d7aaf4ee8a179d40fce8d43e77b55c"><div class="ttname"><a href="class_tcp_transport.html#aa0d7aaf4ee8a179d40fce8d43e77b55c">TcpTransport::SetRecvTransport</a></div><div class="ttdeci">void SetRecvTransport(ITransport *rt)</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:231</div></div>
+<div class="ttc" id="aclass_tcp_transport_html_aa0d7aaf4ee8a179d40fce8d43e77b55c"><div class="ttname"><a href="class_tcp_transport.html#aa0d7aaf4ee8a179d40fce8d43e77b55c">TcpTransport::SetRecvTransport</a></div><div class="ttdeci">void SetRecvTransport(ITransport *rt)</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:233</div></div>
 <div class="ttc" id="aclass_tcp_transport_html_ab203d6679e0a43ebbe20202ee2a5a467"><div class="ttname"><a href="class_tcp_transport.html#ab203d6679e0a43ebbe20202ee2a5a467">TcpTransport::~TcpTransport</a></div><div class="ttdeci">~TcpTransport()</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:49</div></div>
-<div class="ttc" id="aclass_tcp_transport_html_ac34b43390ecc9265e79de7ddeb7e32fd"><div class="ttname"><a href="class_tcp_transport.html#ac34b43390ecc9265e79de7ddeb7e32fd">TcpTransport::SetTransportMonitor</a></div><div class="ttdeci">void SetTransportMonitor(ITransportMonitor *tm)</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:225</div></div>
-<div class="ttc" id="aclass_tcp_transport_html_ac4ee132440b48e2fc8bbf3e3d4eed813"><div class="ttname"><a href="class_tcp_transport.html#ac4ee132440b48e2fc8bbf3e3d4eed813">TcpTransport::Receive</a></div><div class="ttdeci">virtual int Receive(xstringstream &amp;is, DmqHeader &amp;header) override</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:151</div></div>
-<div class="ttc" id="aclass_tcp_transport_html_adcf5853a67d17741dfdbf30e0b5b5393"><div class="ttname"><a href="class_tcp_transport.html#adcf5853a67d17741dfdbf30e0b5b5393">TcpTransport::SetSendTransport</a></div><div class="ttdeci">void SetSendTransport(ITransport *st)</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:228</div></div>
+<div class="ttc" id="aclass_tcp_transport_html_ac34b43390ecc9265e79de7ddeb7e32fd"><div class="ttname"><a href="class_tcp_transport.html#ac34b43390ecc9265e79de7ddeb7e32fd">TcpTransport::SetTransportMonitor</a></div><div class="ttdeci">void SetTransportMonitor(ITransportMonitor *tm)</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:227</div></div>
+<div class="ttc" id="aclass_tcp_transport_html_ac4ee132440b48e2fc8bbf3e3d4eed813"><div class="ttname"><a href="class_tcp_transport.html#ac4ee132440b48e2fc8bbf3e3d4eed813">TcpTransport::Receive</a></div><div class="ttdeci">virtual int Receive(xstringstream &amp;is, DmqHeader &amp;header) override</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:153</div></div>
+<div class="ttc" id="aclass_tcp_transport_html_adcf5853a67d17741dfdbf30e0b5b5393"><div class="ttname"><a href="class_tcp_transport.html#adcf5853a67d17741dfdbf30e0b5b5393">TcpTransport::SetSendTransport</a></div><div class="ttdeci">void SetSendTransport(ITransport *st)</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:230</div></div>
 <div class="ttc" id="aclass_tcp_transport_html_ae39b2043b8de46f44105b0dc67c16b86"><div class="ttname"><a href="class_tcp_transport.html#ae39b2043b8de46f44105b0dc67c16b86">TcpTransport::TcpTransport</a></div><div class="ttdeci">TcpTransport()</div><div class="ttdef"><b>Definition</b> LinuxTcpTransport.h:45</div></div>
 <div class="ttc" id="anamespacedmq_html_a621e40ea0fde57bf5426750dab582f0b"><div class="ttname"><a href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a></div><div class="ttdeci">const uint16_t ACK_REMOTE_ID</div><div class="ttdef"><b>Definition</b> IDispatcher.h:14</div></div>
 </div><!-- fragment --></div><!-- contents -->
@@ -393,7 +395,7 @@ $(function(){initNavTree('_linux_tcp_transport_8h_source.html',''); initResizabl
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_18b86b2e3f1aa2f223a127151285ad7d.html">predef</a></li><li class="navelem"><a class="el" href="dir_4174e8c191e5fd66bbba36a67d910efc.html">transport</a></li><li class="navelem"><a class="el" href="dir_c4aa52b28dd842bc8504c99804a80a4b.html">linux-tcp</a></li><li class="navelem"><a class="el" href="_linux_tcp_transport_8h.html">LinuxTcpTransport.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_8ef93921927604d57abc90fe2fd5bf9b.html">port</a></li><li class="navelem"><a class="el" href="dir_ca7952a9699eabba33598d28551fbb5b.html">transport</a></li><li class="navelem"><a class="el" href="dir_297d0e02809d5fb19417d449e1232921.html">linux-tcp</a></li><li class="navelem"><a class="el" href="_linux_tcp_transport_8h.html">LinuxTcpTransport.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

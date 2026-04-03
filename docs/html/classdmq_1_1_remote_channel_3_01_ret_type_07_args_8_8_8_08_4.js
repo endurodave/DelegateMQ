@@ -1,8 +1,8 @@
 var classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4 =
 [
     [ "RemoteChannel", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a24629ff5e2dc3ddbc260743248930ee8", null ],
+    [ "~RemoteChannel", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#aecd2c6641f9fc996dabd77046ac991ec", null ],
     [ "RemoteChannel", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#aedc8aaea43e85c7aa08d0fc62bdb28da", null ],
-    [ "RemoteChannel", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a470bf58694cbfa7617b2897d43599a80", null ],
     [ "Bind", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a0aa3859da6160b525590547c7efb60b2", null ],
     [ "Bind", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a05eb1e26c406aeb99bc68f41baa58e2a", null ],
     [ "Bind", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a3e012484e8997239ce19bc2b9670bb6f", null ],
@@ -15,7 +15,6 @@ var classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "GetStream", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#af191e5f0e82b8cd7d6098e80fcc101d4", null ],
     [ "operator()", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a88b5547f1fa3097631ab1fc425b0e3e0", null ],
     [ "operator=", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a8c9fc371244c479f85e92d4591527082", null ],
-    [ "operator=", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#a8713aaa8d7679e1a550ded53ef1e65eb", null ],
     [ "SetErrorHandler", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#acf2f56bc4ff722b7ced640941ef76152", null ],
     [ "SetRemoteId", "classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#abe82ad0f01e86f110ec05f14153abe50", null ]
 ];

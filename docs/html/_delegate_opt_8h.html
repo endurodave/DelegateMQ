@@ -109,9 +109,8 @@ $(function(){initNavTree('_delegate_opt_8h.html',''); initResizable(true); });
 <p>Delegate library options header file.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;chrono&gt;</code><br />
-<code>#include &lt;mutex&gt;</code><br />
-<code>#include &quot;<a class="el" href="_bare_metal_clock_8h_source.html">predef/util/BareMetalClock.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_fault_8h_source.html">predef/util/Fault.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_bare_metal_clock_8h_source.html">extras/util/BareMetalClock.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_fault_8h_source.html">extras/util/Fault.h</a>&quot;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;list&gt;</code><br />
@@ -123,6 +122,8 @@ $(function(){initNavTree('_delegate_opt_8h.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_portable_lock_guard.html">dmq::PortableLockGuard&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1_null_mutex.html">dmq::NullMutex</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlist.html">xlist&lt; T, Alloc &gt;</a></td></tr>
@@ -136,6 +137,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:a397bf7b998e327455052c135f305e352" id="r_a397bf7b998e327455052c135f305e352"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a397bf7b998e327455052c135f305e352">DMQ_SERIALIZE_NONE</a></td></tr>
+<tr class="separator:a397bf7b998e327455052c135f305e352"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d017f6688a2ece9c701ea71062fc6b9" id="r_a6d017f6688a2ece9c701ea71062fc6b9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6d017f6688a2ece9c701ea71062fc6b9">DMQ_ASSERTS</a></td></tr>
 <tr class="separator:a6d017f6688a2ece9c701ea71062fc6b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe89b46e296c7421855410a08d6d31fe" id="r_abe89b46e296c7421855410a08d6d31fe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe89b46e296c7421855410a08d6d31fe">BAD_ALLOC</a>()</td></tr>
@@ -161,14 +164,15 @@ Typedefs</h2></td></tr>
 <tr class="separator:a8698347146f2270db3906748c029c529"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32a836d0420b059412e11bb2f8dbfe76" id="r_a32a836d0420b059412e11bb2f8dbfe76"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a32a836d0420b059412e11bb2f8dbfe76">dmq::RecursiveMutex</a> = <a class="el" href="structdmq_1_1_null_mutex.html">NullMutex</a></td></tr>
 <tr class="separator:a32a836d0420b059412e11bb2f8dbfe76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3630077fab3ab296436584a9b6dab522" id="r_a3630077fab3ab296436584a9b6dab522"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3630077fab3ab296436584a9b6dab522"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a3630077fab3ab296436584a9b6dab522">dmq::LockGuard</a> = <a class="el" href="classdmq_1_1_portable_lock_guard.html">PortableLockGuard</a>&lt;T&gt;</td></tr>
+<tr class="separator:a3630077fab3ab296436584a9b6dab522"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54ea4f69408adaa1bb31d8d0de42c2bc" id="r_a54ea4f69408adaa1bb31d8d0de42c2bc"><td class="memItemLeft" align="right" valign="top">typedef std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></td></tr>
 <tr class="separator:a54ea4f69408adaa1bb31d8d0de42c2bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada87f2b80dc83f6d2f182655488948ae" id="r_ada87f2b80dc83f6d2f182655488948ae"><td class="memItemLeft" align="right" valign="top">typedef std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></td></tr>
 <tr class="separator:ada87f2b80dc83f6d2f182655488948ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e4b2760271c0d353bc1e58de15aeb44" id="r_a8e4b2760271c0d353bc1e58de15aeb44"><td class="memItemLeft" align="right" valign="top">typedef std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a></td></tr>
 <tr class="separator:a8e4b2760271c0d353bc1e58de15aeb44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c297a25ec1e3808b17f63f488fb2046" id="r_a3c297a25ec1e3808b17f63f488fb2046"><td class="memItemLeft" align="right" valign="top">typedef std::wstring&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3c297a25ec1e3808b17f63f488fb2046">xwstring</a></td></tr>
-<tr class="separator:a3c297a25ec1e3808b17f63f488fb2046"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -211,6 +215,20 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define DMQ_ASSERTS</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a397bf7b998e327455052c135f305e352" name="a397bf7b998e327455052c135f305e352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a397bf7b998e327455052c135f305e352">&#9670;&#160;</a></span>DMQ_SERIALIZE_NONE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DMQ_SERIALIZE_NONE</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -322,20 +340,6 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">typedef std::basic_stringstream&lt;char, std::char_traits&lt;char&gt; &gt; <a class="el" href="#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a3c297a25ec1e3808b17f63f488fb2046" name="a3c297a25ec1e3808b17f63f488fb2046"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c297a25ec1e3808b17f63f488fb2046">&#9670;&#160;</a></span>xwstring</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::wstring <a class="el" href="#a3c297a25ec1e3808b17f63f488fb2046">xwstring</a></td>
         </tr>
       </table>
 </div><div class="memdoc">

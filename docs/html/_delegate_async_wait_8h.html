@@ -96,101 +96,13 @@ $(function(){initNavTree('_delegate_async_wait_8h.html',''); initResizable(true)
 </div>
 
 <div class="header">
-  <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">DelegateAsyncWait.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
-<p>Delegate "`AsyncWait`" series of classes used to invoke a function asynchronously and block waiting for completion by the target thread.  
-<a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_8h_source.html">Delegate.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_semaphore_8h_source.html">Semaphore.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_i_thread_8h_source.html">IThread.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_i_invoker_8h_source.html">IInvoker.h</a>&quot;</code><br />
-<code>#include &lt;optional&gt;</code><br />
-<code>#include &lt;any&gt;</code><br />
-<code>#include &lt;chrono&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_opt_8h_source.html">DelegateOpt.h</a>&quot;</code><br />
 </div>
 <p><a href="_delegate_async_wait_8h_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_delegate_async_wait_msg.html">dmq::DelegateAsyncWaitMsg&lt; Args &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores all function arguments suitable for blocking asynchronous calls. Argument data is not stored in the heap.  <a href="classdmq_1_1_delegate_async_wait_msg.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html">dmq::DelegateFreeAsyncWait&lt; RetType(Args...)&gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classdmq_1_1_delegate_free_async_wait.html">DelegateFreeAsyncWait</a>&lt;&gt;</code> class asynchronously block invokes a free target function.  <a href="classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html">dmq::DelegateMemberAsyncWait&lt; TClass, RetType(Args...)&gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classdmq_1_1_delegate_member_async_wait.html">DelegateMemberAsyncWait</a>&lt;&gt;</code> class asynchronously block invokes a class member target function.  <a href="classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_delegate_member_async_wait_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html">dmq::DelegateMemberAsyncWaitSp&lt; TClass, RetType(Args...)&gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classdmq_1_1_delegate_member_async_wait_sp.html">DelegateMemberAsyncWaitSp</a>&lt;&gt;</code> class asynchronously block invokes a class member target function using a weak/shared pointer semantics.  <a href="classdmq_1_1_delegate_member_async_wait_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html">dmq::DelegateFunctionAsyncWait&lt; RetType(Args...)&gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="classdmq_1_1_delegate_function_async_wait.html">DelegateFunctionAsyncWait</a>&lt;&gt;</code> class asynchronously block invokes a std::function target function.  <a href="classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
-<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:abba553d856fd21a274ff93f6470f7469" id="r_abba553d856fd21a274ff93f6470f7469"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:abba553d856fd21a274ff93f6470f7469"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#abba553d856fd21a274ff93f6470f7469">dmq::MakeDelegate</a> (RetType(*func)(Args... args), <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> timeout)</td></tr>
-<tr class="memdesc:abba553d856fd21a274ff93f6470f7469"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a free function with a wait and timeout.  <br /></td></tr>
-<tr class="separator:abba553d856fd21a274ff93f6470f7469"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88f1407a2eb6269b664aa55f9611c25a" id="r_a88f1407a2eb6269b664aa55f9611c25a"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:a88f1407a2eb6269b664aa55f9611c25a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a88f1407a2eb6269b664aa55f9611c25a">dmq::MakeDelegate</a> (TClass *object, RetType(TClass::*func)(Args... args), <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> timeout)</td></tr>
-<tr class="memdesc:a88f1407a2eb6269b664aa55f9611c25a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function with a wait and timeout.  <br /></td></tr>
-<tr class="separator:a88f1407a2eb6269b664aa55f9611c25a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa179907ed2f66812991b96dd4a38e118" id="r_aa179907ed2f66812991b96dd4a38e118"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:aa179907ed2f66812991b96dd4a38e118"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#aa179907ed2f66812991b96dd4a38e118">dmq::MakeDelegate</a> (const TClass *object, RetType(TClass::*func)(Args... args) const, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> timeout)</td></tr>
-<tr class="memdesc:aa179907ed2f66812991b96dd4a38e118"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a delegate that binds to a const member function.  <br /></td></tr>
-<tr class="separator:aa179907ed2f66812991b96dd4a38e118"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62d6319e48abd32e7ac1a8a657ee8acc" id="r_a62d6319e48abd32e7ac1a8a657ee8acc"><td class="memTemplParams" colspan="2">template&lt;class TClass , class RetVal , class... Args&gt; </td></tr>
-<tr class="memitem:a62d6319e48abd32e7ac1a8a657ee8acc"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a62d6319e48abd32e7ac1a8a657ee8acc">dmq::MakeDelegate</a> (std::shared_ptr&lt; TClass &gt; object, RetVal(TClass::*func)(Args... args), <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> timeout)</td></tr>
-<tr class="memdesc:a62d6319e48abd32e7ac1a8a657ee8acc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a non-const member function using a shared pointer, with a wait and timeout.  <br /></td></tr>
-<tr class="separator:a62d6319e48abd32e7ac1a8a657ee8acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b26bbea074f787e55f8197a6f9e82e3" id="r_a5b26bbea074f787e55f8197a6f9e82e3"><td class="memTemplParams" colspan="2">template&lt;class RetType , class... Args&gt; </td></tr>
-<tr class="memitem:a5b26bbea074f787e55f8197a6f9e82e3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a5b26bbea074f787e55f8197a6f9e82e3">dmq::MakeDelegate</a> (std::function&lt; RetType(Args...)&gt; func, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> timeout)</td></tr>
-<tr class="memdesc:a5b26bbea074f787e55f8197a6f9e82e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a <code>std::function</code> with a wait and timeout.  <br /></td></tr>
-<tr class="separator:a5b26bbea074f787e55f8197a6f9e82e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab46a253ed2135d0666eda7c31ae2109a" id="r_ab46a253ed2135d0666eda7c31ae2109a"><td class="memTemplParams" colspan="2">template&lt;typename F , typename  = std::enable_if_t&lt;trait::is_callable&lt;F&gt;::value&gt;&gt; </td></tr>
-<tr class="memitem:ab46a253ed2135d0666eda7c31ae2109a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#ab46a253ed2135d0666eda7c31ae2109a">dmq::MakeDelegate</a> (F &amp;&amp;func, <a class="el" href="classdmq_1_1_i_thread.html">IThread</a> &amp;thread, <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">Duration</a> timeout)</td></tr>
-<tr class="memdesc:ab46a253ed2135d0666eda7c31ae2109a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an asynchronous delegate that binds to a raw lambda or functor with a wait and timeout.  <br /></td></tr>
-<tr class="separator:ab46a253ed2135d0666eda7c31ae2109a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a13a5bc30242a3c91cf0cc744e863ffca" id="r_a13a5bc30242a3c91cf0cc744e863ffca"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a13a5bc30242a3c91cf0cc744e863ffca">dmq::WAIT_INFINITE</a> = std::chrono::hours(1000)</td></tr>
-<tr class="separator:a13a5bc30242a3c91cf0cc744e863ffca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Delegate "`AsyncWait`" series of classes used to invoke a function asynchronously and block waiting for completion by the target thread. </p>
-<p>Asynchronous delegate that invokes the target function on the specified thread of control and waits for the function to be executed or a timeout occurs. Use IsSuccess() to determine if asynchronous call succeeded before using the return value and outgoing argument values.</p>
-<p>A <code>IThread</code> implementation is required to serialize and dispatch an async delegate onto a destination thread of control.</p>
-<p>Delegate "`AsyncWait`" series of classes used to invoke a function asynchronously and wait for completion by the destination target thread. Invoking a function asynchronously requires making a clone of the object to be sent to the destination thread message queue. The destination thread calls <code>Invoke()</code> to invoke the target function. The source thread blocks on a semaphore waiting for the destination thread to complete the function invoke. If the caller timeout expires, the target function is not invoked.</p>
-<p>The <code>m_lock</code> mutex is used to protect shared state data between the source and destination threads using the two thread-safe functions below:</p>
-<p><code>RetType operator()(Args... args)</code> - called by the source thread to initiate the async function call. May throw <code>std::bad_alloc</code> if dynamic storage allocation fails and <code>DMQ_ASSERTS</code> is not defined. Clone() also may throw <code>std::bad_alloc</code> unless 'DMQ_ASSERTS'. All other delegate class functions do not throw exceptions.</p>
-<p><code>void Invoke(std::shared_ptr&lt;DelegateMsg&gt; msg)</code> - called by the destination thread to invoke the target function. The destination thread must not call any other delegate instance functions.</p>
-<p>Limitations:</p>
-<ul>
-<li>Cannot use rvalue reference (T&amp;&amp;) as a target function argument.</li>
-<li>The target function cannot return a <code>std::unique_ptr</code> since <code>AsyncWait</code> destination target thread stores the return value (<code>m_retVal</code>) for later use by the calling source thread.</li>
-<li>Cannot insert <code>DelegateMemberAsyncWait</code> into an ordered container. e.g. <code>std::list</code> ok, <code>std::set</code> not ok.</li>
-<li><code>std::function</code> compares the function signature type, not the underlying object instance. See <code>DelegateFunction&lt;&gt;</code> class for more info.</li>
-</ul>
-<p>Code within <code>&lt;common_code&gt;</code> and <code>&lt;/common_code&gt;</code> is updated using <a class="el" href="src__dup_8py.html">src_dup.py</a>. Manually update the code within the <code>DelegateFreeAsyncWait</code> <code>common_code</code> tags, then run the script to propagate to the remaining delegate classes to simplify code maintenance.</p>
-<p><code>python <a class="el" href="src__dup_8py.html">src_dup.py</a> <a class="el" href="_delegate_async_wait_8h.html" title="Delegate &quot;`AsyncWait`&quot; series of classes used to invoke a function asynchronously and block waiting f...">DelegateAsyncWait.h</a></code> </p>
-</div></div><!-- contents -->
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

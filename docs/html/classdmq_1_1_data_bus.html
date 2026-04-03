@@ -113,14 +113,17 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a6e0e6a4d05447c0cfcf9f1546bc41d65" id="r_a6e0e6a4d05447c0cfcf9f1546bc41d65"><td class="memTemplParams" colspan="2">template&lt;typename T , typename F , typename P &gt; </td></tr>
 <tr class="memitem:a6e0e6a4d05447c0cfcf9f1546bc41d65"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a6e0e6a4d05447c0cfcf9f1546bc41d65">SubscribeFilter</a> (const std::string &amp;topic, F &amp;&amp;func, P &amp;&amp;predicate, <a class="el" href="classdmq_1_1_i_thread.html">dmq::IThread</a> *thread=nullptr, <a class="el" href="structdmq_1_1_qo_s.html">QoS</a> qos={})</td></tr>
 <tr class="separator:a6e0e6a4d05447c0cfcf9f1546bc41d65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0cd55e0282c7a626380599d049ff464" id="r_ab0cd55e0282c7a626380599d049ff464"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ab0cd55e0282c7a626380599d049ff464"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab0cd55e0282c7a626380599d049ff464">Publish</a> (const std::string &amp;topic, T data)</td></tr>
-<tr class="separator:ab0cd55e0282c7a626380599d049ff464"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cfdd95ccd3d67dea8ae6a591deae284" id="r_a5cfdd95ccd3d67dea8ae6a591deae284"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a5cfdd95ccd3d67dea8ae6a591deae284"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a5cfdd95ccd3d67dea8ae6a591deae284">Publish</a> (const std::string &amp;topic, const T &amp;data)</td></tr>
+<tr class="separator:a5cfdd95ccd3d67dea8ae6a591deae284"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c08358b90bb6f0c0ae0d123f18436f2" id="r_a1c08358b90bb6f0c0ae0d123f18436f2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c08358b90bb6f0c0ae0d123f18436f2">AddParticipant</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_participant.html">Participant</a> &gt; participant)</td></tr>
 <tr class="separator:a1c08358b90bb6f0c0ae0d123f18436f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdeb11a1b961ebf7dcc5d18db2e17b48" id="r_abdeb11a1b961ebf7dcc5d18db2e17b48"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:abdeb11a1b961ebf7dcc5d18db2e17b48"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#abdeb11a1b961ebf7dcc5d18db2e17b48">RegisterSerializer</a> (const std::string &amp;topic, <a class="el" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt; void(T)&gt; &amp;serializer)</td></tr>
 <tr class="separator:abdeb11a1b961ebf7dcc5d18db2e17b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ede4c036f01c4c2012c582b5af20799" id="r_a6ede4c036f01c4c2012c582b5af20799"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a6ede4c036f01c4c2012c582b5af20799"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a6ede4c036f01c4c2012c582b5af20799">AddIncomingTopic</a> (const std::string &amp;topic, <a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId, <a class="el" href="classdmq_1_1_participant.html">Participant</a> &amp;participant, <a class="el" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt; void(T)&gt; &amp;serializer)</td></tr>
+<tr class="separator:a6ede4c036f01c4c2012c582b5af20799"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50a817364768fe3ddaaa09cc4523f196" id="r_a50a817364768fe3ddaaa09cc4523f196"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a50a817364768fe3ddaaa09cc4523f196"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a50a817364768fe3ddaaa09cc4523f196">RegisterStringifier</a> (const std::string &amp;topic, std::function&lt; std::string(const T &amp;)&gt; func)</td></tr>
 <tr class="separator:a50a817364768fe3ddaaa09cc4523f196"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,6 +133,47 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a2642ed65d730bc6f1f88161d3df83c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a6ede4c036f01c4c2012c582b5af20799" name="a6ede4c036f01c4c2012c582b5af20799"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ede4c036f01c4c2012c582b5af20799">&#9670;&#160;</a></span>AddIncomingTopic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmq::DataBus::AddIncomingTopic </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>topic</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a></td>          <td class="paramname"><span class="paramname"><em>remoteId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classdmq_1_1_participant.html">Participant</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>participant</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt; void(T)&gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>serializer</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a1c08358b90bb6f0c0ae0d123f18436f2" name="a1c08358b90bb6f0c0ae0d123f18436f2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1c08358b90bb6f0c0ae0d123f18436f2">&#9670;&#160;</a></span>AddParticipant()</h2>
 
@@ -189,8 +233,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab0cd55e0282c7a626380599d049ff464" name="ab0cd55e0282c7a626380599d049ff464"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab0cd55e0282c7a626380599d049ff464">&#9670;&#160;</a></span>Publish()</h2>
+<a id="a5cfdd95ccd3d67dea8ae6a591deae284" name="a5cfdd95ccd3d67dea8ae6a591deae284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cfdd95ccd3d67dea8ae6a591deae284">&#9670;&#160;</a></span>Publish()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -208,7 +252,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">T</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
         </tr>
       </table>
   </td>

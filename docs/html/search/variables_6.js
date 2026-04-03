@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['marker_0',['MARKER',['../class_dmq_header.html#a8f1df2f501e483dc7e6490eae1085a58',1,'DmqHeader']]]
+  ['lastvaluecache_0',['lastValueCache',['../structdmq_1_1_qo_s.html#a7d2789149c70c83936f33fd316e25529',1,'dmq::QoS']]]
 ];

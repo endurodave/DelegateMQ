@@ -8,6 +8,5 @@ var class_serial_transport =
     [ "Send", "class_serial_transport.html#ac77c778772a43f7e72d86f36cb9ba3a3", null ],
     [ "SetRecvTransport", "class_serial_transport.html#a81d208584aeb126553c9bc243ea82642", null ],
     [ "SetSendTransport", "class_serial_transport.html#a37cc5bdde58876bf6d5e11ee3eb4632b", null ],
-    [ "SetTransportMonitor", "class_serial_transport.html#a487c81f55bda76fb5c32d36c269d0c38", null ],
-    [ "swap16", "class_serial_transport.html#a6b0f9ea8508d36440ae0469c565d4b5c", null ]
+    [ "SetTransportMonitor", "class_serial_transport.html#a487c81f55bda76fb5c32d36c269d0c38", null ]
 ];

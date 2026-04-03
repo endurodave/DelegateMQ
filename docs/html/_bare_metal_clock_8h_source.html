@@ -127,18 +127,29 @@ $(function(){initNavTree('_bare_metal_clock_8h_source.html',''); initResizable(t
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="comment">// 3. The critical &quot;now()&quot; function</span></div>
 <div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structdmq_1_1_bare_metal_clock.html#a092271fdfa7137dd4dbf9a95f1e71d20">   26</a></span>        <span class="keyword">static</span> <a class="code hl_typedef" href="structdmq_1_1_bare_metal_clock.html#aa130534971f2dd3cbf1649c6a5765f6d">time_point</a> <a class="code hl_function" href="structdmq_1_1_bare_metal_clock.html#a092271fdfa7137dd4dbf9a95f1e71d20">now</a>() noexcept {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="comment">// Read the volatile global variable directly.</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="comment">// Note: On 32-bit ARM, reading a 64-bit volatile is technically not atomic.</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            <span class="comment">// For a rock-solid production system, you might need a &quot;read_atomic()&quot; helper </span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="comment">// that disables interrupts briefly.</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordflow">return</span> <a class="code hl_typedef" href="structdmq_1_1_bare_metal_clock.html#aa130534971f2dd3cbf1649c6a5765f6d">time_point</a>(<a class="code hl_typedef" href="structdmq_1_1_bare_metal_clock.html#aeaa03581ab7d239bdc8fc57520f58dae">duration</a>(<a class="code hl_variable" href="_bare_metal_clock_8h.html#a9d4c3dc4d688d7d3e76a53c46722fc4a">g_ticks</a>));</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="comment">// On 32-bit ARM, reading a 64-bit value requires two 32-bit loads.</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="comment">// A SysTick ISR firing between them would produce a torn read.</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            <span class="comment">// Disable interrupts for the duration of the read to ensure atomicity.</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#if defined(__GNUC__) || defined(__clang__)</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            __asm__ <span class="keyword">volatile</span>(<span class="stringliteral">&quot;cpsid i&quot;</span> ::: <span class="stringliteral">&quot;memory&quot;</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            uint64_t t = <a class="code hl_variable" href="_bare_metal_clock_8h.html#a9d4c3dc4d688d7d3e76a53c46722fc4a">g_ticks</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            __asm__ <span class="keyword">volatile</span>(<span class="stringliteral">&quot;cpsie i&quot;</span> ::: <span class="stringliteral">&quot;memory&quot;</span>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#elif defined(__CC_ARM) || defined(__ARMCC_VERSION)</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            __disable_irq();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            uint64_t t = <a class="code hl_variable" href="_bare_metal_clock_8h.html#a9d4c3dc4d688d7d3e76a53c46722fc4a">g_ticks</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            __enable_irq();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="comment">// Fallback: plain read (safe on platforms with atomic 64-bit loads)</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            uint64_t t = <a class="code hl_variable" href="_bare_metal_clock_8h.html#a9d4c3dc4d688d7d3e76a53c46722fc4a">g_ticks</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keywordflow">return</span> <a class="code hl_typedef" href="structdmq_1_1_bare_metal_clock.html#aa130534971f2dd3cbf1649c6a5765f6d">time_point</a>(<a class="code hl_typedef" href="structdmq_1_1_bare_metal_clock.html#aeaa03581ab7d239bdc8fc57520f58dae">duration</a>(<span class="keyword">static_cast&lt;</span><a class="code hl_typedef" href="structdmq_1_1_bare_metal_clock.html#ad6ff9468abbd3bbffe71ed5a40d8b06a">rep</a><span class="keyword">&gt;</span>(t)));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        }</div>
 </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    };</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    };</div>
 </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#endif </span><span class="comment">// BARE_METAL_CLOCK_H</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#endif </span><span class="comment">// BARE_METAL_CLOCK_H</span></div>
 <div class="ttc" id="a_bare_metal_clock_8h_html_a9d4c3dc4d688d7d3e76a53c46722fc4a"><div class="ttname"><a href="_bare_metal_clock_8h.html#a9d4c3dc4d688d7d3e76a53c46722fc4a">g_ticks</a></div><div class="ttdeci">volatile uint64_t g_ticks</div><div class="ttdef"><b>Definition</b> BareMetalClock.h:10</div></div>
 <div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
 <div class="ttc" id="astructdmq_1_1_bare_metal_clock_html"><div class="ttname"><a href="structdmq_1_1_bare_metal_clock.html">dmq::BareMetalClock</a></div><div class="ttdef"><b>Definition</b> BareMetalClock.h:14</div></div>
@@ -153,7 +164,7 @@ $(function(){initNavTree('_bare_metal_clock_8h_source.html',''); initResizable(t
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_18b86b2e3f1aa2f223a127151285ad7d.html">predef</a></li><li class="navelem"><a class="el" href="dir_56109d0ba843c5a0bae722c3feb08e89.html">util</a></li><li class="navelem"><a class="el" href="_bare_metal_clock_8h.html">BareMetalClock.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_b0dae459d6d18633b7684a65d7046871.html">extras</a></li><li class="navelem"><a class="el" href="dir_d2e00b0ddc7b230738aa0cf0d7deec06.html">util</a></li><li class="navelem"><a class="el" href="_bare_metal_clock_8h.html">BareMetalClock.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

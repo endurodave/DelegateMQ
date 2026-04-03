@@ -97,15 +97,14 @@ $(function(){initNavTree('_mqtt_transport_8h.html',''); initResizable(true); });
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle"><div class="title">MqttTransport.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;arpa/inet.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="_i_transport_8h_source.html">predef/transport/ITransport.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_i_transport_monitor_8h_source.html">predef/transport/ITransportMonitor.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="_dmq_header_8h_source.html">predef/transport/DmqHeader.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_transport_8h_source.html">port/transport/ITransport.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_transport_monitor_8h_source.html">port/transport/ITransportMonitor.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_dmq_header_8h_source.html">port/transport/DmqHeader.h</a>&quot;</code><br />
 <code>#include &quot;MQTTClient.h&quot;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
@@ -122,116 +121,16 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_mqtt_transport.html">MqttTransport</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">MQTT transport example.  <a href="class_mqtt_transport.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:ab67b4c1c55ff8ba1793720539c9de3d8" id="r_ab67b4c1c55ff8ba1793720539c9de3d8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab67b4c1c55ff8ba1793720539c9de3d8">MQTT_ADDRESS</a>&#160;&#160;&#160;&quot;tcp://broker.hivemq.com:1883&quot;</td></tr>
-<tr class="separator:ab67b4c1c55ff8ba1793720539c9de3d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a400d28e1af2bcd57bf651dc23290a6d3" id="r_a400d28e1af2bcd57bf651dc23290a6d3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a400d28e1af2bcd57bf651dc23290a6d3">MQTT_TOPIC</a>&#160;&#160;&#160;&quot;Delegate_MQTT&quot;</td></tr>
-<tr class="separator:a400d28e1af2bcd57bf651dc23290a6d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77b8f1f7489ef61a8df24f32e6b30559" id="r_a77b8f1f7489ef61a8df24f32e6b30559"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77b8f1f7489ef61a8df24f32e6b30559">MQTT_QOS</a>&#160;&#160;&#160;1</td></tr>
-<tr class="separator:a77b8f1f7489ef61a8df24f32e6b30559"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc31fee63bd07cbfbb61fd111b95fa99" id="r_adc31fee63bd07cbfbb61fd111b95fa99"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc31fee63bd07cbfbb61fd111b95fa99">MQTT_TIMEOUT</a>&#160;&#160;&#160;10000L</td></tr>
-<tr class="separator:adc31fee63bd07cbfbb61fd111b95fa99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d65a1aa547e38e8fbb68fecb76504be" id="r_a8d65a1aa547e38e8fbb68fecb76504be"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d65a1aa547e38e8fbb68fecb76504be">MQTT_PUB_CLIENTID</a>&#160;&#160;&#160;&quot;DelegatePub&quot;</td></tr>
-<tr class="separator:a8d65a1aa547e38e8fbb68fecb76504be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3323d0c642d097df91808b3c48b1bd89" id="r_a3323d0c642d097df91808b3c48b1bd89"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3323d0c642d097df91808b3c48b1bd89">MQTT_SUB_CLIENTID</a>&#160;&#160;&#160;&quot;DelegateSub&quot;</td></tr>
-<tr class="separator:a3323d0c642d097df91808b3c48b1bd89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
 <p>Transport callable argument data to/from a remote using MQTT library. <a href="https://github.com/eclipse-paho/paho.mqtt.c">https://github.com/eclipse-paho/paho.mqtt.c</a> </p>
-</div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="ab67b4c1c55ff8ba1793720539c9de3d8" name="ab67b4c1c55ff8ba1793720539c9de3d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab67b4c1c55ff8ba1793720539c9de3d8">&#9670;&#160;</a></span>MQTT_ADDRESS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MQTT_ADDRESS&#160;&#160;&#160;&quot;tcp://broker.hivemq.com:1883&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a8d65a1aa547e38e8fbb68fecb76504be" name="a8d65a1aa547e38e8fbb68fecb76504be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d65a1aa547e38e8fbb68fecb76504be">&#9670;&#160;</a></span>MQTT_PUB_CLIENTID</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MQTT_PUB_CLIENTID&#160;&#160;&#160;&quot;DelegatePub&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a77b8f1f7489ef61a8df24f32e6b30559" name="a77b8f1f7489ef61a8df24f32e6b30559"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a77b8f1f7489ef61a8df24f32e6b30559">&#9670;&#160;</a></span>MQTT_QOS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MQTT_QOS&#160;&#160;&#160;1</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a3323d0c642d097df91808b3c48b1bd89" name="a3323d0c642d097df91808b3c48b1bd89"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3323d0c642d097df91808b3c48b1bd89">&#9670;&#160;</a></span>MQTT_SUB_CLIENTID</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MQTT_SUB_CLIENTID&#160;&#160;&#160;&quot;DelegateSub&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="adc31fee63bd07cbfbb61fd111b95fa99" name="adc31fee63bd07cbfbb61fd111b95fa99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc31fee63bd07cbfbb61fd111b95fa99">&#9670;&#160;</a></span>MQTT_TIMEOUT</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MQTT_TIMEOUT&#160;&#160;&#160;10000L</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a400d28e1af2bcd57bf651dc23290a6d3" name="a400d28e1af2bcd57bf651dc23290a6d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a400d28e1af2bcd57bf651dc23290a6d3">&#9670;&#160;</a></span>MQTT_TOPIC</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MQTT_TOPIC&#160;&#160;&#160;&quot;Delegate_MQTT&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_18b86b2e3f1aa2f223a127151285ad7d.html">predef</a></li><li class="navelem"><a class="el" href="dir_4174e8c191e5fd66bbba36a67d910efc.html">transport</a></li><li class="navelem"><a class="el" href="dir_3c39baae10d5837a8641f8b46ab27637.html">mqtt</a></li><li class="navelem"><a class="el" href="_mqtt_transport_8h.html">MqttTransport.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_8ef93921927604d57abc90fe2fd5bf9b.html">port</a></li><li class="navelem"><a class="el" href="dir_ca7952a9699eabba33598d28551fbb5b.html">transport</a></li><li class="navelem"><a class="el" href="dir_baeb68bae65d8976eae1d9bb8240ad0d.html">mqtt</a></li><li class="navelem"><a class="el" href="_mqtt_transport_8h.html">MqttTransport.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

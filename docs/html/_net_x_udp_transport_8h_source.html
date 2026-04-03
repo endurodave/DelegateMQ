@@ -104,9 +104,9 @@ $(function(){initNavTree('_net_x_udp_transport_8h_source.html',''); initResizabl
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_opt_8h.html">delegate/DelegateOpt.h</a>&quot;</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_8h.html">predef/transport/ITransport.h</a>&quot;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="_dmq_header_8h.html">predef/transport/DmqHeader.h</a>&quot;</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_monitor_8h.html">predef/transport/ITransportMonitor.h</a>&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_8h.html">port/transport/ITransport.h</a>&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="_dmq_header_8h.html">port/transport/DmqHeader.h</a>&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;<a class="code" href="_i_transport_monitor_8h.html">port/transport/ITransportMonitor.h</a>&quot;</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &quot;nx_api.h&quot;</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;cstdio&gt;</span></div>
@@ -241,7 +241,7 @@ $(function(){initNavTree('_net_x_udp_transport_8h_source.html',''); initResizabl
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            <span class="keywordflow">return</span> -1;</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        }</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        std::string payload = os.str();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keyword">auto</span> payload = os.str();</div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">if</span> (payload.length() &gt; UINT16_MAX) {</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            tx_mutex_put(&amp;m_mutex);</div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            <span class="keywordflow">return</span> -1;</div>
@@ -281,22 +281,22 @@ $(function(){initNavTree('_net_x_udp_transport_8h_source.html',''); initResizabl
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keywordflow">if</span> (nx_packet_data_append(packet_ptr, (VOID*)payload.data(), payload.size(), m_pool, NX_NO_WAIT) != NX_SUCCESS) </div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            <span class="keywordflow">goto</span> cleanup_and_fail;</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="comment">// 4. Track Reliability</span></div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">if</span> (headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>() != <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a> &amp;&amp; m_transportMonitor)</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a457ff7ca9a3ba3be3ff1cf2a34b63972">Add</a>(headerCopy.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>(), headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>());</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="comment">// 5. Send</span></div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="comment">// nx_udp_socket_send typically releases the packet on internal errors.</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="comment">// However, if it fails due to binding issues (before driver), it might not.</span></div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        ret = nx_udp_socket_send(&amp;m_socket, packet_ptr, m_targetIp, m_port);</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        </div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordflow">if</span> (ret != NX_SUCCESS) {</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            <span class="comment">// Defensive release: Verify if your specific NetX version auto-releases on specific errors.</span></div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            <span class="comment">// Standard practice is often to release if send fails.</span></div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            nx_packet_release(packet_ptr); </div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            tx_mutex_put(&amp;m_mutex);</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        }</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="comment">// 4. Send</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="comment">// nx_udp_socket_send typically releases the packet on internal errors.</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="comment">// However, if it fails due to binding issues (before driver), it might not.</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        ret = nx_udp_socket_send(&amp;m_socket, packet_ptr, m_targetIp, m_port);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keywordflow">if</span> (ret != NX_SUCCESS) {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="comment">// Defensive release: Verify if your specific NetX version auto-releases on specific errors.</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            <span class="comment">// Standard practice is often to release if send fails.</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            nx_packet_release(packet_ptr);</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            tx_mutex_put(&amp;m_mutex);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="comment">// 5. Track Reliability (after successful send only)</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keywordflow">if</span> (headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>() != <a class="code hl_variable" href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a> &amp;&amp; m_transportMonitor)</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            m_transportMonitor-&gt;<a class="code hl_function" href="class_i_transport_monitor.html#a457ff7ca9a3ba3be3ff1cf2a34b63972">Add</a>(headerCopy.<a class="code hl_function" href="class_dmq_header.html#a9778607b12e1127d472e63cb7b56c978">GetSeqNum</a>(), headerCopy.<a class="code hl_function" href="class_dmq_header.html#a2c57d61c9846d221cf3734c1247c651c">GetId</a>());</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        tx_mutex_put(&amp;m_mutex);</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="keywordflow">return</span> 0;</div>
@@ -430,8 +430,8 @@ $(function(){initNavTree('_net_x_udp_transport_8h_source.html',''); initResizabl
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span> </div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span><span class="preprocessor">#endif </span><span class="comment">// NETX_UDP_TRANSPORT_H</span></div>
 <div class="ttc" id="a_delegate_opt_8h_html"><div class="ttname"><a href="_delegate_opt_8h.html">DelegateOpt.h</a></div><div class="ttdoc">Delegate library options header file.</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:162</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:163</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:247</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:248</div></div>
 <div class="ttc" id="a_dmq_header_8h_html"><div class="ttname"><a href="_dmq_header_8h.html">DmqHeader.h</a></div></div>
 <div class="ttc" id="a_i_transport_8h_html"><div class="ttname"><a href="_i_transport_8h.html">ITransport.h</a></div></div>
 <div class="ttc" id="a_i_transport_monitor_8h_html"><div class="ttname"><a href="_i_transport_monitor_8h.html">ITransportMonitor.h</a></div></div>
@@ -473,7 +473,7 @@ $(function(){initNavTree('_net_x_udp_transport_8h_source.html',''); initResizabl
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_18b86b2e3f1aa2f223a127151285ad7d.html">predef</a></li><li class="navelem"><a class="el" href="dir_4174e8c191e5fd66bbba36a67d910efc.html">transport</a></li><li class="navelem"><a class="el" href="dir_dcafd52f1fd7361bef1b838a247c4012.html">netx-udp</a></li><li class="navelem"><a class="el" href="_net_x_udp_transport_8h.html">NetXUdpTransport.h</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_3790bc3cc921abc2d9cac9e1ed9165e7.html">delegate-mq</a></li><li class="navelem"><a class="el" href="dir_8ef93921927604d57abc90fe2fd5bf9b.html">port</a></li><li class="navelem"><a class="el" href="dir_ca7952a9699eabba33598d28551fbb5b.html">transport</a></li><li class="navelem"><a class="el" href="dir_a36eb94d9f0be56e9ff178a970cc4c6c.html">netx-udp</a></li><li class="navelem"><a class="el" href="_net_x_udp_transport_8h.html">NetXUdpTransport.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>

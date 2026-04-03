@@ -113,14 +113,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a24629ff5e2dc3ddbc260743248930ee8" id="r_a24629ff5e2dc3ddbc260743248930ee8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a24629ff5e2dc3ddbc260743248930ee8">RemoteChannel</a> (<a class="el" href="class_i_transport.html">ITransport</a> &amp;transport, <a class="el" href="classdmq_1_1_i_serializer.html">ISerializer</a>&lt; RetType(Args...)&gt; &amp;serializer)</td></tr>
 <tr class="memdesc:a24629ff5e2dc3ddbc260743248930ee8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a>.  <br /></td></tr>
 <tr class="separator:a24629ff5e2dc3ddbc260743248930ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecd2c6641f9fc996dabd77046ac991ec" id="r_aecd2c6641f9fc996dabd77046ac991ec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aecd2c6641f9fc996dabd77046ac991ec">~RemoteChannel</a> ()=default</td></tr>
+<tr class="separator:aecd2c6641f9fc996dabd77046ac991ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedc8aaea43e85c7aa08d0fc62bdb28da" id="r_aedc8aaea43e85c7aa08d0fc62bdb28da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aedc8aaea43e85c7aa08d0fc62bdb28da">RemoteChannel</a> (const <a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a> &amp;)=delete</td></tr>
 <tr class="separator:aedc8aaea43e85c7aa08d0fc62bdb28da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c9fc371244c479f85e92d4591527082" id="r_a8c9fc371244c479f85e92d4591527082"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c9fc371244c479f85e92d4591527082">operator=</a> (const <a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a> &amp;)=delete</td></tr>
 <tr class="separator:a8c9fc371244c479f85e92d4591527082"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a470bf58694cbfa7617b2897d43599a80" id="r_a470bf58694cbfa7617b2897d43599a80"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a470bf58694cbfa7617b2897d43599a80">RemoteChannel</a> (<a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a> &amp;&amp;)=delete</td></tr>
-<tr class="separator:a470bf58694cbfa7617b2897d43599a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8713aaa8d7679e1a550ded53ef1e65eb" id="r_a8713aaa8d7679e1a550ded53ef1e65eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8713aaa8d7679e1a550ded53ef1e65eb">operator=</a> (<a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a> &amp;&amp;)=delete</td></tr>
-<tr class="separator:a8713aaa8d7679e1a550ded53ef1e65eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:accc5b32807f245e737a4097535927cef" id="r_accc5b32807f245e737a4097535927cef"><td class="memTemplParams" colspan="2">template&lt;class TClass &gt; </td></tr>
 <tr class="memitem:accc5b32807f245e737a4097535927cef"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#accc5b32807f245e737a4097535927cef">Bind</a> (TClass *object, RetType(TClass::*func)(Args...), <a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">DelegateRemoteId</a> id)</td></tr>
 <tr class="memdesc:accc5b32807f245e737a4097535927cef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a non-const member function as the receive-side handler.  <br /></td></tr>
@@ -193,7 +191,7 @@ class dmq::RemoteChannel&lt; RetType(Args...)&gt;</div><p>Aggregates dispatcher,
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a24629ff5e2dc3ddbc260743248930ee8" name="a24629ff5e2dc3ddbc260743248930ee8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24629ff5e2dc3ddbc260743248930ee8">&#9670;&#160;</a></span>RemoteChannel() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a24629ff5e2dc3ddbc260743248930ee8">&#9670;&#160;</a></span>RemoteChannel() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -232,8 +230,35 @@ template&lt;class RetType , class... Args&gt; </div>
 
 </div>
 </div>
+<a id="aecd2c6641f9fc996dabd77046ac991ec" name="aecd2c6641f9fc996dabd77046ac991ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecd2c6641f9fc996dabd77046ac991ec">&#9670;&#160;</a></span>~RemoteChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classdmq_1_1_remote_channel.html">dmq::RemoteChannel</a>&lt; RetType(Args...)&gt;::~<a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aedc8aaea43e85c7aa08d0fc62bdb28da" name="aedc8aaea43e85c7aa08d0fc62bdb28da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aedc8aaea43e85c7aa08d0fc62bdb28da">&#9670;&#160;</a></span>RemoteChannel() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aedc8aaea43e85c7aa08d0fc62bdb28da">&#9670;&#160;</a></span>RemoteChannel() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -247,33 +272,6 @@ template&lt;class RetType , class... Args&gt; </div>
           <td class="memname"><a class="el" href="classdmq_1_1_remote_channel.html">dmq::RemoteChannel</a>&lt; RetType(Args...)&gt;::RemoteChannel </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a>&lt; RetType(Args...)&gt; &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a470bf58694cbfa7617b2897d43599a80" name="a470bf58694cbfa7617b2897d43599a80"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a470bf58694cbfa7617b2897d43599a80">&#9670;&#160;</a></span>RemoteChannel() <span class="overload">[3/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class RetType , class... Args&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdmq_1_1_remote_channel.html">dmq::RemoteChannel</a>&lt; RetType(Args...)&gt;::RemoteChannel </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a>&lt; RetType(Args...)&gt; &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -642,7 +640,7 @@ template&lt;class RetType , class... Args&gt; </div>
 </div>
 </div>
 <a id="a8c9fc371244c479f85e92d4591527082" name="a8c9fc371244c479f85e92d4591527082"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c9fc371244c479f85e92d4591527082">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c9fc371244c479f85e92d4591527082">&#9670;&#160;</a></span>operator=()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -656,33 +654,6 @@ template&lt;class RetType , class... Args&gt; </div>
           <td class="memname"><a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a> &amp; <a class="el" href="classdmq_1_1_remote_channel.html">dmq::RemoteChannel</a>&lt; RetType(Args...)&gt;::operator= </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a>&lt; RetType(Args...)&gt; &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a8713aaa8d7679e1a550ded53ef1e65eb" name="a8713aaa8d7679e1a550ded53ef1e65eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8713aaa8d7679e1a550ded53ef1e65eb">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class RetType , class... Args&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a> &amp; <a class="el" href="classdmq_1_1_remote_channel.html">dmq::RemoteChannel</a>&lt; RetType(Args...)&gt;::operator= </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classdmq_1_1_remote_channel.html">RemoteChannel</a>&lt; RetType(Args...)&gt; &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

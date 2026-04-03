@@ -27,5 +27,6 @@ var class_thread_msg =
     [ "GetId", "class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593", null ],
     [ "GetId", "class_thread_msg.html#abbfb9a9191a8bab76541077c3303d593", null ],
     [ "GetPriority", "class_thread_msg.html#aa0b27dbf61a2b2416a5a055336b4c73a", null ],
+    [ "GetPriority", "class_thread_msg.html#aa0b27dbf61a2b2416a5a055336b4c73a", null ],
     [ "GetPriority", "class_thread_msg.html#aa0b27dbf61a2b2416a5a055336b4c73a", null ]
 ];

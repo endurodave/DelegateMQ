@@ -103,7 +103,7 @@ $(function(){initNavTree('classdmq_1_1_thread_x_condition_variable.html',''); in
 </div><!--header-->
 <div class="contents">
 
-<p>Production-grade wrapper around ThreadX <a class="el" href="classdmq_1_1_semaphore.html" title="A semaphore wrapper class.">Semaphore</a> to mimic std::condition_variable.  
+<p>Production-grade wrapper around ThreadX Semaphore to mimic std::condition_variable.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_thread_x_condition_variable_8h_source.html">ThreadXConditionVariable.h</a>&gt;</code></p>
@@ -131,9 +131,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a168300f44a414bc958547898952b6754"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Production-grade wrapper around ThreadX <a class="el" href="classdmq_1_1_semaphore.html" title="A semaphore wrapper class.">Semaphore</a> to mimic std::condition_variable. </p>
+<div class="textblock"><p>Production-grade wrapper around ThreadX Semaphore to mimic std::condition_variable. </p>
 <ul>
-<li>Uses a Counting <a class="el" href="classdmq_1_1_semaphore.html" title="A semaphore wrapper class.">Semaphore</a> (initialized to 0).</li>
+<li>Uses a Counting Semaphore (initialized to 0).</li>
 <li>ISR-safe notification logic (tx_semaphore_put).</li>
 <li>Robust tick overflow handling using elapsed time subtraction.</li>
 </ul>

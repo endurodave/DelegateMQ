@@ -17,45 +17,36 @@ var hierarchy =
       [ "dmq::Delegate< RetType(Args...)>", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", [
         [ "dmq::DelegateFree< RetType(Args...)>", "classdmq_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html", [
           [ "dmq::DelegateFreeAsync< RetType(Args...)>", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
-          [ "dmq::DelegateFreeAsyncWait< RetType(Args...)>", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
           [ "dmq::DelegateFreeRemote< RetType(Args...)>", "classdmq_1_1_delegate_free_remote_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
         ] ],
         [ "dmq::DelegateFunction< RetType(Args...)>", "classdmq_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html", [
           [ "dmq::DelegateFunctionAsync< RetType(Args...)>", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
-          [ "dmq::DelegateFunctionAsyncWait< RetType(Args...)>", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
           [ "dmq::DelegateFunctionRemote< RetType(Args...)>", "classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html", null ]
         ] ],
         [ "dmq::DelegateMember< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", [
           [ "dmq::DelegateMemberAsync< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
-          [ "dmq::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
           [ "dmq::DelegateMemberRemote< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", [
             [ "RemoteEndpoint< TClass, RetType(Args...)>", "class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
           ] ]
         ] ],
         [ "dmq::DelegateMemberSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", [
-          [ "dmq::DelegateMemberAsyncSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
-          [ "dmq::DelegateMemberAsyncWaitSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
+          [ "dmq::DelegateMemberAsyncSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
         ] ]
       ] ]
     ] ],
     [ "dmq::DelegateFree< R >", "classdmq_1_1_delegate_free.html", null ],
     [ "dmq::DelegateFreeAsync< R >", "classdmq_1_1_delegate_free_async.html", null ],
-    [ "dmq::DelegateFreeAsyncWait< R >", "classdmq_1_1_delegate_free_async_wait.html", null ],
     [ "dmq::DelegateFreeRemote< R >", "classdmq_1_1_delegate_free_remote.html", null ],
     [ "dmq::DelegateFunction< R >", "classdmq_1_1_delegate_function.html", null ],
     [ "dmq::DelegateFunctionAsync< R >", "classdmq_1_1_delegate_function_async.html", null ],
-    [ "dmq::DelegateFunctionAsyncWait< R >", "classdmq_1_1_delegate_function_async_wait.html", null ],
     [ "dmq::DelegateFunctionRemote< R >", "classdmq_1_1_delegate_function_remote.html", null ],
     [ "dmq::DelegateMember< C, R >", "classdmq_1_1_delegate_member.html", null ],
     [ "dmq::DelegateMemberAsync< C, R >", "classdmq_1_1_delegate_member_async.html", null ],
     [ "dmq::DelegateMemberAsyncSp< C, R >", "classdmq_1_1_delegate_member_async_sp.html", null ],
-    [ "dmq::DelegateMemberAsyncWait< C, R >", "classdmq_1_1_delegate_member_async_wait.html", null ],
-    [ "dmq::DelegateMemberAsyncWaitSp< C, R >", "classdmq_1_1_delegate_member_async_wait_sp.html", null ],
     [ "dmq::DelegateMemberRemote< C, R >", "classdmq_1_1_delegate_member_remote.html", null ],
     [ "dmq::DelegateMemberSp< C, R >", "classdmq_1_1_delegate_member_sp.html", null ],
     [ "dmq::DelegateMsg", "classdmq_1_1_delegate_msg.html", [
-      [ "dmq::DelegateAsyncMsg< Args >", "classdmq_1_1_delegate_async_msg.html", null ],
-      [ "dmq::DelegateAsyncWaitMsg< Args >", "classdmq_1_1_delegate_async_wait_msg.html", null ]
+      [ "dmq::DelegateAsyncMsg< Args >", "classdmq_1_1_delegate_async_msg.html", null ]
     ] ],
     [ "DmqHeader", "class_dmq_header.html", null ],
     [ "std::false_type", null, [
@@ -111,13 +102,9 @@ var hierarchy =
     ] ],
     [ "dmq::IThreadInvoker", "classdmq_1_1_i_thread_invoker.html", [
       [ "dmq::DelegateFreeAsync< RetType(Args...)>", "classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
-      [ "dmq::DelegateFreeAsyncWait< RetType(Args...)>", "classdmq_1_1_delegate_free_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "dmq::DelegateFunctionAsync< RetType(Args...)>", "classdmq_1_1_delegate_function_async_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
-      [ "dmq::DelegateFunctionAsyncWait< RetType(Args...)>", "classdmq_1_1_delegate_function_async_wait_3_01_ret_type_07_args_8_8_8_08_4.html", null ],
       [ "dmq::DelegateMemberAsync< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
-      [ "dmq::DelegateMemberAsyncSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
-      [ "dmq::DelegateMemberAsyncWait< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ],
-      [ "dmq::DelegateMemberAsyncWaitSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_wait_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
+      [ "dmq::DelegateMemberAsyncSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_async_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", null ]
     ] ],
     [ "ITransport", "class_i_transport.html", [
       [ "MqttTransport", "class_mqtt_transport.html", null ],
@@ -158,6 +145,7 @@ var hierarchy =
     [ "NetworkContext", "class_network_context.html", null ],
     [ "dmq::NullMutex", "structdmq_1_1_null_mutex.html", null ],
     [ "dmq::Participant", "classdmq_1_1_participant.html", null ],
+    [ "dmq::PortableLockGuard< T >", "classdmq_1_1_portable_lock_guard.html", null ],
     [ "QObject", null, [
       [ "Thread", "class_thread.html", null ],
       [ "Worker", "class_worker.html", null ]
@@ -174,7 +162,6 @@ var hierarchy =
     [ "RetryMonitor::RetryEntry", "struct_retry_monitor_1_1_retry_entry.html", null ],
     [ "RetryMonitor", "class_retry_monitor.html", null ],
     [ "dmq::ScopedConnection", "classdmq_1_1_scoped_connection.html", null ],
-    [ "dmq::Semaphore", "classdmq_1_1_semaphore.html", null ],
     [ "serialize", "classserialize.html", null ],
     [ "Serializer< R >", "struct_serializer.html", null ],
     [ "Serializer< Func >", "struct_serializer.html", null ],
