@@ -1,5 +1,5 @@
-<div align="center">
-  <img src="docs/delegatemq-banner.jpg" alt="DelegateMQ Banner" width="100%">
+<div align="left">
+  <img src="docs/delegatemq-banner.jpg" alt="DelegateMQ Banner" style="max-width: 800px; width="100%">
 </div>
 <br>
 
@@ -34,14 +34,16 @@ It serves as a messaging layer for C++ applications, providing thread-safe async
 
 DelegateMQ is completely modular. You can use only the features you need—such as basic synchronous delegates—without the overhead of asynchronous or remote features.
 
-# Key Concepts
+# Getting Started
 
-- `MakeDelegate` – Creates a delegate bound to any callable. Adding a `Thread` argument makes it asynchronous; adding a `RemoteChannel` makes it remote. The call syntax is the same in all three cases.
-- `Thread` – A cross-platform thread class. Passed to `MakeDelegate` to dispatch a call to a specific worker thread.
-- `RemoteChannel<Sig>` – Owns the transport wiring for one message signature. Call `Bind()` once to configure, then invoke with `operator()` to send remotely.
-- `Signal<Sig>` – Thread-safe multicast signal. `Connect()` returns a `ScopedConnection` that auto-disconnects on scope exit. Declare as a plain class member — no `shared_ptr` required.
-- `MulticastDelegateSafe` – Thread-safe delegate container for broadcast invocation without RAII connection management.
-- `DataBus` – High-level topic-based middleware for data distribution. Enables location-transparent "publish/subscribe" across threads or remote nodes.
+[CMake](https://cmake.org/) is used to create the project build files on any Windows or Linux machine. DelegateMQ supports Visual Studio, GCC, Clang, and ARM toolchains.
+
+1. Clone the repository.
+2. From the repository root, run the following CMake command:   
+   `cmake -B build .`
+3. Build and run the project within the `build` directory. 
+
+See [Example Projects](docs/DETAILS.md#example-projects) to build more project examples (remote/IPC, embedded). See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
 
 # Overview
 
@@ -50,6 +52,15 @@ In C++, a delegate function object encapsulates a callable entity, such as a fun
 DelegateMQ serves as a middleware library that utilizes simple, pure virtual interface classes for the OS, transport, and serializer. This architecture allows easy swapping of underlying technologies without changing application logic.
 
 Originally published on CodeProject at <a href="https://www.codeproject.com/Articles/5277036/Asynchronous-Multicast-Delegates-in-Modern-Cpluspl">Asynchronous Multicast Delegates in Modern C++</a> with a perfect 5.0 article feedback rating.
+
+## Key Concepts
+
+- `MakeDelegate` – Creates a delegate bound to any callable. Adding a `Thread` argument makes it asynchronous; adding a `RemoteChannel` makes it remote. The call syntax is the same in all three cases.
+- `Thread` – A cross-platform thread class. Passed to `MakeDelegate` to dispatch a call to a specific worker thread.
+- `RemoteChannel<Sig>` – Owns the transport wiring for one message signature. Call `Bind()` once to configure, then invoke with `operator()` to send remotely.
+- `Signal<Sig>` – Thread-safe multicast signal. `Connect()` returns a `ScopedConnection` that auto-disconnects on scope exit. Declare as a plain class member — no `shared_ptr` required.
+- `MulticastDelegateSafe` – Thread-safe delegate container for broadcast invocation without RAII connection management.
+- `DataBus` – High-level topic-based middleware for data distribution. Enables location-transparent "publish/subscribe" across threads or remote nodes.
 
 ## Synchronous Delegates
 
@@ -339,6 +350,12 @@ DelegateMQ uses an external thread, transport, and serializer, all of which are 
 
 The library's flexible CMake build options allow for the inclusion of only the necessary features. Synchronous, asynchronous, and remote delegates can be used individually or in combination.
 
+# Documentation
+
+ - See [Design Details](docs/DETAILS.md) for a [porting guide](docs/DETAILS.md#porting-guide), design documentation and [more examples](docs/DETAILS.md#sample-projects).
+ - See [Technology Comparison](docs/COMPARISON.md) for how DelegateMQ compares to DDS, gRPC, Qt signals, Boost.Signals2, `std::async`, and OS message queues.
+ - See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation.
+
 # Features
 
 DelegateMQ at a glance. 
@@ -367,23 +384,6 @@ DelegateMQ at a glance.
 | Embedded Friendly | Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "super loop"). |
 | Operation System | Any. Custom `IThread` implementation may be required. |
 | Language | C++17 or higher |
-
-# Getting Started
-
-To build and run DelegateMQ, follow these simple steps. The library uses <a href="https://www.cmake.org">CMake</a> to generate build files and supports Visual Studio, GCC, Clang, and ARM toolchains.
-
-1. Clone the repository.
-2. From the repository root, run the following CMake command:   
-   `cmake -B build .`
-3. Build and run the project within the `build` directory. 
-
-See [Example Projects](docs/DETAILS.md#example-projects) to build more project examples (remote/IPC, embedded). See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
-
-# Documentation
-
- - See [Design Details](docs/DETAILS.md) for a [porting guide](docs/DETAILS.md#porting-guide), design documentation and [more examples](docs/DETAILS.md#sample-projects).
- - See [Technology Comparison](docs/COMPARISON.md) for how DelegateMQ compares to DDS, gRPC, Qt signals, Boost.Signals2, `std::async`, and OS message queues.
- - See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation.
 
 # Motivation
 
