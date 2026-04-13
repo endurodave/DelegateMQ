@@ -36,6 +36,7 @@
 #include <sstream>
 #include <cstdio>
 #include <iostream>
+#include <vector>
 
 class TcpTransport : public ITransport
 {
@@ -215,9 +216,9 @@ public:
         uint16_t length = header.GetLength();
         if (length > 0)
         {
-            if (length > BUFFER_SIZE) return -1;
-            if (!ReadExact(m_buffer, length)) return -1;
-            is.write(m_buffer, length);
+            std::vector<char> payload(length);
+            if (!ReadExact(payload.data(), length)) return -1;
+            is.write(payload.data(), length);
         }
 
         // 3. Ack
@@ -269,8 +270,6 @@ private:
     ITransport* m_sendTransport = nullptr;
     ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
-    static const int BUFFER_SIZE = 4096;
-    char m_buffer[BUFFER_SIZE] = { 0 };
 };
 
 #endif

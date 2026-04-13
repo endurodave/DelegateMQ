@@ -21,7 +21,7 @@ DelegateMQ is a C++ header-only library for invoking any callable (e.g., functio
 * Remotely (Across processes or processors)
 * Topic-based (Publish/Subscribe across threads or nodes)
 
-It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, topic-based data distribution (DataBus), and inter-thread data transfer. The library is unit-tested and has been ported to numerous embedded and PC platforms (e.g. Windows, Linux, RTOS, bare-metal), with a design that facilitates easy porting to others.
+It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, topic-based data distribution (DataBus), and inter-thread data transfer. The library is unit-tested and has been ported to numerous embedded and PC platforms (e.g. Windows, Linux, RTOS, bare metal), with a design that facilitates easy porting to others.
 
 **Key Use Cases**
 * **Callbacks**: Synchronous and asynchronous execution.
@@ -294,6 +294,7 @@ See [Delegate Invocation Semantics](docs/DETAILS.md#delegate-invocation-semantic
 - **Monitoring**: Built-in "spy" support via `DataBus::Monitor()` to receive a callback for every message published on the bus.
 - **Type Safety**: Runtime type checking ensures topic data types match between publishers and subscribers.
 - **Zero Library Threads**: `DataBus` creates no internal threads. The application owns a single polling thread that calls `Participant::ProcessIncoming()` — every thread is visible and under application control.
+- **[Mixed-Platform](docs/DETAILS.md#example-multi-node-topology)**: Runs unchanged across Linux, FreeRTOS, and bare-metal nodes. Complex topologies (Linux ↔ Ethernet ↔ FreeRTOS ↔ UART ↔ bare metal) are supported.
 
 ```cpp
 #include "DelegateMQ.h"
@@ -313,6 +314,7 @@ auto conn2 = dmq::DataBus::Subscribe<int>("status", [](int s) {
     // New subscribers get the last published value immediately
 }, nullptr, qos);
 ```
+
 
 # DelegateMQ Tools
 
@@ -355,6 +357,21 @@ The library's flexible CMake build options allow for the inclusion of only the n
  - See [Design Details](docs/DETAILS.md) for a [porting guide](docs/DETAILS.md#porting-guide), design documentation and [more examples](docs/DETAILS.md#sample-projects).
  - See [Technology Comparison](docs/COMPARISON.md) for how DelegateMQ compares to DDS, gRPC, Qt signals, Boost.Signals2, `std::async`, and OS message queues.
  - See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation.
+
+# Advantages
+
+Key advantages of using DelegateMQ in your application.
+
+| Advantage | Description |
+| --- | --- |
+| One invocation model | Sync, async, and remote delegates share the same `MakeDelegate` syntax — promoting a call to async or remote is a one-line change. |
+| Runs everywhere C++ runs | Small pure-virtual interfaces (`IThread`, `ITransport`) mean the same application code compiles on Windows, Linux, FreeRTOS, and bare metal. |
+| No imposed dependencies | Header-only core requires only C++17; serialization, transport, and threading are injected externally with no mandatory third-party packages. |
+| Application owns every thread | No internal threads are created — every `Thread` is constructed by the application, keeping scheduling, watchdogs, and stack sizes explicit and auditable. |
+| Gradual adoption | Use synchronous delegates first, add a `Thread` to go async, add a `RemoteChannel` to go cross-process — each step is independent and reversible. |
+| Targeted thread dispatch | Callbacks, signal slots, and DataBus subscribers each specify the thread they run on — the library handles the dispatch, so handlers always execute in the correct thread context without manual queuing. |
+| Off-target development | The stdlib port lets embedded application logic run and be tested on a Windows or Linux host without target hardware; moving to the device swaps the thread port (e.g. FreeRTOS) and transport — application code is unchanged. |
+| DataBus location transparency | Subscribers receive data identically whether the publisher is in the same thread, a different process, or a remote processor — no code change when moving between local and remote. |
 
 # Features
 

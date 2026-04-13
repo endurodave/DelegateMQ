@@ -2578,6 +2578,11 @@ extern void DelegateRemoteTests();
 extern void DelegateThreadsTests();
 extern void ContainersTests();
 extern void RemoteChannelTests();
+extern void SerializeTests();
+extern void DispatcherTests();
+#ifdef DMQ_ALLOCATOR
+extern void AllocatorTests();
+#endif
 
 void RunDelegateUnitTests()
 {
@@ -2592,6 +2597,11 @@ void RunDelegateUnitTests()
 		DelegateRemoteTests();
 		DelegateThreadsTests();
 		RemoteChannelTests();
+		SerializeTests();
+		DispatcherTests();
+#ifdef DMQ_ALLOCATOR
+		AllocatorTests();
+#endif
 	}
 	catch (const std::exception& e)
 	{

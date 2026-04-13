@@ -133,7 +133,7 @@ public:
     bool RemoteInvokeWait(dmq::DelegateMemberRemote<TClass, RetType(Args...)>& endpoint, Args&&... args)
     {
         // 1. [Caller Thread] Check if we are on the Network Thread.
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        if (!m_thread.IsCurrentThread())
         {
             // 2. [Caller Thread] Create shared synchronization state.
             struct SyncState {
@@ -207,7 +207,7 @@ public:
     template <class RetType, class... Args>
     bool RemoteInvokeWait(dmq::RemoteChannel<RetType(Args...)>& channel, Args&&... args)
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        if (!m_thread.IsCurrentThread())
         {
             struct SyncState {
                 std::atomic<bool> success{ false };

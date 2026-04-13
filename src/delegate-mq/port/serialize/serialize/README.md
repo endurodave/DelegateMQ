@@ -1,0 +1,96 @@
+# MessageSerialize
+
+A robust, header-only C++ binary serialization library designed for DelegateMQ. It provides a simple yet powerful framework for marshaling C++ objects, primitives, and STL containers into binary streams.
+
+## Features
+
+- **Header-Only**: No external dependencies beyond the C++ Standard Library.
+- **Endianness Aware**: Uses a little-endian wire format. Automatically handles byte-swapping on big-endian hosts.
+- **STL Support**: Native support for `std::vector`, `std::list`, `std::map`, `std::set`, `std::string`, and `std::wstring`.
+- **Custom Allocators**: Fully compatible with custom allocators, including DelegateMQ's `xlist`, `xvector`, etc.
+- **Versioning**: Supports forward and backward compatibility for user-defined objects.
+- **Type Safety**: Uses compile-time checks to ensure only supported types are serialized.
+- **Pointer Support**: Supports serializing containers of pointers with automatic memory allocation during deserialization.
+- **Stream Verification**: Includes runtime and compile-time checks (via `is_seekable` trait) to ensure streams support the required seeking operations.
+
+## Stream Requirements
+
+- **Seekable**: The library requires seekable streams (e.g., `std::stringstream`, `std::fstream`) to handle object versioning and size backfilling. Non-seekable streams (like sockets or `std::cout`) will trigger a runtime error.
+- **Binary Mode**: Always open files or streams in **binary mode** (`std::ios::binary`). Failure to do so may lead to data corruption due to automatic newline translations (especially on Windows).
+
+## Basic Usage
+
+### Serializing Primitives
+
+```cpp
+#include "msg_serialize.h"
+#include <sstream>
+
+serialize ms;
+int value = 123;
+std::stringstream ss;
+
+// Write to stream
+ms.write(ss, value);
+
+// Read from stream
+int outValue;
+ms.read(ss, outValue);
+```
+
+### Custom Serializable Objects
+
+User-defined types must inherit from `serialize::I` and implement the `read()` and `write()` methods.
+
+```cpp
+struct MyData : public serialize::I {
+    int id = 0;
+    std::string name;
+
+    // Serialize object to stream
+    std::ostream& write(serialize& ms, std::ostream& os) const override {
+        ms.write(os, id);
+        ms.write(os, name);
+        return os;
+    }
+
+    // Deserialize object from stream
+    std::istream& read(serialize& ms, std::istream& is) override {
+        ms.read(is, id);
+        ms.read(is, name);
+        return is;
+    }
+};
+```
+
+### STL Containers and Custom Allocators
+
+The library handles standard containers and those using custom allocators (like fixed-block pools) automatically.
+
+```cpp
+xlist<int> myList = {1, 2, 3};
+std::stringstream ss;
+serialize ms;
+
+ms.write(ss, myList);
+
+xlist<int> outList;
+ms.read(ss, outList);
+```
+
+## Advanced Features
+
+### Versioning & Compatibility
+
+When serializing objects derived from `serialize::I`, the library records the object size in the stream. 
+- **Forward Compatibility**: If a receiver gets a newer (larger) version of an object, it reads what it knows and safely skips the remaining bytes.
+- **Backward Compatibility**: If a receiver gets an older (smaller) version, it reads the available data and leaves the remaining members at their default values.
+
+### Pointer Containers
+
+When serializing `std::vector<T*>` or `std::list<T*>`, the library:
+1.  Writes a boolean flag for each element indicating if it's null.
+2.  For non-null elements, it serializes the pointed-to object.
+3.  During deserialization, it calls `new T` to recreate the objects. 
+
+*Note: The caller is responsible for managing the memory of objects created during pointer container deserialization.*

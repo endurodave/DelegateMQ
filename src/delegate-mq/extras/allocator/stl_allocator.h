@@ -69,11 +69,4 @@ inline bool operator==(const stl_allocator<T>&, const stl_allocator<U>&) { retur
 template <typename T, typename U>
 inline bool operator!=(const stl_allocator<T>&, const stl_allocator<U>&) { return false; }
 
-// Create a shared_ptr with both the object and control block allocated from the fixed-block pool
-template <typename T, typename... Args>
-inline std::shared_ptr<T> xmake_shared(Args&&... args)
-{
-    return std::allocate_shared<T>(stl_allocator<T>(), std::forward<Args>(args)...);
-}
-
 #endif 

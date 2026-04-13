@@ -49,6 +49,7 @@ SKIP_ALWAYS = {
 }
 
 WINDOWS_ONLY = {
+    "databus-freertos",        # server uses FreeRTOS Win32 simulator (32-bit); full pair only meaningful on Windows
     "freertos-bare-metal",
     "win32-pipe-serializer",
     "win32-tcp-serializer",

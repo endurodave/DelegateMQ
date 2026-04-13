@@ -77,6 +77,15 @@ def build_samples(use_clang=False):
                     # These are sub-libraries or skipped platforms, not standalone apps
                     continue
 
+                # --- SKIP WINDOWS-ONLY PROJECTS ON LINUX ---
+                # databus-freertos requires the FreeRTOS Win32 simulator (cmake -A Win32),
+                # which is only available on Windows.  Attempting to configure it on Linux
+                # produces a noisy cmake error with no useful output.
+                WINDOWS_ONLY_PROJECTS = {"databus-freertos"}
+                if not IS_WINDOWS and (project_name in WINDOWS_ONLY_PROJECTS or
+                                       parent_name in WINDOWS_ONLY_PROJECTS):
+                    continue
+
                 # Build a display label that includes the parent for client/server sub-dirs
                 if project_name in ("client", "server"):
                     display_name = f"{parent_name}/{project_name}"
@@ -90,7 +99,15 @@ def build_samples(use_clang=False):
                     except: pass
 
                 # 3. CONFIGURE
-                if "freertos" in project_name.lower():
+                # Win32 is required for the FreeRTOS Windows simulator port.
+                # Match standalone projects (e.g. "freertos-bare-metal") by project_name,
+                # and client/server sub-projects by parent_name + role.  The client side of
+                # a mixed-platform project (e.g. databus-freertos/client) must NOT use Win32.
+                needs_win32 = (
+                    "freertos" in project_name.lower() or
+                    ("freertos" in parent_name.lower() and project_name == "server")
+                )
+                if needs_win32:
                     print(f"[CONFIGURING] {display_name} (Win32)")
                     cmd = ["cmake", "-B", "build", "-A", "Win32", "."]
                 else:
@@ -123,7 +140,7 @@ def build_samples(use_clang=False):
                                 break
 
                 # --- CLANG CONFIGURE (optional, Linux only) ---
-                if clang_exe and "freertos" not in project_name.lower():
+                if clang_exe and not needs_win32:
                     build_clang_path = os.path.join(dirpath, "build-clang")
                     if os.path.exists(build_clang_path):
                         try: shutil.rmtree(build_clang_path)

@@ -1,25 +1,29 @@
 #include "Fault.h"
-#include <assert.h>
+#include <cstdlib>
+
+#if defined(_WIN32) || defined(__linux__)
 #include <iostream>
 #include "delegate/DelegateOpt.h"
-
-#ifdef _WIN32
-	#include "windows.h"
 #endif
 
-using namespace std;
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 //----------------------------------------------------------------------------
 // FaultHandler
 //----------------------------------------------------------------------------
 void FaultHandler(const char* file, unsigned short line)
 {
-    // @TODO: Update fault handling if necessary. 
-    
+    // @TODO: Update fault handling if necessary.
+
     // 1. PRINT FIRST (Flush to ensure it appears in CI logs)
-    cout << "FaultHandler called. Application terminated." << endl;
-    cout << "File: " << file << " Line: " << line << endl;
+    // Excluded on bare-metal/RTOS targets where cout is unavailable.
+#if defined(_WIN32) || defined(__linux__)
+    std::cout << "FaultHandler called. Application terminated." << std::endl;
+    std::cout << "File: " << file << " Line: " << line << std::endl;
     LOG_ERROR("FaultHandler File={} Line={}", file, line);
+#endif
 
     // 2. Break only if interactive or specifically desired
 #ifdef _WIN32
@@ -30,5 +34,9 @@ void FaultHandler(const char* file, unsigned short line)
 #endif
 
     // 3. Force exit
-    abort(); // Better than assert(0) for a clean exit code
+#if defined(_WIN32) || defined(__linux__)
+    abort();    // raises SIGABRT, triggers core dump, returns non-zero exit code
+#else
+    while(1);   // halt for debugger / watchdog on embedded targets
+#endif
 }

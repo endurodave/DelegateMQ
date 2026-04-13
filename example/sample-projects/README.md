@@ -20,6 +20,7 @@ The following remote delegate projects have no external library dependencies. Th
 
 * [bare-metal-remote](./bare-metal-remote/) - Simple remote delegate app on Windows and Linux.
 * [databus](./databus/) - Distributed sensor/actuator system using `dmq::DataBus` over UDP.
+* [databus-freertos](./databus-freertos/) - FreeRTOS server (Win32 simulator, 32-bit) publishing sensor data to a Linux/Windows client over UDP, with the client sending rate-control commands back. Demonstrates mixed-platform DataBus with the FreeRTOS port.
 * [databus-multicast](./databus-multicast/) - Distributed sensor/actuator system using `dmq::DataBus` over UDP Multicast.
 * [freertos-bare-metal](./freertos-bare-metal/) - FreeRTOS example on Windows (32-bit).
 * [linux-tcp-serializer](./linux-tcp-serializer/) - Simple TCP remote delegate app on Linux.

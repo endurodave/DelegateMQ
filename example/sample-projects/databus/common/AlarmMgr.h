@@ -24,7 +24,7 @@ public:
         NetworkMgr::Instance().SendAlarmMsg(msg, note);
 #else
         // Reinvoke function call on the AlarmMgr thread of control
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        if (!m_thread.IsCurrentThread())
             return MakeDelegate(this, &AlarmMgr::SetAlarm, m_thread)(msg, note);
 
         // Client handles alarm locally

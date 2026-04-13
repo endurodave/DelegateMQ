@@ -225,6 +225,7 @@ namespace dmq
     #include "extras/allocator/xsstream.h"
     #include "extras/allocator/stl_allocator.h"
     #include "extras/allocator/xnew.h"
+    #include "extras/allocator/xmake_shared.h"
 #else
     #include <string>
     #include <list>

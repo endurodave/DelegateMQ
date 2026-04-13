@@ -41,7 +41,7 @@ public:
 
     void Start()
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        if (!m_thread.IsCurrentThread())
             return MakeDelegate(this, &Sender::Start, m_thread)();
 
         // Start a timer to send data
@@ -52,7 +52,7 @@ public:
 
     void Stop()
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        if (!m_thread.IsCurrentThread())
             return MakeDelegate(this, &Sender::Stop, m_thread)();
 
         m_sendTimerConn.Disconnect();
@@ -63,7 +63,7 @@ public:
     // Send data to the remote
     void Send()
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        if (!m_thread.IsCurrentThread())
             return MakeDelegate(this, &Sender::Send, m_thread)();
 
         Data data;
@@ -82,7 +82,7 @@ public:
     // Send data to the remote and capture send success or error with lambda
     void SendV2()
     {
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+        if (!m_thread.IsCurrentThread())
             return MakeDelegate(this, &Sender::SendV2, m_thread)();
 
         bool success = false;

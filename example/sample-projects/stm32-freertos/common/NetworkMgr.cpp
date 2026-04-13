@@ -57,7 +57,7 @@ void NetworkMgr::OnStatus(DelegateRemoteId id, uint16_t seq, TransportMonitor::S
 }
 
 void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note) {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
         return MakeDelegate(this, &NetworkMgr::SendAlarmMsg, m_thread)(msg, note);
     m_alarmMsgDel(msg, note);
 }
@@ -67,7 +67,7 @@ bool NetworkMgr::SendAlarmMsgWait(AlarmMsg& msg, AlarmNote& note) {
 }
 
 void NetworkMgr::SendCommandMsg(CommandMsg& command) {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
         return MakeDelegate(this, &NetworkMgr::SendCommandMsg, m_thread)(command);
     m_commandMsgDel(command);
 }
@@ -77,7 +77,7 @@ bool NetworkMgr::SendCommandMsgWait(CommandMsg& command) {
 }
 
 void NetworkMgr::SendDataMsg(DataMsg& data) {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
         return MakeDelegate(this, &NetworkMgr::SendDataMsg, m_thread)(data);
     m_dataMsgDel(data);
 }
@@ -87,7 +87,7 @@ bool NetworkMgr::SendDataMsgWait(DataMsg& data) {
 }
 
 void NetworkMgr::SendActuatorMsg(ActuatorMsg& msg) {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
         return MakeDelegate(this, &NetworkMgr::SendActuatorMsg, m_thread)(msg);
     m_actuatorMsgDel(msg);
 }

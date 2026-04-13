@@ -180,14 +180,20 @@ These libraries are good for in-thread event wiring where every subscriber runs 
 | Footprint | Large (MBs) | Medium (Client lib) | Tiny (Header-only) |
 | IDL Required | Yes | No | No (Plain C++) |
 | Thread Safety | Manual Dispatch | Manual Dispatch | Automatic (via `IThread`) |
+| Local inter-thread use | Impractical (10–15 threads overhead) | No | Yes (zero overhead) |
+| Remote distribution | Yes | Yes | Yes |
 | Location Transparency | Yes | Yes | Yes |
 | QoS - Last Value Cache | Yes | Yes (Retained) | Yes |
 | QoS - Reliability | Complex Policies | Levels 0, 1, 2 | Reliable (Unicast) or Best-Effort (Multicast) |
-| Primary Use Case | Critical Infrastructure | IoT / Cloud | Embedded / Desktop IPC |
+| Primary Use Case | Remote/Network distribution | IoT / Cloud | Inter-thread and/or Remote |
 
-**Key Advantage**: Unlike full DDS systems that require complex IDL compilation and manual thread management to get data into your application's control loop, `DataBus` handles the thread-safe delivery automatically. You simply provide a pointer to your `Thread` object, and the callback is guaranteed to execute in that specific context. 
+**Key Advantage**: Unlike full DDS systems that require complex IDL compilation and manual thread management to get data into your application's control loop, `DataBus` handles the thread-safe delivery automatically. You simply provide a pointer to your `Thread` object, and the callback is guaranteed to execute in that specific context.
 
-Additionally, the DataBus now supports **UDP Multicast**, allowing a single publisher to reach an unlimited number of subscribers with zero extra CPU or network overhead per client—ideal for high-frequency telemetry and monitoring tools like the [DelegateMQ Spy](#unified-api-the-core-differentiator).
+**Local and Remote with One API**: DDS is designed as network middleware — it is technically capable of intra-process communication, but doing so still spins up 10–15 threads for discovery and RTPS machinery, adds megabytes of footprint, and goes through full serialization overhead. In practice, DDS systems use a separate mechanism (mutexes, condition variables, OS queues) for inter-thread communication and reserve DDS for inter-node distribution. `DataBus` makes no such distinction. The same `Publish`/`Subscribe` call works whether the subscriber is on the same thread, a different thread in the same process, or a different machine entirely — and local delivery costs nothing extra (no serialization, no network stack, no extra threads). Adding a `Participant` extends the existing bus to the network; removing it collapses it back to purely local.
+
+**Data Model — One Type Per Topic**: Like DDS, `DataBus` enforces the data-centric constraint that each topic carries exactly one typed value (`void(T)`). A topic represents the *current state* of something in the system; a publish is a single snapshot of that state. This is intentional — it mirrors `DataWriter::write(const T& data)` in real DDS and encourages well-typed data modeling. When you need to call a remote function with multiple arguments (RPC semantics), use `RemoteChannel` directly rather than routing through `DataBus`. See [Pub/Sub vs. RPC](../docs/DETAILS.md#pubsub-vs-rpc) in DETAILS.md for the full comparison.
+
+Additionally, the DataBus supports **UDP Multicast**, allowing a single publisher to reach an unlimited number of subscribers with zero extra CPU or network overhead per client—ideal for high-frequency telemetry and monitoring tools like the [DelegateMQ Spy](#unified-api-the-core-differentiator).
 
 ---
 

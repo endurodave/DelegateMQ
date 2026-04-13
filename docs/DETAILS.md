@@ -38,8 +38,15 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Remote Delegate](#remote-delegate)
   - [DataBus](#databus)
     - [Core Concepts](#core-concepts)
+    - [Pub/Sub vs. RPC](#pubsub-vs-rpc)
     - [Features](#features)
     - [Threading Model](#threading-model)
+    - [Thread Priority and Dispatch Latency](#thread-priority-and-dispatch-latency)
+      - [Subscriber Thread Priority](#subscriber-thread-priority)
+      - [Dispatch Latency — Local Inter-Thread](#dispatch-latency--local-inter-thread)
+      - [Polling Thread Priority — Remote Distribution](#polling-thread-priority--remote-distribution)
+      - [Polling Frequency and Transport Timeout](#polling-frequency-and-transport-timeout)
+      - [Dispatch Latency Breakdown — Remote Distribution](#dispatch-latency-breakdown--remote-distribution)
     - [DataBus Spy](#databus-spy)
     - [Example: Local Pub/Sub](#example-local-pubsub)
     - [Example: Last Value Cache (LVC)](#example-last-value-cache-lvc)
@@ -48,6 +55,11 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
       - [Multicast (One-to-Many)](#multicast-one-to-many)
       - [Comparison Table](#comparison-table)
     - [Example: Remote Distribution](#example-remote-distribution)
+    - [Example: Multi-Node Topology](#example-multi-node-topology)
+      - [CPU-A Setup](#cpu-a-setup)
+      - [CPU-B Setup (Bridge Node)](#cpu-b-setup-bridge-node)
+      - [MCU-C / MCU-D Setup](#mcu-c--mcu-d-setup)
+      - [Reliability Summary for This Topology](#reliability-summary-for-this-topology)
     - [Last Value Cache (LVC)](#last-value-cache-lvc)
   - [Async Public API Pattern](#async-public-api-pattern)
   - [Delegate Invocation Semantics](#delegate-invocation-semantics)
@@ -612,10 +624,37 @@ The sender calls `(*m_channel)(value)` or `RemoteInvokeWait(*m_channel, value)`.
 - **Topic**: A unique string identifier for a data stream (e.g., `"sensor/battery_voltage"`).
 - **Participant**: Represents a node in the network. Manages remote topic mappings and transport integration.
 - **QoS (Quality of Service)**: Configuration for topic behavior, such as Last Value Cache (LVC).
+- **Data Model**: Each topic carries exactly one typed value — `void(T)`. A topic represents the *current state* of something; a publish is one snapshot of that state. All fields travel inside `T`.
+
+### Pub/Sub vs. RPC
+
+`DataBus` follows the **pub/sub (data-centric)** paradigm inherited from DDS: each topic has exactly one associated C++ type `T`, and every `Publish`/`Subscribe` call carries a single `const T&` argument. This is not a limitation of the underlying delegate machinery — it is a deliberate modeling constraint. Real DDS systems enforce the same rule: `DataWriter::write(const T& data)` takes one sample because a topic is a named data stream, not a function call. Pack everything into `T`:
+
+```cpp
+struct MotorState { float rpm; float torque; uint32_t timestamp_ms; };
+DataBus::Publish<MotorState>("motor/state", { 3000.0f, 12.5f, now });
+```
+
+When you need **RPC semantics** — calling a remote function with multiple distinct arguments, or receiving a return value — use `RemoteChannel` directly without going through `DataBus`:
+
+```cpp
+// RPC: arbitrary signature, no topic string, point-to-point
+RemoteChannel<void(int, float, std::string)> channel(transport, serializer);
+channel(42, 3.14f, "config");   // all 3 args serialized and sent
+```
+
+| | `DataBus` (Pub/Sub) | `RemoteChannel` direct (RPC) |
+|:---|:---|:---|
+| Paradigm | Data-centric (DDS model) | Call-centric |
+| Arguments | One typed value `void(T)` | Arbitrary `RetType(A, B, C, ...)` |
+| Addressing | Topic string | Remote ID |
+| Subscribers | Many (fan-out via `Signal`) | One target function |
+| Return value | None | Supported (via `RemoteInvokeWait`) |
+| Use case | State, telemetry, events | Commands, configuration, queries |
 
 ### Features
 
-1. **Location Transparency**: Components subscribe to topics by name. They do not need to know if the publisher is in the same thread, a different thread, or on a completely different processor.
+1. **Location Transparency**: Components subscribe to topics by name. They do not need to know if the publisher is on the same thread, a different thread, or a completely different machine. This is the defining characteristic that separates `DataBus` from both raw signal/slot libraries (local-only) and DDS (remote-oriented, impractical for inter-thread use due to 10–15 threads of overhead). The same `Publish`/`Subscribe` API covers all three cases; adding a `Participant` extends an existing local bus to the network without changing any publisher or subscriber code.
 2. **Dynamic Discovery (Manual)**: While not fully automatic like industrial DDS, `DataBus` allows adding `Participant` objects at runtime to bridge local buses across a network.
 3. **Type Safety**: Runtime checks ensure that if two components use the same topic name, they must use the same data type; otherwise, a fault is triggered.
 4. **Spy/Monitor Support**: Call `DataBus::Monitor()` to receive a callback for every single message published on the bus. This is the foundation for the [DelegateMQ Tools](../tools/TOOLS.md) diagnostic consoles. The callback receives a `dmq::SpyPacket` containing:
@@ -647,6 +686,65 @@ std::thread receiveThread([&]() {
 `Participant` protects its internal channel map with a `RecursiveMutex`. The handler callback is intentionally invoked **outside** that lock to prevent deadlock if the handler itself calls back into the same `Participant`. `ProcessIncoming()` is therefore safe to call from a single dedicated thread while the main thread calls `Publish`, `Subscribe`, or `AddParticipant` concurrently. Calling `ProcessIncoming()` simultaneously from multiple threads on the same `Participant` is not safe; transport thread-safety is transport-implementation dependent.
 
 **Contrast with NetworkMgr**: `NetworkEngine` (used by the `system-architecture` samples) creates two threads internally — a dedicated receive thread and a marshal/dispatch thread — so the application never calls `ProcessIncoming()`. DataBus trades that automation for explicit control, making it a better fit for embedded or RTOS environments where every thread must be accounted for.
+
+### Thread Priority and Dispatch Latency
+
+#### Subscriber Thread Priority
+
+When a subscriber registers with a worker thread, the callback is posted to that thread's message queue as an async delegate. The subscriber thread priority therefore determines how quickly the callback executes after `Publish()` is called — regardless of whether the publish originated locally or arrived over the network.
+
+- Set the subscriber thread priority to match the urgency of the data. High-frequency telemetry and low-priority status updates can share a lower-priority worker thread; alarm or safety-critical callbacks warrant a dedicated high-priority thread.
+- On RTOS targets with a fixed priority budget, assign subscriber thread priorities in relation to the other application threads that produce and consume the same data.
+- Synchronous subscribers (no thread argument) execute inline on the publishing thread and inherit its priority — no separate priority decision is needed, but the publisher blocks until all synchronous subscribers return.
+
+#### Dispatch Latency — Local Inter-Thread
+
+For local pub/sub (no network, no `Participant`), `DataBus::Publish()` fires a `Signal` synchronously. The end-to-end latency has two components:
+
+```
+local latency = Signal fire on publisher thread  (~microseconds)
+              + subscriber thread wake-up         (OS/RTOS scheduler dependent)
+```
+
+The signal fire itself is negligible. The dominant term is the subscriber thread wake-up time, which depends on the OS scheduler quantum and the subscriber thread's priority relative to other runnable threads.
+
+#### Polling Thread Priority — Remote Distribution
+
+When a `Participant` is added, a dedicated polling thread calls `ProcessIncoming()` in a loop. This thread's priority controls how quickly an arriving network packet becomes a `DataBus::Publish()` call. There are then two separate priority decisions:
+
+| Stage | Controlled by |
+|:---|:---|
+| Network bytes → `Publish()` | Polling thread priority |
+| `Publish()` → subscriber callback | Subscriber's worker thread priority |
+
+- Set the polling thread priority high enough to drain the transport receive buffer before it overflows — typically at or near the priority of the threads that consume the arriving data.
+- For alarm or safety-critical messages, consider a dedicated high-priority polling thread rather than sharing one thread across all participants.
+- On RTOS targets, a typical placement is one or two priority levels above the lowest-priority application thread.
+
+#### Polling Frequency and Transport Timeout
+
+`ProcessIncoming()` blocks inside the transport's `Receive()` call for up to the configured transport timeout. The `sleep_for` in the typical pattern adds additional idle time *after* the timeout:
+
+```
+worst-case receive latency = transport timeout + sleep duration
+```
+
+- **Minimize latency**: remove the `sleep_for` entirely and let the transport timeout alone control the polling rate. For most transports a 10–50 ms timeout is a good balance.
+- **Yield CPU on RTOS/embedded**: keep a short `sleep_for` (1–10 ms) if the polling thread must share CPU time with other tasks. Setting the transport timeout to 5 ms and adding a 5 ms sleep yields the CPU while bounding latency to ~10 ms.
+- **Busy-wait (zero latency)**: set the transport timeout to 0 and remove the sleep. Minimizes latency to near zero but consumes a full CPU core — only appropriate on a dedicated core or for benchmarking.
+
+#### Dispatch Latency Breakdown — Remote Distribution
+
+Total end-to-end latency from a remote sender to the local subscriber callback has four components:
+
+```
+remote latency = network transit
+               + transport receive blocking  (0 → timeout + sleep, worst case)
+               + DataBus::Publish() on polling thread  (~microseconds)
+               + subscriber thread wake-up   (if async — OS/RTOS scheduler dependent)
+```
+
+The dominant terms are network transit and receive blocking. Once `Publish()` is called on the polling thread the remaining cost is the same as the local inter-thread case above.
 
 ### DataBus Spy
 
@@ -728,6 +826,222 @@ dmq::DataBus::RegisterSerializer<MyData>("telemetry/data", mySerializer);
 // The bus handles local distribution AND remote sending via the participant
 dmq::DataBus::Publish<MyData>("telemetry/data", someData);
 ```
+
+### Example: Multi-Node Topology
+
+This example uses a realistic mixed-platform hierarchy spanning three tiers.
+
+| Node | Platform | DelegateMQ OS Port | Transport |
+|:---|:---|:---|:---|
+| CPU-A | Linux | `port/os/stdlib` | `port/transport/linux-udp` |
+| CPU-B | FreeRTOS + lwIP | `port/os/freertos` | `port/transport/arm-lwip-udp` (UDP), `port/transport/stm32-uart` (serial) |
+| MCU-C, MCU-D | Bare metal (no OS) | `port/os/bare-metal` (clock only) | Custom `ITransport` over UART |
+
+The `DataBus::Publish`, `DataBus::Subscribe`, and `AddIncomingTopic` calls are identical on all three tiers. The only differences are the port headers included and, on bare metal, the absence of an RTOS thread. Platform-specific notes appear in each subsection below.
+
+This example shows a fully bidirectional three-node system. CPU-A sends actuator commands down to MCU-C and MCU-D via CPU-B. The MCUs publish sensor data back up through CPU-B to CPU-A. CPU-B acts as a bridge between the Ethernet and serial transports in both directions.
+
+```
+                              Ethernet                    Serial
+  CPU-A ─────────────────────────────────── CPU-B ──────────────── MCU-C
+                                              │
+                                              └────────────────── MCU-D
+
+  CPU-A ──▶ CPU-B ──▶ MCU-C, MCU-D  :  cmd/actuator  (unicast,   reliable)
+  MCU-C ──▶ CPU-B ──▶ CPU-A         :  sensor/temp   (serial then multicast)
+  MCU-D ──▶ CPU-B ──▶ CPU-A         :  sensor/temp   (serial then multicast)
+```
+
+**Topic assignments:**
+
+| Topic | Path | Transport | Reliability |
+|:---|:---|:---|:---|
+| `cmd/actuator` | CPU-A → CPU-B | Unicast UDP | ACK + retry (requires `ReliableTransport`) |
+| `cmd/actuator` | CPU-B → MCU-C, MCU-D | Serial (unicast) | ACK + retry (requires `ReliableTransport`) |
+| `sensor/temp` | MCU-C, MCU-D → CPU-B | Serial (unicast) | ACK + retry (requires `ReliableTransport`) |
+| `sensor/temp` | CPU-B → CPU-A | Multicast UDP | Best effort, no callback |
+
+> **Note:** ACK + retry on UDP and serial legs requires wrapping the transport with `ReliableTransport` and `RetryMonitor`. The code snippets below omit this wiring for clarity. See the `system-architecture` sample project for a complete reliability setup.
+
+---
+
+#### CPU-A Setup
+
+**Platform: Linux.** Include `port/os/stdlib/Thread.h` and `port/transport/linux-udp/LinuxUdpTransport.h`. `Thread` maps to `std::thread`. No platform-specific changes to any of the DataBus calls below.
+
+CPU-A sends actuator commands via unicast (reliable, ACK expected) and subscribes to sensor data arriving from CPU-B via multicast (best effort). The transport choice at setup time is the reliability contract — the `Publish` and `Subscribe` calls themselves are identical regardless of transport.
+
+```cpp
+// --- Unicast: actuator commands to CPU-B ---
+UdpTransport cmdTransport;
+cmdTransport.Create(UdpTransport::Type::PUB, "192.168.1.2", 5000);
+auto toB = std::make_shared<dmq::Participant>(cmdTransport);
+toB->AddRemoteTopic("cmd/actuator", ids::CMD_ACTUATOR_ID);
+dmq::DataBus::AddParticipant(toB);
+dmq::DataBus::RegisterSerializer<ActuatorCmd>("cmd/actuator", cmdSerializer);
+
+// --- Failure notification (unicast only) ---
+// Failure notification requires ReliableTransport + RetryMonitor wiring and
+// is surfaced via TransportMonitor::OnSendStatus (Status::TIMEOUT) or by
+// subclassing NetworkEngine and overriding OnStatus(). Multicast never
+// generates failure callbacks. See the system-architecture sample for full wiring.
+
+// --- Multicast receive: sensor data forwarded by CPU-B ---
+MulticastTransport sensorRecv;
+sensorRecv.Create(MulticastTransport::Type::SUB, "239.1.1.1", 5001);
+auto fromB = std::make_shared<dmq::Participant>(sensorRecv);
+dmq::DataBus::AddIncomingTopic<TempData>(
+    "sensor/temp", ids::SENSOR_TEMP_ID, *fromB, sensorSerializer);
+
+dmq::DataBus::Subscribe<TempData>("sensor/temp", [](const TempData& t) {
+    // process aggregated sensor data from MCU-C and MCU-D
+}, &workerThread);
+
+// --- Publish and polling ---
+dmq::DataBus::Publish<ActuatorCmd>("cmd/actuator", cmd);  // unicast, ACK expected
+
+// Thread is the DelegateMQ abstraction — maps to stdlib, FreeRTOS, RTX, etc.
+// Priority can be set before or after CreateThread().
+Thread m_pollSensor("PollSensor");
+m_pollSensor.CreateThread();
+dmq::MakeDelegate(this, &CpuA::PollSensor, m_pollSensor).AsyncInvoke();
+
+// void CpuA::PollSensor() { while (running) fromB->ProcessIncoming(); }
+```
+
+---
+
+#### CPU-B Setup (Bridge Node)
+
+**Platform: FreeRTOS + lwIP.** Include `port/os/freertos/Thread.h` and `port/transport/arm-lwip-udp/ArmLwipUdpTransport.h`. The lwIP transport exposes the same `UdpTransport` class name and `Create(Type, addr, port)` signature as the Linux version — no code changes to the snippets below. `Thread` maps to a FreeRTOS task created via `xTaskCreate`; priority can be set per-thread with `SetThreadPriority()`. For the serial legs, include `port/transport/stm32-uart/Stm32UartTransport.h`, which uses interrupt-driven ring buffering and a binary semaphore so the FreeRTOS task sleeps until data arrives.
+
+> **`Stm32UartTransport` single-channel constraint.** The current implementation routes all UART ISR bytes through a single global pointer (`g_uartTransportInstance`). Each `Create()` call overwrites that pointer, so only the last transport to call `Create()` receives ISR bytes. For a two-MCU bridge you need two separate globals and two separate `HAL_UART_RxCpltCallback` dispatchers — one per UART peripheral. The snippets below assume that extension is in place. Alternatively, a single-MCU variant of CPU-B (one serial link) avoids the issue entirely.
+
+CPU-B is purely a bridge — it does not originate or consume any topics itself. It receives on three incoming transports (one Ethernet, two serial) and forwards in both directions. `AddIncomingTopic` handles the re-publish in one line per topic per transport. The serializer can differ per leg; CPU-B always works with plain C++ objects between the two legs. Each polling thread is a named `Thread` instance whose priority can be set independently — for example, the serial MCU threads could be raised above the Ethernet thread if sensor latency is more critical than command latency on a given target.
+
+```cpp
+// ── Inbound from CPU-A: actuator commands ──────────────────────────────
+UdpTransport cmdRecv;
+cmdRecv.Create(UdpTransport::Type::SUB, "0.0.0.0", 5000);
+auto fromA = std::make_shared<dmq::Participant>(cmdRecv);
+dmq::DataBus::AddIncomingTopic<ActuatorCmd>(
+    "cmd/actuator", ids::CMD_ACTUATOR_ID, *fromA, cmdEthSerializer);
+
+// ── Serial links to MCU-C and MCU-D (one transport per physical UART) ─────
+// Stm32UartTransport is full-duplex: one instance owns the UART handle and
+// handles both Send() (HAL_UART_Transmit) and Receive() (ISR ring buffer).
+// Splitting one UART into separate send/receive objects would create two
+// competing owners of the same hardware — use one instance per physical link.
+Stm32UartTransport serialC;   // full-duplex link to MCU-C
+Stm32UartTransport serialD;   // full-duplex link to MCU-D
+
+// Outbound: forward actuator commands to each MCU
+auto toMcuC = std::make_shared<dmq::Participant>(serialC);
+auto toMcuD = std::make_shared<dmq::Participant>(serialD);
+toMcuC->AddRemoteTopic("cmd/actuator", ids::MCU_CMD_ID);
+toMcuD->AddRemoteTopic("cmd/actuator", ids::MCU_CMD_ID);
+dmq::DataBus::AddParticipant(toMcuC);
+dmq::DataBus::AddParticipant(toMcuD);
+dmq::DataBus::RegisterSerializer<ActuatorCmd>("cmd/actuator", cmdSerialSerializer);
+
+// Inbound: sensor data from each MCU — same transport object, separate Participant
+auto fromMcuC = std::make_shared<dmq::Participant>(serialC);
+auto fromMcuD = std::make_shared<dmq::Participant>(serialD);
+dmq::DataBus::AddIncomingTopic<TempData>(
+    "sensor/temp", ids::MCU_TEMP_ID, *fromMcuC, sensorSerialSerializer);
+dmq::DataBus::AddIncomingTopic<TempData>(
+    "sensor/temp", ids::MCU_TEMP_ID, *fromMcuD, sensorSerialSerializer);
+
+// ── Outbound to CPU-A: forward sensor data via multicast ───────────────
+MulticastTransport sensorMulticast;
+sensorMulticast.Create(MulticastTransport::Type::PUB, "239.1.1.1", 5001);
+auto toA = std::make_shared<dmq::Participant>(sensorMulticast);
+toA->AddRemoteTopic("sensor/temp", ids::SENSOR_TEMP_ID);
+dmq::DataBus::AddParticipant(toA);
+dmq::DataBus::RegisterSerializer<TempData>("sensor/temp", sensorEthSerializer);
+
+// ── Polling threads: one per incoming transport (three total) ──────────
+// Named Thread instances — priority settable per thread, portable to RTOS.
+Thread m_pollFromA("PollFromA");
+Thread m_pollFromC("PollFromMcuC");
+Thread m_pollFromD("PollFromMcuD");
+m_pollFromA.CreateThread();
+m_pollFromC.CreateThread();
+m_pollFromD.CreateThread();
+dmq::MakeDelegate(this, &Bridge::PollFromA,    m_pollFromA).AsyncInvoke();
+dmq::MakeDelegate(this, &Bridge::PollFromMcuC, m_pollFromC).AsyncInvoke();
+dmq::MakeDelegate(this, &Bridge::PollFromMcuD, m_pollFromD).AsyncInvoke();
+
+// void Bridge::PollFromA()    { while (running) fromA->ProcessIncoming(); }
+// void Bridge::PollFromMcuC() { while (running) fromMcuC->ProcessIncoming(); }
+// void Bridge::PollFromMcuD() { while (running) fromMcuD->ProcessIncoming(); }
+```
+
+When `cmd/actuator` arrives from CPU-A, `AddIncomingTopic` re-publishes it locally and the bus fans it out to both `toMcuC` and `toMcuD` automatically. When `sensor/temp` arrives from either MCU, it is re-published locally and forwarded to CPU-A via multicast — both MCUs feed the same topic, so CPU-A receives a single stream of temperature readings.
+
+---
+
+#### MCU-C / MCU-D Setup
+
+**Platform: Bare metal (no OS).** There is no RTOS, so there are no `Thread` instances and no blocking primitives. Two things change from the FreeRTOS nodes above:
+
+1. **No polling thread.** `ProcessIncoming()` is called directly from the main super-loop (or from a timer/DMA callback). There is no `Thread::CreateThread()` or `AsyncInvoke()`.
+2. **Synchronous dispatch.** `DataBus::Subscribe` is called *without* a thread argument. When `ProcessIncoming()` delivers a message, the subscriber callback fires synchronously in the same call stack — no queue, no context switch.
+
+The serial transport on bare metal is a custom `ITransport` implementation that polls or interrupt-drives your MCU's UART peripheral directly. `BareMetalClock.h` (`port/os/bare-metal/BareMetalClock.h`) provides the timing source, fed by your SysTick handler incrementing `g_ticks`. The `DataBus::Publish` and `AddIncomingTopic` calls are unchanged.
+
+The MCUs see only their serial link to CPU-B. They subscribe to actuator commands and publish sensor data. They have no knowledge of the Ethernet layer or of each other.
+
+```cpp
+// On MCU-C (and identically on MCU-D) — bare metal, no RTOS
+
+// BareMetalUartTransport is your ITransport implementation over the MCU's
+// UART peripheral. DmqHeader framing and CRC16 are the only requirements.
+BareMetalUartTransport serial;
+
+// One Participant handles both directions on the full-duplex serial port.
+// AddIncomingTopic registers the receive handler; AddRemoteTopic + AddParticipant
+// register the send side — both on the same object.
+auto cpuBLink = std::make_shared<dmq::Participant>(serial);
+
+// ── Inbound: actuator commands from CPU-B ──────────────────────────────
+dmq::DataBus::AddIncomingTopic<ActuatorCmd>(
+    "cmd/actuator", ids::MCU_CMD_ID, *cpuBLink, cmdSerialSerializer);
+
+// No thread argument — callback fires synchronously inside ProcessIncoming()
+dmq::DataBus::Subscribe<ActuatorCmd>("cmd/actuator", [](const ActuatorCmd& cmd) {
+    // apply actuator command
+});
+
+// ── Outbound: sensor data to CPU-B ─────────────────────────────────────
+cpuBLink->AddRemoteTopic("sensor/temp", ids::MCU_TEMP_ID);
+dmq::DataBus::AddParticipant(cpuBLink);
+dmq::DataBus::RegisterSerializer<TempData>("sensor/temp", sensorSerialSerializer);
+
+// Publish sensor reading (triggered by timer or hardware event)
+dmq::DataBus::Publish<TempData>("sensor/temp", reading);
+
+// ── Super-loop polling (no Thread, no RTOS) ────────────────────────────
+// In main():
+while (true)
+{
+    cpuBLink->ProcessIncoming();  // deliver any waiting inbound messages
+    // ... other bare-metal tasks
+}
+```
+
+---
+
+#### Reliability Summary for This Topology
+
+| Leg | Topic | Reliable | Failure Notification |
+|:---|:---|:---|:---|
+| CPU-A → CPU-B (Ethernet unicast) | `cmd/actuator` | Yes (with `ReliableTransport`) | Via `TransportMonitor::OnSendStatus` or `NetworkEngine::OnStatus()` override |
+| CPU-B → MCU-C, MCU-D (Serial) | `cmd/actuator` | Yes (with `ReliableTransport`) | Via `TransportMonitor::OnSendStatus` |
+| MCU-C, MCU-D → CPU-B (Serial) | `sensor/temp` | Yes (with `ReliableTransport`) | Via `TransportMonitor::OnSendStatus` |
+| CPU-B → CPU-A (Multicast) | `sensor/temp` | No | No — next reading follows shortly |
+
+The multicast leg from CPU-B to CPU-A is intentionally best effort. Sensor data is high-frequency and a lost packet is simply superseded by the next sample. Actuator commands travel the full path reliably with failure notification at each hop — but only when `ReliableTransport` and `RetryMonitor` are wired in. See the `system-architecture` sample for the complete setup.
 
 ### Last Value Cache (LVC)
 

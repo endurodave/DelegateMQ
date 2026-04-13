@@ -290,6 +290,10 @@ private:
     ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
 
+    /// @note UDP datagrams larger than the network MTU (typically 1500 bytes) will be 
+    /// fragmented by the IP layer. If any fragment is lost, the entire message is 
+    /// discarded. For maximum reliability, keep serialized messages under 1400 bytes.
+    /// Messages exceeding BUFFER_SIZE will be truncated and discarded by the OS.
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE] = { 0 };
 };

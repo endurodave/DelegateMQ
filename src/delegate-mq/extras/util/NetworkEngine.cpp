@@ -60,7 +60,7 @@ NetworkEngine::~NetworkEngine()
 // --------------------------------------------------------
 int NetworkEngine::Initialize(const std::string& sendAddr, const std::string& recvAddr, bool isServer)
 {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
         return MakeDelegate(this, &NetworkEngine::Initialize, m_thread, WAIT_INFINITE)(sendAddr, recvAddr, isServer);
 
     int err = 0;
@@ -90,7 +90,7 @@ int NetworkEngine::Initialize(const std::string& sendAddr, const std::string& re
 // --------------------------------------------------------
 int NetworkEngine::Initialize(const std::string& sendIp, int sendPort, const std::string& recvIp, int recvPort)
 {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
         return MakeDelegate(this, &NetworkEngine::Initialize, m_thread, WAIT_INFINITE)(sendIp, sendPort, recvIp, recvPort);
 
     int err = 0;
@@ -119,7 +119,7 @@ int NetworkEngine::Initialize(const std::string& sendIp, int sendPort, const std
 // --------------------------------------------------------
 int NetworkEngine::Initialize(UART_HandleTypeDef* huart)
 {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
         return MakeDelegate(this, &NetworkEngine::Initialize, m_thread, WAIT_INFINITE)(huart);
 
     int err = 0;
@@ -147,7 +147,7 @@ int NetworkEngine::Initialize(UART_HandleTypeDef* huart)
 // --------------------------------------------------------
 int NetworkEngine::Initialize(const std::string& portName, int baudRate)
 {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
         return MakeDelegate(this, &NetworkEngine::Initialize, m_thread, WAIT_INFINITE)(portName, baudRate);
 
     int err = 0;
@@ -175,7 +175,7 @@ int NetworkEngine::Initialize(const std::string& portName, int baudRate)
 
 void NetworkEngine::Start()
 {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
         return MakeDelegate(this, &NetworkEngine::Start, m_thread)();
 
     if (!m_recvThreadCreated)
@@ -193,7 +193,7 @@ void NetworkEngine::Start()
 
 void NetworkEngine::Stop()
 {
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId()) {
+    if (!m_thread.IsCurrentThread()) {
 
         // Close calls are safe for both transport types
         m_recvTransport.Close();
@@ -213,7 +213,7 @@ void NetworkEngine::RegisterEndpoint(dmq::DelegateRemoteId id, dmq::IRemoteInvok
 {
     // Thread Safety: Ensure this runs on the Network Thread to avoid 
     // racing with 'Incoming()' which reads this map.
-    if (Thread::GetCurrentThreadId() != m_thread.GetThreadId())
+    if (!m_thread.IsCurrentThread())
     {
         // Marshal the call to the Network Thread
         MakeDelegate(this, &NetworkEngine::RegisterEndpoint, m_thread, dmq::WAIT_INFINITE)(id, endpoint);

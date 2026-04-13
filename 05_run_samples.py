@@ -23,6 +23,11 @@ Skip List (always excluded):
     - mqtt-rapidjson          Requires an external MQTT broker
     - serialport-serializer   Requires physical serial port hardware
 
+Windows-only (skipped on Linux):
+    - databus-freertos        Server uses FreeRTOS Win32 simulator (32-bit); full pair only runs on Windows
+    - freertos-bare-metal     FreeRTOS Windows simulator
+    - win32-*                 Windows API transport projects
+
 Cross-language pairs (server from one project, non-C++ client):
     - system-architecture-python  C++ server (system-architecture), Python client
     - databus-interop             C++ DataBus server, Python client (msgpack required)
@@ -83,6 +88,7 @@ CROSS_PAIRS = {
 }
 
 WINDOWS_ONLY = {
+    "databus-freertos",        # server uses FreeRTOS Win32 simulator (32-bit); client/server pair only runs on Windows
     "freertos-bare-metal",
     "win32-pipe-serializer",
     "win32-tcp-serializer",
@@ -107,6 +113,7 @@ SUCCESS_OVERRIDES = {
 # to a required substring.  Only roles listed here are checked.
 REQUIRED_OUTPUT = {
     "databus":                     {"client": "Client received DataMsg"},
+    "databus-freertos":            {"client": "[Client] sensor/temp"},
     "databus-multicast":           {"client": "Received Multicast Data"},
     "system-architecture":         {"client": "Actuators:"},
     "system-architecture-no-deps": {"client": "Actuators:"},
