@@ -108,6 +108,9 @@ $(function(){initNavTree('msg__serialize_8h.html',''); initResizable(true); });
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
 <code>#include &lt;typeinfo&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
@@ -133,6 +136,11 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structserialize__traits_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html">serialize_traits::is_shared_ptr&lt; std::shared_ptr&lt; T &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structserialize__traits_1_1is__unsupported__container.html">serialize_traits::is_unsupported_container&lt; U &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structserialize__traits_1_1is__seekable.html">serialize_traits::is_seekable&lt; T, typename &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trait to check if a stream type is seekable.  <a href="structserialize__traits_1_1is__seekable.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structserialize__traits_1_1is__seekable_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declval19c262a50700af0ee451643140885e4a.html">serialize_traits::is_seekable&lt; T, std::void_t&lt; decltype(std::declval&lt; T &amp; &gt;().seekp(std::declval&lt; std::streampos &gt;())), decltype(std::declval&lt; T &amp; &gt;().tellp()) &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structserialize__traits_1_1is__unsupported__container_3_01std_1_1multiset_3_01_u_01_4_01_4.html">serialize_traits::is_unsupported_container&lt; std::multiset&lt; U &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -177,9 +185,13 @@ Macros</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>David Lafreniere </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>2024</dd></dl>
 <p>This library provides a framework for marshaling C++ objects, primitives, and STL containers into binary streams (std::ostream) and demarshaling them back (std::istream). It is designed for network communication and data persistence where binary compatibility and protocol evolution are required.</p>
+<p><b>CRITICAL REQUIREMENTS:</b></p><ul>
+<li><b>Binary Mode:</b> Streams MUST be opened in binary mode (std::ios::binary). Text-mode streams will corrupt binary data (e.g., newline conversion on Windows).</li>
+<li><b>Seekable Streams:</b> User-defined objects (inheriting from <code><a class="el" href="classserialize_1_1_i.html" title="Abstract interface that all serialized user defined classes inherit.">serialize::I</a></code>) require seekable streams (e.g., <code>std::stringstream</code>, <code>std::fstream</code>) to backfill object sizes. Non-seekable streams (like <code>std::cout</code> or sockets) will trigger a <code>NON_SEEKABLE_STREAM</code> error.</li>
+</ul>
 <p><b>Key Features:</b></p><ul>
 <li><b>Single Header:</b> A self-contained, header-only library with no external dependencies beyond the standard C++ library (STL).</li>
-<li><b>Endianness Handling:</b> Automatic endianness detection and byte-swapping to ensure compatibility between Big-Endian and Little-Endian architectures.</li>
+<li><b>Endianness Handling:</b> Wire format is little-endian. Automatic byte-swapping on big-endian hosts ensures compatibility between mixed-endian architectures.</li>
 <li><b>STL Container Support:</b> Native serialization for std::vector, std::list, std::map, std::set, std::string, and std::wstring.</li>
 <li><b>Protocol Versioning:</b> Supports "Forward/Backward Compatibility" by handling size mismatches. If a received user-defined object is larger than expected (newer version), the parser safely discards the extra data.</li>
 <li><b>Type Safety:</b> Uses SFINAE and compile-time static assertions to prevent serialization of unsupported types or unsafe pointers.</li>

@@ -100,6 +100,7 @@ $(function(){initNavTree('classserialize.html',''); initResizable(true); });
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classserialize-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">serialize Class Reference</div></div>
 </div><!--header-->
@@ -138,9 +139,10 @@ Public Types</h2></td></tr>
 &#160;&#160;<a class="el" href="#acfb1afef8776c22530f83bec54ea89b0ab50339a10e1de285ac99d4c3990b8693">NONE</a>
 , <a class="el" href="#acfb1afef8776c22530f83bec54ea89b0a2f93918ef99e03b7b8e7230b2a28fb52">TYPE_MISMATCH</a>
 , <a class="el" href="#acfb1afef8776c22530f83bec54ea89b0a778538f32afec1c04103343a92a7ff0f">STREAM_ERROR</a>
-, <a class="el" href="#acfb1afef8776c22530f83bec54ea89b0a6a0751f8d7c5f4b4b0a9d315bcfb121b">STRING_TOO_LONG</a>
+, <a class="el" href="#acfb1afef8776c22530f83bec54ea89b0a8f9acd54c35facc1d6db3cfabedcfa17">NON_SEEKABLE_STREAM</a>
 , <br />
-&#160;&#160;<a class="el" href="#acfb1afef8776c22530f83bec54ea89b0aa75ed07cefcfe1eaac8fc31011440c95">CONTAINER_TOO_MANY</a>
+&#160;&#160;<a class="el" href="#acfb1afef8776c22530f83bec54ea89b0a6a0751f8d7c5f4b4b0a9d315bcfb121b">STRING_TOO_LONG</a>
+, <a class="el" href="#acfb1afef8776c22530f83bec54ea89b0aa75ed07cefcfe1eaac8fc31011440c95">CONTAINER_TOO_MANY</a>
 , <a class="el" href="#acfb1afef8776c22530f83bec54ea89b0ac063281d4adc16ebccfec66aa885b4dd">INVALID_INPUT</a>
 , <a class="el" href="#acfb1afef8776c22530f83bec54ea89b0a581953f6b20ad7f993b64b1dc632032e">END_OF_FILE</a>
 <br />
@@ -157,8 +159,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aff42f6a0b2af926919e970a95492c122"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a587c1fd9308681181e30579b9930539f" id="r_a587c1fd9308681181e30579b9930539f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a587c1fd9308681181e30579b9930539f">~serialize</a> ()=default</td></tr>
 <tr class="separator:a587c1fd9308681181e30579b9930539f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1789bd444322bdd9154bd1b0f5bbb3fa" id="r_a1789bd444322bdd9154bd1b0f5bbb3fa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1789bd444322bdd9154bd1b0f5bbb3fa">LE</a> ()</td></tr>
-<tr class="separator:a1789bd444322bdd9154bd1b0f5bbb3fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4eceddf9316ef275c8f99aa6573d491" id="r_ac4eceddf9316ef275c8f99aa6573d491"><td class="memItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac4eceddf9316ef275c8f99aa6573d491">readEndian</a> (std::istream &amp;is, bool &amp;littleEndian)</td></tr>
 <tr class="separator:ac4eceddf9316ef275c8f99aa6573d491"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14c9d82a1dc13412f4b3ba74f5cbbf0a" id="r_a14c9d82a1dc13412f4b3ba74f5cbbf0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14c9d82a1dc13412f4b3ba74f5cbbf0a">writeEndian</a> (std::ostream &amp;os)</td></tr>
@@ -169,8 +169,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abddf28ce1a3bc4c1431958bb3f247392"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21fbb7680534439df2b5deafc9b554f7" id="r_a21fbb7680534439df2b5deafc9b554f7"><td class="memItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a21fbb7680534439df2b5deafc9b554f7">read</a> (std::istream &amp;is, std::wstring &amp;s)</td></tr>
 <tr class="separator:a21fbb7680534439df2b5deafc9b554f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2822faff8129cc083a021d0f907742da" id="r_a2822faff8129cc083a021d0f907742da"><td class="memItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2822faff8129cc083a021d0f907742da">read</a> (std::istream &amp;is, char *str)</td></tr>
-<tr class="separator:a2822faff8129cc083a021d0f907742da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57cc3a2ab94aee5da6b1bd99e5ea36b8" id="r_a57cc3a2ab94aee5da6b1bd99e5ea36b8"><td class="memItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57cc3a2ab94aee5da6b1bd99e5ea36b8">read</a> (std::istream &amp;is, char *str, size_t maxLen)</td></tr>
+<tr class="separator:a57cc3a2ab94aee5da6b1bd99e5ea36b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d65463e884f779312f9f216aa8948c4" id="r_a1d65463e884f779312f9f216aa8948c4"><td class="memItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d65463e884f779312f9f216aa8948c4">read</a> (std::istream &amp;is, std::vector&lt; bool &gt; &amp;container)</td></tr>
 <tr class="separator:a1d65463e884f779312f9f216aa8948c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac69f92552e29b9c1c109d4baf9e06761" id="r_ac69f92552e29b9c1c109d4baf9e06761"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac69f92552e29b9c1c109d4baf9e06761">write</a> (std::ostream &amp;os, <a class="el" href="classserialize_1_1_i.html">I</a> *t_)</td></tr>
@@ -195,54 +195,54 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a721e2ccdd72b4def0087f84acdd565bc" id="r_a721e2ccdd72b4def0087f84acdd565bc"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a721e2ccdd72b4def0087f84acdd565bc"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a721e2ccdd72b4def0087f84acdd565bc">write</a> (std::ostream &amp;os, T &amp;t_, bool prependType=true)</td></tr>
 <tr class="separator:a721e2ccdd72b4def0087f84acdd565bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a2e3766a7ed3a8c1fe6b2a111eb0621" id="r_a8a2e3766a7ed3a8c1fe6b2a111eb0621"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a8a2e3766a7ed3a8c1fe6b2a111eb0621"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a8a2e3766a7ed3a8c1fe6b2a111eb0621">write</a> (std::ostream &amp;os, std::vector&lt; T &gt; &amp;container)</td></tr>
-<tr class="separator:a8a2e3766a7ed3a8c1fe6b2a111eb0621"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa7171b666b34b757283abfe576f9266" id="r_aaa7171b666b34b757283abfe576f9266"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:aaa7171b666b34b757283abfe576f9266"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aaa7171b666b34b757283abfe576f9266">read</a> (std::istream &amp;is, std::vector&lt; T &gt; &amp;container)</td></tr>
-<tr class="separator:aaa7171b666b34b757283abfe576f9266"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5aa0ec25eba8fcdb5a94f82b6f02a8b9" id="r_a5aa0ec25eba8fcdb5a94f82b6f02a8b9"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a5aa0ec25eba8fcdb5a94f82b6f02a8b9"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a5aa0ec25eba8fcdb5a94f82b6f02a8b9">write</a> (std::ostream &amp;os, std::vector&lt; T * &gt; &amp;container)</td></tr>
-<tr class="separator:a5aa0ec25eba8fcdb5a94f82b6f02a8b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3faa12fcc205adab7930686697e78cf" id="r_ae3faa12fcc205adab7930686697e78cf"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:ae3faa12fcc205adab7930686697e78cf"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae3faa12fcc205adab7930686697e78cf">read</a> (std::istream &amp;is, std::vector&lt; T * &gt; &amp;container)</td></tr>
-<tr class="separator:ae3faa12fcc205adab7930686697e78cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9cb89c3e29e4acee823e9b6d27a89110" id="r_a9cb89c3e29e4acee823e9b6d27a89110"><td class="memTemplParams" colspan="2">template&lt;class K , class V , class P &gt; </td></tr>
-<tr class="memitem:a9cb89c3e29e4acee823e9b6d27a89110"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a9cb89c3e29e4acee823e9b6d27a89110">write</a> (std::ostream &amp;os, std::map&lt; K, V, P &gt; &amp;container)</td></tr>
-<tr class="separator:a9cb89c3e29e4acee823e9b6d27a89110"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae812a637ede2eae0b7d1c64a0a5b95d6" id="r_ae812a637ede2eae0b7d1c64a0a5b95d6"><td class="memTemplParams" colspan="2">template&lt;class K , class V , class P &gt; </td></tr>
-<tr class="memitem:ae812a637ede2eae0b7d1c64a0a5b95d6"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae812a637ede2eae0b7d1c64a0a5b95d6">read</a> (std::istream &amp;is, std::map&lt; K, V, P &gt; &amp;container)</td></tr>
-<tr class="separator:ae812a637ede2eae0b7d1c64a0a5b95d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e01f869fd9e3d0ca3386c41d71f069d" id="r_a2e01f869fd9e3d0ca3386c41d71f069d"><td class="memTemplParams" colspan="2">template&lt;class K , class V , class P &gt; </td></tr>
-<tr class="memitem:a2e01f869fd9e3d0ca3386c41d71f069d"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a2e01f869fd9e3d0ca3386c41d71f069d">write</a> (std::ostream &amp;os, std::map&lt; K, V *, P &gt; &amp;container)</td></tr>
-<tr class="separator:a2e01f869fd9e3d0ca3386c41d71f069d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a266c822d76377c47af581a1e566e0f58" id="r_a266c822d76377c47af581a1e566e0f58"><td class="memTemplParams" colspan="2">template&lt;class K , class V , class P &gt; </td></tr>
-<tr class="memitem:a266c822d76377c47af581a1e566e0f58"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a266c822d76377c47af581a1e566e0f58">read</a> (std::istream &amp;is, std::map&lt; K, V *, P &gt; &amp;container)</td></tr>
-<tr class="separator:a266c822d76377c47af581a1e566e0f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a166cf10c574605bf7acb04f62f0518d3" id="r_a166cf10c574605bf7acb04f62f0518d3"><td class="memTemplParams" colspan="2">template&lt;class T , class P &gt; </td></tr>
-<tr class="memitem:a166cf10c574605bf7acb04f62f0518d3"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a166cf10c574605bf7acb04f62f0518d3">write</a> (std::ostream &amp;os, std::set&lt; T, P &gt; &amp;container)</td></tr>
-<tr class="separator:a166cf10c574605bf7acb04f62f0518d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e25f919cd84914efb020a0b4dfdffb5" id="r_a6e25f919cd84914efb020a0b4dfdffb5"><td class="memTemplParams" colspan="2">template&lt;class T , class P &gt; </td></tr>
-<tr class="memitem:a6e25f919cd84914efb020a0b4dfdffb5"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a6e25f919cd84914efb020a0b4dfdffb5">read</a> (std::istream &amp;is, std::set&lt; T, P &gt; &amp;container)</td></tr>
-<tr class="separator:a6e25f919cd84914efb020a0b4dfdffb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96ca1a1217ef1f692e2bb518231d0aa3" id="r_a96ca1a1217ef1f692e2bb518231d0aa3"><td class="memTemplParams" colspan="2">template&lt;class T , class P &gt; </td></tr>
-<tr class="memitem:a96ca1a1217ef1f692e2bb518231d0aa3"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a96ca1a1217ef1f692e2bb518231d0aa3">write</a> (std::ostream &amp;os, std::set&lt; T *, P &gt; &amp;container)</td></tr>
-<tr class="separator:a96ca1a1217ef1f692e2bb518231d0aa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5b169aa2d3dbdfee2a235c9b3d9feaf" id="r_aa5b169aa2d3dbdfee2a235c9b3d9feaf"><td class="memTemplParams" colspan="2">template&lt;class T , class P &gt; </td></tr>
-<tr class="memitem:aa5b169aa2d3dbdfee2a235c9b3d9feaf"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa5b169aa2d3dbdfee2a235c9b3d9feaf">read</a> (std::istream &amp;is, std::set&lt; T *, P &gt; &amp;container)</td></tr>
-<tr class="separator:aa5b169aa2d3dbdfee2a235c9b3d9feaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9599e3f4d50097636e18e2552465fcd0" id="r_a9599e3f4d50097636e18e2552465fcd0"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a9599e3f4d50097636e18e2552465fcd0"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a9599e3f4d50097636e18e2552465fcd0">write</a> (std::ostream &amp;os, std::list&lt; T &gt; &amp;container)</td></tr>
-<tr class="separator:a9599e3f4d50097636e18e2552465fcd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed523e011a4b1647a9b4d7f9b13b8b42" id="r_aed523e011a4b1647a9b4d7f9b13b8b42"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:aed523e011a4b1647a9b4d7f9b13b8b42"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aed523e011a4b1647a9b4d7f9b13b8b42">read</a> (std::istream &amp;is, std::list&lt; T &gt; &amp;container)</td></tr>
-<tr class="separator:aed523e011a4b1647a9b4d7f9b13b8b42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab24b9c0d43d0b621af7db7ffd3b7b385" id="r_ab24b9c0d43d0b621af7db7ffd3b7b385"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:ab24b9c0d43d0b621af7db7ffd3b7b385"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab24b9c0d43d0b621af7db7ffd3b7b385">write</a> (std::ostream &amp;os, std::list&lt; T * &gt; &amp;container)</td></tr>
-<tr class="separator:ab24b9c0d43d0b621af7db7ffd3b7b385"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85b92c1f1445329b010b7baee28ba750" id="r_a85b92c1f1445329b010b7baee28ba750"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
-<tr class="memitem:a85b92c1f1445329b010b7baee28ba750"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a85b92c1f1445329b010b7baee28ba750">read</a> (std::istream &amp;is, std::list&lt; T * &gt; &amp;container)</td></tr>
-<tr class="separator:a85b92c1f1445329b010b7baee28ba750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12da2adb3601a414ce820197cfd8ca60" id="r_a12da2adb3601a414ce820197cfd8ca60"><td class="memTemplParams" colspan="2">template&lt;class T , class Alloc &gt; </td></tr>
+<tr class="memitem:a12da2adb3601a414ce820197cfd8ca60"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a12da2adb3601a414ce820197cfd8ca60">write</a> (std::ostream &amp;os, std::vector&lt; T, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:a12da2adb3601a414ce820197cfd8ca60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af24f875a3e028c4d810e925bbcc01f39" id="r_af24f875a3e028c4d810e925bbcc01f39"><td class="memTemplParams" colspan="2">template&lt;class T , class Alloc &gt; </td></tr>
+<tr class="memitem:af24f875a3e028c4d810e925bbcc01f39"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af24f875a3e028c4d810e925bbcc01f39">read</a> (std::istream &amp;is, std::vector&lt; T, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:af24f875a3e028c4d810e925bbcc01f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a5cc8354e9fdab60c072de9dd1f3c10" id="r_a3a5cc8354e9fdab60c072de9dd1f3c10"><td class="memTemplParams" colspan="2">template&lt;class T , class Alloc &gt; </td></tr>
+<tr class="memitem:a3a5cc8354e9fdab60c072de9dd1f3c10"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a3a5cc8354e9fdab60c072de9dd1f3c10">write</a> (std::ostream &amp;os, std::vector&lt; T *, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:a3a5cc8354e9fdab60c072de9dd1f3c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2176b79a797904fadb5a1e3484b3586a" id="r_a2176b79a797904fadb5a1e3484b3586a"><td class="memTemplParams" colspan="2">template&lt;class T , class Alloc &gt; </td></tr>
+<tr class="memitem:a2176b79a797904fadb5a1e3484b3586a"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a2176b79a797904fadb5a1e3484b3586a">read</a> (std::istream &amp;is, std::vector&lt; T *, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:a2176b79a797904fadb5a1e3484b3586a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab785c9ab6e18bd5b90658625ac78079" id="r_aab785c9ab6e18bd5b90658625ac78079"><td class="memTemplParams" colspan="2">template&lt;class K , class V , class P , class Alloc &gt; </td></tr>
+<tr class="memitem:aab785c9ab6e18bd5b90658625ac78079"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aab785c9ab6e18bd5b90658625ac78079">write</a> (std::ostream &amp;os, std::map&lt; K, V, P, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:aab785c9ab6e18bd5b90658625ac78079"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79dc60b635d1296ab0a854e974146781" id="r_a79dc60b635d1296ab0a854e974146781"><td class="memTemplParams" colspan="2">template&lt;class K , class V , class P , class Alloc &gt; </td></tr>
+<tr class="memitem:a79dc60b635d1296ab0a854e974146781"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a79dc60b635d1296ab0a854e974146781">read</a> (std::istream &amp;is, std::map&lt; K, V, P, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:a79dc60b635d1296ab0a854e974146781"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a9e530ec0ce588c81e6b8efa6361a33" id="r_a7a9e530ec0ce588c81e6b8efa6361a33"><td class="memTemplParams" colspan="2">template&lt;class K , class V , class P , class Alloc &gt; </td></tr>
+<tr class="memitem:a7a9e530ec0ce588c81e6b8efa6361a33"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a7a9e530ec0ce588c81e6b8efa6361a33">write</a> (std::ostream &amp;os, std::map&lt; K, V *, P, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:a7a9e530ec0ce588c81e6b8efa6361a33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0f173272c81acc67092bc11e130688f" id="r_ae0f173272c81acc67092bc11e130688f"><td class="memTemplParams" colspan="2">template&lt;class K , class V , class P , class Alloc &gt; </td></tr>
+<tr class="memitem:ae0f173272c81acc67092bc11e130688f"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae0f173272c81acc67092bc11e130688f">read</a> (std::istream &amp;is, std::map&lt; K, V *, P, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:ae0f173272c81acc67092bc11e130688f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4970c01f5d8fa0bfa3f2fab314c34c9" id="r_ae4970c01f5d8fa0bfa3f2fab314c34c9"><td class="memTemplParams" colspan="2">template&lt;class T , class P , class Alloc &gt; </td></tr>
+<tr class="memitem:ae4970c01f5d8fa0bfa3f2fab314c34c9"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae4970c01f5d8fa0bfa3f2fab314c34c9">write</a> (std::ostream &amp;os, std::set&lt; T, P, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:ae4970c01f5d8fa0bfa3f2fab314c34c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb8d7dd0f5792e1ede706d31772f38f0" id="r_abb8d7dd0f5792e1ede706d31772f38f0"><td class="memTemplParams" colspan="2">template&lt;class T , class P , class Alloc &gt; </td></tr>
+<tr class="memitem:abb8d7dd0f5792e1ede706d31772f38f0"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#abb8d7dd0f5792e1ede706d31772f38f0">read</a> (std::istream &amp;is, std::set&lt; T, P, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:abb8d7dd0f5792e1ede706d31772f38f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4be69db99e2bcbf8a70ef9fd0177433" id="r_ab4be69db99e2bcbf8a70ef9fd0177433"><td class="memTemplParams" colspan="2">template&lt;class T , class P , class Alloc &gt; </td></tr>
+<tr class="memitem:ab4be69db99e2bcbf8a70ef9fd0177433"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab4be69db99e2bcbf8a70ef9fd0177433">write</a> (std::ostream &amp;os, std::set&lt; T *, P, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:ab4be69db99e2bcbf8a70ef9fd0177433"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d32a260e7f6849f10e68a834d7313e9" id="r_a4d32a260e7f6849f10e68a834d7313e9"><td class="memTemplParams" colspan="2">template&lt;class T , class P , class Alloc &gt; </td></tr>
+<tr class="memitem:a4d32a260e7f6849f10e68a834d7313e9"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a4d32a260e7f6849f10e68a834d7313e9">read</a> (std::istream &amp;is, std::set&lt; T *, P, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:a4d32a260e7f6849f10e68a834d7313e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa83123c7907d90ebb585d4a33f8778d6" id="r_aa83123c7907d90ebb585d4a33f8778d6"><td class="memTemplParams" colspan="2">template&lt;class T , class Alloc &gt; </td></tr>
+<tr class="memitem:aa83123c7907d90ebb585d4a33f8778d6"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa83123c7907d90ebb585d4a33f8778d6">write</a> (std::ostream &amp;os, std::list&lt; T, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:aa83123c7907d90ebb585d4a33f8778d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2faff0655d3455051121efe9dd21167f" id="r_a2faff0655d3455051121efe9dd21167f"><td class="memTemplParams" colspan="2">template&lt;class T , class Alloc &gt; </td></tr>
+<tr class="memitem:a2faff0655d3455051121efe9dd21167f"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a2faff0655d3455051121efe9dd21167f">read</a> (std::istream &amp;is, std::list&lt; T, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:a2faff0655d3455051121efe9dd21167f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb82a9e344e3cff7b745fe6a8b61dd80" id="r_aeb82a9e344e3cff7b745fe6a8b61dd80"><td class="memTemplParams" colspan="2">template&lt;class T , class Alloc &gt; </td></tr>
+<tr class="memitem:aeb82a9e344e3cff7b745fe6a8b61dd80"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aeb82a9e344e3cff7b745fe6a8b61dd80">write</a> (std::ostream &amp;os, std::list&lt; T *, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:aeb82a9e344e3cff7b745fe6a8b61dd80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af515aa051a966471827ed326d50b4531" id="r_af515aa051a966471827ed326d50b4531"><td class="memTemplParams" colspan="2">template&lt;class T , class Alloc &gt; </td></tr>
+<tr class="memitem:af515aa051a966471827ed326d50b4531"><td class="memTemplItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af515aa051a966471827ed326d50b4531">read</a> (std::istream &amp;is, std::list&lt; T *, Alloc &gt; &amp;container)</td></tr>
+<tr class="separator:af515aa051a966471827ed326d50b4531"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0d4b612d403691b8829435f20293dd6" id="r_aa0d4b612d403691b8829435f20293dd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0d4b612d403691b8829435f20293dd6">setErrorHandler</a> (<a class="el" href="#ac6c4014cb8480145899c1da3d837d26a">ErrorHandler</a> error_handler_)</td></tr>
 <tr class="separator:aa0d4b612d403691b8829435f20293dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab404cbfd9d4728d8f90e82b2c9f72da6" id="r_ab404cbfd9d4728d8f90e82b2c9f72da6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#acfb1afef8776c22530f83bec54ea89b0">ParsingError</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab404cbfd9d4728d8f90e82b2c9f72da6">getLastError</a> () const</td></tr>
@@ -251,6 +251,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4621dcdc7de613159fa5b0c954cca389"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a310603d2e501dcb2884f690b55a62965" id="r_a310603d2e501dcb2884f690b55a62965"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a310603d2e501dcb2884f690b55a62965">setParseHandler</a> (<a class="el" href="#ab305a895fd24eb4361929f57dd313ab5">ParseHandler</a> parse_handler_)</td></tr>
 <tr class="separator:a310603d2e501dcb2884f690b55a62965"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a160d44cc2c19098e5d41224867559ac4" id="r_a160d44cc2c19098e5d41224867559ac4"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a160d44cc2c19098e5d41224867559ac4">LE</a> ()</td></tr>
+<tr class="separator:a160d44cc2c19098e5d41224867559ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The serialize class binary serializes and deserializes C++ objects. </p>
@@ -263,9 +268,9 @@ wstring
 char[]
 </pre><p>Always check the input stream or output stream to ensure no errors before using data. e.g.</p>
 <p>if (ss.good()) // Do something with input or output data</p>
-<p>This serialization class is not thread safe and a serialie instance should only be accessed from a single task.</p>
-<p>The serialize class support receiving objects that have more or less data fields that what is currenting being parsed. If more data is received after parsing an object, the extra data is discard. If less data is received, the parsing of the extra data fields does not occur. This supports the protocol changing by adding new data elements to an object. Once the protocol is released at a particular version, new data elements can be added but existing ones cannot be removed/changed. <br  />
- </p>
+<p>This serialization class is not thread safe and a serialize instance should only be accessed from a single task.</p>
+<p>The serialize class support receiving objects that have more or less data fields than what is currently being parsed. If more data is received after parsing an object, the extra data is discarded. If less data is received, the parsing of the extra data fields does not occur. This supports the protocol changing by adding new data elements to an object. Once the protocol is released at a particular version, new data elements can be added but existing ones cannot be removed/changed.</p>
+<dl class="section note"><dt>Note</dt><dd><a class="el" href="#ac69f92552e29b9c1c109d4baf9e06761">write()</a> requires a seekable stream (i.e. std::ostringstream). The size field for user-defined objects is backfilled via seekp() after the object is written. Using a non-seekable stream produces a corrupt size field and triggers an error. </dd></dl>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="ac6c4014cb8480145899c1da3d837d26a" name="ac6c4014cb8480145899c1da3d837d26a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac6c4014cb8480145899c1da3d837d26a">&#9670;&#160;</a></span>ErrorHandler</h2>
@@ -319,6 +324,7 @@ char[]
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="acfb1afef8776c22530f83bec54ea89b0ab50339a10e1de285ac99d4c3990b8693" name="acfb1afef8776c22530f83bec54ea89b0ab50339a10e1de285ac99d4c3990b8693"></a>NONE&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="acfb1afef8776c22530f83bec54ea89b0a2f93918ef99e03b7b8e7230b2a28fb52" name="acfb1afef8776c22530f83bec54ea89b0a2f93918ef99e03b7b8e7230b2a28fb52"></a>TYPE_MISMATCH&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="acfb1afef8776c22530f83bec54ea89b0a778538f32afec1c04103343a92a7ff0f" name="acfb1afef8776c22530f83bec54ea89b0a778538f32afec1c04103343a92a7ff0f"></a>STREAM_ERROR&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acfb1afef8776c22530f83bec54ea89b0a8f9acd54c35facc1d6db3cfabedcfa17" name="acfb1afef8776c22530f83bec54ea89b0a8f9acd54c35facc1d6db3cfabedcfa17"></a>NON_SEEKABLE_STREAM&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="acfb1afef8776c22530f83bec54ea89b0a6a0751f8d7c5f4b4b0a9d315bcfb121b" name="acfb1afef8776c22530f83bec54ea89b0a6a0751f8d7c5f4b4b0a9d315bcfb121b"></a>STRING_TOO_LONG&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="acfb1afef8776c22530f83bec54ea89b0aa75ed07cefcfe1eaac8fc31011440c95" name="acfb1afef8776c22530f83bec54ea89b0aa75ed07cefcfe1eaac8fc31011440c95"></a>CONTAINER_TOO_MANY&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="acfb1afef8776c22530f83bec54ea89b0ac063281d4adc16ebccfec66aa885b4dd" name="acfb1afef8776c22530f83bec54ea89b0ac063281d4adc16ebccfec66aa885b4dd"></a>INVALID_INPUT&#160;</td><td class="fielddoc"></td></tr>
@@ -463,8 +469,8 @@ char[]
 
 </div>
 </div>
-<a id="a1789bd444322bdd9154bd1b0f5bbb3fa" name="a1789bd444322bdd9154bd1b0f5bbb3fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1789bd444322bdd9154bd1b0f5bbb3fa">&#9670;&#160;</a></span>LE()</h2>
+<a id="a160d44cc2c19098e5d41224867559ac4" name="a160d44cc2c19098e5d41224867559ac4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a160d44cc2c19098e5d41224867559ac4">&#9670;&#160;</a></span>LE()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -473,7 +479,7 @@ char[]
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool serialize::LE </td>
+          <td class="memname">static bool serialize::LE </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -481,17 +487,16 @@ char[]
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Returns true if little endian. </p><dl class="section return"><dt>Returns</dt><dd>Returns true if little endian. <br  />
- </dd></dl>
+<p>Returns true if the host is little-endian. </p><dl class="section return"><dt>Returns</dt><dd>Returns true if little-endian. </dd></dl>
 
 </div>
 </div>
-<a id="a2822faff8129cc083a021d0f907742da" name="a2822faff8129cc083a021d0f907742da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2822faff8129cc083a021d0f907742da">&#9670;&#160;</a></span>read() <span class="overload">[1/14]</span></h2>
+<a id="a57cc3a2ab94aee5da6b1bd99e5ea36b8" name="a57cc3a2ab94aee5da6b1bd99e5ea36b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57cc3a2ab94aee5da6b1bd99e5ea36b8">&#9670;&#160;</a></span>read() <span class="overload">[1/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -507,7 +512,12 @@ char[]
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>&#160;)</td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>maxLen</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -520,6 +530,7 @@ char[]
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">is</td><td>- the input stream </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">str</td><td>- the character string to read into </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">maxLen</td><td>- the capacity of str in bytes (including null terminator) </td></tr>
   </table>
   </dd>
 </dl>
@@ -553,24 +564,24 @@ char[]
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Read a user defined object implementing the serialize:<a class="el" href="classserialize_1_1_i.html" title="Abstract interface that all serialized user defined classes inherit.">I</a> interface from a stream. Normally the send and reciever object is the same size. However, if a newer version of the object is introduced on one side the sizes will differ. If received object is smaller than sent object, the extra data in the sent object is discarded. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Read a user defined object implementing the <a class="el" href="classserialize_1_1_i.html" title="Abstract interface that all serialized user defined classes inherit.">serialize::I</a> interface from a stream. Normally the sender and receiver object is the same size. However, if a newer version of the object is introduced on one side the sizes will differ. If received object is smaller than sent object, the extra data in the sent object is discarded. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">is</td><td>- the input stream </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t_</td><td>- the object to read </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The output stream </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The input stream </dd></dl>
 
 </div>
 </div>
-<a id="a85b92c1f1445329b010b7baee28ba750" name="a85b92c1f1445329b010b7baee28ba750"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a85b92c1f1445329b010b7baee28ba750">&#9670;&#160;</a></span>read() <span class="overload">[3/14]</span></h2>
+<a id="af515aa051a966471827ed326d50b4531" name="af515aa051a966471827ed326d50b4531"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af515aa051a966471827ed326d50b4531">&#9670;&#160;</a></span>read() <span class="overload">[3/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T &gt; </div>
+template&lt;class T , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -583,7 +594,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::list&lt; T * &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::list&lt; T *, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -603,13 +614,13 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="aed523e011a4b1647a9b4d7f9b13b8b42" name="aed523e011a4b1647a9b4d7f9b13b8b42"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed523e011a4b1647a9b4d7f9b13b8b42">&#9670;&#160;</a></span>read() <span class="overload">[4/14]</span></h2>
+<a id="a2faff0655d3455051121efe9dd21167f" name="a2faff0655d3455051121efe9dd21167f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2faff0655d3455051121efe9dd21167f">&#9670;&#160;</a></span>read() <span class="overload">[4/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T &gt; </div>
+template&lt;class T , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -622,7 +633,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::list&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::list&lt; T, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -642,13 +653,13 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="a266c822d76377c47af581a1e566e0f58" name="a266c822d76377c47af581a1e566e0f58"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a266c822d76377c47af581a1e566e0f58">&#9670;&#160;</a></span>read() <span class="overload">[5/14]</span></h2>
+<a id="ae0f173272c81acc67092bc11e130688f" name="ae0f173272c81acc67092bc11e130688f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0f173272c81acc67092bc11e130688f">&#9670;&#160;</a></span>read() <span class="overload">[5/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class K , class V , class P &gt; </div>
+template&lt;class K , class V , class P , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -661,7 +672,7 @@ template&lt;class K , class V , class P &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::map&lt; K, V *, P &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::map&lt; K, V *, P, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -681,13 +692,13 @@ template&lt;class K , class V , class P &gt; </div>
 
 </div>
 </div>
-<a id="ae812a637ede2eae0b7d1c64a0a5b95d6" name="ae812a637ede2eae0b7d1c64a0a5b95d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae812a637ede2eae0b7d1c64a0a5b95d6">&#9670;&#160;</a></span>read() <span class="overload">[6/14]</span></h2>
+<a id="a79dc60b635d1296ab0a854e974146781" name="a79dc60b635d1296ab0a854e974146781"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79dc60b635d1296ab0a854e974146781">&#9670;&#160;</a></span>read() <span class="overload">[6/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class K , class V , class P &gt; </div>
+template&lt;class K , class V , class P , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -700,7 +711,7 @@ template&lt;class K , class V , class P &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::map&lt; K, V, P &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::map&lt; K, V, P, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -720,13 +731,13 @@ template&lt;class K , class V , class P &gt; </div>
 
 </div>
 </div>
-<a id="aa5b169aa2d3dbdfee2a235c9b3d9feaf" name="aa5b169aa2d3dbdfee2a235c9b3d9feaf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa5b169aa2d3dbdfee2a235c9b3d9feaf">&#9670;&#160;</a></span>read() <span class="overload">[7/14]</span></h2>
+<a id="a4d32a260e7f6849f10e68a834d7313e9" name="a4d32a260e7f6849f10e68a834d7313e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d32a260e7f6849f10e68a834d7313e9">&#9670;&#160;</a></span>read() <span class="overload">[7/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T , class P &gt; </div>
+template&lt;class T , class P , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -739,7 +750,7 @@ template&lt;class T , class P &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::set&lt; T *, P &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::set&lt; T *, P, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -759,13 +770,13 @@ template&lt;class T , class P &gt; </div>
 
 </div>
 </div>
-<a id="a6e25f919cd84914efb020a0b4dfdffb5" name="a6e25f919cd84914efb020a0b4dfdffb5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e25f919cd84914efb020a0b4dfdffb5">&#9670;&#160;</a></span>read() <span class="overload">[8/14]</span></h2>
+<a id="abb8d7dd0f5792e1ede706d31772f38f0" name="abb8d7dd0f5792e1ede706d31772f38f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb8d7dd0f5792e1ede706d31772f38f0">&#9670;&#160;</a></span>read() <span class="overload">[8/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T , class P &gt; </div>
+template&lt;class T , class P , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -778,7 +789,7 @@ template&lt;class T , class P &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::set&lt; T, P &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::set&lt; T, P, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -794,8 +805,7 @@ template&lt;class T , class P &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The input stream <br  />
- </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The input stream </dd></dl>
 
 </div>
 </div>
@@ -825,9 +835,9 @@ template&lt;class T , class P &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Read a str::string from a stream. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Read a std::string from a stream. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>- the input stream </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">is</td><td>- the input stream </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>- the string to read </td></tr>
   </table>
   </dd>
@@ -873,13 +883,13 @@ template&lt;class T , class P &gt; </div>
 
 </div>
 </div>
-<a id="ae3faa12fcc205adab7930686697e78cf" name="ae3faa12fcc205adab7930686697e78cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3faa12fcc205adab7930686697e78cf">&#9670;&#160;</a></span>read() <span class="overload">[11/14]</span></h2>
+<a id="a2176b79a797904fadb5a1e3484b3586a" name="a2176b79a797904fadb5a1e3484b3586a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2176b79a797904fadb5a1e3484b3586a">&#9670;&#160;</a></span>read() <span class="overload">[11/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T &gt; </div>
+template&lt;class T , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -892,7 +902,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; T * &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::vector&lt; T *, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -912,13 +922,13 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="aaa7171b666b34b757283abfe576f9266" name="aaa7171b666b34b757283abfe576f9266"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa7171b666b34b757283abfe576f9266">&#9670;&#160;</a></span>read() <span class="overload">[12/14]</span></h2>
+<a id="af24f875a3e028c4d810e925bbcc01f39" name="af24f875a3e028c4d810e925bbcc01f39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af24f875a3e028c4d810e925bbcc01f39">&#9670;&#160;</a></span>read() <span class="overload">[12/14]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T &gt; </div>
+template&lt;class T , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -931,7 +941,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::vector&lt; T, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -977,9 +987,9 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Read a str::wstring from a stream. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Read a std::wstring from a stream. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>- the input stream </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">is</td><td>- the input stream </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>- the string to read </td></tr>
   </table>
   </dd>
@@ -1060,11 +1070,12 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <p>Read endian from stream. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">istream</td><td>- input stream </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">is</td><td>- input stream </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">littleEndian</td><td>- set to true if stream was written on a little-endian host </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Return true if little endian. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The input stream. </dd></dl>
 
 </div>
 </div>
@@ -1255,7 +1266,7 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Write a const str::wstring to a stream. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Write a const std::wstring to a stream. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>- the output stream </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>- the string to write </td></tr>
@@ -1292,7 +1303,8 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Write a user defined object implementing the serialize:<a class="el" href="classserialize_1_1_i.html" title="Abstract interface that all serialized user defined classes inherit.">I</a> interface to a stream. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Write a user defined object implementing the <a class="el" href="classserialize_1_1_i.html" title="Abstract interface that all serialized user defined classes inherit.">serialize::I</a> interface to a stream. </p><dl class="section note"><dt>Note</dt><dd>The stream must support seekp(). The object size is backfilled after writing. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>- the output stream </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">t_</td><td>- the object to write </td></tr>
@@ -1303,13 +1315,13 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ab24b9c0d43d0b621af7db7ffd3b7b385" name="ab24b9c0d43d0b621af7db7ffd3b7b385"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab24b9c0d43d0b621af7db7ffd3b7b385">&#9670;&#160;</a></span>write() <span class="overload">[6/17]</span></h2>
+<a id="aeb82a9e344e3cff7b745fe6a8b61dd80" name="aeb82a9e344e3cff7b745fe6a8b61dd80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb82a9e344e3cff7b745fe6a8b61dd80">&#9670;&#160;</a></span>write() <span class="overload">[6/17]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T &gt; </div>
+template&lt;class T , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1322,7 +1334,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::list&lt; T * &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::list&lt; T *, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1342,13 +1354,13 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="a9599e3f4d50097636e18e2552465fcd0" name="a9599e3f4d50097636e18e2552465fcd0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9599e3f4d50097636e18e2552465fcd0">&#9670;&#160;</a></span>write() <span class="overload">[7/17]</span></h2>
+<a id="aa83123c7907d90ebb585d4a33f8778d6" name="aa83123c7907d90ebb585d4a33f8778d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa83123c7907d90ebb585d4a33f8778d6">&#9670;&#160;</a></span>write() <span class="overload">[7/17]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T &gt; </div>
+template&lt;class T , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1361,7 +1373,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::list&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::list&lt; T, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1381,13 +1393,13 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="a2e01f869fd9e3d0ca3386c41d71f069d" name="a2e01f869fd9e3d0ca3386c41d71f069d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e01f869fd9e3d0ca3386c41d71f069d">&#9670;&#160;</a></span>write() <span class="overload">[8/17]</span></h2>
+<a id="a7a9e530ec0ce588c81e6b8efa6361a33" name="a7a9e530ec0ce588c81e6b8efa6361a33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a9e530ec0ce588c81e6b8efa6361a33">&#9670;&#160;</a></span>write() <span class="overload">[8/17]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class K , class V , class P &gt; </div>
+template&lt;class K , class V , class P , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1400,7 +1412,7 @@ template&lt;class K , class V , class P &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::map&lt; K, V *, P &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::map&lt; K, V *, P, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1420,13 +1432,13 @@ template&lt;class K , class V , class P &gt; </div>
 
 </div>
 </div>
-<a id="a9cb89c3e29e4acee823e9b6d27a89110" name="a9cb89c3e29e4acee823e9b6d27a89110"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9cb89c3e29e4acee823e9b6d27a89110">&#9670;&#160;</a></span>write() <span class="overload">[9/17]</span></h2>
+<a id="aab785c9ab6e18bd5b90658625ac78079" name="aab785c9ab6e18bd5b90658625ac78079"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab785c9ab6e18bd5b90658625ac78079">&#9670;&#160;</a></span>write() <span class="overload">[9/17]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class K , class V , class P &gt; </div>
+template&lt;class K , class V , class P , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1439,7 +1451,7 @@ template&lt;class K , class V , class P &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::map&lt; K, V, P &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::map&lt; K, V, P, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1459,13 +1471,13 @@ template&lt;class K , class V , class P &gt; </div>
 
 </div>
 </div>
-<a id="a96ca1a1217ef1f692e2bb518231d0aa3" name="a96ca1a1217ef1f692e2bb518231d0aa3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a96ca1a1217ef1f692e2bb518231d0aa3">&#9670;&#160;</a></span>write() <span class="overload">[10/17]</span></h2>
+<a id="ab4be69db99e2bcbf8a70ef9fd0177433" name="ab4be69db99e2bcbf8a70ef9fd0177433"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4be69db99e2bcbf8a70ef9fd0177433">&#9670;&#160;</a></span>write() <span class="overload">[10/17]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T , class P &gt; </div>
+template&lt;class T , class P , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1478,7 +1490,7 @@ template&lt;class T , class P &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::set&lt; T *, P &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::set&lt; T *, P, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1498,13 +1510,13 @@ template&lt;class T , class P &gt; </div>
 
 </div>
 </div>
-<a id="a166cf10c574605bf7acb04f62f0518d3" name="a166cf10c574605bf7acb04f62f0518d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a166cf10c574605bf7acb04f62f0518d3">&#9670;&#160;</a></span>write() <span class="overload">[11/17]</span></h2>
+<a id="ae4970c01f5d8fa0bfa3f2fab314c34c9" name="ae4970c01f5d8fa0bfa3f2fab314c34c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4970c01f5d8fa0bfa3f2fab314c34c9">&#9670;&#160;</a></span>write() <span class="overload">[11/17]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T , class P &gt; </div>
+template&lt;class T , class P , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1517,7 +1529,7 @@ template&lt;class T , class P &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::set&lt; T, P &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::set&lt; T, P, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1600,7 +1612,7 @@ template&lt;class T , class P &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Write a vector&lt;bool&gt; container to a stream. The vector&lt;bool&gt; items are stored differently and therefore need special handling to serialize. Unlike other specialisations of vector, std::vector&lt;bool&gt; does not manage a dynamic array of bool objects.Instead, it is supposed to pack the boolean values into a single bit each. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Write a vector&lt;bool&gt; container to a stream. The vector&lt;bool&gt; items are stored differently and therefore need special handling to serialize. Unlike other specializations of vector, std::vector&lt;bool&gt; does not manage a dynamic array of bool objects. Instead, it is supposed to pack the boolean values into a single bit each. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>- the output stream </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">container</td><td>- the vector container to write </td></tr>
@@ -1611,13 +1623,13 @@ template&lt;class T , class P &gt; </div>
 
 </div>
 </div>
-<a id="a5aa0ec25eba8fcdb5a94f82b6f02a8b9" name="a5aa0ec25eba8fcdb5a94f82b6f02a8b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5aa0ec25eba8fcdb5a94f82b6f02a8b9">&#9670;&#160;</a></span>write() <span class="overload">[14/17]</span></h2>
+<a id="a3a5cc8354e9fdab60c072de9dd1f3c10" name="a3a5cc8354e9fdab60c072de9dd1f3c10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a5cc8354e9fdab60c072de9dd1f3c10">&#9670;&#160;</a></span>write() <span class="overload">[14/17]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T &gt; </div>
+template&lt;class T , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1630,7 +1642,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; T * &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::vector&lt; T *, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1650,13 +1662,13 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="a8a2e3766a7ed3a8c1fe6b2a111eb0621" name="a8a2e3766a7ed3a8c1fe6b2a111eb0621"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a2e3766a7ed3a8c1fe6b2a111eb0621">&#9670;&#160;</a></span>write() <span class="overload">[15/17]</span></h2>
+<a id="a12da2adb3601a414ce820197cfd8ca60" name="a12da2adb3601a414ce820197cfd8ca60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12da2adb3601a414ce820197cfd8ca60">&#9670;&#160;</a></span>write() <span class="overload">[15/17]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T &gt; </div>
+template&lt;class T , class Alloc &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -1669,7 +1681,7 @@ template&lt;class T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
+          <td class="paramtype">std::vector&lt; T, Alloc &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>container</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -1715,7 +1727,7 @@ template&lt;class T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Write a str::wstring to a stream. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Write a std::wstring to a stream. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>- the output stream </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">s</td><td>- the string to write </td></tr>
@@ -1794,7 +1806,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <p>Write current CPU endian to stream. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">ostream</td><td>- output stream </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>- output stream </td></tr>
   </table>
   </dd>
 </dl>

@@ -3,6 +3,8 @@ var msg__serialize_8h =
     [ "serialize_traits::is_shared_ptr< T >", "structserialize__traits_1_1is__shared__ptr.html", null ],
     [ "serialize_traits::is_shared_ptr< std::shared_ptr< T > >", "structserialize__traits_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html", null ],
     [ "serialize_traits::is_unsupported_container< U >", "structserialize__traits_1_1is__unsupported__container.html", null ],
+    [ "serialize_traits::is_seekable< T, typename >", "structserialize__traits_1_1is__seekable.html", null ],
+    [ "serialize_traits::is_seekable< T, std::void_t< decltype(std::declval< T & >().seekp(std::declval< std::streampos >())), decltype(std::declval< T & >().tellp()) > >", "structserialize__traits_1_1is__seekable_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declval19c262a50700af0ee451643140885e4a.html", null ],
     [ "serialize_traits::is_unsupported_container< std::multiset< U > >", "structserialize__traits_1_1is__unsupported__container_3_01std_1_1multiset_3_01_u_01_4_01_4.html", null ],
     [ "serialize_traits::is_unsupported_container< std::pair< U, V > >", "structserialize__traits_1_1is__unsupported__container_3_01std_1_1pair_3_01_u_00_01_v_01_4_01_4.html", null ],
     [ "serialize_traits::is_unsupported_container< std::deque< T, Alloc > >", "structserialize__traits_1_1is__unsupported__container_3_01std_1_1deque_3_01_t_00_01_alloc_01_4_01_4.html", null ],

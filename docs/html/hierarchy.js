@@ -55,6 +55,7 @@ var hierarchy =
       [ "dmq::trait::is_callable< T, typename >", "structdmq_1_1trait_1_1is__callable.html", null ],
       [ "dmq::trait::is_shared_ptr_reference< T >", "structdmq_1_1trait_1_1is__shared__ptr__reference.html", null ],
       [ "dmq::trait::is_std_function< T >", "structdmq_1_1trait_1_1is__std__function.html", null ],
+      [ "serialize_traits::is_seekable< T, typename >", "structserialize__traits_1_1is__seekable.html", null ],
       [ "serialize_traits::is_shared_ptr< T >", "structserialize__traits_1_1is__shared__ptr.html", null ],
       [ "serialize_traits::is_unsupported_container< U >", "structserialize__traits_1_1is__unsupported__container.html", null ]
     ] ],
@@ -70,7 +71,9 @@ var hierarchy =
       [ "dmq::heap_arg_deleter< T * >", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_01_4.html", null ],
       [ "dmq::heap_arg_deleter< T ** >", "classdmq_1_1heap__arg__deleter_3_01_t_01_5_5_01_4.html", null ]
     ] ],
-    [ "serialize::I", "classserialize_1_1_i.html", null ],
+    [ "serialize::I", "classserialize_1_1_i.html", [
+      [ "dmq::SpyPacket", "structdmq_1_1_spy_packet.html", null ]
+    ] ],
     [ "dmq::IDispatcher", "classdmq_1_1_i_dispatcher.html", [
       [ "Dispatcher", "class_dispatcher.html", null ]
     ] ],
@@ -171,7 +174,6 @@ var hierarchy =
     [ "dmq::Signal< void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)>", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< void(dmq::DelegateRemoteId, uint16_t, Status)>", "classdmq_1_1_signal.html", null ],
     [ "dmq::Signal< void(void)>", "classdmq_1_1_signal.html", null ],
-    [ "dmq::SpyPacket", "structdmq_1_1_spy_packet.html", null ],
     [ "stl_allocator< void >", "classstl__allocator_3_01void_01_4.html", null ],
     [ "ThreadMsg", "class_thread_msg.html", null ],
     [ "ThreadMsgComparator", "struct_thread_msg_comparator.html", null ],
@@ -191,6 +193,7 @@ var hierarchy =
       [ "dmq::trait::is_shared_ptr_reference< std::shared_ptr< T > & >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_6_01_4.html", null ],
       [ "dmq::trait::is_shared_ptr_reference< std::shared_ptr< T > * >", "structdmq_1_1trait_1_1is__shared__ptr__reference_3_01std_1_1shared__ptr_3_01_t_01_4_01_5_01_4.html", null ],
       [ "dmq::trait::is_std_function< std::function< Sig > >", "structdmq_1_1trait_1_1is__std__function_3_01std_1_1function_3_01_sig_01_4_01_4.html", null ],
+      [ "serialize_traits::is_seekable< T, std::void_t< decltype(std::declval< T & >().seekp(std::declval< std::streampos >())), decltype(std::declval< T & >().tellp()) > >", "structserialize__traits_1_1is__seekable_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declval19c262a50700af0ee451643140885e4a.html", null ],
       [ "serialize_traits::is_shared_ptr< std::shared_ptr< T > >", "structserialize__traits_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html", null ],
       [ "serialize_traits::is_unsupported_container< std::deque< T, Alloc > >", "structserialize__traits_1_1is__unsupported__container_3_01std_1_1deque_3_01_t_00_01_alloc_01_4_01_4.html", null ],
       [ "serialize_traits::is_unsupported_container< std::forward_list< T, Alloc > >", "structserialize__traits_1_1is__unsupported__container_3_01std_1_1forward__list_3_01_t_00_01_alloc_01_4_01_4.html", null ],

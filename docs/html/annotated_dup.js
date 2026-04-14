@@ -101,6 +101,8 @@ var annotated_dup =
       [ "ZephyrMutex", "classdmq_1_1_zephyr_mutex.html", "classdmq_1_1_zephyr_mutex" ]
     ] ],
     [ "serialize_traits", "namespaceserialize__traits.html", [
+      [ "is_seekable", "structserialize__traits_1_1is__seekable.html", null ],
+      [ "is_seekable< T, std::void_t< decltype(std::declval< T & >().seekp(std::declval< std::streampos >())), decltype(std::declval< T & >().tellp()) > >", "structserialize__traits_1_1is__seekable_3_01_t_00_01std_1_1void__t_3_01decltype_07std_1_1declval19c262a50700af0ee451643140885e4a.html", null ],
       [ "is_shared_ptr", "structserialize__traits_1_1is__shared__ptr.html", null ],
       [ "is_shared_ptr< std::shared_ptr< T > >", "structserialize__traits_1_1is__shared__ptr_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html", null ],
       [ "is_unsupported_container", "structserialize__traits_1_1is__unsupported__container.html", null ],

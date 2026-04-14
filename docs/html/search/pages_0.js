@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dispatcher_20layer_0',['Dispatcher Layer',['../index.html',1,'']]]
+  ['allocator_20suite_0',['Allocator Suite',['../index.html',1,'']]]
 ];

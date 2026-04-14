@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.12.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DelegateMQ: Dispatcher Layer</title>
+<title>DelegateMQ: Allocator Suite</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -96,60 +96,68 @@ $(function(){initNavTree('index.html',''); initResizable(true); });
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title"><a class="el" href="class_dispatcher.html" title="Dispatcher sends data to the transport for transmission to the endpoint.">Dispatcher</a> Layer </div></div>
+  <div class="headertitle"><div class="title"><a class="el" href="class_allocator.html">Allocator</a> Suite </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_src_2delegate-mq_2extras_2dispatcher_2_r_e_a_d_m_e"></a></p>
-<p>This directory contains the dispatch logic for <b>DelegateMQ</b>, serving as the critical bridge between the high-level serialization layer and the low-level physical transport.</p>
+<div class="textblock"><p><a class="anchor" id="md_src_2delegate-mq_2extras_2allocator_2_r_e_a_d_m_e"></a></p>
+<p>A robust, fixed-block memory allocator suite for C++ applications, designed for performance and deterministic behavior in resource-constrained or real-time systems.</p>
 <h1><a class="anchor" id="autotoc_md1"></a>
-Overview</h1>
-<p>The <code><a class="el" href="class_dispatcher.html" title="Dispatcher sends data to the transport for transmission to the endpoint.">Dispatcher</a></code> is responsible for taking the serialized payload (function arguments) and preparing it for transmission over the network or IPC link. It decouples the "what" (serialized data) from the "how" (transport mechanism).</p>
-<h1><a class="anchor" id="autotoc_md2"></a>
-Key Components</h1>
+Features</h1>
 <ul>
-<li><b><code><a class="el" href="_dispatcher_8h.html" title="The bridge between the serialization layer and the physical transport layer.">Dispatcher.h</a></code></b>: The concrete implementation of the <code>IDispatcher</code> interface.</li>
-<li><b><code><a class="el" href="_remote_channel_8h.html" title="Aggregates transport, serializer, dispatcher, and stream into a single object, mirroring how IThread/...">RemoteChannel.h</a></code></b>: An aggregator that owns a <code><a class="el" href="class_dispatcher.html" title="Dispatcher sends data to the transport for transmission to the endpoint.">Dispatcher</a></code>, an <code>xostringstream</code> (serialization buffer), and borrows an <code>ISerializer</code> for a single function signature. Use <code>RemoteChannel</code> to configure <code>DelegateMemberRemote</code> endpoints without manually wiring each component.</li>
+<li><b>Fixed-Block Allocation</b>: Prevents heap fragmentation by using pre-allocated pools of equal-sized blocks.</li>
+<li><b>C++ Class Integration</b>: <code>DECLARE_ALLOCATOR</code> and <code>IMPLEMENT_ALLOCATOR</code> macros provide easy integration with custom classes.</li>
+<li><b>XALLOCATOR Macro</b>: Overloads <code>operator new</code> and <code>operator delete</code> for seamless use.</li>
+<li><b>STL Compatibility</b>: <code><a class="el" href="classstl__allocator.html">stl_allocator</a>&lt;T&gt;</code> allows STL containers (<code>std::vector</code>, <code>std::list</code>, <code>std::map</code>, etc.) to use the fixed-block pool.</li>
+<li><b>Smart Pointer Support</b>: <code>xmake_shared&lt;T&gt;</code> creates <code>std::shared_ptr</code> with both the object and control block allocated from the pool.</li>
+<li><b>C API</b>: <code>xmalloc</code>, <code>xfree</code>, and <code>xrealloc</code> functions for C-style memory management.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md3"></a>
-Responsibilities</h2>
-<h3><a class="anchor" id="autotoc_md4"></a>
-Dispatcher</h3>
-<ol type="1">
-<li><b>Protocol Framing</b>: It constructs the <code><a class="el" href="class_dmq_header.html" title="Header for remote delegate messages.">DmqHeader</a></code> for every message, assigning the correct <b>Remote ID</b> and generating a monotonic <b>Sequence Number</b>.</li>
-<li><b>Stream Validation</b>: It ensures the output stream (<code>xostringstream</code>) contains valid data before transmission.</li>
-<li><b>Transport Handoff</b>: It forwards the framed message (Header + Payload) to the registered <code><a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a></code> instance for physical transmission.</li>
-</ol>
-<h3><a class="anchor" id="autotoc_md5"></a>
-RemoteChannel</h3>
-<p><code>RemoteChannel&lt;Sig&gt;</code> owns a <code>DelegateFunctionRemote</code> internally and handles all wiring automatically. Call <code>Bind()</code> once to configure the channel, then invoke it with <code>operator()</code>.</p>
-<div class="fragment"><div class="line"><span class="comment">// Create one channel per message signature</span></div>
-<div class="line">RemoteChannel&lt;void(AlarmMsg&amp;, AlarmNote&amp;)&gt; alarmChannel(transport, alarmSerializer);</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// Bind a member function and remote ID — channel owns the delegate internally</span></div>
-<div class="line">alarmChannel.Bind(<span class="keyword">this</span>, &amp;MyClass::ForwardAlarm, ALARM_MSG_ID);</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// Optionally register an error handler</span></div>
-<div class="line">alarmChannel.SetErrorHandler(MakeDelegate(<span class="keyword">this</span>, &amp;MyClass::OnError));</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// Register the receive endpoint with NetworkEngine</span></div>
-<div class="line">RegisterEndpoint(ALARM_MSG_ID, alarmChannel.GetEndpoint());</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// Invoke (fire-and-forget)</span></div>
-<div class="line">AlarmMsg msg; AlarmNote note;</div>
-<div class="line">alarmChannel(msg, note);</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">// Or invoke with blocking wait (via NetworkEngine::RemoteInvokeWait)</span></div>
-<div class="line"><span class="keywordtype">bool</span> ok = RemoteInvokeWait(alarmChannel, msg, note);</div>
-</div><!-- fragment --><p>Key accessors:</p><ul>
-<li><code>Bind(obj, func, id)</code> — binds a member function and configures all internal plumbing.</li>
-<li><code>operator()(args...)</code> — invokes (sends) the remote message.</li>
-<li><code>GetEndpoint()</code> — returns <code>IRemoteInvoker*</code> for <code>RegisterEndpoint()</code>.</li>
-<li><code>GetError()</code> / <code>GetRemoteId()</code> — query last error and remote ID.</li>
-<li><code>SetErrorHandler(delegate)</code> — register an error notification callback.</li>
+<h1><a class="anchor" id="autotoc_md2"></a>
+Components</h1>
+<ul>
+<li><b><a class="el" href="class_allocator.html">Allocator</a></b>: The core engine for fixed-block management.</li>
+<li><b><a class="el" href="class_allocator_pool.html">AllocatorPool</a></b>: A template-based pool for specific types.</li>
+<li><b><a class="el" href="classstl__allocator.html">stl_allocator</a></b>: STL-compliant allocator wrapper.</li>
+<li><b>xmake_shared</b>: Helper for pool-allocated shared pointers.</li>
+<li><b>xnew / xdelete</b>: Helper templates for placement new/destroy in the pool.</li>
 </ul>
-<blockquote class="doxtable">
-<p>&zwj;<b>Legacy accessors</b> (<code>GetDispatcher()</code>, <code>GetSerializer()</code>, <code>GetStream()</code>) remain available for code that manually wires a <code>DelegateMemberRemote</code>. </p>
-</blockquote>
+<h1><a class="anchor" id="autotoc_md3"></a>
+Basic Usage</h1>
+<h2><a class="anchor" id="autotoc_md4"></a>
+Using XALLOCATOR in a class</h2>
+<div class="fragment"><div class="line"><span class="keyword">class </span>MyClass {</div>
+<div class="line">    <a class="code hl_define" href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">XALLOCATOR</a></div>
+<div class="line"><span class="keyword">public</span>:</div>
+<div class="line">    <span class="keywordtype">int</span> data;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Now &#39;new MyClass&#39; uses the fixed-block allocator</span></div>
+<div class="line">MyClass* obj = <span class="keyword">new</span> MyClass();</div>
+<div class="line"><span class="keyword">delete</span> obj;</div>
+<div class="ttc" id="a_delegate_opt_8h_html_a5e800c556290ed548055177c33a66f5c"><div class="ttname"><a href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">XALLOCATOR</a></div><div class="ttdeci">#define XALLOCATOR</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:238</div></div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
+Using STL containers</h2>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="xlist_8h.html">xlist.h</a>&quot;</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// xlist is a typedef for std::list using stl_allocator</span></div>
+<div class="line"><a class="code hl_class" href="classxlist.html">xlist&lt;int&gt;</a> myList;</div>
+<div class="line">myList.push_back(10);</div>
+<div class="ttc" id="aclassxlist_html"><div class="ttname"><a href="classxlist.html">xlist</a></div><div class="ttdef"><b>Definition</b> DelegateOpt.h:242</div></div>
+<div class="ttc" id="axlist_8h_html"><div class="ttname"><a href="xlist_8h.html">xlist.h</a></div></div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md6"></a>
+Using xmake_shared</h2>
+<div class="fragment"><div class="line"><span class="keyword">auto</span> sp = <a class="code hl_function" href="_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c">xmake_shared&lt;MyClass&gt;</a>(args...);</div>
+<div class="ttc" id="a_delegate_opt_8h_html_a897146520ab3fe3629d618cf8efb925c"><div class="ttname"><a href="_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c">xmake_shared</a></div><div class="ttdeci">std::shared_ptr&lt; T &gt; xmake_shared(Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:255</div></div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md7"></a>
+Memory Alignment</h1>
+<p>The <code>xallocator</code> implementation ensures that all allocated blocks are correctly aligned for the target architecture:</p>
+<ul>
+<li><b>Power-of-Two Rounding</b>: All requested block sizes are rounded up to the next power of two (8, 16, 32, 64, etc.). This inherently satisfies the natural alignment requirements of all standard C++ types (<code>int</code>, <code>double</code>, <code>long long</code>, etc.) and modern SIMD/AVX vector instructions.</li>
+<li><b>Header Alignment</b>: A <code>BLOCK_HEADER_SIZE</code> (16 bytes on 64-bit, 8 bytes on 32-bit) is added to each block to store metadata. Both the raw block and the user's data pointer remain aligned on 8 or 16-byte boundaries.</li>
+<li><b>Efficiency vs. Safety</b>: This strategy prioritizes "automatic" alignment and safety over maximum memory density. While it may result in some internal fragmentation, it ensures that memory is always safe for any data type without manual alignment configuration.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md8"></a>
+Integration with DelegateMQ</h1>
+<p>To enable the allocator suite within DelegateMQ, define <code>DMQ_ALLOCATOR</code> in your build configuration. This will cause DelegateMQ's internal containers and remote delegate marshalling to use the fixed-block pools instead of the standard heap. </p>
 </div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->

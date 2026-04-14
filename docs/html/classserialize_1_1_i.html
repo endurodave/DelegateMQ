@@ -107,6 +107,15 @@ $(function(){initNavTree('classserialize_1_1_i.html',''); initResizable(true); }
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="msg__serialize_8h_source.html">msg_serialize.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for serialize::I:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classserialize_1_1_i.png" usemap="#serialize::I_map" alt=""/>
+  <map id="serialize::I_map" name="serialize::I_map">
+<area href="structdmq_1_1_spy_packet.html" title="Standardized packet containing bus traffic metadata." alt="dmq::SpyPacket" shape="rect" coords="0,56,100,80"/>
+  </map>
+</div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -144,7 +153,7 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Inheriting class implements the read function. Read each class member to the ostream. Read in the same order as <a class="el" href="#a9654365cf62920370ccdc039e2240d0b">write()</a>. Each level within the hierarchy must implement. Ensure base <a class="el" href="#aae7f1fcec7b24d6c54de57491cab03b9">read()</a> implementation is called if necessary. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Inheriting class implements the read function. Read each class member from the istream. Read in the same order as <a class="el" href="#a9654365cf62920370ccdc039e2240d0b">write()</a>. Each level within the hierarchy must implement. Ensure base <a class="el" href="#aae7f1fcec7b24d6c54de57491cab03b9">read()</a> implementation is called if necessary. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ms</td><td>- the message serialize instance </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">is</td><td>- the input stream </td></tr>
@@ -152,6 +161,8 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The input stream </dd></dl>
+
+<p>Implemented in <a class="el" href="structdmq_1_1_spy_packet.html#ad5fa89d44ae40cd919bf64948fb15114">dmq::SpyPacket</a>.</p>
 
 </div>
 </div>
@@ -184,11 +195,13 @@ Public Member Functions</h2></td></tr>
 <p>Inheriting class implements the write function. Write each class member to the ostream. Write in the same order as <a class="el" href="#aae7f1fcec7b24d6c54de57491cab03b9">read()</a>. Each level within the hierarchy must implement. Ensure base <a class="el" href="#a9654365cf62920370ccdc039e2240d0b">write()</a> implementation is called if necessary. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">ms</td><td>- the message serialize instance </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">is</td><td>- the input stream </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>- the output stream </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The input stream </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The output stream </dd></dl>
+
+<p>Implemented in <a class="el" href="structdmq_1_1_spy_packet.html#a68eb7a096bf0e67475e94bbed8d70ec8">dmq::SpyPacket</a>.</p>
 
 </div>
 </div>

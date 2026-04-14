@@ -172,24 +172,24 @@ $(function(){initNavTree('_delegate_opt_8h_source.html',''); initResizable(true)
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">    #include &lt;condition_variable&gt;</span></div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">#elif defined(DMQ_THREAD_FREERTOS)</span></div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="preprocessor">    #include &lt;mutex&gt;</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">    #include &quot;<a class="code" href="_free_r_t_o_s_clock_8h.html">extras/util/FreeRTOSClock.h</a>&quot;</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">    #include &quot;<a class="code" href="_free_r_t_o_s_mutex_8h.html">extras/util/FreeRTOSMutex.h</a>&quot;</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">    #include &quot;<a class="code" href="_free_r_t_o_s_condition_variable_8h.html">extras/util/FreeRTOSConditionVariable.h</a>&quot;</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">    #include &quot;<a class="code" href="_free_r_t_o_s_clock_8h.html">port/os/freertos/FreeRTOSClock.h</a>&quot;</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">    #include &quot;<a class="code" href="_free_r_t_o_s_mutex_8h.html">port/os/freertos/FreeRTOSMutex.h</a>&quot;</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">    #include &quot;<a class="code" href="_free_r_t_o_s_condition_variable_8h.html">port/os/freertos/FreeRTOSConditionVariable.h</a>&quot;</span></div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#elif defined(DMQ_THREAD_THREADX)</span></div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">    #include &lt;mutex&gt;</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">    #include &quot;<a class="code" href="_thread_x_clock_8h.html">extras/util/ThreadXClock.h</a>&quot;</span></div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">    #include &quot;<a class="code" href="_thread_x_mutex_8h.html">extras/util/ThreadXMutex.h</a>&quot;</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="preprocessor">    #include &quot;<a class="code" href="_thread_x_condition_variable_8h.html">extras/util/ThreadXConditionVariable.h</a>&quot;</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">    #include &quot;<a class="code" href="_thread_x_clock_8h.html">port/os/threadx/ThreadXClock.h</a>&quot;</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">    #include &quot;<a class="code" href="_thread_x_mutex_8h.html">port/os/threadx/ThreadXMutex.h</a>&quot;</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="preprocessor">    #include &quot;<a class="code" href="_thread_x_condition_variable_8h.html">port/os/threadx/ThreadXConditionVariable.h</a>&quot;</span></div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">#elif defined(DMQ_THREAD_ZEPHYR)</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">    #include &quot;<a class="code" href="_zephyr_clock_8h.html">extras/util/ZephyrClock.h</a>&quot;</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">    #include &quot;<a class="code" href="_zephyr_mutex_8h.html">extras/util/ZephyrMutex.h</a>&quot;</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">    #include &quot;<a class="code" href="_zephyr_clock_8h.html">port/os/zephyr/ZephyrClock.h</a>&quot;</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">    #include &quot;<a class="code" href="_zephyr_mutex_8h.html">port/os/zephyr/ZephyrMutex.h</a>&quot;</span></div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="preprocessor">#elif defined(DMQ_THREAD_CMSIS_RTOS2)</span></div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">    #include &quot;<a class="code" href="_cmsis_rtos2_clock_8h.html">extras/util/CmsisRtos2Clock.h</a>&quot;</span></div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">    #include &quot;<a class="code" href="_cmsis_rtos2_mutex_8h.html">extras/util/CmsisRtos2Mutex.h</a>&quot;</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">    #include &quot;<a class="code" href="_cmsis_rtos2_clock_8h.html">port/os/cmsis-rtos2/CmsisRtos2Clock.h</a>&quot;</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="preprocessor">    #include &quot;<a class="code" href="_cmsis_rtos2_mutex_8h.html">port/os/cmsis-rtos2/CmsisRtos2Mutex.h</a>&quot;</span></div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="preprocessor">#elif defined(DMQ_THREAD_NONE)</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="preprocessor">    #include &quot;<a class="code" href="_bare_metal_clock_8h.html">extras/util/BareMetalClock.h</a>&quot;</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="preprocessor">    #include &quot;<a class="code" href="_bare_metal_clock_8h.html">port/os/bare-metal/BareMetalClock.h</a>&quot;</span></div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="preprocessor">    #include &quot;<a class="code" href="_bare_metal_clock_8h.html">extras/util/BareMetalClock.h</a>&quot;</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="preprocessor">    #include &quot;<a class="code" href="_bare_metal_clock_8h.html">port/os/bare-metal/BareMetalClock.h</a>&quot;</span></div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedmq.html">dmq</a></div>
@@ -328,80 +328,81 @@ $(function(){initNavTree('_delegate_opt_8h_source.html',''); initResizable(true)
 <div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="preprocessor">    #include &quot;<a class="code" href="xsstream_8h.html">extras/allocator/xsstream.h</a>&quot;</span></div>
 <div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span><span class="preprocessor">    #include &quot;<a class="code" href="stl__allocator_8h.html">extras/allocator/stl_allocator.h</a>&quot;</span></div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="preprocessor">    #include &quot;<a class="code" href="xnew_8h.html">extras/allocator/xnew.h</a>&quot;</span></div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span><span class="preprocessor">    #include &lt;string&gt;</span></div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span><span class="preprocessor">    #include &lt;list&gt;</span></div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="preprocessor">    #include &lt;sstream&gt;</span></div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="preprocessor">    #include &lt;memory&gt;</span></div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span><span class="preprocessor">    #include &lt;utility&gt;</span></div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="comment">// Not using xallocator; define as nothing</span></div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span><span class="preprocessor">    #undef XALLOCATOR</span></div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">  237</a></span><span class="preprocessor">    #define XALLOCATOR</span></div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span> </div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="comment">// Use default std::allocator for dynamic storage allocation</span></div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Alloc = std::allocator&lt;T&gt;&gt;</div>
-<div class="foldopen" id="foldopen00241" data-start="{" data-end="};">
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno"><a class="line" href="classxlist.html">  241</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classxlist.html">xlist</a> : <span class="keyword">public</span> std::list&lt;T, Alloc&gt; {</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        <span class="keyword">using </span>std::list&lt;T, Alloc&gt;::list; <span class="comment">// Inherit constructors</span></div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        <span class="keyword">using </span>std::list&lt;T, Alloc&gt;::operator=;</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    };</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="preprocessor">    #include &quot;<a class="code" href="xmake__shared_8h.html">extras/allocator/xmake_shared.h</a>&quot;</span></div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span><span class="preprocessor">    #include &lt;string&gt;</span></div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="preprocessor">    #include &lt;list&gt;</span></div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="preprocessor">    #include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span><span class="preprocessor">    #include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span><span class="preprocessor">    #include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="comment">// Not using xallocator; define as nothing</span></div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span><span class="preprocessor">    #undef XALLOCATOR</span></div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">  238</a></span><span class="preprocessor">    #define XALLOCATOR</span></div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="comment">// Use default std::allocator for dynamic storage allocation</span></div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Alloc = std::allocator&lt;T&gt;&gt;</div>
+<div class="foldopen" id="foldopen00242" data-start="{" data-end="};">
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno"><a class="line" href="classxlist.html">  242</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classxlist.html">xlist</a> : <span class="keyword">public</span> std::list&lt;T, Alloc&gt; {</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        <span class="keyword">using </span>std::list&lt;T, Alloc&gt;::list; <span class="comment">// Inherit constructors</span></div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        <span class="keyword">using </span>std::list&lt;T, Alloc&gt;::operator=;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    };</div>
 </div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">  247</a></span>    <span class="keyword">typedef</span> std::basic_ostringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>;</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">  248</a></span>    <span class="keyword">typedef</span> std::basic_stringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>;</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">  250</a></span>    <span class="keyword">typedef</span> std::string <a class="code hl_typedef" href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a>;</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="comment">// Fallback xmake_shared — uses std::make_shared when fixed-block allocator is disabled</span></div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00254" data-start="{" data-end="}">
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c">  254</a></span>    <span class="keyword">inline</span> std::shared_ptr&lt;T&gt; <a class="code hl_function" href="_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c">xmake_shared</a>(Args&amp;&amp;... args)</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    {</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <span class="keywordflow">return</span> std::make_shared&lt;T&gt;(std::forward&lt;Args&gt;(args)...);</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    }</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">  248</a></span>    <span class="keyword">typedef</span> std::basic_ostringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a>;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">  249</a></span>    <span class="keyword">typedef</span> std::basic_stringstream&lt;char, std::char_traits&lt;char&gt;&gt; <a class="code hl_typedef" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a>;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">  251</a></span>    <span class="keyword">typedef</span> std::string <a class="code hl_typedef" href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a>;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="comment">// Fallback xmake_shared — uses std::make_shared when fixed-block allocator is disabled</span></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00255" data-start="{" data-end="}">
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c">  255</a></span>    <span class="keyword">inline</span> std::shared_ptr&lt;T&gt; <a class="code hl_function" href="_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c">xmake_shared</a>(Args&amp;&amp;... args)</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    {</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="keywordflow">return</span> std::make_shared&lt;T&gt;(std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    }</div>
 </div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="comment">// Fallback xnew/xdelete — use standard new/delete when fixed-block allocator is disabled</span></div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00261" data-start="{" data-end="}">
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ac54e2b2f79ec5717e58fd6c3d2779656">  261</a></span>    <span class="keyword">inline</span> T* <a class="code hl_function" href="_delegate_opt_8h.html#ac54e2b2f79ec5717e58fd6c3d2779656">xnew</a>(Args&amp;&amp;... args) {</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keywordflow">return</span> <span class="keyword">new</span>(std::nothrow) T(std::forward&lt;Args&gt;(args)...);</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    }</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <span class="comment">// Fallback xnew/xdelete — use standard new/delete when fixed-block allocator is disabled</span></div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00262" data-start="{" data-end="}">
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ac54e2b2f79ec5717e58fd6c3d2779656">  262</a></span>    <span class="keyword">inline</span> T* <a class="code hl_function" href="_delegate_opt_8h.html#ac54e2b2f79ec5717e58fd6c3d2779656">xnew</a>(Args&amp;&amp;... args) {</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="keywordflow">return</span> <span class="keyword">new</span>(std::nothrow) T(std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    }</div>
 </div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00266" data-start="{" data-end="}">
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a884ae556ebbfac2b3e5ee912730b5466">  266</a></span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="_delegate_opt_8h.html#a884ae556ebbfac2b3e5ee912730b5466">xdelete</a>(T* p) {</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        <span class="keyword">delete</span> p;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    }</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00267" data-start="{" data-end="}">
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a884ae556ebbfac2b3e5ee912730b5466">  267</a></span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="_delegate_opt_8h.html#a884ae556ebbfac2b3e5ee912730b5466">xdelete</a>(T* p) {</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        <span class="keyword">delete</span> p;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    }</div>
 </div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><span class="comment">// @TODO: Select the desired logging (see Port.cmake).</span></div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span><span class="preprocessor">#ifdef DMQ_LOG</span></div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span><span class="preprocessor">    #include &lt;spdlog/spdlog.h&gt;</span></div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span><span class="preprocessor">    #define LOG_INFO(...)    spdlog::info(__VA_ARGS__)</span></div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span><span class="preprocessor">    #define LOG_DEBUG(...)   spdlog::debug(__VA_ARGS__)</span></div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span><span class="preprocessor">    #define LOG_ERROR(...)   spdlog::error(__VA_ARGS__)</span></div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="comment">// No-op macros when logging disabled</span></div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a378e28bfcb78d17285210d6bbb70a083">  279</a></span><span class="preprocessor">    #define LOG_INFO(...)    do {} while(0)</span></div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a754b3d074e0af4ad3c7b918dd77ecb2d">  280</a></span><span class="preprocessor">    #define LOG_DEBUG(...)   do {} while(0)</span></div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63">  281</a></span><span class="preprocessor">    #define LOG_ERROR(...)   do {} while(0)</span></div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span><span class="preprocessor">#endif </span><span class="comment">// _DELEGATE_OPT_H</span></div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span><span class="comment">// @TODO: Select the desired logging (see Port.cmake).</span></div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span><span class="preprocessor">#ifdef DMQ_LOG</span></div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span><span class="preprocessor">    #include &lt;spdlog/spdlog.h&gt;</span></div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span><span class="preprocessor">    #define LOG_INFO(...)    spdlog::info(__VA_ARGS__)</span></div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span><span class="preprocessor">    #define LOG_DEBUG(...)   spdlog::debug(__VA_ARGS__)</span></div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="preprocessor">    #define LOG_ERROR(...)   spdlog::error(__VA_ARGS__)</span></div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="comment">// No-op macros when logging disabled</span></div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a378e28bfcb78d17285210d6bbb70a083">  280</a></span><span class="preprocessor">    #define LOG_INFO(...)    do {} while(0)</span></div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#a754b3d074e0af4ad3c7b918dd77ecb2d">  281</a></span><span class="preprocessor">    #define LOG_DEBUG(...)   do {} while(0)</span></div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno"><a class="line" href="_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63">  282</a></span><span class="preprocessor">    #define LOG_ERROR(...)   do {} while(0)</span></div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span> </div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span><span class="preprocessor">#endif </span><span class="comment">// _DELEGATE_OPT_H</span></div>
 <div class="ttc" id="a_bare_metal_clock_8h_html"><div class="ttname"><a href="_bare_metal_clock_8h.html">BareMetalClock.h</a></div></div>
 <div class="ttc" id="a_cmsis_rtos2_clock_8h_html"><div class="ttname"><a href="_cmsis_rtos2_clock_8h.html">CmsisRtos2Clock.h</a></div></div>
 <div class="ttc" id="a_cmsis_rtos2_mutex_8h_html"><div class="ttname"><a href="_cmsis_rtos2_mutex_8h.html">CmsisRtos2Mutex.h</a></div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:247</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a884ae556ebbfac2b3e5ee912730b5466"><div class="ttname"><a href="_delegate_opt_8h.html#a884ae556ebbfac2b3e5ee912730b5466">xdelete</a></div><div class="ttdeci">void xdelete(T *p)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:266</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a897146520ab3fe3629d618cf8efb925c"><div class="ttname"><a href="_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c">xmake_shared</a></div><div class="ttdeci">std::shared_ptr&lt; T &gt; xmake_shared(Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:254</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a8e4b2760271c0d353bc1e58de15aeb44"><div class="ttname"><a href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a></div><div class="ttdeci">std::string xstring</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:250</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_ac54e2b2f79ec5717e58fd6c3d2779656"><div class="ttname"><a href="_delegate_opt_8h.html#ac54e2b2f79ec5717e58fd6c3d2779656">xnew</a></div><div class="ttdeci">T * xnew(Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:261</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:248</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a54ea4f69408adaa1bb31d8d0de42c2bc"><div class="ttname"><a href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:248</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a884ae556ebbfac2b3e5ee912730b5466"><div class="ttname"><a href="_delegate_opt_8h.html#a884ae556ebbfac2b3e5ee912730b5466">xdelete</a></div><div class="ttdeci">void xdelete(T *p)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:267</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a897146520ab3fe3629d618cf8efb925c"><div class="ttname"><a href="_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c">xmake_shared</a></div><div class="ttdeci">std::shared_ptr&lt; T &gt; xmake_shared(Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:255</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a8e4b2760271c0d353bc1e58de15aeb44"><div class="ttname"><a href="_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a></div><div class="ttdeci">std::string xstring</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:251</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_ac54e2b2f79ec5717e58fd6c3d2779656"><div class="ttname"><a href="_delegate_opt_8h.html#ac54e2b2f79ec5717e58fd6c3d2779656">xnew</a></div><div class="ttdeci">T * xnew(Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:262</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_ada87f2b80dc83f6d2f182655488948ae"><div class="ttname"><a href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:249</div></div>
 <div class="ttc" id="a_fault_8h_html"><div class="ttname"><a href="_fault_8h.html">Fault.h</a></div></div>
 <div class="ttc" id="a_free_r_t_o_s_clock_8h_html"><div class="ttname"><a href="_free_r_t_o_s_clock_8h.html">FreeRTOSClock.h</a></div></div>
 <div class="ttc" id="a_free_r_t_o_s_condition_variable_8h_html"><div class="ttname"><a href="_free_r_t_o_s_condition_variable_8h.html">FreeRTOSConditionVariable.h</a></div></div>
@@ -424,7 +425,7 @@ $(function(){initNavTree('_delegate_opt_8h_source.html',''); initResizable(true)
 <div class="ttc" id="aclassdmq_1_1_thread_x_condition_variable_html"><div class="ttname"><a href="classdmq_1_1_thread_x_condition_variable.html">dmq::ThreadXConditionVariable</a></div><div class="ttdoc">Production-grade wrapper around ThreadX Semaphore to mimic std::condition_variable.</div><div class="ttdef"><b>Definition</b> ThreadXConditionVariable.h:18</div></div>
 <div class="ttc" id="aclassdmq_1_1_thread_x_mutex_html"><div class="ttname"><a href="classdmq_1_1_thread_x_mutex.html">dmq::ThreadXMutex</a></div><div class="ttdef"><b>Definition</b> ThreadXMutex.h:12</div></div>
 <div class="ttc" id="aclassdmq_1_1_zephyr_mutex_html"><div class="ttname"><a href="classdmq_1_1_zephyr_mutex.html">dmq::ZephyrMutex</a></div><div class="ttdef"><b>Definition</b> ZephyrMutex.h:12</div></div>
-<div class="ttc" id="aclassxlist_html"><div class="ttname"><a href="classxlist.html">xlist</a></div><div class="ttdef"><b>Definition</b> DelegateOpt.h:241</div></div>
+<div class="ttc" id="aclassxlist_html"><div class="ttname"><a href="classxlist.html">xlist</a></div><div class="ttdef"><b>Definition</b> DelegateOpt.h:242</div></div>
 <div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
 <div class="ttc" id="anamespacedmq_html_a6d0244bb590c4fcfacf4250bd04a04a2"><div class="ttname"><a href="namespacedmq.html#a6d0244bb590c4fcfacf4250bd04a04a2">dmq::ZephyrRecursiveMutex</a></div><div class="ttdeci">ZephyrMutex ZephyrRecursiveMutex</div><div class="ttdef"><b>Definition</b> ZephyrMutex.h:40</div></div>
 <div class="ttc" id="anamespacedmq_html_a8ff86233aa2d05f03cada0b63ebf8aef"><div class="ttname"><a href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a></div><div class="ttdeci">typename Clock::time_point TimePoint</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:140</div></div>
@@ -442,6 +443,7 @@ $(function(){initNavTree('_delegate_opt_8h_source.html',''); initResizable(true)
 <div class="ttc" id="astructdmq_1_1_thread_x_clock_html"><div class="ttname"><a href="structdmq_1_1_thread_x_clock.html">dmq::ThreadXClock</a></div><div class="ttdef"><b>Definition</b> ThreadXClock.h:9</div></div>
 <div class="ttc" id="astructdmq_1_1_zephyr_clock_html"><div class="ttname"><a href="structdmq_1_1_zephyr_clock.html">dmq::ZephyrClock</a></div><div class="ttdef"><b>Definition</b> ZephyrClock.h:8</div></div>
 <div class="ttc" id="axlist_8h_html"><div class="ttname"><a href="xlist_8h.html">xlist.h</a></div></div>
+<div class="ttc" id="axmake__shared_8h_html"><div class="ttname"><a href="xmake__shared_8h.html">xmake_shared.h</a></div></div>
 <div class="ttc" id="axnew_8h_html"><div class="ttname"><a href="xnew_8h.html">xnew.h</a></div><div class="ttdoc">Fixed-block pool equivalents of operator new / delete.</div></div>
 <div class="ttc" id="axsstream_8h_html"><div class="ttname"><a href="xsstream_8h.html">xsstream.h</a></div></div>
 <div class="ttc" id="axstring_8h_html"><div class="ttname"><a href="xstring_8h.html">xstring.h</a></div></div>

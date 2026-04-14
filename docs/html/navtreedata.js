@@ -25,7 +25,7 @@
 var NAVTREE =
 [
   [ "DelegateMQ", "index.html", [
-    [ "Dispatcher Layer", "index.html", "index" ],
+    [ "Allocator Suite", "index.html", "index" ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -73,7 +73,7 @@ var NAVTREEINDEX =
 "classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433",
 "classdmq_1_1_thread_x_mutex.html#a2bacb126f9d838d49f3e4e03d990ff58",
 "dir_297d0e02809d5fb19417d449e1232921.html",
-"structdmq_1_1_cmsis_rtos2_clock.html#aa9cce6bf2988caaf608cc1eb99837947"
+"structdmq_1_1_cmsis_rtos2_clock.html#a6ed5a9889f4a505296743d0259c0ed4b"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
