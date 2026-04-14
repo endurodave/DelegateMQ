@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cstdint>
+#include "port/serialize/serialize/msg_serialize.h"
 
 namespace dmq {
 
@@ -12,17 +13,25 @@ namespace dmq {
 /// 
 /// The timestamp_us field uses dmq::Clock::now(), which typically provides 
 /// monotonic time since boot.
-struct SpyPacket {
+struct SpyPacket : public serialize::I {
+    SpyPacket() = default;
+    SpyPacket(const std::string& t, const std::string& v, uint64_t ts) 
+        : topic(t), value(v), timestamp_us(ts) {}
+
     std::string topic;      ///< The name of the data topic.
     std::string value;      ///< Stringified representation of the data (or "?" if no stringifier registered).
     uint64_t timestamp_us;  ///< Microseconds (usually since boot) when the message was published.
 
-    /// @brief Bitsery serialization method.
-    template <typename S>
-    void serialize(S& s) {
-        s.text1b(topic, 1024);
-        s.text1b(value, 8192);
-        s.value8b(timestamp_us);
+    std::ostream& write(serialize& ms, std::ostream& os) override {
+        ms.write(os, topic);
+        ms.write(os, value);
+        return ms.write(os, timestamp_us);
+    }
+
+    std::istream& read(serialize& ms, std::istream& is) override {
+        ms.read(is, topic);
+        ms.read(is, value);
+        return ms.read(is, timestamp_us);
     }
 };
 

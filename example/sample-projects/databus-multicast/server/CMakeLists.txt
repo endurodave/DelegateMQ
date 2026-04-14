@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(DELEGATE_APP "delegate_databus_multicast_server")
 project(DelegateDataBusMulticastServer VERSION 1.0 LANGUAGES CXX)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${DELEGATE_APP})
 
 # @TODO: Set build options (see Port.cmake). 
 # Rerun cmake configuration and clean/rebuild if you change these settings

@@ -4,11 +4,9 @@
 
 #include "SpyBridge.h"
 #include "../src/UdpSocket.h"
-#include <bitsery/bitsery.h>
-#include <bitsery/adapter/buffer.h>
-#include <bitsery/traits/vector.h>
-#include <bitsery/traits/string.h>
+#include "port/serialize/serialize/msg_serialize.h"
 #include <iostream>
+#include <sstream>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include "port/transport/win32-udp/MulticastTransport.h"
@@ -107,7 +105,7 @@ void SpyBridge::Worker() {
         socket.Connect(instance.address, instance.port);
     }
 
-    std::vector<uint8_t> buffer;
+    serialize ms;
 
     while (instance.running || !instance.queue.empty()) {
         dmq::SpyPacket packet;
@@ -126,11 +124,12 @@ void SpyBridge::Worker() {
             instance.queue.pop();
         }
 
-        buffer.clear();
-        auto writtenSize = bitsery::quickSerialization<bitsery::OutputBufferAdapter<std::vector<uint8_t>>>(buffer, packet);
+        std::ostringstream oss(std::ios::binary);
+        ms.write(oss, packet);
 
-        if (writtenSize > 0) {
-            int sent = sendto(socket.GetSocket(), (const char*)buffer.data(), (int)buffer.size(), 0, (sockaddr*)&destAddr, sizeof(destAddr));
+        if (oss.good()) {
+            std::string buffer = oss.str();
+            int sent = sendto(socket.GetSocket(), buffer.data(), (int)buffer.size(), 0, (sockaddr*)&destAddr, sizeof(destAddr));
 #ifdef _WIN32
             if (sent == SOCKET_ERROR) {
                 // std::cerr << "[SpyBridge] sendto error: " << WSAGetLastError() << std::endl;

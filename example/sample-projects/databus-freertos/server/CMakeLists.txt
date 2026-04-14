@@ -14,6 +14,7 @@ endif()
 
 set(DELEGATE_APP "delegate_databus_freertos_server")
 project(DelegateDataBusFreeRTOSServer VERSION 1.0 LANGUAGES CXX C)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${DELEGATE_APP})
 
 # Override thread to FreeRTOS; transport and serializer auto-detect from WIN32.
 # On real hardware, swap DMQ_TRANSPORT to DMQ_TRANSPORT_ARM_LWIP_UDP.

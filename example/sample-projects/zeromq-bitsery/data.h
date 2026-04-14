@@ -18,24 +18,24 @@ class DataPoint {
 public:
     int x = 0;
     int y = 0;
-};
 
-template <typename S>
-void serialize(S& s, DataPoint& d) {
-    s.value4b(d.x);
-    s.value4b(d.y);
-}
+    template <typename S>
+    void serialize(S& s) {
+        s.value4b(x);
+        s.value4b(y);
+    }
+};
 
 class Data {
 public:
     std::vector<DataPoint> dataPoints;
     std::string msg;
-};
 
-template <typename S>
-void serialize(S& s, Data& d) {
-    s.container(d.dataPoints, 100);  // Vector, max size hint
-    s.text1b(d.msg, 255);            // String serialization
-}
+    template <typename S>
+    void serialize(S& s) {
+        s.container(dataPoints, 100);  // Vector, max size hint
+        s.text1b(msg, 255);            // String serialization
+    }
+};
 
 #endif

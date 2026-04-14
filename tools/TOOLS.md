@@ -33,7 +33,7 @@ Diagnostic tools and Terminal User Interface (TUI) dashboards for the DelegateMQ
 1.  **The Spy Console** (`spy/main.cpp`): The standalone `dmq-spy` application that displays the data.
 2.  **The Spy Bridge** (`bridge/SpyBridge.cpp/.h`): A small component you add to your own application to export its internal bus traffic over UDP.
 
-Data is serialized using [Bitsery](https://github.com/fraillt/bitsery) and transmitted over UDP.
+Data is serialized using the built-in `msg_serialize` library and transmitted over UDP.
 
 ### Integrating SpyBridge into Your App
 
@@ -162,7 +162,6 @@ Topic and message count tracking is automatic — NodeBridge subscribes to `Data
 *   CMake 3.15+.
 *   Dependencies (managed via the workspace `01_fetch_repos.py` script):
     *   [FTXUI](https://github.com/ArthurSonzogni/FTXUI)
-    *   [Bitsery](https://github.com/fraillt/bitsery)
     *   [spdlog](https://github.com/gabime/spdlog)
 
 ### Build Instructions

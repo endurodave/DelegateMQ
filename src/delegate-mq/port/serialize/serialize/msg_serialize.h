@@ -11,6 +11,13 @@
 /// It is designed for network communication and data persistence where binary compatibility
 /// and protocol evolution are required.
 ///
+/// **CRITICAL REQUIREMENTS:**
+/// * **Binary Mode:** Streams MUST be opened in binary mode (std::ios::binary). Text-mode 
+///   streams will corrupt binary data (e.g., newline conversion on Windows).
+/// * **Seekable Streams:** User-defined objects (inheriting from `serialize::I`) require 
+///   seekable streams (e.g., `std::stringstream`, `std::fstream`) to backfill object sizes.
+///   Non-seekable streams (like `std::cout` or sockets) will trigger a `NON_SEEKABLE_STREAM` error.
+///
 /// **Key Features:**
 /// * **Single Header:** A self-contained, header-only library with no external dependencies
 ///   beyond the standard C++ library (STL).
@@ -147,7 +154,7 @@ namespace serialize_traits
 ///
 /// @note write() requires a seekable stream (i.e. std::ostringstream). The size field
 ///       for user-defined objects is backfilled via seekp() after the object is written.
-///       Using a non-seekable stream produces a corrupt size field without any error.
+///       Using a non-seekable stream produces a corrupt size field and triggers an error.
 class serialize
 {
 public:
@@ -193,6 +200,7 @@ public:
         NONE,
         TYPE_MISMATCH,
         STREAM_ERROR,
+        NON_SEEKABLE_STREAM,    // Stream does not support tellp/seekp (required for objects)
         STRING_TOO_LONG,
         CONTAINER_TOO_MANY,
         INVALID_INPUT,
@@ -253,7 +261,7 @@ public:
                 std::streampos startPos = is.tellg();
                 if (startPos == std::streampos(-1))
                 {
-                    raiseError(ParsingError::INVALID_INPUT, __LINE__, __FILE__);
+                    raiseError(ParsingError::NON_SEEKABLE_STREAM, __LINE__, __FILE__);
                     is.setstate(std::ios::failbit);
                     return is;
                 }
@@ -299,11 +307,12 @@ public:
         {
             uint16_t size = 0;
             read(is, size, false);
+            s.clear();
             if (check_stream(is) && check_slength(is, size))
             {
                 s.resize(size);
                 parseStatus(typeid(s), s.size());
-                read_internal(is, const_cast<char*>(s.c_str()), size, true);
+                read_internal(is, &s[0], size, true);
             }
         }
         return is;
@@ -322,6 +331,7 @@ public:
         {
             uint16_t size = 0;
             read(is, size, false);
+            s.clear();
             if (check_stream(is) && check_slength(is, size))
             {
                 s.resize(size);
@@ -417,7 +427,7 @@ public:
             std::streampos elementSizePos = os.tellp();
             if (elementSizePos == std::streampos(-1))
             {
-                raiseError(ParsingError::INVALID_INPUT, __LINE__, __FILE__);
+                raiseError(ParsingError::NON_SEEKABLE_STREAM, __LINE__, __FILE__);
                 os.setstate(std::ios::failbit);
                 return os;
             }
@@ -446,7 +456,7 @@ public:
     /// @return The output stream
     std::ostream& write(std::ostream& os, const std::string& s)
     {
-        assert(s.size() <= std::numeric_limits<uint16_t>::max());
+        assert(s.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(s.size());
         write_type(os, Type::STRING);
         write(os, size, false);
@@ -472,7 +482,7 @@ public:
     /// @return The output stream
     std::ostream& write(std::ostream& os, const std::wstring& s)
     {
-        assert(s.size() <= std::numeric_limits<uint16_t>::max());
+        assert(s.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(s.size());
         write_type(os, Type::WSTRING);
         write(os, size, false);
@@ -535,7 +545,7 @@ public:
     /// @return The output stream
     std::ostream& write(std::ostream& os, std::vector<bool>& container)
     {
-        assert(container.size() <= std::numeric_limits<uint16_t>::max());
+        assert(container.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::VECTOR);
         write(os, size, false);
@@ -561,7 +571,7 @@ public:
         static_assert(!(std::is_pointer<T>::value &&
             (std::is_arithmetic<typename std::remove_pointer<T>::type>::value ||
                 std::is_class<typename std::remove_pointer<T>::type>::value)),
-            "T cannot be a pointer to a built-in or custom data type");
+            "T cannot be a pointer to a built-in or custom data type. Use values instead.");
 
         if (check_stop_parse(is))
             return is;
@@ -618,7 +628,7 @@ public:
         static_assert(!(std::is_pointer<T>::value &&
             (std::is_arithmetic<typename std::remove_pointer<T>::type>::value ||
                 std::is_class<typename std::remove_pointer<T>::type>::value)),
-            "T cannot be a pointer to a built-in or custom data type");
+            "T cannot be a pointer to a built-in or custom data type. Use values instead.");
 
         // When T is a class it must inherit from serialize::I.
         // The combined form (!is_class || is_base_of) is valid for all T — non-class
@@ -700,7 +710,7 @@ public:
     {
         static_assert(!serialize_traits::is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
 
-        assert(container.size() <= std::numeric_limits<uint16_t>::max());
+        assert(container.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::VECTOR);
         write(os, size, false);
@@ -756,7 +766,7 @@ public:
     {
         static_assert(std::is_base_of<serialize::I, T>::value, "Type T must be derived from serialize::I");
 
-        assert(container.size() <= std::numeric_limits<uint16_t>::max());
+        assert(container.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::VECTOR);
         write(os, size, false);
@@ -813,8 +823,8 @@ public:
                     if (notNULL)
                     {
                         T* object = new T;
-                        auto* i = static_cast<I*>(object);
-                        read(is, i);
+                        auto* iface = static_cast<I*>(object);
+                        read(is, iface);
                         container.push_back(object);
                     }
                     else
@@ -837,7 +847,7 @@ public:
     {
         static_assert(!serialize_traits::is_shared_ptr<V>::value, "Type V must not be a shared_ptr type");
 
-        assert(container.size() <= std::numeric_limits<uint16_t>::max());
+        assert(container.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::MAP);
         write(os, size, false);
@@ -896,7 +906,7 @@ public:
     {
         static_assert(std::is_base_of<serialize::I, V>::value, "Type V must be derived from serialize::I");
 
-        assert(container.size() <= std::numeric_limits<uint16_t>::max());
+        assert(container.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::MAP);
         write(os, size, false);
@@ -955,8 +965,8 @@ public:
                     if (notNULL)
                     {
                         V* object = new V;
-                        auto* i = static_cast<I*>(object);
-                        read(is, i);
+                        auto* iface = static_cast<I*>(object);
+                        read(is, iface);
                         container[key] = static_cast<V*>(object);
                     }
                     else
@@ -979,7 +989,7 @@ public:
     {
         static_assert(!serialize_traits::is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
 
-        assert(container.size() <= std::numeric_limits<uint16_t>::max());
+        assert(container.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::SET);
         write(os, size, false);
@@ -1036,7 +1046,7 @@ public:
     {
         static_assert(std::is_base_of<serialize::I, T>::value, "Type T must be derived from serialize::I");
 
-        assert(container.size() <= std::numeric_limits<uint16_t>::max());
+        assert(container.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::SET);
         write(os, size, false);
@@ -1090,8 +1100,8 @@ public:
                     if (notNULL)
                     {
                         T* object = new T;
-                        auto* i = static_cast<I*>(object);
-                        read(is, i);
+                        auto* iface = static_cast<I*>(object);
+                        read(is, iface);
                         container.insert(object);
                     }
                     else
@@ -1114,7 +1124,7 @@ public:
     {
         static_assert(!serialize_traits::is_shared_ptr<T>::value, "Type T must not be a shared_ptr type");
 
-        assert(container.size() <= std::numeric_limits<uint16_t>::max());
+        assert(container.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::LIST);
         write(os, size, false);
@@ -1171,7 +1181,7 @@ public:
     {
         static_assert(std::is_base_of<serialize::I, T>::value, "Type T must be derived from serialize::I");
 
-        assert(container.size() <= std::numeric_limits<uint16_t>::max());
+        assert(container.size() <= (std::numeric_limits<uint16_t>::max)());
         uint16_t size = static_cast<uint16_t>(container.size());
         write_type(os, Type::LIST);
         write(os, size, false);
@@ -1226,8 +1236,8 @@ public:
                     if (notNULL)
                     {
                         T* object = new T;
-                        auto* i = static_cast<I*>(object);
-                        read(is, i);
+                        auto* iface = static_cast<I*>(object);
+                        read(is, iface);
                         container.push_back(object);
                     }
                     else
@@ -1295,10 +1305,16 @@ private:
 
         if (!LE() && !no_swap && size > 1)
         {
+            if (size > 8)
+            {
+                raiseError(ParsingError::INVALID_INPUT, __LINE__, __FILE__);
+                os.setstate(std::ios::failbit);
+                return os;
+            }
+
             // Reverse bytes into a small stack buffer then write in a single call.
             // Primitives are at most 8 bytes (double / int64_t).
             char tmp[8];
-            assert(size <= sizeof(tmp));
             for (uint32_t i = 0; i < size; ++i)
                 tmp[i] = p[size - 1 - i];
             os.write(tmp, size);

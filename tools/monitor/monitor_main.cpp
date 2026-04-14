@@ -14,10 +14,7 @@
 
 #include "UdpSocket.h"
 #include "NodeInfoPacket.h"
-#include <bitsery/bitsery.h>
-#include <bitsery/adapter/buffer.h>
-#include <bitsery/traits/vector.h>
-#include <bitsery/traits/string.h>
+#include "port/serialize/serialize/msg_serialize.h"
 #include "extras/util/NetworkConnect.h"
 
 #include <iostream>
@@ -117,6 +114,7 @@ static void ReceiverThread(uint16_t port, std::string multicastGroup, std::strin
     socket.SetReceiveTimeout(100);
 
     std::vector<uint8_t> buffer(16384);
+    serialize ms_decoder;
 
     while (g_running) {
         int received = socket.Receive(buffer.data(), (int)buffer.size());
@@ -124,18 +122,18 @@ static void ReceiverThread(uint16_t port, std::string multicastGroup, std::strin
             g_packetCount++;
 
             dmq::NodeInfoPacket packet;
-            auto state = bitsery::quickDeserialization<
-                bitsery::InputBufferAdapter<std::vector<uint8_t>>>(
-                    {buffer.begin(), static_cast<size_t>(received)}, packet);
+            std::string data(reinterpret_cast<char*>(buffer.data()), received);
+            std::istringstream iss(data, std::ios::binary);
+            
+            ms_decoder.read(iss, packet);
 
-            if (state.first == bitsery::ReaderError::NoError && !packet.nodeId.empty()) {
-                std::string key = MakeNodeKey(packet);  // copy before move
+            if (iss.good() && !packet.nodeId.empty()) {
+                std::string key = MakeNodeKey(packet);
                 std::lock_guard<std::mutex> lock(g_nodesMutex);
                 g_nodes[key] = { std::move(packet), std::chrono::steady_clock::now() };
             } else {
                 g_errorCount++;
-                g_statusMessage = "Deserialize error " + std::to_string((int)state.first) +
-                                  " (bytes=" + std::to_string(received) + ")";
+                g_statusMessage = "Deserialize error (bytes=" + std::to_string(received) + ")";
             }
         }
     }

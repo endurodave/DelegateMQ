@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 # On Windows with Clang (GNU front-end), CMake requires rc.exe (Windows Resource
 # Compiler) which lives in the Windows SDK — not on PATH by default outside a VS
@@ -12,6 +12,7 @@ endif()
 
 set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${DELEGATE_APP})
 
 # DelegateMQ options — stdlib threading, no serialization, no transport
 set(DMQ_ALLOCATOR "OFF")

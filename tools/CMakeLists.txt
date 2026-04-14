@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
 project(DelegateMQ-Tools VERSION 1.0.0 LANGUAGES CXX)
+
+# Set 'dmq-monitor' as the startup project for Visual Studio
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT dmq-monitor)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,12 +11,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(DELEGATE_MQ_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../src/delegate-mq")
 set(WORKSPACE_DIR   "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 set(FTXUI_DIR   "${WORKSPACE_DIR}/ftxui")
-set(BITSERY_DIR "${WORKSPACE_DIR}/bitsery")
 set(SPDLOG_DIR  "${WORKSPACE_DIR}/spdlog")
 
 # --- DelegateMQ configuration for tools ---
 set(DMQ_THREAD    "DMQ_THREAD_STDLIB")
-set(DMQ_SERIALIZE "DMQ_SERIALIZE_BITSERY")
+set(DMQ_SERIALIZE "DMQ_SERIALIZE_SERIALIZE")
 set(DMQ_TRANSPORT "DMQ_TRANSPORT_NONE")
 set(DMQ_UTIL      "ON")
 set(DMQ_DATABUS   "ON")
@@ -37,7 +39,6 @@ endif()
 
 set(COMMON_INCLUDES
     ${DMQ_INCLUDE_DIR}
-    "${BITSERY_DIR}/include"
     "${SPDLOG_DIR}/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )

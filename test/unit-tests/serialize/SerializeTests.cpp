@@ -877,6 +877,65 @@ static void MultiObjectStreamTests()
 }
 
 // ---------------------------------------------------------------------------
+// Safety and Bug Fix Tests (from code review)
+// ---------------------------------------------------------------------------
+
+/// Verify that reading a zero-length string correctly clears the target string.
+static void EmptyStringBugFixTest()
+{
+    serialize ser;
+
+    // std::string
+    {
+        std::string src = "";
+        std::string dst = "previous data";
+        
+        std::ostringstream oss;
+        ser.write(oss, src);
+        std::istringstream iss(oss.str());
+        ser.read(iss, dst);
+        
+        ASSERT_TRUE(dst.empty());
+    }
+
+    // std::wstring
+    {
+        std::wstring src = L"";
+        std::wstring dst = L"previous data";
+        
+        std::ostringstream oss;
+        ser.write(oss, src);
+        std::istringstream iss(oss.str());
+        ser.read(iss, dst);
+        
+        ASSERT_TRUE(dst.empty());
+    }
+}
+
+/// A custom stream buffer that forces tellp/tellg/seekp to return error (-1).
+class NonSeekableBuffer : public std::stringbuf
+{
+protected:
+    pos_type seekoff(off_type, std::ios_base::seekdir, std::ios_base::openmode) override { return pos_type(off_type(-1)); }
+    pos_type seekpos(pos_type, std::ios_base::openmode) override { return pos_type(off_type(-1)); }
+};
+
+/// Verify that serializing an object into a non-seekable stream triggers an error.
+static void NonSeekableStreamTest()
+{
+    serialize ser;
+    SimpleMsg msg;
+    NonSeekableBuffer buf;
+    std::iostream nss(&buf);
+    
+    ser.clearLastError();
+    ser.write(nss, msg);
+    
+    ASSERT_TRUE(ser.getLastError() == serialize::ParsingError::NON_SEEKABLE_STREAM);
+    ASSERT_TRUE(nss.fail());
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -892,4 +951,6 @@ void SerializeTests()
     EndiannessTests();
     ErrorTests();
     MultiObjectStreamTests();
+    EmptyStringBugFixTest();
+    NonSeekableStreamTest();
 }

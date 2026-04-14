@@ -1,8 +1,9 @@
 # Specify the minimum CMake version required
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES CXX)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${DELEGATE_APP})
 
 if (MSVC)
     add_compile_options("/Zc:__cplusplus")

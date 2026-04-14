@@ -22,6 +22,7 @@ set(CMAKE_CXX_FLAGS "${ARM_FLAGS}" CACHE STRING "")
 
 set(DELEGATE_APP "delegate_app")
 project(Delegate VERSION 1.0 LANGUAGES C CXX)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${DELEGATE_APP})
 
 # DelegateMQ options — bare-metal, no threading, no serialization, no transport
 set(DMQ_ALLOCATOR "OFF")

@@ -4,15 +4,13 @@
 
 #include "NodeBridge.h"
 #include "../src/UdpSocket.h"
-#include <bitsery/bitsery.h>
-#include <bitsery/adapter/buffer.h>
-#include <bitsery/traits/vector.h>
-#include <bitsery/traits/string.h>
+#include "port/serialize/serialize/msg_serialize.h"
 #include "extras/util/NetworkConnect.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <vector>
+#include <sstream>
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -138,7 +136,7 @@ void NodeBridge::Worker() {
         socket.Connect(instance.address, instance.port);
     }
 
-    std::vector<uint8_t> buffer;
+    serialize ms;
 
     while (instance.running) {
         auto loopStart = std::chrono::steady_clock::now();
@@ -164,12 +162,12 @@ void NodeBridge::Worker() {
         }
 
         // Serialize and transmit
-        buffer.clear();
-        auto writtenSize = bitsery::quickSerialization<
-            bitsery::OutputBufferAdapter<std::vector<uint8_t>>>(buffer, packet);
+        std::ostringstream oss(std::ios::binary);
+        ms.write(oss, packet);
 
-        if (writtenSize > 0) {
-            sendto(socket.GetSocket(), (const char*)buffer.data(), (int)buffer.size(),
+        if (oss.good()) {
+            std::string buffer = oss.str();
+            sendto(socket.GetSocket(), buffer.data(), (int)buffer.size(),
                    0, (sockaddr*)&destAddr, sizeof(destAddr));
         }
 
