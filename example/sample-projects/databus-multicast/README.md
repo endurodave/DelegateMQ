@@ -40,7 +40,6 @@ This example demonstrates a distributed system using `dmq::DataBus` over **UDP M
 This project includes optional support for the **DelegateMQ Spy Console**. When enabled, the application exports all bus traffic to a multicast group, allowing multiple consoles to monitor the system at once.
 
 ### Prerequisites
-- `Bitsery` must be available in the workspace (fetched via `01_fetch_repos.py`).
 
 ### Enabling Spy
 To enable the spy bridge, configure the project with the `DMQ_DATABUS_TOOLS` option set to `ON`:

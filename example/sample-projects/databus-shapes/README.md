@@ -37,7 +37,6 @@ The **Shapes Demo** is a graphical demonstration of the **DelegateMQ DataBus** c
 This project integrates with both **dmq-spy** (DataBus message monitor) and **dmq-monitor** (network node monitor). Both tools are built from `tools/` with `-DDMQ_TOOLS=ON`. See [tools/TOOLS.md](../../../../tools/TOOLS.md) for details.
 
 ### Prerequisites
-- `Bitsery` must be available in the workspace (fetched via `01_fetch_repos.py`).
 
 ### Enabling the Tool Bridges
 Build the client and server with `DMQ_DATABUS_TOOLS=ON` to enable the bridge components:

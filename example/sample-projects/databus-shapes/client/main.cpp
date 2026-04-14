@@ -2,6 +2,8 @@
 // DataBus Shapes Demo Client (Subscriber).
 //
 // Receives shape positions via Multicast and renders them in a TUI using FTXUI.
+// DeadlineSubscription monitors the Square topic — if no data arrives within
+// 1 second the status line turns red; it recovers automatically when data resumes.
 
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
@@ -32,6 +34,7 @@ using namespace ftxui;
 struct GlobalState {
     std::mutex mutex;
     std::map<std::string, ShapeMsg> shapes;
+    std::atomic<bool> serverOnline{false};
     ScreenInteractive* screen = nullptr;
 } g_state;
 
@@ -51,24 +54,13 @@ static bool SetupTransport(ClientState& s, const std::string& localIP) {
     return true;
 }
 
-// Register participant and per-shape handlers that update g_state and trigger a UI redraw.
-// NOTE: g_state.screen must be assigned before calling this so the PostEvent call is valid.
+// Register incoming multicast topics so they flow through the local DataBus.
+// Subscribers and DeadlineSubscriptions are set up in main() after this call.
 static void SetupDataBus(ClientState& s) {
     s.group = std::make_shared<dmq::Participant>(s.transport);
-
-    auto shapeHandler = [](const std::string& topic, ShapeMsg msg) {
-        {
-            std::lock_guard<std::mutex> lock(g_state.mutex);
-            g_state.shapes[topic] = msg;
-        }
-        if (g_state.screen) {
-            g_state.screen->PostEvent(Event::Custom);
-        }
-    };
-
-    s.group->RegisterHandler<ShapeMsg>(SystemTopic::SquareId,   s.serializer, [shapeHandler](ShapeMsg m) { shapeHandler(SystemTopic::Square,   m); });
-    s.group->RegisterHandler<ShapeMsg>(SystemTopic::CircleId,   s.serializer, [shapeHandler](ShapeMsg m) { shapeHandler(SystemTopic::Circle,   m); });
-    s.group->RegisterHandler<ShapeMsg>(SystemTopic::TriangleId, s.serializer, [shapeHandler](ShapeMsg m) { shapeHandler(SystemTopic::Triangle, m); });
+    dmq::DataBus::AddIncomingTopic<ShapeMsg>(SystemTopic::Square,   SystemTopic::SquareId,   *s.group, s.serializer);
+    dmq::DataBus::AddIncomingTopic<ShapeMsg>(SystemTopic::Circle,   SystemTopic::CircleId,   *s.group, s.serializer);
+    dmq::DataBus::AddIncomingTopic<ShapeMsg>(SystemTopic::Triangle, SystemTopic::TriangleId, *s.group, s.serializer);
 }
 
 int main(int argc, char* argv[]) {
@@ -85,17 +77,51 @@ int main(int argc, char* argv[]) {
     ClientState s;
     if (!SetupTransport(s, localIP)) return -1;
 
-    // Assign screen pointer before SetupDataBus so handlers can post UI events.
     auto screen = ScreenInteractive::Fullscreen();
     g_state.screen = &screen;
 
     SetupDataBus(s);
 
-    // Background thread: process incoming multicast shape data
-    std::atomic<bool> running{ true };
+    // Subscribe to each shape topic: update render state and mark server online.
+    auto onShape = [](const char* topic, const ShapeMsg& msg) {
+        {
+            std::lock_guard<std::mutex> lock(g_state.mutex);
+            g_state.shapes[topic] = msg;
+        }
+        g_state.serverOnline = true;
+        if (g_state.screen)
+            g_state.screen->PostEvent(Event::Custom);
+    };
+
+    auto connSquare   = dmq::DataBus::Subscribe<ShapeMsg>(SystemTopic::Square,
+        [onShape](const ShapeMsg& m) { onShape(SystemTopic::Square,   m); });
+    auto connCircle   = dmq::DataBus::Subscribe<ShapeMsg>(SystemTopic::Circle,
+        [onShape](const ShapeMsg& m) { onShape(SystemTopic::Circle,   m); });
+    auto connTriangle = dmq::DataBus::Subscribe<ShapeMsg>(SystemTopic::Triangle,
+        [onShape](const ShapeMsg& m) { onShape(SystemTopic::Triangle, m); });
+
+    // Deadline monitoring: if Square stops arriving for more than 1 second,
+    // mark the server offline and force a UI redraw. Recovers automatically
+    // when deliveries resume — no extra wiring needed.
+    auto onServerSilent = []() {
+        g_state.serverOnline = false;
+        if (g_state.screen)
+            g_state.screen->PostEvent(Event::Custom);
+    };
+
+    dmq::DeadlineSubscription<ShapeMsg> deadlineSquare{
+        SystemTopic::Square,
+        std::chrono::milliseconds(1000),
+        [](const ShapeMsg&) {},  // data handled by connSquare above
+        onServerSilent
+    };
+
+    // Background thread: receive multicast data and drive the deadline timer.
+    std::atomic<bool> running{true};
     std::thread netThread([&]() {
         while (running) {
             s.group->ProcessIncoming();
+            Timer::ProcessTimers();  // drives DeadlineSubscription timer
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     });
@@ -104,21 +130,29 @@ int main(int argc, char* argv[]) {
     auto renderer = Renderer([&] {
         auto c = Canvas(200, 100);
 
+        bool online = g_state.serverOnline.load();
+
         {
             std::lock_guard<std::mutex> lock(g_state.mutex);
             for (auto const& [topic, shape] : g_state.shapes) {
                 if (topic == SystemTopic::Square) {
                     for (int x = 0; x < 10; ++x)
-                        for (int y = 0; y < 10; ++y) c.DrawBlock(shape.x * 2 + x, shape.y * 2 + y, true, Color::Blue);
+                        for (int y = 0; y < 10; ++y)
+                            c.DrawBlock(shape.x * 2 + x, shape.y * 2 + y, true, Color::Blue);
                 } else if (topic == SystemTopic::Circle) {
                     c.DrawBlockCircle(shape.x * 2, shape.y * 2, 10, Color::Red);
                 }
             }
         }
 
+        auto statusText = online
+            ? text("  \u25cf  Server Online  ") | color(Color::Green) | bold
+            : text("  \u25cf  Server Offline \u2014 no data for >1s  ") | color(Color::Red) | bold;
+
         return vbox({
             text("DelegateMQ DataBus - Multicast Shapes Demo") | bold | color(Color::Green) | center,
             text("Interface: " + localIP + " | Group: 239.1.1.1:8000") | dim | center,
+            hbox({ filler(), statusText, filler() }),
             separator(),
             canvas(std::move(c)) | flex | border,
             hbox({

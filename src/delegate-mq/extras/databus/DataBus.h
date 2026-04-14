@@ -15,6 +15,7 @@
 #include <vector>
 #include <functional>
 #include <typeindex>
+#include <atomic>
 
 namespace dmq {
 
@@ -121,16 +122,34 @@ private:
     template <typename T, typename F>
     dmq::ScopedConnection InternalSubscribe(const std::string& topic, F&& func, dmq::IThread* thread, QoS qos) {
         SignalPtr<T> signal;
-        
+
         // Performance Note: Forced std::function construction for internal type management.
         std::function<void(T)> typedFunc = std::forward<F>(func);
+
+        // Wrap with min separation rate limiter if requested. Each subscriber gets its
+        // own independent last-delivery timestamp, so different subscribers on the same
+        // topic can have different (or no) rate limits without affecting each other.
+        if (qos.minSeparation.has_value()) {
+            auto minSepRep = qos.minSeparation.value().count();
+            auto lastDeliveryRep = std::make_shared<std::atomic<int64_t>>(0);
+            auto inner = std::move(typedFunc);
+            typedFunc = [inner = std::move(inner), minSepRep, lastDeliveryRep](T data) {
+                auto nowRep = static_cast<int64_t>(dmq::Clock::now().time_since_epoch().count());
+                auto lastRep = lastDeliveryRep->load(std::memory_order_relaxed);
+                if (nowRep - lastRep >= minSepRep) {
+                    lastDeliveryRep->store(nowRep, std::memory_order_relaxed);
+                    inner(data);
+                }
+            };
+        }
+
         T* cachedValPtr = nullptr;
         T cachedVal;
         dmq::ScopedConnection conn;
 
         {
             std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
-            
+
             // 1. Enable LVC if requested (persists for topic lifetime until ResetForTesting)
             if (qos.lastValueCache) {
                 m_topicQos[topic].lastValueCache = true;
@@ -154,17 +173,25 @@ private:
             if (qos.lastValueCache) {
                 auto it = m_lastValues.find(topic);
                 if (it != m_lastValues.end()) {
-                    cachedVal = *std::static_pointer_cast<T>(it->second);
-                    cachedValPtr = &cachedVal;
+                    // Check lifespan: skip delivery if the cached value is too old
+                    bool expired = false;
+                    if (qos.lifespan.has_value()) {
+                        auto age = dmq::Clock::now() - it->second.timestamp;
+                        expired = (age > qos.lifespan.value());
+                    }
+                    if (!expired) {
+                        cachedVal = *std::static_pointer_cast<T>(it->second.value);
+                        cachedValPtr = &cachedVal;
+                    }
                 }
             }
         }
 
-        // 5. Dispatch LVC outside the lock to prevent deadlocks. 
+        // 5. Dispatch LVC outside the lock to prevent deadlocks.
         // IMPORTANT: Because this happens after releasing the lock, a high-frequency
         // publisher on another thread could have already sent a new value to the
         // connected signal. The subscriber might receive the fresh value FIRST,
-        // followed by this stale LVC value. Users of LVC should ensure their 
+        // followed by this stale LVC value. Users of LVC should ensure their
         // logic handles potential out-of-order state arrival.
         if (cachedValPtr) {
             if (thread) {
@@ -207,7 +234,7 @@ private:
             // by any subscriber, it remains active for that topic until ResetForTesting().
             auto itQos = m_topicQos.find(topic);
             if (itQos != m_topicQos.end() && itQos->second.lastValueCache) {
-                m_lastValues[topic] = std::make_shared<T>(data);
+                m_lastValues[topic] = LvcEntry{ std::make_shared<T>(data), now };
             }
 
             // 3. Prepare monitor data
@@ -337,12 +364,17 @@ private:
         return signal;
     }
 
+    struct LvcEntry {
+        std::shared_ptr<void> value;
+        dmq::TimePoint timestamp;
+    };
+
     dmq::RecursiveMutex m_mutex;
     std::unordered_map<std::string, std::shared_ptr<void>> m_signals;
     std::unordered_map<std::string, std::type_index> m_typeIndices;
     std::vector<std::shared_ptr<Participant>> m_participants;
     std::unordered_map<std::string, std::shared_ptr<void>> m_serializers;
-    std::unordered_map<std::string, std::shared_ptr<void>> m_lastValues;
+    std::unordered_map<std::string, LvcEntry> m_lastValues;
     std::unordered_map<std::string, QoS> m_topicQos;
     std::unordered_map<std::string, std::shared_ptr<void>> m_stringifiers;
     dmq::Signal<void(const SpyPacket&)> m_monitorSignal;

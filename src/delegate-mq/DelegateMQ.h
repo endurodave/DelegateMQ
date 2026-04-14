@@ -250,6 +250,7 @@
 #if defined(DMQ_DATABUS)
     #include "extras/databus/DataBus.h"
     #include "extras/databus/Participant.h"
+    #include "extras/databus/DeadlineSubscription.h"
 #endif
 
 #endif

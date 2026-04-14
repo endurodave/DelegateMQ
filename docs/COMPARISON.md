@@ -184,6 +184,9 @@ These libraries are good for in-thread event wiring where every subscriber runs 
 | Remote distribution | Yes | Yes | Yes |
 | Location Transparency | Yes | Yes | Yes |
 | QoS - Last Value Cache | Yes | Yes (Retained) | Yes |
+| QoS - Lifespan (stale LVC expiry) | Yes | No | Yes |
+| QoS - Min Separation (rate limiting) | Yes | No | Yes |
+| QoS - Deadline Monitoring | Yes | No | Yes (client-side helper) |
 | QoS - Reliability | Complex Policies | Levels 0, 1, 2 | Reliable (Unicast) or Best-Effort (Multicast) |
 | Primary Use Case | Remote/Network distribution | IoT / Cloud | Inter-thread and/or Remote |
 
@@ -313,7 +316,7 @@ private:
 | Subscriber setup | `Participant → Topic → Subscriber → DataReader` | `RemoteChannel` + `Bind()` |
 | Thread dispatch on receive | Manual (listener on DDS thread → queue → your thread) | Automatic (Poll runs on your thread) |
 | Discovery | Automatic (multicast/unicast, topic matching) | Partial (via Multicast group) |
-| QoS policies | Rich (reliability, durability, history, lifespan, ...) | LVC, Fixed-block, Reliable/Best-Effort |
+| QoS policies | Rich (reliability, durability, history, lifespan, ...) | LVC, Lifespan, Min Separation, Deadline Monitoring, Fixed-block, Reliable/Best-Effort |
 | Transport | RTPS over UDP/TCP, multicast, secure | Pluggable `ITransport` — Unicast & Multicast UDP |
 | IDL / build tool required | Yes | No |
 | Embedded / RTOS support | Limited | Yes |

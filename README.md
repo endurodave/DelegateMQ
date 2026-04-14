@@ -43,7 +43,7 @@ DelegateMQ is completely modular. You can use only the features you need—such 
    `cmake -B build .`
 3. Build and run the project within the `build` directory. 
 
-See [Example Projects](docs/DETAILS.md#example-projects) to build more project examples (remote/IPC, embedded). See [Porting Guide](docs/DETAILS.md#porting-guide) for details on porting to a new platform.
+See [Example Projects](docs/DETAILS.md#example-projects) to build more project examples (remote/IPC, embedded). See [Porting Guide](docs/PORTING.md) for details on porting to a new platform.
 
 # Overview
 
@@ -210,7 +210,7 @@ btn.Press(2);       // safe: no subscribers, nothing happens
 | Lifetime safety | Safe — disconnects even if Signal outlives subscriber | Caller responsible; missed `-=` leaves dangling subscriber |
 | Mixed sync/async slots | Yes | Yes |
 
-See [Publish / Subscribe with Signal](docs/DETAILS.md#publish--subscribe-with-signal) for lambda slots, nested signals, and additional patterns.
+See [Publish / Subscribe with Signal](docs/SIGNALS.md) for lambda slots, mixed sync/async slots, and additional patterns.
 
 ## Remote Delegates
 
@@ -354,7 +354,7 @@ The library's flexible CMake build options allow for the inclusion of only the n
 
 # Documentation
 
- - See [Design Details](docs/DETAILS.md) for a [porting guide](docs/DETAILS.md#porting-guide), design documentation and [more examples](docs/DETAILS.md#sample-projects).
+ - See [Design Details](docs/DETAILS.md) for design documentation and [more examples](docs/DETAILS.md#sample-projects). See [Porting Guide](docs/PORTING.md) for platform porting and interface implementation.
  - See [Technology Comparison](docs/COMPARISON.md) for how DelegateMQ compares to DDS, gRPC, Qt signals, Boost.Signals2, `std::async`, and OS message queues.
  - See [Doxygen Documentation](https://endurodave.github.io/DelegateMQ/html/index.html) for source code documentation.
 

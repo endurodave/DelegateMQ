@@ -1,6 +1,8 @@
 #include "DelegateMQ.h"
 #include <iostream>
 #include <string>
+#include <thread>
+#include <chrono>
 
 #if defined(DMQ_DATABUS)
 
@@ -64,6 +66,166 @@ int DataBusQosTestMain() {
 
         dmq::DataBus::Publish<int>("sensor", 10);
         ASSERT_TRUE(lastLowValue == 10);
+    }
+
+    // 3. Test Lifespan QoS
+    {
+        std::cout << "Testing Lifespan..." << std::endl;
+        dmq::DataBus::ResetForTesting();
+
+        // Arm LVC for the topic
+        {
+            dmq::QoS qos;
+            qos.lastValueCache = true;
+            auto conn = dmq::DataBus::Subscribe<int>("lvc/topic", [](int){}, nullptr, qos);
+        }
+        dmq::DataBus::Publish<int>("lvc/topic", 42);
+
+        // 3a. Within lifespan: LVC should be delivered
+        {
+            int received = 0;
+            dmq::QoS qos;
+            qos.lastValueCache = true;
+            qos.lifespan = std::chrono::milliseconds(500);
+            auto conn = dmq::DataBus::Subscribe<int>("lvc/topic", [&](int val) {
+                received = val;
+            }, nullptr, qos);
+            ASSERT_TRUE(received == 42);
+        }
+
+        // 3b. Without lifespan: LVC is always delivered regardless of age
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(60));
+            int received = 0;
+            dmq::QoS qos;
+            qos.lastValueCache = true;
+            // no lifespan set
+            auto conn = dmq::DataBus::Subscribe<int>("lvc/topic", [&](int val) {
+                received = val;
+            }, nullptr, qos);
+            ASSERT_TRUE(received == 42);
+        }
+
+        // 3c. Past lifespan: LVC should NOT be delivered
+        {
+            int received = 0;
+            dmq::QoS qos;
+            qos.lastValueCache = true;
+            qos.lifespan = std::chrono::milliseconds(10); // already expired (we slept 60ms above)
+            auto conn = dmq::DataBus::Subscribe<int>("lvc/topic", [&](int val) {
+                received = val;
+            }, nullptr, qos);
+            ASSERT_TRUE(received == 0);
+        }
+
+        // 3d. Fresh publish resets the timestamp; new subscriber within lifespan receives it
+        {
+            dmq::DataBus::Publish<int>("lvc/topic", 99);
+            int received = 0;
+            dmq::QoS qos;
+            qos.lastValueCache = true;
+            qos.lifespan = std::chrono::milliseconds(500);
+            auto conn = dmq::DataBus::Subscribe<int>("lvc/topic", [&](int val) {
+                received = val;
+            }, nullptr, qos);
+            ASSERT_TRUE(received == 99);
+        }
+    }
+
+    // 4. Test Min Separation QoS
+    {
+        std::cout << "Testing Min Separation..." << std::endl;
+        dmq::DataBus::ResetForTesting();
+
+        // 4a. Rapid publishes are throttled: only the first gets through
+        {
+            int deliveryCount = 0;
+            dmq::QoS qos;
+            qos.minSeparation = std::chrono::milliseconds(100);
+            auto conn = dmq::DataBus::Subscribe<int>("fast/topic", [&](int) {
+                deliveryCount++;
+            }, nullptr, qos);
+
+            for (int i = 0; i < 5; i++) {
+                dmq::DataBus::Publish<int>("fast/topic", i);
+            }
+            ASSERT_TRUE(deliveryCount == 1);
+        }
+
+        // 4b. After minSeparation elapses, the next publish goes through
+        {
+            int deliveryCount = 0;
+            dmq::QoS qos;
+            qos.minSeparation = std::chrono::milliseconds(50);
+            auto conn = dmq::DataBus::Subscribe<int>("rate/topic", [&](int) {
+                deliveryCount++;
+            }, nullptr, qos);
+
+            dmq::DataBus::Publish<int>("rate/topic", 1); // passes
+            ASSERT_TRUE(deliveryCount == 1);
+
+            dmq::DataBus::Publish<int>("rate/topic", 2); // dropped, too soon
+            ASSERT_TRUE(deliveryCount == 1);
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            dmq::DataBus::Publish<int>("rate/topic", 3); // passes, enough time elapsed
+            ASSERT_TRUE(deliveryCount == 2);
+
+            dmq::DataBus::Publish<int>("rate/topic", 4); // dropped, too soon
+            ASSERT_TRUE(deliveryCount == 2);
+        }
+
+        // 4c. Each subscriber has an independent rate limit
+        {
+            dmq::DataBus::ResetForTesting();
+            int throttledCount = 0;
+            int unthrottledCount = 0;
+
+            dmq::QoS slowQos;
+            slowQos.minSeparation = std::chrono::milliseconds(200);
+
+            auto conn1 = dmq::DataBus::Subscribe<int>("shared/topic", [&](int) {
+                throttledCount++;
+            }, nullptr, slowQos);
+
+            auto conn2 = dmq::DataBus::Subscribe<int>("shared/topic", [&](int) {
+                unthrottledCount++;
+            }); // no rate limit
+
+            dmq::DataBus::Publish<int>("shared/topic", 1);
+            dmq::DataBus::Publish<int>("shared/topic", 2);
+            dmq::DataBus::Publish<int>("shared/topic", 3);
+
+            ASSERT_TRUE(throttledCount == 1);   // only first got through
+            ASSERT_TRUE(unthrottledCount == 3); // all got through
+        }
+
+        // 4d. Min separation with LVC: the LVC delivery counts as the first delivery,
+        //     so an immediate publish afterwards is throttled
+        {
+            dmq::DataBus::ResetForTesting();
+
+            {
+                dmq::QoS qos;
+                qos.lastValueCache = true;
+                auto conn = dmq::DataBus::Subscribe<int>("lvc/fast", [](int){}, nullptr, qos);
+            }
+            dmq::DataBus::Publish<int>("lvc/fast", 99);
+
+            int deliveryCount = 0;
+            dmq::QoS qos;
+            qos.lastValueCache = true;
+            qos.minSeparation = std::chrono::milliseconds(100);
+            auto conn = dmq::DataBus::Subscribe<int>("lvc/fast", [&](int) {
+                deliveryCount++;
+            }, nullptr, qos);
+
+            ASSERT_TRUE(deliveryCount == 1); // LVC delivery went through
+
+            dmq::DataBus::Publish<int>("lvc/fast", 100); // dropped: minSeparation not elapsed
+            ASSERT_TRUE(deliveryCount == 1);
+        }
     }
 
     std::cout << "DataBusQosTest PASSED!" << std::endl;

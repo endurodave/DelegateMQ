@@ -268,6 +268,8 @@ public:
 
                 read(is, size, false);
 
+                parseStatus(typeid(*t_), size);
+
                 // Save the stop parsing position to prevent parsing overrun
                 push_stop_parse_pos(startPos + std::streampos(size));
 
@@ -591,7 +593,7 @@ public:
                 }
 
                 if (readPrependedType)
-                    parseStatus(typeid(t_));
+                    parseStatus(typeid(t_), sizeof(t_));
                 read_internal(is, reinterpret_cast<char*>(&t_), sizeof(t_));
                 return is;
             }
@@ -606,7 +608,6 @@ public:
         // Else T is a user defined data type (e.g. MyData)
         else
         {
-            parseStatus(typeid(t_));
             // C-style cast required: without if constexpr (C++14) this branch is
             // compiled for all T including primitives, so static_cast is rejected
             // for non-class types. The branch is only reached when is_class<T> is

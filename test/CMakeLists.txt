@@ -67,7 +67,9 @@ target_precompile_headers(${DELEGATE_APP} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/../src/delegate-mq/DelegateMQ.h"
 )
 
-target_link_libraries(${DELEGATE_APP} PRIVATE 
+target_link_libraries(${DELEGATE_APP} PRIVATE
     unit_tests_lib
     sample_code_lib
 )
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${DELEGATE_APP})
