@@ -160,7 +160,7 @@ int DataBusDeadlineTestMain()
         Thread workerThread("DeadlineWorker");
         workerThread.CreateThread();
 
-        auto mainId = std::this_thread::get_id();
+        auto mainId = Thread::GetCurrentThreadId();
         std::atomic<bool> dataOnWorker{false};
         std::atomic<bool> missedOnWorker{false};
 
@@ -168,10 +168,10 @@ int DataBusDeadlineTestMain()
             "deadline/topic",
             std::chrono::milliseconds(50),
             [&](const int&) {
-                dataOnWorker = (std::this_thread::get_id() == workerThread.GetThreadId());
+                dataOnWorker = (Thread::GetCurrentThreadId() == workerThread.GetThreadId());
             },
             [&]() {
-                missedOnWorker = (std::this_thread::get_id() == workerThread.GetThreadId());
+                missedOnWorker = (Thread::GetCurrentThreadId() == workerThread.GetThreadId());
             },
             &workerThread
         };

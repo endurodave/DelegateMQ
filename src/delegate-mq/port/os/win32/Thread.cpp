@@ -12,9 +12,10 @@
 //----------------------------------------------------------------------------
 // Thread
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName, size_t maxQueueSize)
+Thread::Thread(const std::string& threadName, size_t maxQueueSize, FullPolicy fullPolicy)
     : THREAD_NAME(threadName)
     , MAX_QUEUE_SIZE(maxQueueSize)
+    , FULL_POLICY(fullPolicy)
     , m_exit(false)
 {
     InitializeCriticalSection(&m_cs);
@@ -95,20 +96,26 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
     if (m_exit.load() || m_hThread == NULL) return;
 
-    // If using XALLOCATOR explicit operator new required. See xallocator.h.
-    auto threadMsg = xmake_shared<ThreadMsg>(MSG_DISPATCH_DELEGATE, msg);
-
     EnterCriticalSection(&m_cs);
 
-    // [BACK PRESSURE LOGIC]
-    if (MAX_QUEUE_SIZE > 0)
+    // [BACK PRESSURE / DROP LOGIC]
+    if (MAX_QUEUE_SIZE > 0 && m_queue.size() >= MAX_QUEUE_SIZE)
     {
-        // Wait while queue is full, BUT stop waiting if m_exit is true.
+        if (FULL_POLICY == FullPolicy::DROP)
+        {
+            LeaveCriticalSection(&m_cs);
+            return; // silently discard
+        }
+
+        // BLOCK: wait while queue is full, BUT stop waiting if m_exit is true.
         while (m_queue.size() >= MAX_QUEUE_SIZE && !m_exit.load())
         {
             SleepConditionVariableCS(&m_cvNotFull, &m_cs, INFINITE);
         }
     }
+
+    // If using XALLOCATOR explicit operator new required. See xallocator.h.
+    auto threadMsg = xmake_shared<ThreadMsg>(MSG_DISPATCH_DELEGATE, msg);
 
     // If we woke up because of exit (or exit happened while waiting), abort
     if (!m_exit.load())
@@ -119,9 +126,12 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 
     LeaveCriticalSection(&m_cs);
 
-    LOG_INFO("Thread::DispatchDelegate\n   thread={}\n   target={}",
-        THREAD_NAME,
-        typeid(*threadMsg->GetData()->GetInvoker()).name());
+    if (threadMsg)
+    {
+        LOG_INFO("Thread::DispatchDelegate\n   thread={}\n   target={}",
+            THREAD_NAME,
+            typeid(*threadMsg->GetData()->GetInvoker()).name());
+    }
 }
 
 //----------------------------------------------------------------------------

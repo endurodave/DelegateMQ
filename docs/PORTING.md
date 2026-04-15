@@ -6,6 +6,7 @@ Numerous predefined platforms are already supported — Windows, Linux, FreeRTOS
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Porting Checklist](#porting-checklist)
 - [Embedded Systems](#embedded-systems)
 - [Interfaces](#interfaces)
@@ -14,6 +15,10 @@ Numerous predefined platforms are already supported — Windows, Linux, FreeRTOS
     - [Receive `DelegateMsg`](#receive-delegatemsg)
   - [`ISerializer`](#iserializer)
   - [`IDispatcher`](#idispatcher)
+- [Thread Implementations](#thread-implementations)
+  - [Thread Priority and Latency](#thread-priority-and-latency)
+  - [Message Queueing](#message-queueing)
+  - [Watchdog Integration](#watchdog-integration)
 
 ---
 
@@ -91,19 +96,39 @@ if (thread) {
 
 `DispatchDelegate()` inserts a message into the thread's message queue. The `Thread` class uses an underlying `std::thread` on stdlib/Win32 platforms and a FreeRTOS task on embedded. Create a unique `DispatchDelegate()` implementation based on your platform's OS API.
 
+The implementation should handle the queue-full case according to `FullPolicy` before allocating the message. On platforms with a lockable queue (stdlib, Win32), check first then allocate to avoid wasting heap on drops. On RTOS platforms (FreeRTOS, Zephyr, etc.) the OS queue API is atomic, so allocate first and delete on failure:
+
 ```cpp
+// stdlib / Win32 style — check under lock before allocating
 void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
-    if (m_thread == nullptr)
-        throw std::invalid_argument("Thread pointer is null");
-
-    // Create a new ThreadMsg
-    std::shared_ptr<ThreadMsg> threadMsg(new ThreadMsg(MSG_DISPATCH_DELEGATE, msg));
-
-    // Add dispatch delegate msg to queue and notify worker thread
     std::unique_lock<std::mutex> lk(m_mutex);
+
+    if (MAX_QUEUE_SIZE > 0 && m_queue.size() >= MAX_QUEUE_SIZE)
+    {
+        if (FULL_POLICY == FullPolicy::DROP)
+            return;  // discard — no allocation wasted
+
+        // BLOCK: wait until consumer drains a slot
+        m_cvNotFull.wait(lk, [this]() {
+            return m_queue.size() < MAX_QUEUE_SIZE || m_exit.load();
+        });
+    }
+
+    auto threadMsg = std::make_shared<ThreadMsg>(MSG_DISPATCH_DELEGATE, msg);
     m_queue.push(threadMsg);
     m_cv.notify_one();
+}
+
+// RTOS style (e.g. FreeRTOS) — allocate first, let OS API enforce the limit
+void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
+{
+    ThreadMsg* threadMsg = new (std::nothrow) ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
+    if (!threadMsg) return;
+
+    TickType_t timeout = (FULL_POLICY == FullPolicy::DROP) ? 0 : portMAX_DELAY;
+    if (xQueueSend(m_queue, &threadMsg, timeout) != pdPASS)
+        delete threadMsg;  // queue full, dropped per policy
 }
 ```
 
@@ -245,3 +270,50 @@ public:
     virtual int Dispatch(std::ostream& os) = 0;
 };
 ```
+
+---
+
+## Thread Implementations
+
+While DelegateMQ provides the `IThread` interface, the library includes concrete `Thread` class implementations for many OSs (stdlib, Win32, FreeRTOS, etc.). These implementations provide a standard event loop and several advanced features for robustness and flow control.
+
+### Thread Priority and Latency
+
+When a delegate is dispatched to a worker thread, it is posted to that thread's message queue. The thread's OS priority determines how quickly the callback executes relative to other tasks.
+
+- **High Priority**: Use for time-critical delegates (e.g., safety-critical commands, emergency stops).
+- **Medium Priority**: Suitable for general application logic.
+- **Low Priority**: Best for non-critical tasks like background telemetry or logging.
+
+The end-to-end dispatch latency is primarily dominated by the destination thread's priority and the OS scheduler wake-up time.
+
+### Message Queueing
+
+The `Thread` class uses an underlying `std::priority_queue` to ensure high-priority delegate messages jump to the front of the line.
+
+#### FullPolicy (Back Pressure / Drop)
+
+When a thread's message queue has a fixed size (`maxQueueSize > 0`), `FullPolicy` controls what `DispatchDelegate()` does when the queue is full. The default is `FullPolicy::BLOCK`.
+
+```cpp
+// Never drop — block the publisher until the consumer has room
+Thread cmdThread("CmdThread", /*maxQueueSize=*/50, FullPolicy::BLOCK);
+
+// Drop stale samples rather than stall the publisher
+Thread sensorThread("SensorThread", /*maxQueueSize=*/10, FullPolicy::DROP);
+```
+
+- **`FullPolicy::BLOCK`** *(default)*: `DispatchDelegate()` blocks the caller until the consumer drains a slot. This provides automatic back pressure, slowing the producer to match the consumer's rate. Use for critical topics (commands, state transitions) where no message may be lost.
+- **`FullPolicy::DROP`**: `DispatchDelegate()` silently discards the message and returns immediately without stalling the caller. Ideal for high-rate best-effort data (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher.
+
+Setting `maxQueueSize = 0` disables the limit entirely — `FullPolicy` has no effect and all messages are queued regardless of consumer speed.
+
+`FullPolicy` is a thread-level setting. All delegates dispatched to the same `Thread` instance share the policy. If a single thread serves both drop-tolerant and loss-intolerant subscribers, split them across separate threads with different policies.
+
+### Watchdog Integration
+
+To detect deadlocks or unresponsive threads, the `Thread` class can integrate with a watchdog timer. 
+
+1. **Check-in**: The thread periodically updates a "last alive" timestamp in its `Process()` loop.
+2. **Monitoring**: A separate watchdog timer (driven by `Timer::ProcessTimers()`) checks these timestamps.
+3. **Fault**: If `now - lastAlive > timeout`, the thread is considered stalled and a fault handler is triggered.

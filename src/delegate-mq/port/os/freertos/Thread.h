@@ -14,14 +14,15 @@
 ///
 /// @note This implementation is a basic port. For reference, the stdlib and win32
 /// implementations provide additional features:
-/// 1. Priority Support: Uses a priority queue to respect dmq::Priority.
-/// 2. Back Pressure: DispatchDelegate() blocks if the queue is full.
-/// 3. Watchdog: Includes a ThreadCheck() heartbeat mechanism.
-/// 4. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
+/// 1. Watchdog: Includes a ThreadCheck() heartbeat mechanism.
+/// 2. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
 ///
 /// **Key Features:**
 /// * **Task Integration:** Wraps a FreeRTOS `xTaskCreate` call to establish a
 ///   dedicated worker loop.
+/// * **FullPolicy Support:** Configurable back-pressure (BLOCK or DROP) when the 
+///   message queue is full.
+/// * **Priority Support:** Normal and High priorities (uses `xQueueSendToFront`).
 /// * **Queue-Based Dispatch:** Uses a FreeRTOS `QueueHandle_t` to receive and
 ///   process incoming delegate messages in a thread-safe manner.
 /// * **Thread Identification:** Implements `GetThreadId()` using `TaskHandle_t`
@@ -40,6 +41,16 @@
 
 class ThreadMsg;
 
+/// @brief Policy applied when the FreeRTOS task queue is full.
+/// @details Controls the behavior of DispatchDelegate() when the queue has no space.
+///   - DROP:  xQueueSend() with timeout 0 — returns immediately, message discarded.
+///   - BLOCK: xQueueSend() with portMAX_DELAY — caller blocks until space is available.
+///
+/// BLOCK is the default to match all other ports. For embedded targets where the
+/// caller may be an ISR or high-priority task, consider using DROP to avoid
+/// priority inversion or blocking at an unsafe context.
+enum class FullPolicy { BLOCK, DROP };
+
 class Thread : public dmq::IThread
 {
 public:
@@ -49,7 +60,8 @@ public:
     /// Constructor
     /// @param threadName Name for the FreeRTOS task
     /// @param maxQueueSize Max number of messages in queue (0 = Default 20)
-    Thread(const std::string& threadName, size_t maxQueueSize = 0);
+    /// @param fullPolicy Action when queue is full: BLOCK the caller (default) or DROP the message.
+    Thread(const std::string& threadName, size_t maxQueueSize = 0, FullPolicy fullPolicy = FullPolicy::BLOCK);
 
     /// Destructor
     ~Thread();
@@ -103,6 +115,7 @@ private:
     void Run();
 
     const std::string THREAD_NAME;
+    const FullPolicy FULL_POLICY;
     size_t m_queueSize;
     int m_priority;
 

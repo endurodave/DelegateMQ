@@ -15,8 +15,9 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread Constructor
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName, size_t maxQueueSize)
+Thread::Thread(const std::string& threadName, size_t maxQueueSize, FullPolicy fullPolicy)
     : THREAD_NAME(threadName)
+    , FULL_POLICY(fullPolicy)
     , m_exit(false)
 {
     m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
@@ -189,11 +190,20 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
         return;
     }
 
-    if (xQueueSend(m_queue, &threadMsg, pdMS_TO_TICKS(10)) != pdPASS) {
-        printf("[Thread] Error: Queue Full (%s)\n", THREAD_NAME.c_str());
-        delete threadMsg;
-    } else {
-        //printf("[Thread] Dispatch Success (%s)\n", THREAD_NAME.c_str());
+    // DROP: non-blocking — discard if queue is full, caller is never stalled.
+    // BLOCK: wait indefinitely — guarantees delivery, caller blocks until space is available.
+    TickType_t timeout = (FULL_POLICY == FullPolicy::DROP) ? 0 : portMAX_DELAY;
+
+    // Option #2: Implement High priority using xQueueSendToFront. 
+    // All other priorities use default FIFO (SendToBack).
+    BaseType_t status;
+    if (msg->GetPriority() == Priority::HIGH)
+        status = xQueueSendToFront(m_queue, &threadMsg, timeout);
+    else
+        status = xQueueSendToBack(m_queue, &threadMsg, timeout);
+
+    if (status != pdPASS) {
+        delete threadMsg;  // queue full, message dropped per DROP policy
     }
 }
 

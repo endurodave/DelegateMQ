@@ -60,12 +60,12 @@ int DataBusLocalTestMain() {
 
         std::atomic<bool> asyncReceived{false};
         std::atomic<int> asyncValue{0};
-        auto mainThreadId = std::this_thread::get_id();
+        auto mainThreadId = Thread::GetCurrentThreadId();
 
         auto conn = dmq::DataBus::Subscribe<int>("async/data", [&](int val) {
-            std::cout << "Async callback on thread: " << std::this_thread::get_id() << std::endl;
-            ASSERT_TRUE(std::this_thread::get_id() != mainThreadId);
-            ASSERT_TRUE(std::this_thread::get_id() == workerThread.GetThreadId());
+            std::cout << "Async callback on thread: " << Thread::GetCurrentThreadId() << std::endl;
+            ASSERT_TRUE(Thread::GetCurrentThreadId() != mainThreadId);
+            ASSERT_TRUE(Thread::GetCurrentThreadId() == workerThread.GetThreadId());
             asyncValue = val;
             asyncReceived = true;
         }, &workerThread);

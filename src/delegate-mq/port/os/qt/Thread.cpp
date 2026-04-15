@@ -11,8 +11,10 @@ static int registerId = qRegisterMetaType<std::shared_ptr<dmq::DelegateMsg>>();
 //----------------------------------------------------------------------------
 // Thread Constructor
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName)
+Thread::Thread(const std::string& threadName, size_t maxQueueSize, FullPolicy fullPolicy)
     : m_threadName(threadName)
+    , m_maxQueueSize((maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize)
+    , m_fullPolicy(fullPolicy)
 {
 }
 
@@ -68,6 +70,12 @@ void Thread::ExitThread()
     if (m_thread)
     {
         m_thread->quit();
+
+        // Wake any blocked threads
+        m_mutex.lock();
+        m_cvNotFull.wakeAll();
+        m_mutex.unlock();
+
         m_thread->wait();
         
         // Cleanup manually if not using deleteLater
@@ -109,8 +117,30 @@ bool Thread::IsCurrentThread()
 void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 {
     // Safety check: Don't emit if thread is tearing down
-    if (m_thread && m_thread->isRunning()) {
-        m_queueSize++;
-        emit SignalDispatch(msg);
+    if (m_thread && m_thread->isRunning()) 
+    {
+        m_mutex.lock();
+        if (m_queueSize >= m_maxQueueSize)
+        {
+            if (m_fullPolicy == FullPolicy::DROP)
+            {
+                m_mutex.unlock();
+                return; // silently discard
+            }
+
+            // BLOCK: wait while queue is full
+            while (m_queueSize >= m_maxQueueSize && m_thread->isRunning())
+            {
+                m_cvNotFull.wait(&m_mutex);
+            }
+        }
+
+        // Re-check running status after wait
+        if (m_thread->isRunning())
+        {
+            m_queueSize++;
+            emit SignalDispatch(msg);
+        }
+        m_mutex.unlock();
     }
 }

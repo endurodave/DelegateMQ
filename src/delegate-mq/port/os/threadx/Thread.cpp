@@ -18,13 +18,12 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread Constructor
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName, size_t maxQueueSize)
+Thread::Thread(const std::string& threadName, size_t maxQueueSize, FullPolicy fullPolicy)
     : THREAD_NAME(threadName)
+    , m_queueSize((maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize)
+    , FULL_POLICY(fullPolicy)
     , m_exit(false)
 {
-    // If 0 is passed, use the default size
-    m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
-
     // Zero out control blocks for safety
     memset(&m_thread, 0, sizeof(m_thread));
     memset(&m_queue, 0, sizeof(m_queue));
@@ -236,13 +235,20 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
         return;
     }
 
-    // Send pointer to queue. Wait 10 ticks if full.
-    UINT ret = tx_queue_send(&m_queue, &threadMsg, 10);
+    // Send pointer to queue
+    // Set wait option based on FullPolicy: TX_WAIT_FOREVER for BLOCK, TX_NO_WAIT for DROP.
+    UINT wait_option = (FULL_POLICY == FullPolicy::BLOCK) ? TX_WAIT_FOREVER : TX_NO_WAIT;
+
+    // Option #2: Implement High priority using tx_queue_front_send.
+    UINT ret;
+    if (msg->GetPriority() == Priority::HIGH)
+        ret = tx_queue_front_send(&m_queue, &threadMsg, wait_option);
+    else
+        ret = tx_queue_send(&m_queue, &threadMsg, wait_option);
 
     if (ret != TX_SUCCESS)
     {
         delete threadMsg; // Failed to enqueue, prevent leak
-        // Optional: printf("Error: Thread '%s' queue full!\n", THREAD_NAME.c_str());
     }
 }
 

@@ -16,6 +16,7 @@
   - [Polling Thread Priority — Remote Distribution](#polling-thread-priority--remote-distribution)
   - [Polling Frequency and Transport Timeout](#polling-frequency-and-transport-timeout)
   - [Dispatch Latency Breakdown — Remote Distribution](#dispatch-latency-breakdown--remote-distribution)
+  - [Thread Queue Full Policy](#thread-queue-full-policy)
 - [DataBus Spy](#databus-spy)
 - [Quality of Service (QoS)](#quality-of-service-qos)
   - [Last Value Cache (LVC)](#last-value-cache-lvc)
@@ -174,6 +175,46 @@ remote latency = network transit
 ```
 
 The dominant terms are network transit and receive blocking. Once `Publish()` is called on the polling thread the remaining cost is the same as the local inter-thread case above.
+
+### Thread Queue Full Policy
+
+When a subscriber is registered with a worker thread, `DataBus::Publish()` posts a message to that thread's internal queue. If a slow subscriber falls behind a fast publisher the queue grows. `Thread` provides a configurable `FullPolicy` to control what happens when the queue reaches its limit (`maxQueueSize`):
+
+| Policy | Behavior when full | Publisher stalled? |
+|:---|:---|:---|
+| `FullPolicy::BLOCK` (default) | `DispatchDelegate()` blocks the caller until the consumer drains a slot | Yes |
+| `FullPolicy::DROP` | `DispatchDelegate()` discards the message and returns immediately | No |
+
+**Choosing a policy**
+
+Use `DROP` for topics where losing an occasional sample is acceptable and stalling the publisher is not. High-rate sensor telemetry, display updates, and best-effort multicast data are natural fits — a missed reading is superseded by the next one.
+
+Use `BLOCK` for topics where every message must be delivered. Commands, configuration updates, and state transitions fall into this category. BLOCK ensures the publisher waits until the consumer has capacity, providing back pressure that naturally limits the rate to what the consumer can sustain.
+
+```cpp
+// Sensor thread: drop stale readings rather than stall the publisher
+Thread sensorThread("SensorThread", /*maxQueueSize=*/10, FullPolicy::DROP);
+sensorThread.CreateThread();
+
+// Command thread: never drop, apply back pressure to the publisher
+Thread cmdThread("CmdThread", /*maxQueueSize=*/50, FullPolicy::BLOCK);
+cmdThread.CreateThread();
+
+auto connSensor = dmq::DataBus::Subscribe<ImuData>("sensor/imu",
+    [](const ImuData& d) { /* update display */ },
+    &sensorThread);
+
+auto connCmd = dmq::DataBus::Subscribe<ActuatorCmd>("cmd/actuator",
+    [](const ActuatorCmd& cmd) { /* apply command */ },
+    &cmdThread);
+```
+
+**Trade-offs**
+
+- `FullPolicy` is a thread-level setting, not per-subscription. All subscribers on the same `Thread` instance share the same policy. If a single thread serves both drop-tolerant and drop-intolerant topics, split them across two threads.
+- With `BLOCK`, a backed-up subscriber thread stalls the publishing thread. If the publisher also drives other topics or dispatches to other threads, that stall propagates. Isolate publishers with strong back-pressure requirements onto a dedicated polling or dispatch thread.
+- With `DROP`, a fast publisher and slow subscriber can result in the subscriber seeing only a fraction of publishes. Pair `DROP` with `minSeparation` QoS on the subscriber to proactively rate-limit delivery before the queue ever fills — this keeps delivery uniform rather than bursty-then-silent.
+- Setting `maxQueueSize = 0` disables the limit entirely; `FullPolicy` has no effect and all messages are queued regardless of consumer speed.
 
 ---
 

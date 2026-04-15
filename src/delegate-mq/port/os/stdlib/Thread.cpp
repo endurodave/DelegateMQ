@@ -19,11 +19,12 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName, size_t maxQueueSize)
+Thread::Thread(const std::string& threadName, size_t maxQueueSize, FullPolicy fullPolicy)
     : m_thread(std::nullopt)
     , m_exit(false)
     , THREAD_NAME(threadName)
     , MAX_QUEUE_SIZE(maxQueueSize)
+    , FULL_POLICY(fullPolicy)
 {
 }
 
@@ -212,19 +213,22 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     if (!m_thread.has_value())
         throw std::invalid_argument("Thread pointer is null");
 
-    // If using XALLOCATOR explicit operator new required. See xallocator.h.
-    auto threadMsg = xmake_shared<ThreadMsg>(MSG_DISPATCH_DELEGATE, msg);
-
     std::unique_lock<std::mutex> lk(m_mutex);
 
-    // [BACK PRESSURE LOGIC]
-    if (MAX_QUEUE_SIZE > 0)
+    // [BACK PRESSURE / DROP LOGIC]
+    if (MAX_QUEUE_SIZE > 0 && m_queue.size() >= MAX_QUEUE_SIZE)
     {
-        // Wait while queue is full, BUT stop waiting if m_exit is true.
+        if (FULL_POLICY == FullPolicy::DROP)
+            return;  // silently discard — caller is not stalled, no allocation wasted
+
+        // BLOCK: wait until the consumer drains a slot or the thread exits
         m_cvNotFull.wait(lk, [this]() {
             return m_queue.size() < MAX_QUEUE_SIZE || m_exit.load();
             });
     }
+
+    // If using XALLOCATOR explicit operator new required. See xallocator.h.
+    auto threadMsg = xmake_shared<ThreadMsg>(MSG_DISPATCH_DELEGATE, msg);
 
     // If we woke up because of exit (or exit happened while waiting), abort
     if (m_exit.load())

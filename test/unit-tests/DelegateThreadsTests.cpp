@@ -278,6 +278,156 @@ static void FunctionTests()
     std::cout << "FunctionTests() complete!" << std::endl;
 }
 
+// ---------------------------------------------------------------------------
+// FullPolicy tests
+// ---------------------------------------------------------------------------
+
+// DROP policy: flooding a full queue drops messages; publisher is never stalled.
+static void FullPolicy_Drop_DropsWhenFull()
+{
+    // Queue holds 3 messages. Consumer sleeps 50ms per message so it drains slowly.
+    // We fire 10 messages as fast as possible; some must be dropped.
+    Thread dropThread("DropThread", 3, FullPolicy::DROP);
+    dropThread.CreateThread();
+
+    std::atomic<int> deliveredCount{ 0 };
+
+    auto slowConsumer = [&deliveredCount]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        deliveredCount++;
+    };
+
+    auto start = std::chrono::steady_clock::now();
+
+    for (int i = 0; i < 10; i++)
+        MakeDelegate(slowConsumer, dropThread)(/* no args */);
+
+    auto elapsed = std::chrono::steady_clock::now() - start;
+
+    // Publisher must NOT have blocked — posting 10 messages should finish well
+    // under the time it would take to drain even one slot (50ms).
+    ASSERT_TRUE(elapsed < std::chrono::milliseconds(30));
+
+    // Let the queue drain fully
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+    // With a queue depth of 3 and 10 rapid-fire posts, at least some were dropped.
+    // Exactly 3 might be delivered (the ones that fit) but we allow a little slack
+    // for timing; the invariant is: delivered < 10.
+    ASSERT_TRUE(deliveredCount < 10);
+    ASSERT_TRUE(deliveredCount > 0);
+
+    dropThread.ExitThread();
+    std::cout << "FullPolicy_Drop_DropsWhenFull() complete! (delivered " << deliveredCount << "/10)" << std::endl;
+}
+
+// DROP policy: if the queue never fills, every message is delivered.
+static void FullPolicy_Drop_DeliversAllWhenBelowLimit()
+{
+    Thread dropThread("DropBelowLimitThread", 20, FullPolicy::DROP);
+    dropThread.CreateThread();
+
+    std::atomic<int> deliveredCount{ 0 };
+    const int SEND_COUNT = 10;
+
+    for (int i = 0; i < SEND_COUNT; i++)
+        MakeDelegate([&deliveredCount]() { deliveredCount++; }, dropThread)();
+
+    // Wait for all queued messages to be processed
+    while (dropThread.GetQueueSize() != 0)
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+    ASSERT_TRUE(deliveredCount == SEND_COUNT);
+
+    dropThread.ExitThread();
+    std::cout << "FullPolicy_Drop_DeliversAllWhenBelowLimit() complete!" << std::endl;
+}
+
+// BLOCK policy (default): all messages are delivered even when the queue is flooded.
+static void FullPolicy_Block_DeliversAll()
+{
+    Thread blockThread("BlockThread", 3, FullPolicy::BLOCK);
+    blockThread.CreateThread();
+
+    std::atomic<int> deliveredCount{ 0 };
+    const int SEND_COUNT = 10;
+
+    // Fire sends on a background thread so blocking doesn't stall this test thread.
+    std::thread sender([&]() {
+        for (int i = 0; i < SEND_COUNT; i++)
+            MakeDelegate([&deliveredCount]() { deliveredCount++; }, blockThread)();
+    });
+    sender.join();
+
+    while (blockThread.GetQueueSize() != 0)
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+    ASSERT_TRUE(deliveredCount == SEND_COUNT);
+
+    blockThread.ExitThread();
+    std::cout << "FullPolicy_Block_DeliversAll() complete!" << std::endl;
+}
+
+// Default constructor (no policy arg) still behaves as BLOCK.
+static void FullPolicy_DefaultIsBlock()
+{
+    // maxQueueSize set, no FullPolicy arg — must default to BLOCK.
+    Thread defaultThread("DefaultPolicyThread", 3);
+    defaultThread.CreateThread();
+
+    std::atomic<int> deliveredCount{ 0 };
+    const int SEND_COUNT = 6;
+
+    std::thread sender([&]() {
+        for (int i = 0; i < SEND_COUNT; i++)
+            MakeDelegate([&deliveredCount]() { deliveredCount++; }, defaultThread)();
+    });
+    sender.join();
+
+    while (defaultThread.GetQueueSize() != 0)
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+    // All delivered — BLOCK never drops.
+    ASSERT_TRUE(deliveredCount == SEND_COUNT);
+
+    defaultThread.ExitThread();
+    std::cout << "FullPolicy_DefaultIsBlock() complete!" << std::endl;
+}
+
+// Unlimited queue (maxQueueSize=0): FullPolicy has no effect; all messages delivered.
+static void FullPolicy_UnlimitedQueue_DeliversAll()
+{
+    Thread unlimitedThread("UnlimitedThread", 0, FullPolicy::DROP);
+    unlimitedThread.CreateThread();
+
+    std::atomic<int> deliveredCount{ 0 };
+    const int SEND_COUNT = 50;
+
+    for (int i = 0; i < SEND_COUNT; i++)
+        MakeDelegate([&deliveredCount]() { deliveredCount++; }, unlimitedThread)();
+
+    while (unlimitedThread.GetQueueSize() != 0)
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+    ASSERT_TRUE(deliveredCount == SEND_COUNT);
+
+    unlimitedThread.ExitThread();
+    std::cout << "FullPolicy_UnlimitedQueue_DeliversAll() complete!" << std::endl;
+}
+
+static void ThreadFullPolicyTests()
+{
+    FullPolicy_Drop_DropsWhenFull();
+    FullPolicy_Drop_DeliversAllWhenBelowLimit();
+    FullPolicy_Block_DeliversAll();
+    FullPolicy_DefaultIsBlock();
+    FullPolicy_UnlimitedQueue_DeliversAll();
+}
+
 void DelegateThreadsTests()
 {
     workerThread1.CreateThread();
@@ -290,4 +440,6 @@ void DelegateThreadsTests()
 
     workerThread1.ExitThread();
     workerThread2.ExitThread();
+
+    ThreadFullPolicyTests();
 }

@@ -7,9 +7,15 @@
 /// @note This implementation is a basic port. For reference, the stdlib and win32
 /// implementations provide additional features:
 /// 1. Priority Support: Uses a priority queue to respect dmq::Priority.
-/// 2. Back Pressure: DispatchDelegate() blocks if the queue is full.
-/// 3. Watchdog: Includes a ThreadCheck() heartbeat mechanism.
-/// 4. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
+/// 2. Watchdog: Includes a ThreadCheck() heartbeat mechanism.
+/// 3. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
+///
+/// **Key Features:**
+/// * **Task Integration:** Wraps `k_thread_create` to establish a dedicated worker loop.
+/// * **FullPolicy Support:** Configurable back-pressure (BLOCK or DROP) when the 
+///   message queue is full.
+/// * **Queue-Based Dispatch:** Uses `k_msgq` to receive and process incoming 
+///   delegate messages in a thread-safe manner.
 ///
 #include "delegate/IThread.h"
 #include <zephyr/kernel.h>
@@ -19,13 +25,27 @@
 
 class ThreadMsg;
 
+/// @brief Policy applied when the thread message queue is full.
+/// @details Only meaningful when maxQueueSize > 0.
+///   - BLOCK: DispatchDelegate() blocks the caller until space is available (back pressure).
+///   - DROP:  DispatchDelegate() silently discards the message and returns immediately.
+///
+/// Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where
+/// a stale sample is preferable to stalling the publisher. Use BLOCK for critical topics
+/// (commands, state transitions) where no message may be lost.
+enum class FullPolicy { BLOCK, DROP };
+
 class Thread : public dmq::IThread
 {
 public:
     /// Default queue size if 0 is passed
     static const size_t DEFAULT_QUEUE_SIZE = 20;
 
-    Thread(const std::string& threadName, size_t maxQueueSize = 0);
+    /// Constructor
+    /// @param threadName Name for the Zephyr thread
+    /// @param maxQueueSize Max number of messages in queue (0 = Default 20)
+    /// @param fullPolicy Action when queue is full: BLOCK the caller or DROP the message.
+    Thread(const std::string& threadName, size_t maxQueueSize = 0, FullPolicy fullPolicy = FullPolicy::BLOCK);
     ~Thread();
 
     bool CreateThread();
@@ -58,7 +78,8 @@ private:
     void Run();
 
     const std::string THREAD_NAME;
-    size_t m_queueSize;
+    const size_t m_queueSize;
+    const FullPolicy FULL_POLICY;
     int m_priority;
 
     // Zephyr Kernel Objects

@@ -17,13 +17,12 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread Constructor
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName, size_t maxQueueSize) 
+Thread::Thread(const std::string& threadName, size_t maxQueueSize, FullPolicy fullPolicy) 
     : THREAD_NAME(threadName)
+    , m_queueSize((maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize)
+    , FULL_POLICY(fullPolicy)
     , m_exit(false)
 {
-    // If 0 is passed, use the default size
-    m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
-    
     // Default Priority
     m_priority = osPriorityNormal;
 }
@@ -174,12 +173,17 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     ThreadMsg* threadMsg = new (std::nothrow) ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
     if (!threadMsg) return;
 
-    // 2. Send pointer to queue (Wait 10 ticks if full)
-    // Priority 0 (default)
-    if (osMessageQueuePut(m_msgq, &threadMsg, 0, 10) != osOK)
+    // 2. Send pointer to queue
+    // Set timeout based on FullPolicy: osWaitForever for BLOCK, 0 for DROP.
+    uint32_t timeout = (FULL_POLICY == FullPolicy::BLOCK) ? osWaitForever : 0;
+
+    // Option #2: Implement High priority using msg_prio.
+    uint8_t msg_prio = (msg->GetPriority() == Priority::HIGH) ? 1 : 0;
+
+    if (osMessageQueuePut(m_msgq, &threadMsg, msg_prio, timeout) != osOK)
     {
+        // Failed to send (queue full)
         delete threadMsg;
-        // Optional: printf("Error: Thread '%s' queue full!\n", THREAD_NAME.c_str());
     }
 }
 

@@ -16,8 +16,9 @@
 /// **Key Features:**
 /// * **Priority Queue:** Uses `std::priority_queue` to ensure high-priority delegate
 ///   messages (e.g., system signals) are processed before lower-priority ones.
-/// * **Back Pressure:** Supports a configurable `maxQueueSize`. If the queue is full,
-///   `DispatchDelegate()` blocks the caller until space is available, preventing memory exhaustion.
+/// * **Queue Full Policy:** Configurable `FullPolicy` (BLOCK or DROP) when `maxQueueSize > 0`.
+///   BLOCK applies back pressure to the caller; DROP silently discards the message so the
+///   caller is never stalled. Default is BLOCK.
 /// * **Watchdog Integration:** Includes a built-in heartbeat mechanism. If the thread loop
 ///   stalls (deadlock or infinite loop), the watchdog timer detects the failure.
 /// * **Synchronized Start:** Uses a Win32 manual-reset event to ensure the thread
@@ -47,6 +48,16 @@ struct ThreadMsgComparator {
     }
 };
 
+/// @brief Policy applied when the thread message queue is full.
+/// @details Only meaningful when maxQueueSize > 0.
+///   - BLOCK: DispatchDelegate() blocks the caller until space is available (back pressure).
+///   - DROP:  DispatchDelegate() silently discards the message and returns immediately.
+///
+/// Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where
+/// a stale sample is preferable to stalling the publisher. Use BLOCK for critical topics
+/// (commands, state transitions) where no message may be lost.
+enum class FullPolicy { BLOCK, DROP };
+
 /// @brief Windows-native thread for systems using the Win32 API.
 /// @details The Thread class creates a worker thread capable of dispatching and
 /// invoking asynchronous delegates.
@@ -57,7 +68,9 @@ public:
     /// @param threadName The name of the thread for debugging.
     /// @param maxQueueSize The maximum number of messages allowed in the queue.
     ///                     0 means unlimited (no back pressure).
-    Thread(const std::string& threadName, size_t maxQueueSize = 0);
+    /// @param fullPolicy When the queue is full: BLOCK the caller or DROP the message.
+    ///                   Only meaningful when maxQueueSize > 0.
+    Thread(const std::string& threadName, size_t maxQueueSize = 0, FullPolicy fullPolicy = FullPolicy::BLOCK);
 
     /// Destructor
     virtual ~Thread();
@@ -135,6 +148,9 @@ private:
 
     // Max queue size for back pressure (0 = unlimited)
     const size_t MAX_QUEUE_SIZE;
+
+    // Policy applied when the thread message queue is full.
+    const FullPolicy FULL_POLICY;
 
     std::atomic<bool> m_exit;
 

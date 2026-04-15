@@ -17,11 +17,12 @@ using namespace dmq;
 //----------------------------------------------------------------------------
 // Thread Constructor
 //----------------------------------------------------------------------------
-Thread::Thread(const std::string& threadName, size_t maxQueueSize) 
+Thread::Thread(const std::string& threadName, size_t maxQueueSize, FullPolicy fullPolicy) 
     : THREAD_NAME(threadName)
+    , m_queueSize((maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize)
+    , FULL_POLICY(fullPolicy)
     , m_exit(false)
 {
-    m_queueSize = (maxQueueSize == 0) ? DEFAULT_QUEUE_SIZE : maxQueueSize;
     m_priority = K_PRIO_PREEMPT(5); // Default priority
 
     // Initialize objects to zero
@@ -179,11 +180,14 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     ThreadMsg* threadMsg = new (std::nothrow) ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
     if (!threadMsg) return;
 
-    // 2. Send pointer to queue (Wait 10ms if full)
-    if (k_msgq_put(&m_msgq, &threadMsg, K_MSEC(10)) != 0)
+    // 2. Send pointer to queue
+    // Set timeout based on FullPolicy: K_FOREVER for BLOCK, K_NO_WAIT for DROP.
+    k_timeout_t timeout = (FULL_POLICY == FullPolicy::BLOCK) ? K_FOREVER : K_NO_WAIT;
+
+    if (k_msgq_put(&m_msgq, &threadMsg, timeout) != 0)
     {
+        // Failed to enqueue (queue full)
         delete threadMsg;
-        // Optional: LOG_ERR("Thread '%s' queue full!", THREAD_NAME.c_str());
     }
 }
 

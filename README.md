@@ -294,7 +294,7 @@ See [Delegate Invocation Semantics](docs/DETAILS.md#delegate-invocation-semantic
 - **Monitoring**: Built-in "spy" support via `DataBus::Monitor()` to receive a callback for every message published on the bus.
 - **Type Safety**: Runtime type checking ensures topic data types match between publishers and subscribers.
 - **Zero Library Threads**: `DataBus` creates no internal threads. The application owns a single polling thread that calls `Participant::ProcessIncoming()` — every thread is visible and under application control.
-- **[Mixed-Platform](docs/DETAILS.md#example-multi-node-topology)**: Runs unchanged across Linux, FreeRTOS, and bare-metal nodes. Complex topologies (Linux ↔ Ethernet ↔ FreeRTOS ↔ UART ↔ bare metal) are supported.
+- **[Mixed-Platform](docs/DATABUS.md#example-multi-node-topology)**: Runs unchanged across Linux, FreeRTOS, and bare-metal nodes. Complex topologies (Linux ↔ Ethernet ↔ FreeRTOS ↔ UART ↔ bare metal) are supported.
 
 ```cpp
 #include "DelegateMQ.h"
