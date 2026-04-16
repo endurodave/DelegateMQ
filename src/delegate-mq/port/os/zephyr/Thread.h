@@ -7,21 +7,26 @@
 /// @note This implementation is a basic port. For reference, the stdlib and win32
 /// implementations provide additional features:
 /// 1. Priority Support: Uses a priority queue to respect dmq::Priority.
-/// 2. Watchdog: Includes a ThreadCheck() heartbeat mechanism.
-/// 3. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
+/// 2. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
 ///
 /// **Key Features:**
 /// * **Task Integration:** Wraps `k_thread_create` to establish a dedicated worker loop.
-/// * **FullPolicy Support:** Configurable back-pressure (BLOCK or DROP) when the 
+/// * **FullPolicy Support:** Configurable back-pressure (BLOCK or DROP) when the
 ///   message queue is full.
-/// * **Queue-Based Dispatch:** Uses `k_msgq` to receive and process incoming 
+/// * **Queue-Based Dispatch:** Uses `k_msgq` to receive and process incoming
 ///   delegate messages in a thread-safe manner.
+/// * **Watchdog Integration:** Optional heartbeat mechanism detects stalled or deadlocked
+///   threads. Enable by passing a timeout to CreateThread(). Requires
+///   Timer::ProcessTimers() to be called from a context that can preempt watched threads
+///   — typically a hardware timer ISR or the highest-priority task in the system.
 ///
 #include "delegate/IThread.h"
+#include "extras/util/Timer.h"
 #include <zephyr/kernel.h>
 #include <string>
 #include <memory>
 #include <atomic>
+#include <optional>
 
 class ThreadMsg;
 
@@ -48,7 +53,11 @@ public:
     Thread(const std::string& threadName, size_t maxQueueSize = 0, FullPolicy fullPolicy = FullPolicy::BLOCK);
     ~Thread();
 
-    bool CreateThread();
+    /// Called once to create the worker thread. If watchdogTimeout value
+    /// provided, the maximum watchdog interval is used. Otherwise no watchdog.
+    /// @param[in] watchdogTimeout - optional watchdog timeout.
+    /// @return TRUE if thread is created. FALSE otherwise.
+    bool CreateThread(std::optional<dmq::Duration> watchdogTimeout = std::nullopt);
     void ExitThread();
 
     // Note: k_tid_t is a struct k_thread* in Zephyr
@@ -77,6 +86,12 @@ private:
     static void Process(void* p1, void* p2, void* p3);
     void Run();
 
+    /// Check watchdog is expired. Called from Timer::ProcessTimers() context.
+    void WatchdogCheck();
+
+    /// Timer expiration function dispatched to this thread to update m_lastAliveTime.
+    void ThreadCheck();
+
     const std::string THREAD_NAME;
     const size_t m_queueSize;
     const FullPolicy FULL_POLICY;
@@ -103,6 +118,14 @@ private:
     static const size_t STACK_SIZE = 2048;
     // Size of one message item (the pointer)
     static const size_t MSG_SIZE = sizeof(MsgPtr);
+
+    // Watchdog related members
+    std::atomic<dmq::TimePoint> m_lastAliveTime;
+    std::unique_ptr<Timer> m_watchdogTimer;
+    dmq::ScopedConnection m_watchdogTimerConn;
+    std::unique_ptr<Timer> m_threadTimer;
+    dmq::ScopedConnection m_threadTimerConn;
+    std::atomic<dmq::Duration> m_watchdogTimeout;
 };
 
 #endif // _THREAD_ZEPHYR_H

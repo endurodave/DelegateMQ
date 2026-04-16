@@ -2,6 +2,7 @@
 #error "port/os/zephyr/Thread.cpp requires DMQ_THREAD_ZEPHYR. Remove this file from your build configuration or define DMQ_THREAD_ZEPHYR."
 #endif
 
+#include "DelegateMQ.h"
 #include "Thread.h"
 #include "ThreadMsg.h"
 #include <cstdio>
@@ -44,7 +45,7 @@ Thread::~Thread()
 //----------------------------------------------------------------------------
 // CreateThread
 //----------------------------------------------------------------------------
-bool Thread::CreateThread()
+bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 {
     // Check if thread is already created (dummy check on stack ptr)
     if (!m_stackMemory)
@@ -82,6 +83,23 @@ bool Thread::CreateThread()
         
         // Optional: Set thread name for debug
         k_thread_name_set(tid, THREAD_NAME.c_str());
+
+        m_lastAliveTime.store(Timer::GetNow());
+
+        if (watchdogTimeout.has_value())
+        {
+            m_watchdogTimeout = watchdogTimeout.value();
+
+            m_threadTimer = std::unique_ptr<Timer>(new Timer());
+            m_threadTimerConn = m_threadTimer->OnExpired.Connect(
+                MakeDelegate(this, &Thread::ThreadCheck, *this));
+            m_threadTimer->Start(m_watchdogTimeout.load() / 4);
+
+            m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
+            m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(
+                MakeDelegate(this, &Thread::WatchdogCheck));
+            m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
+        }
     }
     return true;
 }
@@ -91,8 +109,19 @@ bool Thread::CreateThread()
 //----------------------------------------------------------------------------
 void Thread::ExitThread()
 {
-    if (m_stackMemory) 
+    if (m_stackMemory)
     {
+        if (m_watchdogTimer)
+        {
+            m_watchdogTimer->Stop();
+            m_watchdogTimerConn.Disconnect();
+        }
+        if (m_threadTimer)
+        {
+            m_threadTimer->Stop();
+            m_threadTimerConn.Disconnect();
+        }
+
         m_exit.store(true);
 
         // Send exit message
@@ -207,11 +236,35 @@ void Thread::Process(void* p1, void* p2, void* p3)
 //----------------------------------------------------------------------------
 // Run (Member Function Loop)
 //----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+// WatchdogCheck
+//----------------------------------------------------------------------------
+void Thread::WatchdogCheck()
+{
+    auto now = Timer::GetNow();
+    auto lastAlive = m_lastAliveTime.load();
+    auto delta = now - lastAlive;
+    if (delta > m_watchdogTimeout.load())
+    {
+        // @TODO trigger recovery or fault handler
+    }
+}
+
+//----------------------------------------------------------------------------
+// ThreadCheck
+//----------------------------------------------------------------------------
+void Thread::ThreadCheck()
+{
+    m_lastAliveTime.store(Timer::GetNow());
+}
+
 void Thread::Run()
 {
     ThreadMsg* msg = nullptr;
     while (!m_exit.load())
     {
+        m_lastAliveTime.store(Timer::GetNow());
+
         // Block forever waiting for a message
         if (k_msgq_get(&m_msgq, &msg, K_FOREVER) == 0)
         {

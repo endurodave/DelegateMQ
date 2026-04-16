@@ -2,6 +2,7 @@
 #error "port/os/qt/Thread.cpp requires DMQ_THREAD_QT. Remove this file from your build configuration or define DMQ_THREAD_QT."
 #endif
 
+#include "DelegateMQ.h"
 #include "Thread.h"
 #include <QDebug>
 
@@ -29,7 +30,7 @@ Thread::~Thread()
 //----------------------------------------------------------------------------
 // CreateThread
 //----------------------------------------------------------------------------
-bool Thread::CreateThread()
+bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 {
     if (!m_thread)
     {
@@ -58,8 +59,47 @@ bool Thread::CreateThread()
         // connect(m_thread, &QThread::finished, m_thread, &QObject::deleteLater);
 
         m_thread->start();
+
+        m_lastAliveTime.store(Timer::GetNow());
+
+        if (watchdogTimeout.has_value())
+        {
+            m_watchdogTimeout = watchdogTimeout.value();
+
+            m_threadTimer = std::unique_ptr<Timer>(new Timer());
+            m_threadTimerConn = m_threadTimer->OnExpired.Connect(
+                MakeDelegate(this, &Thread::ThreadCheck, *this));
+            m_threadTimer->Start(m_watchdogTimeout.load() / 4);
+
+            m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
+            m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(
+                MakeDelegate(this, &Thread::WatchdogCheck));
+            m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
+        }
     }
     return true;
+}
+
+//----------------------------------------------------------------------------
+// WatchdogCheck
+//----------------------------------------------------------------------------
+void Thread::WatchdogCheck()
+{
+    auto now = Timer::GetNow();
+    auto lastAlive = m_lastAliveTime.load();
+    auto delta = now - lastAlive;
+    if (delta > m_watchdogTimeout.load())
+    {
+        // @TODO trigger recovery or fault handler
+    }
+}
+
+//----------------------------------------------------------------------------
+// ThreadCheck
+//----------------------------------------------------------------------------
+void Thread::ThreadCheck()
+{
+    m_lastAliveTime.store(Timer::GetNow());
 }
 
 //----------------------------------------------------------------------------
@@ -69,6 +109,17 @@ void Thread::ExitThread()
 {
     if (m_thread)
     {
+        if (m_watchdogTimer)
+        {
+            m_watchdogTimer->Stop();
+            m_watchdogTimerConn.Disconnect();
+        }
+        if (m_threadTimer)
+        {
+            m_threadTimer->Stop();
+            m_threadTimerConn.Disconnect();
+        }
+
         m_thread->quit();
 
         // Wake any blocked threads

@@ -14,27 +14,32 @@
 ///
 /// @note This implementation is a basic port. For reference, the stdlib and win32
 /// implementations provide additional features:
-/// 1. Watchdog: Includes a ThreadCheck() heartbeat mechanism.
-/// 2. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
+/// 1. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
 ///
 /// **Key Features:**
 /// * **Task Integration:** Wraps `tx_thread_create` to establish a dedicated worker loop.
-/// * **FullPolicy Support:** Configurable back-pressure (BLOCK or DROP) when the 
+/// * **FullPolicy Support:** Configurable back-pressure (BLOCK or DROP) when the
 ///   message queue is full.
 /// * **Priority Support:** Normal and High priorities (uses `tx_queue_front_send`).
-/// * **Queue-Based Dispatch:** Uses a `TX_QUEUE` to receive and process incoming 
+/// * **Queue-Based Dispatch:** Uses a `TX_QUEUE` to receive and process incoming
 ///   delegate messages in a thread-safe manner.
 /// * **Priority Control:** Supports runtime priority configuration via `SetThreadPriority`.
 /// * **Dynamic Configuration:** Allows configuring stack size and queue depth at construction.
-/// * **Graceful Shutdown:** Implements robust termination logic using semaphores to ensure 
+/// * **Graceful Shutdown:** Implements robust termination logic using semaphores to ensure
 ///   the thread exits cleanly before destruction.
+/// * **Watchdog Integration:** Optional heartbeat mechanism detects stalled or deadlocked
+///   threads. Enable by passing a timeout to CreateThread(). Requires
+///   Timer::ProcessTimers() to be called from a context that can preempt watched threads
+///   — typically a hardware timer ISR or the highest-priority task in the system.
 
 #include "delegate/IThread.h"
+#include "extras/util/Timer.h"
 #include "tx_api.h"
 #include <string>
 #include <memory>
 #include <vector>
 #include <atomic>
+#include <optional>
 
 class ThreadMsg;
 
@@ -63,9 +68,11 @@ public:
     /// Destructor
     ~Thread();
 
-    /// Called once to create the worker thread
-    /// @return TRUE if thread is created. FALSE otherwise. 
-    bool CreateThread();
+    /// Called once to create the worker thread. If watchdogTimeout value
+    /// provided, the maximum watchdog interval is used. Otherwise no watchdog.
+    /// @param[in] watchdogTimeout - optional watchdog timeout.
+    /// @return TRUE if thread is created. FALSE otherwise.
+    bool CreateThread(std::optional<dmq::Duration> watchdogTimeout = std::nullopt);
 
     /// Terminate the thread gracefully
     void ExitThread();
@@ -105,6 +112,12 @@ private:
     // Run loop called by Process
     void Run();
 
+    /// Check watchdog is expired. Called from Timer::ProcessTimers() context.
+    void WatchdogCheck();
+
+    /// Timer expiration function dispatched to this thread to update m_lastAliveTime.
+    void ThreadCheck();
+
     const std::string THREAD_NAME;
     const size_t m_queueSize; // Stored queue size
     const FullPolicy FULL_POLICY;
@@ -120,9 +133,17 @@ private:
     // Using ULONG[] ensures correct alignment for ThreadX stacks and queues
     std::unique_ptr<ULONG[]> m_stackMemory;
     std::unique_ptr<ULONG[]> m_queueMemory;
-    
+
     // Configurable stack size (bytes)
-    static const ULONG STACK_SIZE = 2048; 
+    static const ULONG STACK_SIZE = 2048;
+
+    // Watchdog related members
+    std::atomic<dmq::TimePoint> m_lastAliveTime;
+    std::unique_ptr<Timer> m_watchdogTimer;
+    dmq::ScopedConnection m_watchdogTimerConn;
+    std::unique_ptr<Timer> m_threadTimer;
+    dmq::ScopedConnection m_threadTimerConn;
+    std::atomic<dmq::Duration> m_watchdogTimeout;
 };
 
 #endif // _THREAD_THREADX_H

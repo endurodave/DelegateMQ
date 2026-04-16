@@ -312,8 +312,67 @@ Setting `maxQueueSize = 0` disables the limit entirely — `FullPolicy` has no e
 
 ### Watchdog Integration
 
-To detect deadlocks or unresponsive threads, the `Thread` class can integrate with a watchdog timer. 
+All `Thread` port implementations (stdlib, Win32, FreeRTOS, CMSIS-RTOS2, ThreadX, Zephyr, Qt) support an optional watchdog. Enable it by passing a timeout to `CreateThread()`:
 
-1. **Check-in**: The thread periodically updates a "last alive" timestamp in its `Process()` loop.
-2. **Monitoring**: A separate watchdog timer (driven by `Timer::ProcessTimers()`) checks these timestamps.
-3. **Fault**: If `now - lastAlive > timeout`, the thread is considered stalled and a fault handler is triggered.
+```cpp
+thread.CreateThread(std::chrono::seconds(2));  // fault if thread stalls > 2s
+```
+
+The mechanism uses two `Timer` objects — no additional OS threads are created:
+
+- **`m_threadTimer`** (fires every `timeout/4`): dispatches `ThreadCheck()` to the worker thread via `MakeDelegate`. When the worker processes it, `m_lastAliveTime` is updated. This also wakes an idle sleeping thread so it does not false-alarm.
+- **`m_watchdogTimer`** (fires every `timeout/2`): calls `WatchdogCheck()` synchronously on the `Timer::ProcessTimers()` caller. If `now − m_lastAliveTime > timeout`, a fault is triggered.
+
+```
+ProcessTimers() caller (ISR or high-priority task)
+   │
+   ├─ m_threadTimer fires (timeout/4)
+   │    └─ posts ThreadCheck() → worker thread queue
+   │                                   └─ worker updates m_lastAliveTime ✓
+   │
+   └─ m_watchdogTimer fires (timeout/2)
+        └─ WatchdogCheck() runs inline — compares now vs m_lastAliveTime
+             └─ gap > timeout → @TODO: trigger fault/recovery
+```
+
+#### Priority Requirement — Critical on Single-Core RTOS
+
+The watchdog **only catches CPU-spinning runaway threads** if `Timer::ProcessTimers()` runs at a **higher priority** than the threads it watches. On a single-core RTOS (FreeRTOS, ThreadX, Zephyr, CMSIS-RTOS2), a runaway high-priority task starves all lower-priority tasks including the one calling `ProcessTimers()` — the watchdog timers never fire and the fault is never detected.
+
+| Failure mode | ProcessTimers() priority requirement |
+|:---|:---|
+| Deadlocked thread (blocked on mutex/semaphore) | Any — blocked threads don't consume CPU |
+| Idle thread (waiting for messages) | Any — `ThreadCheck` wakes it when scheduled |
+| CPU-spinning runaway (infinite loop in callback) | **Must be higher** than the watched thread |
+
+Two acceptable approaches for embedded targets:
+
+**Option 1 — Hardware timer ISR (recommended):** Call `Timer::ProcessTimers()` from a SysTick or similar periodic ISR. ISRs preempt all tasks regardless of priority, so the watchdog fires even if the highest-priority task runs away.
+
+```cpp
+// FreeRTOS / CMSIS-RTOS2 example: SysTick ISR
+extern "C" void SysTick_Handler(void)
+{
+    Timer::ProcessTimers();  // preempts all tasks — watchdog always fires
+    // ... other SysTick work
+}
+```
+
+**Option 2 — Highest-priority task:** Dedicate the system's highest-priority task to calling `Timer::ProcessTimers()` in a tight loop. This task must be strictly higher priority than any thread it is watching — a runaway task at equal or lower priority will starve it and defeat the watchdog.
+
+```cpp
+// FreeRTOS example: dedicated watchdog task at highest priority
+void WatchdogTask(void*)
+{
+    while (true)
+    {
+        Timer::ProcessTimers();
+        vTaskDelay(pdMS_TO_TICKS(10));  // 10ms tick rate
+    }
+}
+
+// At startup — assign priority above all worker threads
+xTaskCreate(WatchdogTask, "Watchdog", 512, nullptr, configMAX_PRIORITIES - 1, nullptr);
+```
+
+Note: if user callbacks in the worker thread legitimately take longer than the watchdog timeout, the watchdog will false-alarm. Set the timeout to comfortably exceed the maximum expected callback duration.

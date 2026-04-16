@@ -14,13 +14,12 @@
 ///
 /// @note This implementation is a basic port. For reference, the stdlib and win32
 /// implementations provide additional features:
-/// 1. Watchdog: Includes a ThreadCheck() heartbeat mechanism.
-/// 2. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
+/// 1. Synchronized Startup: CreateThread() blocks until the worker thread is ready.
 ///
 /// **Key Features:**
 /// * **Task Integration:** Wraps a FreeRTOS `xTaskCreate` call to establish a
 ///   dedicated worker loop.
-/// * **FullPolicy Support:** Configurable back-pressure (BLOCK or DROP) when the 
+/// * **FullPolicy Support:** Configurable back-pressure (BLOCK or DROP) when the
 ///   message queue is full.
 /// * **Priority Support:** Normal and High priorities (uses `xQueueSendToFront`).
 /// * **Queue-Based Dispatch:** Uses a FreeRTOS `QueueHandle_t` to receive and
@@ -29,8 +28,13 @@
 ///   to ensure correct thread context checks (used by `AsyncInvoke` optimizations).
 /// * **Graceful Shutdown:** Provides mechanisms (`ExitThread`) to cleanup resources,
 ///   though typical embedded tasks often run forever.
+/// * **Watchdog Integration:** Optional heartbeat mechanism detects stalled or deadlocked
+///   threads. Enable by passing a timeout to CreateThread(). Requires
+///   Timer::ProcessTimers() to be called from a context that can preempt watched threads
+///   — typically a hardware timer ISR or the highest-priority task in the system.
 
 #include "delegate/IThread.h"
+#include "extras/util/Timer.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -38,6 +42,7 @@
 #include <string>
 #include <memory>
 #include <atomic>
+#include <optional>
 
 class ThreadMsg;
 
@@ -66,9 +71,11 @@ public:
     /// Destructor
     ~Thread();
 
-    /// Called once to create the worker thread
-    /// @return TRUE if thread is created. FALSE otherwise. 
-    bool CreateThread();
+    /// Called once to create the worker thread. If watchdogTimeout value
+    /// provided, the maximum watchdog interval is used. Otherwise no watchdog.
+    /// @param[in] watchdogTimeout - optional watchdog timeout.
+    /// @return TRUE if thread is created. FALSE otherwise.
+    bool CreateThread(std::optional<dmq::Duration> watchdogTimeout = std::nullopt);
 
     /// Returns true if the thread is created
     bool IsThreadCreated() const { return m_thread != nullptr; }
@@ -114,6 +121,12 @@ private:
     // Run loop called by Process
     void Run();
 
+    /// Check watchdog is expired. Called from Timer::ProcessTimers() context.
+    void WatchdogCheck();
+
+    /// Timer expiration function dispatched to this thread to update m_lastAliveTime.
+    void ThreadCheck();
+
     const std::string THREAD_NAME;
     const FullPolicy FULL_POLICY;
     size_t m_queueSize;
@@ -128,6 +141,14 @@ private:
     StackType_t* m_stackBuffer = nullptr;
     uint32_t m_stackSize = 1024; // Default size (words)
     StaticTask_t m_tcb;          // TCB storage for static creation
+
+    // Watchdog related members
+    std::atomic<dmq::TimePoint> m_lastAliveTime;
+    std::unique_ptr<Timer> m_watchdogTimer;
+    dmq::ScopedConnection m_watchdogTimerConn;
+    std::unique_ptr<Timer> m_threadTimer;
+    dmq::ScopedConnection m_threadTimerConn;
+    std::atomic<dmq::Duration> m_watchdogTimeout;
 };
 
 #endif

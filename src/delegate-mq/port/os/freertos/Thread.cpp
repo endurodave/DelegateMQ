@@ -2,6 +2,7 @@
 #error "port/os/freertos/Thread.cpp requires DMQ_THREAD_FREERTOS. Remove this file from your build configuration or define DMQ_THREAD_FREERTOS."
 #endif
 
+#include "DelegateMQ.h"
 #include "Thread.h"
 #include "ThreadMsg.h"
 #include <cstdio>
@@ -50,7 +51,7 @@ void Thread::SetStackMem(StackType_t* stackBuffer, uint32_t stackSizeInWords)
 //----------------------------------------------------------------------------
 // CreateThread
 //----------------------------------------------------------------------------
-bool Thread::CreateThread()
+bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 {
     if (IsThreadCreated())
         return true;
@@ -106,6 +107,24 @@ bool Thread::CreateThread()
     }
 
     ASSERT_TRUE(m_thread != nullptr);
+
+    m_lastAliveTime.store(Timer::GetNow());
+
+    if (watchdogTimeout.has_value())
+    {
+        m_watchdogTimeout = watchdogTimeout.value();
+
+        m_threadTimer = std::unique_ptr<Timer>(new Timer());
+        m_threadTimerConn = m_threadTimer->OnExpired.Connect(
+            MakeDelegate(this, &Thread::ThreadCheck, *this));
+        m_threadTimer->Start(m_watchdogTimeout.load() / 4);
+
+        m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
+        m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(
+            MakeDelegate(this, &Thread::WatchdogCheck));
+        m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
+    }
+
     return true;
 }
 
@@ -115,6 +134,17 @@ bool Thread::CreateThread()
 void Thread::ExitThread()
 {
     if (m_queue) {
+        if (m_watchdogTimer)
+        {
+            m_watchdogTimer->Stop();
+            m_watchdogTimerConn.Disconnect();
+        }
+        if (m_threadTimer)
+        {
+            m_threadTimer->Stop();
+            m_threadTimerConn.Disconnect();
+        }
+
         m_exit.store(true);
 
         ThreadMsg* msg = new (std::nothrow) ThreadMsg(MSG_EXIT_THREAD);
@@ -218,11 +248,35 @@ void Thread::Process(void* instance)
     vTaskDelete(NULL);
 }
 
+//----------------------------------------------------------------------------
+// WatchdogCheck
+//----------------------------------------------------------------------------
+void Thread::WatchdogCheck()
+{
+    auto now = Timer::GetNow();
+    auto lastAlive = m_lastAliveTime.load();
+    auto delta = now - lastAlive;
+    if (delta > m_watchdogTimeout.load())
+    {
+        // @TODO trigger recovery or fault handler
+    }
+}
+
+//----------------------------------------------------------------------------
+// ThreadCheck
+//----------------------------------------------------------------------------
+void Thread::ThreadCheck()
+{
+    m_lastAliveTime.store(Timer::GetNow());
+}
+
 void Thread::Run()
 {
     ThreadMsg* msg = nullptr;
     while (!m_exit.load())
     {
+        m_lastAliveTime.store(Timer::GetNow());
+
         if (xQueueReceive(m_queue, &msg, portMAX_DELAY) == pdPASS)
         {
             if (!msg) continue;
