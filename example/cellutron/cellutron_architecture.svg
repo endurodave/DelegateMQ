@@ -1,0 +1,62 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  
+  <!-- Labels Style -->
+  <style>
+    .node-text { font: bold 14px sans-serif; fill: #333; }
+    .port-text { font: 12px monospace; fill: #666; }
+    .topic-text { font: italic 11px sans-serif; fill: #0056b3; }
+    .fault-text { font: bold 11px sans-serif; fill: #dc3545; }
+  </style>
+
+  <!-- Nodes -->
+  <!-- GUI -->
+  <rect x="50" y="50" width="120" height="80" rx="10" fill="#e7f3ff" stroke="#007bff" stroke-width="2"/>
+  <text x="110" y="85" text-anchor="middle" class="node-text">GUI CPU</text>
+  <text x="110" y="105" text-anchor="middle" class="port-text">Port: 5010</text>
+
+  <!-- Controller -->
+  <rect x="350" y="50" width="150" height="80" rx="10" fill="#fff4e5" stroke="#fd7e14" stroke-width="2"/>
+  <text x="425" y="85" text-anchor="middle" class="node-text">Controller CPU</text>
+  <text x="425" y="105" text-anchor="middle" class="port-text">Port: 5011</text>
+
+  <!-- Safety -->
+  <rect x="200" y="250" width="150" height="80" rx="10" fill="#f8d7da" stroke="#dc3545" stroke-width="2"/>
+  <text x="275" y="285" text-anchor="middle" class="node-text">Safety CPU</text>
+  <text x="275" y="305" text-anchor="middle" class="port-text">Port: 5013</text>
+
+  <!-- Connections -->
+  <!-- GUI to Controller -->
+  <path d="M 170 80 L 350 80" stroke="#007bff" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <text x="260" y="75" text-anchor="middle" class="topic-text">cmd/run</text>
+
+  <!-- Controller to GUI -->
+  <path d="M 350 100 L 170 100" stroke="#fd7e14" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+  <text x="260" y="115" text-anchor="middle" class="topic-text">status/run</text>
+
+  <!-- Controller to Safety -->
+  <path d="M 425 130 L 350 260" stroke="#fd7e14" stroke-width="1.5" marker-end="url(#arrow-orange)" fill="none"/>
+  <text x="430" y="200" text-anchor="middle" class="topic-text">cmd/speed</text>
+
+  <!-- Safety to Controller -->
+  <path d="M 275 250 L 370 130" stroke="#dc3545" stroke-width="1.5" marker-end="url(#arrow-red)" fill="none"/>
+  <text x="310" y="180" text-anchor="middle" class="fault-text">fault</text>
+
+  <!-- Safety to GUI -->
+  <path d="M 200 290 L 110 130" stroke="#dc3545" stroke-width="1.5" marker-end="url(#arrow-red)" fill="none"/>
+  <text x="140" y="240" text-anchor="middle" class="fault-text">fault</text>
+
+  <!-- Arrow heads -->
+  <defs>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#007bff" />
+    </marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#fd7e14" />
+    </marker>
+    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#dc3545" />
+    </marker>
+  </defs>
+</svg>

@@ -95,7 +95,8 @@ public:
             int err = ::bind(m_socket, (sockaddr*)&m_addr, sizeof(m_addr));
             if (err == SOCKET_ERROR)
             {
-                std::cerr << "Bind failed: " << err << std::endl;
+                int wsaErr = WSAGetLastError();
+                std::cerr << "UdpTransport: Bind failed on port " << port << ". Error: " << wsaErr << std::endl;
                 return -1;
             }
 
@@ -169,6 +170,12 @@ public:
         auto data = ss.str();
 
         int err = sendto(m_socket, data.c_str(), (int)data.size(), 0, (sockaddr*)&m_addr, sizeof(m_addr));
+
+        if (err != SOCKET_ERROR) {
+            // std::cout << "UdpTransport: Sent " << data.size() << " bytes to remote ID " << headerCopy.GetId() << std::endl;
+        } else {
+            std::cerr << "UdpTransport: ERROR - sendto failed with " << WSAGetLastError() << std::endl;
+        }
 
         // Always track the message (unless it is an ACK)
         // Use Host Byte Order for ID check

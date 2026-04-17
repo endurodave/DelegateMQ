@@ -82,6 +82,7 @@ public:
     }
 
     // Subscribe to all bus traffic (topic and stringified value).
+    // Monitor all traffic on the DataBus.
     // NOTE: priority is only applied when thread != nullptr; passing a non-default
     // priority without a thread is a programming error and triggers FaultHandler.
     static dmq::ScopedConnection Monitor(std::function<void(const SpyPacket&)> func, dmq::IThread* thread = nullptr, dmq::Priority priority = dmq::Priority::NORMAL) {
@@ -97,6 +98,11 @@ public:
             return instance.m_monitorSignal.Connect(del);
         }
         return instance.m_monitorSignal.Connect(dmq::MakeDelegate(std::move(func)));
+    }
+
+    /// Fired when a message is published but has no local or remote subscribers.
+    static dmq::ScopedConnection SubscribeUnhandled(std::function<void(const std::string& topic)> func) {
+        return GetInstance().m_unhandledSignal.Connect(dmq::MakeDelegate(std::move(func)));
     }
 
     // Reset the DataBus (mostly for testing).
@@ -271,15 +277,23 @@ private:
         }
 
         // 7. Local distribution
+        bool handled = false;
         if (signal) {
             (*signal)(data);
+            handled = true;
         }
 
         // 8. Remote distribution using the snapshot
         if (serializer) {
             for (auto& participant : participantsSnapshot) {
                 participant->Send<T>(topic, data, *serializer);
+                handled = true;
             }
+        }
+
+        // 9. Notify if no one received the message
+        if (!handled) {
+            m_unhandledSignal(topic);
         }
     }
 
@@ -378,6 +392,7 @@ private:
     std::unordered_map<std::string, QoS> m_topicQos;
     std::unordered_map<std::string, std::shared_ptr<void>> m_stringifiers;
     dmq::Signal<void(const SpyPacket&)> m_monitorSignal;
+    dmq::Signal<void(const std::string& topic)> m_unhandledSignal;
 };
 
 } // namespace dmq
