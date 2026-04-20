@@ -1,0 +1,51 @@
+#ifndef _ALARMS_H
+#define _ALARMS_H
+
+#include "DelegateMQ.h"
+#include "messages/HeartbeatMsg.h"
+#include "messages/FaultMsg.h"
+#include "extras/databus/DeadlineSubscription.h"
+#include <string>
+#include <memory>
+
+/// @brief Singleton class for centralized alarm handling in the GUI.
+class Alarms {
+public:
+    static Alarms& GetInstance() {
+        static Alarms instance;
+        return instance;
+    }
+
+    /// Initialize the Alarm subsystem.
+    void Initialize();
+
+    /// Shutdown the Alarm subsystem.
+    void Shutdown();
+
+    /// Reset the current alarm state.
+    void Reset();
+
+    /// Signal emitted when an alarm state changes.
+    /// std::string: The human-readable alarm message.
+    /// bool: True if this is an active alarm (Red), False for "No Alarm" (Green).
+    dmq::Signal<void(std::string, bool)> OnAlarmChanged;
+
+private:
+    Alarms() = default;
+    ~Alarms() { Shutdown(); }
+
+    void SetAlarm(const std::string& message, bool active);
+
+    // Standardized thread name for Active Object subsystem
+    Thread m_thread{"AlarmThread", 200, FullPolicy::DROP};
+
+    dmq::ScopedConnection m_faultConn;
+    std::unique_ptr<dmq::DeadlineSubscription<HeartbeatMsg>> m_safetyWatchdog;
+    std::unique_ptr<dmq::DeadlineSubscription<HeartbeatMsg>> m_controllerWatchdog;
+
+    std::string m_currentMessage = "No Alarm";
+    bool m_alarmActive = false;
+    uint32_t m_ticksWaited = 0;
+};
+
+#endif

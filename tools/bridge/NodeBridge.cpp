@@ -75,7 +75,8 @@ void NodeBridge::StartMulticast(const std::string& nodeId, const std::string& gr
     instance.running       = true;
 
     std::cout << "[NodeBridge] Starting Multicast heartbeats to " << groupAddr << ":" << port
-              << " as node \"" << nodeId << "\"" << std::endl;
+              << " as node \"" << nodeId << "\" on interface " 
+              << (localInterface.empty() ? "DEFAULT" : localInterface) << std::endl;
 
     // Subscribe to DataBus::Monitor to auto-discover topics and count messages.
     instance.monitorConn = dmq::DataBus::Monitor([](const dmq::SpyPacket& packet) {

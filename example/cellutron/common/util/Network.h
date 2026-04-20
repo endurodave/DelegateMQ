@@ -15,7 +15,7 @@ public:
     }
 
     /// Initialize network and start receiving.
-    void Initialize(uint16_t subPort);
+    void Initialize(uint16_t subPort, const std::string& nodeName = "Unknown");
 
     /// Stop network.
     void Shutdown();
@@ -28,8 +28,12 @@ public:
 
     /// Register a serializer for an outgoing topic.
     template <typename T>
-    void RegisterOutgoingTopic(const std::string& topic, dmq::ISerializer<void(T)>& serializer) {
+    void RegisterOutgoingTopic(const std::string& topic, dmq::DelegateRemoteId remoteId, dmq::ISerializer<void(T)>& serializer) {
         dmq::DataBus::RegisterSerializer<T>(topic, serializer);
+        m_outgoingTopics.push_back({topic, remoteId});
+        for (auto& [name, node] : m_remoteNodes) {
+            node.participant->AddRemoteTopic(topic, remoteId);
+        }
     }
 
     /// Register an incoming topic from the network.
@@ -58,6 +62,8 @@ private:
         std::shared_ptr<dmq::Participant> participant;
     };
     std::unordered_map<std::string, RemoteNode> m_remoteNodes;
+    std::vector<std::pair<std::string, dmq::DelegateRemoteId>> m_outgoingTopics;
+    std::string m_nodeName;
 };
 
 #endif

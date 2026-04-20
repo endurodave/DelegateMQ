@@ -35,8 +35,10 @@ list(REMOVE_DUPLICATES COMMON_SOURCES)
 
 add_executable(cellutron_gui 
     main.cpp 
+    system/System.cpp
     ui/UI.cpp
     logs/Logs.cpp
+    alarms/Alarms.cpp
     ${COMMON_SOURCES}
     ${DMQ_LIB_SOURCES} 
     ${DMQ_PORT_SOURCES}
@@ -58,6 +60,7 @@ target_include_directories(cellutron_gui PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/ui
     ${CMAKE_CURRENT_SOURCE_DIR}/logs
+    ${CMAKE_CURRENT_SOURCE_DIR}/alarms
     ${CELLUTRON_COMMON_DIR}
     ${CELLUTRON_COMMON_DIR}/util
     ${CELLUTRON_COMMON_DIR}/messages

@@ -11,6 +11,7 @@
 #include "messages/FaultMsg.h"
 #include "messages/ActuatorStatusMsg.h"
 #include "messages/SensorStatusMsg.h"
+#include "messages/HeartbeatMsg.h"
 
 // Remote IDs
 static constexpr dmq::DelegateRemoteId RID_START_PROCESS     = 100;
@@ -21,6 +22,8 @@ static constexpr dmq::DelegateRemoteId RID_RUN_STATUS         = 103;
 static constexpr dmq::DelegateRemoteId RID_FAULT_EVENT        = 105;
 static constexpr dmq::DelegateRemoteId RID_ACTUATOR_STATUS    = 106;
 static constexpr dmq::DelegateRemoteId RID_SENSOR_STATUS      = 107;
+static constexpr dmq::DelegateRemoteId RID_SAFETY_HB           = 108;
+static constexpr dmq::DelegateRemoteId RID_CONTROLLER_HB       = 109;
 
 // Shared Serializers
 extern Serializer<void(StartProcessMsg)>    serStart;
@@ -31,5 +34,6 @@ extern Serializer<void(RunStatusMsg)>       serRun;
 extern Serializer<void(FaultMsg)>           serFault;
 extern Serializer<void(ActuatorStatusMsg)>  serActuator;
 extern Serializer<void(SensorStatusMsg)>    serSensor;
+extern Serializer<void(HeartbeatMsg)>       serHeartbeat;
 
 #endif

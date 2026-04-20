@@ -29,7 +29,9 @@ foreach(FILE_PATH ${COMMON_SOURCES})
     endif()
 endforeach()
 
-add_executable(cellutron_safety main.cpp 
+add_executable(cellutron_safety 
+    main.cpp 
+    system/System.cpp
     ${COMMON_SOURCES}
     ${DMQ_LIB_SOURCES} 
     ${DMQ_PORT_SOURCES}

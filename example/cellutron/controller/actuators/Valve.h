@@ -1,0 +1,42 @@
+#ifndef _HW_VALVE_H
+#define _HW_VALVE_H
+
+#include "DelegateMQ.h"
+#include "messages/ActuatorStatusMsg.h"
+#include <cstdio>
+
+namespace hw {
+
+/// @brief Represents a single on/off solenoid valve.
+///
+/// SetState() must be called on the ActuatorThread (enforced by the
+/// Actuators manager via a blocking delegate). The current position is
+/// published to the DataBus on every state change so the logging
+/// subsystem and any other subscribers receive it automatically.
+class Valve
+{
+public:
+    explicit Valve(uint8_t id) : m_id(id) {}
+
+    /// Open or close the valve. Publishes the new state to the DataBus.
+    /// Runs on the ActuatorThread.
+    void SetState(bool open)
+    {
+        m_isOpen = open;
+        printf("[Valve %d] -> %s\n", m_id, open ? "OPEN" : "CLOSED");
+        dmq::DataBus::Publish<ActuatorStatusMsg>(
+            "hw/status/actuator",
+            { ActuatorType::VALVE, m_id, open ? uint8_t(1) : uint8_t(0) });
+    }
+
+    bool    IsOpen() const { return m_isOpen; }
+    uint8_t GetId()  const { return m_id; }
+
+private:
+    uint8_t m_id;
+    bool    m_isOpen = false;
+};
+
+} // namespace hw
+
+#endif // _HW_VALVE_H

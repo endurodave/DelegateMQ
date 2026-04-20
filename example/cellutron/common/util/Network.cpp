@@ -1,5 +1,6 @@
 #include "Network.h"
 #include <iostream>
+#include <vector>
 
 using namespace dmq;
 
@@ -7,12 +8,13 @@ Network::~Network() {
     Shutdown();
 }
 
-void Network::Initialize(uint16_t subPort) {
+void Network::Initialize(uint16_t subPort, const std::string& nodeName) {
     if (m_running) return;
 
+    m_nodeName = nodeName;
     m_subParticipant = std::make_shared<Participant>(m_subTransport);
 
-    std::cout << "Network: Initializing on port " << subPort << "..." << std::endl;
+    std::cout << "Network: Initializing node '" << m_nodeName << "' on port " << subPort << "..." << std::endl;
 
     if (m_subTransport.Create(UdpTransport::Type::SUB, "127.0.0.1", subPort) != 0) {
         std::cerr << "Network: ERROR - Failed to create subscriber transport on port " << subPort << std::endl;
@@ -46,9 +48,21 @@ void Network::AddRemoteNode(const std::string& nodeName, const std::string& addr
     auto transport = std::make_unique<UdpTransport>();
     if (transport->Create(UdpTransport::Type::PUB, addr.c_str(), port) == 0) {
         auto participant = std::make_shared<Participant>(*transport);
+
+        // Apply all outgoing topic-RID mappings registered so far
+        for (const auto& [topic, remoteId] : m_outgoingTopics) {
+            participant->AddRemoteTopic(topic, remoteId);
+        }
+
+        // Register with DataBus for global distribution
         DataBus::AddParticipant(participant);
-        m_remoteNodes[nodeName] = { std::move(transport), participant };
-        std::cout << "Network: SUCCESS - Remote node '" << nodeName << "' added." << std::endl;
+
+        RemoteNode node;
+        node.transport = std::move(transport);
+        node.participant = participant;
+        m_remoteNodes[nodeName] = std::move(node);
+        
+        std::cout << "Network: SUCCESS - Remote node '" << nodeName << "' added to DataBus." << std::endl;
     } else {
         std::cerr << "Network: ERROR - Failed to connect to node " << nodeName << " at " << addr << ":" << port << std::endl;
     }

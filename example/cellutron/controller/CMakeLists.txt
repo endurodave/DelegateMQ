@@ -39,7 +39,9 @@ file(GLOB SM_APP_SOURCES
 
 add_executable(cellutron_controller 
     main.cpp 
+    system/System.cpp
     ${COMMON_SOURCES}
+
     ${SM_APP_SOURCES}
     ${DMQ_LIB_SOURCES} 
     ${DMQ_PORT_SOURCES}
@@ -58,12 +60,8 @@ source_group("Common Files" FILES ${COMMON_SOURCES})
 
 target_include_directories(cellutron_controller PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/process
-    ${CMAKE_CURRENT_SOURCE_DIR}/actuators
-    ${CMAKE_CURRENT_SOURCE_DIR}/sensors
     ${CELLUTRON_COMMON_DIR}
     ${CELLUTRON_COMMON_DIR}/util
-    ${CELLUTRON_COMMON_DIR}/state-machine
     ${CELLUTRON_COMMON_DIR}/messages
     ${DMQ_INCLUDE_DIR}
     ${DMQ_SRC_DIR}
