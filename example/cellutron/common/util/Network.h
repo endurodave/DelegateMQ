@@ -2,7 +2,6 @@
 #define NETWORK_H
 
 #include "DelegateMQ.h"
-#include "port/transport/win32-udp/Win32UdpTransport.h"
 #include "SpyBridge.h"
 #include "NodeBridge.h"
 #include <string>

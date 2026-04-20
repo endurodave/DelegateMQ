@@ -18,6 +18,7 @@ System::~System() {
 void System::Initialize() {
     printf("GUI: System initializing...\n");
 
+    RegisterStringifiers();
     SetupNetwork();
     
     Logs::GetInstance().Initialize();

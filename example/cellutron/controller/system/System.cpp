@@ -20,6 +20,8 @@ void System::Initialize() {
     printf("Controller: System initializing...\n");
     m_ticksWaited = 0;
 
+    RegisterStringifiers();
+
     // 1. Create Communication/Sequencing Thread
     m_commThread = new Thread("CommThread", 200, FullPolicy::DROP);
     if (!m_commThread->CreateThread(std::chrono::seconds(2))) {

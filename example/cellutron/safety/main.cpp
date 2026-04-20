@@ -5,6 +5,7 @@
 
 #include "DelegateMQ.h"
 #include "system/System.h"
+#include "extras/util/NetworkConnect.h"
 #include <cstdio>
 
 #include "FreeRTOS.h"
@@ -68,6 +69,7 @@ static void vSafetyTask(void* /*pvParams*/) {
 
 int main(void) {
     prvInitialiseHeap();
+    static NetworkContext networkContext;
     printf("Cellutron Safety Processor starting (FreeRTOS Win32)...\n");
 
     TimerHandle_t sysTimer = xTimerCreate("SysTimer", pdMS_TO_TICKS(10), pdTRUE, NULL, [](TimerHandle_t) { Timer::ProcessTimers(); });

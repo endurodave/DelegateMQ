@@ -36,4 +36,6 @@ extern Serializer<void(ActuatorStatusMsg)>  serActuator;
 extern Serializer<void(SensorStatusMsg)>    serSensor;
 extern Serializer<void(HeartbeatMsg)>       serHeartbeat;
 
+void RegisterStringifiers();
+
 #endif

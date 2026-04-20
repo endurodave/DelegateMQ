@@ -5,11 +5,13 @@
 
 #include "system/System.h"
 #include "ui/UI.h"
+#include "extras/util/NetworkConnect.h"
 #include <iostream>
 
 using namespace cellutron;
 
 int main() {
+    static NetworkContext networkContext;
     std::cout << "Cellutron GUI Processor starting..." << std::endl;
 
     System::GetInstance().Initialize();
