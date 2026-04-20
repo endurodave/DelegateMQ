@@ -14,6 +14,9 @@ set(DMQ_DATABUS "ON")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../src/delegate-mq/DelegateMQ.cmake")
 get_filename_component(DMQ_SRC_DIR "${DMQ_INCLUDE_DIR}" DIRECTORY)
 
+set(TOOLS_BRIDGE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/bridge")
+set(TOOLS_SRC_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/src")
+
 # Paths for FTXUI
 set(WORKSPACE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 set(FTXUI_DIR "${WORKSPACE_DIR}/ftxui")
@@ -31,6 +34,8 @@ set(COMMON_SOURCES ${ALL_COMMON_SOURCES})
 # Ensure Network.cpp and RemoteConfig.cpp are included
 list(APPEND COMMON_SOURCES "${CELLUTRON_COMMON_DIR}/util/Network.cpp")
 list(APPEND COMMON_SOURCES "${CELLUTRON_COMMON_DIR}/util/RemoteConfig.cpp")
+list(APPEND COMMON_SOURCES "${TOOLS_BRIDGE_DIR}/SpyBridge.cpp")
+list(APPEND COMMON_SOURCES "${TOOLS_BRIDGE_DIR}/NodeBridge.cpp")
 list(REMOVE_DUPLICATES COMMON_SOURCES)
 
 add_executable(cellutron_gui 
@@ -67,6 +72,8 @@ target_include_directories(cellutron_gui PRIVATE
     ${DMQ_INCLUDE_DIR}
     ${DMQ_SRC_DIR}
     ${SPDLOG_INCLUDE_DIR}
+    ${TOOLS_BRIDGE_DIR}
+    ${TOOLS_SRC_DIR}
 )
 
 target_link_libraries(cellutron_gui PRIVATE

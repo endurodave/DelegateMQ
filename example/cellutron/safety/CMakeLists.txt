@@ -14,6 +14,9 @@ set(DMQ_DATABUS "ON")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../src/delegate-mq/DelegateMQ.cmake")
 get_filename_component(DMQ_SRC_DIR "${DMQ_INCLUDE_DIR}" DIRECTORY)
 
+set(TOOLS_BRIDGE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/bridge")
+set(TOOLS_SRC_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/src")
+
 # Glob common sources but exclude SQLite
 file(GLOB_RECURSE ALL_COMMON_SOURCES "${CELLUTRON_COMMON_DIR}/*.h" "${CELLUTRON_COMMON_DIR}/*.cpp" "${CELLUTRON_COMMON_DIR}/*.c")
 set(COMMON_SOURCES ${ALL_COMMON_SOURCES})
@@ -21,6 +24,8 @@ set(COMMON_SOURCES ${ALL_COMMON_SOURCES})
 # Ensure util files are included
 list(APPEND COMMON_SOURCES "${CELLUTRON_COMMON_DIR}/util/Network.cpp")
 list(APPEND COMMON_SOURCES "${CELLUTRON_COMMON_DIR}/util/RemoteConfig.cpp")
+list(APPEND COMMON_SOURCES "${TOOLS_BRIDGE_DIR}/SpyBridge.cpp")
+list(APPEND COMMON_SOURCES "${TOOLS_BRIDGE_DIR}/NodeBridge.cpp")
 list(REMOVE_DUPLICATES COMMON_SOURCES)
 
 foreach(FILE_PATH ${COMMON_SOURCES})
@@ -57,4 +62,6 @@ target_include_directories(cellutron_safety PRIVATE
     ${SPDLOG_INCLUDE_DIR}
     ${FREERTOS_ROOT_DIR}/include
     ${FREERTOS_ROOT_DIR}/portable/MSVC-MingW
+    ${TOOLS_BRIDGE_DIR}
+    ${TOOLS_SRC_DIR}
 )

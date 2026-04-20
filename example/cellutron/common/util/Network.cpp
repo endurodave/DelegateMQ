@@ -26,6 +26,10 @@ void Network::Initialize(uint16_t subPort, const std::string& nodeName) {
     // Enable DelegateMQ Watchdog (2 second timeout)
     m_thread.CreateThread(std::chrono::seconds(2));
 
+    // Initialize Bridges for dmq-spy and dmq-monitor
+    SpyBridge::Start("127.0.0.1", 9999);
+    NodeBridge::StartMulticast(m_nodeName, "239.1.1.1", 9998);
+
     // Post the receiver loop to the standardized worker thread
     dmq::MakeDelegate(this, &Network::ReceiverThread, m_thread).AsyncInvoke();
     
