@@ -24,6 +24,7 @@ static constexpr dmq::DelegateRemoteId RID_ACTUATOR_STATUS    = 106;
 static constexpr dmq::DelegateRemoteId RID_SENSOR_STATUS      = 107;
 static constexpr dmq::DelegateRemoteId RID_SAFETY_HB           = 108;
 static constexpr dmq::DelegateRemoteId RID_CONTROLLER_HB       = 109;
+static constexpr dmq::DelegateRemoteId RID_GUI_HB              = 110;
 
 // Shared Serializers
 extern Serializer<void(StartProcessMsg)>    serStart;

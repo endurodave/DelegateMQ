@@ -212,19 +212,22 @@ STATE_DEFINE(cellutron::process::CellProcess, FillSolutionA, NoEventData)
 {
     printf("CellProcess: ST_FILL_SOLUTION_A\n");
     DataBus::Publish<RunStatusMsg>("cell/status/run", { RunStatus::PROCESSING });
-    m_pumpProcess.Start(std::make_shared<PumpData>(1, 1, 50, std::chrono::seconds(2)));
+    // Use Pump ID 1
+    m_pumpProcess.Start(std::make_shared<PumpData>(1, 50, std::chrono::seconds(2)));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, FillSolutionB, NoEventData)
 {
     printf("CellProcess: ST_FILL_SOLUTION_B\n");
-    m_pumpProcess.Start(std::make_shared<PumpData>(2, 1, 50, std::chrono::seconds(2)));
+    // Use Pump ID 1
+    m_pumpProcess.Start(std::make_shared<PumpData>(2, 50, std::chrono::seconds(2)));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, FillCells, NoEventData)
 {
     printf("CellProcess: ST_FILL_CELLS\n");
-    m_pumpProcess.Start(std::make_shared<PumpData>(3, 2, 25, std::chrono::seconds(2)));
+    // Use Pump ID 1
+    m_pumpProcess.Start(std::make_shared<PumpData>(3, 25, std::chrono::seconds(2)));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, Spin, NoEventData)
@@ -236,7 +239,8 @@ STATE_DEFINE(cellutron::process::CellProcess, Spin, NoEventData)
 STATE_DEFINE(cellutron::process::CellProcess, Drain, NoEventData)
 {
     printf("CellProcess: ST_DRAIN\n");
-    m_pumpProcess.Start(std::make_shared<PumpData>(10, 3, 100, std::chrono::seconds(3)));
+    // Use Pump ID 1, Valve 10
+    m_pumpProcess.Start(std::make_shared<PumpData>(10, 100, std::chrono::seconds(3)));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, Complete, NoEventData)
@@ -257,9 +261,8 @@ STATE_DEFINE(cellutron::process::CellProcess, Fault, NoEventData)
     printf("CellProcess: ST_FAULT\n");
     DataBus::Publish<RunStatusMsg>("cell/status/run", { RunStatus::FAULT });
     
+    // Stop single pump
     actuators::Actuators::GetInstance().SetPump(1, 0);
-    actuators::Actuators::GetInstance().SetPump(2, 0);
-    actuators::Actuators::GetInstance().SetPump(3, 0);
     
     m_centrifuge.StopRamp(std::make_shared<actuators::Centrifuge::RampData>(0, std::chrono::milliseconds(2000)));
 }

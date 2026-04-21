@@ -2,6 +2,7 @@
 #define _GUI_SYSTEM_H
 
 #include "DelegateMQ.h"
+#include "util/Heartbeat.h"
 #include <thread>
 #include <atomic>
 
@@ -17,21 +18,27 @@ public:
 
     void Initialize();
     void Shutdown();
+    void Tick();
+
+    Thread& GetThread() { return m_thread; }
 
 private:
-    System() = default;
+    System() : m_heartbeat("GUI", topics::GUI_HEARTBEAT, m_thread) {}
     ~System();
 
     System(const System&) = delete;
     System& operator=(const System&) = delete;
 
     void SetupNetwork();
+    void SetupWatchdog();
     void StartTimerThread();
 
-    Thread m_timerThread{"TimerThread", 200, FullPolicy::DROP};
+    Thread m_thread{"SystemThread", 200, FullPolicy::DROP};
     
     std::atomic<bool> m_timerRunning{false};
     std::thread m_backgroundTimer;
+
+    Heartbeat m_heartbeat;
 };
 
 } // namespace cellutron

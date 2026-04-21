@@ -2,8 +2,7 @@
 #define _SYSTEM_H
 
 #include "DelegateMQ.h"
-#include "extras/databus/DeadlineSubscription.h"
-#include "messages/HeartbeatMsg.h"
+#include "util/Heartbeat.h"
 #include <memory>
 
 namespace cellutron {
@@ -29,7 +28,7 @@ public:
     Thread& GetThread() { return m_thread; }
 
 private:
-    System() = default;
+    System() : m_heartbeat("Controller", topics::CONTROLLER_HEARTBEAT, m_thread) {}
     ~System() = default;
 
     System(const System&) = delete;
@@ -37,7 +36,6 @@ private:
 
     void SetupLocalSubscriptions();
     void SetupNetwork();
-    void SetupHeartbeat();
     void SetupWatchdog();
 
     Thread m_thread{"SystemThread", 200, FullPolicy::DROP};
@@ -46,15 +44,9 @@ private:
     dmq::ScopedConnection m_startConn;
     dmq::ScopedConnection m_stopConn;
     dmq::ScopedConnection m_faultConn;
-    dmq::ScopedConnection m_heartbeatConn;
 
-    // Heartbeat state
-    Timer       m_heartbeatTimer;
-    uint32_t    m_heartbeatCount = 0;
-
-    // Watchdog to monitor the Safety node's heartbeat
-    std::unique_ptr<dmq::DeadlineSubscription<HeartbeatMsg>> m_safetyWatchdog;
-    uint32_t m_ticksWaited = 0;
+    // Heartbeat component
+    Heartbeat m_heartbeat;
 };
 
 } // namespace cellutron

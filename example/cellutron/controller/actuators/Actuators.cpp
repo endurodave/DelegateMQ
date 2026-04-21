@@ -32,16 +32,13 @@ void Actuators::Initialize() {
             dmq::MakeDelegate(this, &Actuators::HandleValveChanged, m_thread));
     }
 
-    // 4. Initialize Pumps (IDs used in CellProcess: 1, 2, 3)
-    int pumpIds[] = {1, 2, 3};
-    for (int id : pumpIds) {
-        m_pumps.emplace(std::piecewise_construct, std::forward_as_tuple(id), std::forward_as_tuple(id));
+    // 4. Initialize Single Pump (ID 1)
+    m_pumps.emplace(std::piecewise_construct, std::forward_as_tuple(1), std::forward_as_tuple(1));
 
-        // Connect internal pump signal to Actuators signal.
-        // pump::OnSpeedChanged(int, uint8_t) connects to Actuators::HandlePumpChanged(int, uint8_t)
-        m_pumpConns[id] = m_pumps.at(id).OnSpeedChanged.Connect(
-            dmq::MakeDelegate(this, &Actuators::HandlePumpChanged, m_thread));
-    }
+    // Connect internal pump signal to Actuators signal.
+    // pump::OnSpeedChanged(int, uint8_t) connects to Actuators::HandlePumpChanged(int, uint8_t)
+    m_pumpConns[1] = m_pumps.at(1).OnSpeedChanged.Connect(
+        dmq::MakeDelegate(this, &Actuators::HandlePumpChanged, m_thread));
 
     printf("Actuators: Subsystem initialized.\n");
 }

@@ -2,7 +2,7 @@
 #define _SAFETY_SYSTEM_H
 
 #include "DelegateMQ.h"
-#include "messages/HeartbeatMsg.h"
+#include "util/Heartbeat.h"
 
 namespace cellutron {
 
@@ -15,28 +15,28 @@ public:
     }
 
     void Initialize();
+    void Tick();
 
     Thread& GetThread() { return m_thread; }
 
 private:
-    System() = default;
-    ~System();
+    System() : m_heartbeat("Safety", topics::SAFETY_HEARTBEAT, m_thread) {}
+    ~System() = default;
 
     System(const System&) = delete;
     System& operator=(const System&) = delete;
 
     void SetupLocalSubscriptions();
     void SetupNetwork();
-    void SetupHeartbeat();
+    void SetupWatchdog();
 
     Thread m_thread{"SafetyThread", 50, FullPolicy::DROP};
 
     dmq::ScopedConnection m_speedConn;
-    dmq::ScopedConnection m_heartbeatConn;
+    dmq::ScopedConnection m_faultConn;
 
-    Timer* m_heartbeatTimer = nullptr;
-    uint32_t    m_heartbeatCount = 0;
-    bool        m_faulted = false;
+    Heartbeat m_heartbeat;
+    bool      m_faulted = false;
 };
 
 } // namespace cellutron

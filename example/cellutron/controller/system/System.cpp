@@ -13,7 +13,6 @@ namespace cellutron {
 
 void System::Initialize() {
     printf("Controller: System initializing...\n");
-    m_ticksWaited = 0;
 
     RegisterSerializers();
     RegisterStringifiers();
@@ -34,14 +33,16 @@ void System::Initialize() {
     // 4. Setup Wiring
     SetupLocalSubscriptions();
     SetupNetwork();
-    SetupHeartbeat();
     SetupWatchdog();
+
+    // 5. Start Heartbeat
+    m_heartbeat.Start();
 
     printf("Controller: System ready.\n");
 }
 
 void System::Tick() {
-    m_ticksWaited++;
+    m_heartbeat.Tick();
 }
 
 void System::SetupLocalSubscriptions() {
@@ -55,7 +56,7 @@ void System::SetupLocalSubscriptions() {
         process::Process::GetInstance().Abort();
     }, &m_thread);
 
-    m_faultConn = DataBus::Subscribe<FaultMsg>("cell/fault", [](FaultMsg msg) {
+    m_faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [](FaultMsg msg) {
         if (process::Process::GetInstance().GetCellProcess().GetCurrentState() != 25) { // 25 = ST_FAULT
             printf("Controller: >>>> CRITICAL FAULT RECEIVED (Code: %d) <<<<\n", msg.faultCode);
             process::Process::GetInstance().Fault();
@@ -69,42 +70,25 @@ void System::SetupNetwork() {
     // Incoming from Network
     Network::GetInstance().RegisterIncomingTopic<StartProcessMsg>("cell/cmd/run", RID_START_PROCESS, serStart);
     Network::GetInstance().RegisterIncomingTopic<StopProcessMsg>("cell/cmd/abort", RID_STOP_PROCESS, serStop);
-    Network::GetInstance().RegisterIncomingTopic<FaultMsg>("cell/fault", RID_FAULT_EVENT, serFault);
+    Network::GetInstance().RegisterIncomingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
     Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::SAFETY_HEARTBEAT, RID_SAFETY_HB, serHeartbeat);
+    Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
 
     // Setup Outgoing Topics
     Network::GetInstance().AddRemoteNode("GUI", "127.0.0.1", 5010);
     Network::GetInstance().AddRemoteNode("Safety", "127.0.0.1", 5013);
 
     Network::GetInstance().RegisterOutgoingTopic<RunStatusMsg>("cell/status/run", RID_RUN_STATUS, serRun);
-    Network::GetInstance().RegisterOutgoingTopic<FaultMsg>("cell/fault", RID_FAULT_EVENT, serFault);
+    Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
     Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
     Network::GetInstance().RegisterOutgoingTopic<CentrifugeSpeedMsg>("cell/cmd/centrifuge_speed", RID_CENTRIFUGE_SPEED, serSpeed);
     Network::GetInstance().RegisterOutgoingTopic<ActuatorStatusMsg>("hw/status/actuator", RID_ACTUATOR_STATUS, serActuator);
     Network::GetInstance().RegisterOutgoingTopic<SensorStatusMsg>("hw/status/sensor", RID_SENSOR_STATUS, serSensor);
 }
 
-void System::SetupHeartbeat() {
-    m_heartbeatConn = m_heartbeatTimer.OnExpired.Connect(dmq::MakeDelegate([this]() {
-        DataBus::Publish<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, { ++m_heartbeatCount });
-    }, m_thread));
-    m_heartbeatTimer.Start(std::chrono::milliseconds(500));
-}
-
 void System::SetupWatchdog() {
-    m_safetyWatchdog = std::make_unique<dmq::DeadlineSubscription<HeartbeatMsg>>(
-        topics::SAFETY_HEARTBEAT,
-        std::chrono::seconds(2),
-        [](const HeartbeatMsg&) { /* No-op on success */ },
-        [this]() {
-            if (m_ticksWaited >= 15 && process::Process::GetInstance().GetCellProcess().GetCurrentState() != 25) { 
-                printf("Controller: CRITICAL - Safety node heartbeat lost! TRIGGERING FAULT.\n");
-                DataBus::Publish<FaultMsg>("cell/fault", { FAULT_SAFETY_LOST });
-                process::Process::GetInstance().Fault();
-            }
-        },
-        &m_thread
-    );
+    m_heartbeat.MonitorNode(topics::SAFETY_HEARTBEAT, FAULT_SAFETY_LOST, "Safety");
+    m_heartbeat.MonitorNode(topics::GUI_HEARTBEAT, FAULT_GUI_LOST, "GUI");
 }
 
 } // namespace cellutron

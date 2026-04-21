@@ -48,7 +48,8 @@ void PumpProcess::OnValveChanged(int id, bool open)
 
 void PumpProcess::OnPumpChanged(int id, int speed) 
 {
-    if (m_data && id == m_data->pumpId)
+    // We only have one pump (ID 1)
+    if (m_data && id == 1)
     {
         if (speed == m_data->speed) PumpStarted();
         else if (speed == 0) PumpStopped();
@@ -140,8 +141,9 @@ STATE_DEFINE(cellutron::process::PumpProcess, ValveOpen, cellutron::process::Pum
 
 STATE_DEFINE(cellutron::process::PumpProcess, PumpOn, cellutron::process::PumpData)
 {
-    printf("PumpProcess: ST_PUMP_ON (ID: %d, Speed: %d%%)\n", data->pumpId, data->speed);
-    actuators::Actuators::GetInstance().SetPump(data->pumpId, data->speed);
+    printf("PumpProcess: ST_PUMP_ON (Speed: %d%%)\n", data->speed);
+    // Use fixed Pump ID 1
+    actuators::Actuators::GetInstance().SetPump(1, data->speed);
 }
 
 STATE_DEFINE(cellutron::process::PumpProcess, Waiting, cellutron::process::PumpData)
@@ -152,8 +154,9 @@ STATE_DEFINE(cellutron::process::PumpProcess, Waiting, cellutron::process::PumpD
 
 STATE_DEFINE(cellutron::process::PumpProcess, PumpOff, cellutron::process::PumpData)
 {
-    printf("PumpProcess: ST_PUMP_OFF (ID: %d)\n", data->pumpId);
-    actuators::Actuators::GetInstance().SetPump(data->pumpId, 0);
+    printf("PumpProcess: ST_PUMP_OFF\n");
+    // Use fixed Pump ID 1
+    actuators::Actuators::GetInstance().SetPump(1, 0);
 }
 
 STATE_DEFINE(cellutron::process::PumpProcess, ValveClose, cellutron::process::PumpData)

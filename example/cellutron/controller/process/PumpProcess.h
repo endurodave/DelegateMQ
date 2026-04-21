@@ -12,12 +12,12 @@ namespace process {
 struct PumpData : public EventData
 {
     uint8_t valveId;
-    uint8_t pumpId;
     uint8_t speed;
     std::chrono::milliseconds duration;
 
-    PumpData(uint8_t v, uint8_t p, uint8_t s, std::chrono::milliseconds d) :
-        valveId(v), pumpId(p), speed(s), duration(d) {}
+    // Default to Pump ID 1 for all operations
+    PumpData(uint8_t v, uint8_t s, std::chrono::milliseconds d) :
+        valveId(v), speed(s), duration(d) {}
 };
 
 /// @brief Sub-process state machine that handles: Valve Open -> Pump On -> Wait -> Pump Off -> Valve Close.
