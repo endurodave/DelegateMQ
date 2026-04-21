@@ -7,6 +7,9 @@
 
 using namespace dmq;
 
+namespace cellutron {
+namespace actuators {
+
 Actuators::~Actuators() {
     Shutdown();
 }
@@ -88,3 +91,6 @@ int Actuators::InternalSetPump(int id, int speed) {
     Thread::Sleep(std::chrono::milliseconds(100));
     return 0;
 }
+
+} // namespace actuators
+} // namespace cellutron

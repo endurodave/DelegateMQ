@@ -6,6 +6,7 @@
 #include "extras/util/Timer.h"
 
 namespace cellutron {
+namespace process {
 
 /// @brief Event data for PumpProcess containing all info needed for the sequence.
 struct PumpData : public EventData
@@ -87,6 +88,7 @@ private:
     std::shared_ptr<const PumpData> m_data;
 };
 
+} // namespace process
 } // namespace cellutron
 
 #endif // _PUMP_PROCESS_H

@@ -11,11 +11,6 @@ using namespace dmq;
 
 namespace cellutron {
 
-System::~System() {
-    delete m_heartbeatTimer;
-    delete m_commThread;
-}
-
 void System::Initialize() {
     printf("Controller: System initializing...\n");
     m_ticksWaited = 0;
@@ -23,19 +18,18 @@ void System::Initialize() {
     RegisterSerializers();
     RegisterStringifiers();
 
-    // 1. Create Communication/Sequencing Thread
-    m_commThread = new Thread("CommThread", 200, FullPolicy::DROP);
-    if (!m_commThread->CreateThread(std::chrono::seconds(2))) {
-        printf("Controller: ERROR - Failed to create comm thread!\n");
+    // 1. Create System Thread
+    if (!m_thread.CreateThread(std::chrono::seconds(2))) {
+        printf("Controller: ERROR - Failed to create system thread!\n");
         return;
     }
 
     // 2. Instantiate state machines
-    Process::GetInstance().Initialize();
+    process::Process::GetInstance().Initialize();
 
     // 3. Initialize Subsystems
-    Actuators::GetInstance().Initialize();
-    Sensors::GetInstance().Initialize();
+    actuators::Actuators::GetInstance().Initialize();
+    sensors::Sensors::GetInstance().Initialize();
 
     // 4. Setup Wiring
     SetupLocalSubscriptions();
@@ -53,20 +47,20 @@ void System::Tick() {
 void System::SetupLocalSubscriptions() {
     m_startConn = DataBus::Subscribe<StartProcessMsg>("cell/cmd/run", [](StartProcessMsg msg) {
         printf("Controller: >>>> RECEIVED START COMMAND <<<<\n");
-        Process::GetInstance().Start();
-    }, m_commThread);
+        process::Process::GetInstance().Start();
+    }, &m_thread);
 
     m_stopConn = DataBus::Subscribe<StopProcessMsg>("cell/cmd/abort", [](StopProcessMsg msg) {
         printf("Controller: >>>> RECEIVED ABORT COMMAND <<<<\n");
-        Process::GetInstance().Abort();
-    }, m_commThread);
+        process::Process::GetInstance().Abort();
+    }, &m_thread);
 
     m_faultConn = DataBus::Subscribe<FaultMsg>("cell/fault", [](FaultMsg msg) {
-        if (Process::GetInstance().GetCellProcess().GetCurrentState() != 25) { // 25 = ST_FAULT
+        if (process::Process::GetInstance().GetCellProcess().GetCurrentState() != 25) { // 25 = ST_FAULT
             printf("Controller: >>>> CRITICAL FAULT RECEIVED (Code: %d) <<<<\n", msg.faultCode);
-            Process::GetInstance().Fault();
+            process::Process::GetInstance().Fault();
         }
-    }, m_commThread);
+    }, &m_thread);
 }
 
 void System::SetupNetwork() {
@@ -91,11 +85,10 @@ void System::SetupNetwork() {
 }
 
 void System::SetupHeartbeat() {
-    m_heartbeatTimer = new Timer();
-    m_heartbeatConn = m_heartbeatTimer->OnExpired.Connect(dmq::MakeDelegate([this]() {
+    m_heartbeatConn = m_heartbeatTimer.OnExpired.Connect(dmq::MakeDelegate([this]() {
         DataBus::Publish<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, { ++m_heartbeatCount });
-    }, *m_commThread));
-    m_heartbeatTimer->Start(std::chrono::milliseconds(500));
+    }, m_thread));
+    m_heartbeatTimer.Start(std::chrono::milliseconds(500));
 }
 
 void System::SetupWatchdog() {
@@ -104,13 +97,13 @@ void System::SetupWatchdog() {
         std::chrono::seconds(2),
         [](const HeartbeatMsg&) { /* No-op on success */ },
         [this]() {
-            if (m_ticksWaited >= 15 && Process::GetInstance().GetCellProcess().GetCurrentState() != 25) { 
+            if (m_ticksWaited >= 15 && process::Process::GetInstance().GetCellProcess().GetCurrentState() != 25) { 
                 printf("Controller: CRITICAL - Safety node heartbeat lost! TRIGGERING FAULT.\n");
                 DataBus::Publish<FaultMsg>("cell/fault", { FAULT_SAFETY_LOST });
-                Process::GetInstance().Fault();
+                process::Process::GetInstance().Fault();
             }
         },
-        m_commThread
+        &m_thread
     );
 }
 

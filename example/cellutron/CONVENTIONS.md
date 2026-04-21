@@ -7,14 +7,14 @@ The project uses a custom table-driven Finite State Machine (FSM) framework.
 
 ### Macro Usage
 *   **Single-Line Declaration**: `BEGIN_TRANSITION_MAP` and `STATE_DEFINE` must be written on a single line to maintain readability and macro parser compatibility.
-    *   *Correct*: `BEGIN_TRANSITION_MAP(cellutron::MyClass, MyFunc, data)`
+    *   *Correct*: `BEGIN_TRANSITION_MAP(cellutron::process::MyClass, MyFunc, data)`
     *   *Incorrect*: 
         ```cpp
-        BEGIN_TRANSITION_MAP(cellutron::MyClass, 
+        BEGIN_TRANSITION_MAP(cellutron::process::MyClass, 
            MyFunc, data)
         ```
 *   **Fully Scoped Classes**: Always use the full namespace inside macros to avoid ambiguity.
-    *   *Correct*: `STATE_DEFINE(cellutron::PumpProcess, Idle, NoEventData)`
+    *   *Correct*: `STATE_DEFINE(cellutron::process::PumpProcess, Idle, NoEventData)`
 
 ### External Events Pattern
 All external event methods (public methods that trigger a transition) must follow this pattern:
@@ -38,9 +38,11 @@ When a state machine waits for an external signal (e.g., from hardware or anothe
     *   **Always Store**: Use `dmq::ScopedConnection` or `std::map<T, dmq::ScopedConnection>` to manage subscriber lifetimes.
 
 ## 3. Namespace Architecture
-*   **`cellutron`**: All process logic, state machines, and system coordinators.
-*   **`hw`**: Low-level hardware abstractions (Valve, Pump).
+*   **`cellutron::process`**: High-level process logic, state machines, and system coordinators.
+*   **`cellutron::actuators`**: Low-level actuator abstractions (Valve, Pump, Centrifuge) and management.
+*   **`cellutron::sensors`**: Low-level sensor abstractions and monitoring.
 *   **Global**: `Thread`, `Timer`, and `FullPolicy` are global classes from the DelegateMQ extras/ports. **Never** prefix them with `dmq::`.
+*   **DelegateMQ Inclusions**: Always include `DelegateMQ.h` as the primary entry point for the library. It automatically includes all necessary delegate types, port abstractions, and transport layers based on the build configuration. **Do not** include internal library files directly (e.g., avoid `#include "port/transport/win32-udp/Win32UdpTransport.h"`) to maintain platform portability.
 
 ## 4. Portability & Types
 To ensure the system can run on FreeRTOS, Windows (Win32), and Standard C++ targets without code changes, use the provided portable abstractions instead of OS-specific or `std` primitives:

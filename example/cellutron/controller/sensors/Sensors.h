@@ -3,6 +3,9 @@
 
 #include "DelegateMQ.h"
 
+namespace cellutron {
+namespace sensors {
+
 /// @brief Singleton class for monitoring hardware sensors.
 class Sensors {
 public:
@@ -33,5 +36,8 @@ private:
     // Use standardized thread name for Active Object subsystem
     Thread m_thread{"SensorThread"};
 };
+
+} // namespace sensors
+} // namespace cellutron
 
 #endif

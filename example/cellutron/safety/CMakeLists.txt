@@ -34,9 +34,14 @@ foreach(FILE_PATH ${COMMON_SOURCES})
     endif()
 endforeach()
 
+set(SYSTEM_FILES 
+    system/System.cpp
+    system/System.h
+)
+
 add_executable(cellutron_safety 
     main.cpp 
-    system/System.cpp
+    ${SYSTEM_FILES}
     ${COMMON_SOURCES}
     ${DMQ_LIB_SOURCES} 
     ${DMQ_PORT_SOURCES}
@@ -46,11 +51,13 @@ add_executable(cellutron_safety
 target_compile_definitions(cellutron_safety PRIVATE ${DMQ_COMPILE_DEFINITIONS})
 
 # Organize delegate source files within IDE (Visual Studio)
+source_group("Source Files" FILES main.cpp)
+source_group("System Files" FILES ${SYSTEM_FILES})
+source_group("Common Files" FILES ${COMMON_SOURCES})
 source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
 source_group("Port Files" FILES ${DMQ_PORT_ONLY_SOURCES})
 source_group("Extras Files" FILES ${DMQ_EXTRAS_SOURCES})
 source_group("FreeRTOS Files" FILES ${FREERTOS_SOURCES})
-source_group("Common Files" FILES ${COMMON_SOURCES})
 
 target_include_directories(cellutron_safety PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}

@@ -7,6 +7,9 @@
 #include "Pump.h"
 #include <map>
 
+namespace cellutron {
+namespace actuators {
+
 /// @brief Singleton class for controlling hardware actuators.
 class Actuators {
 public:
@@ -29,13 +32,13 @@ public:
     int SetPump(int id, int speed);
 
     /// Get the centrifuge actuator.
-    hw::Centrifuge& GetCentrifuge() { return m_centrifuge; }
+    Centrifuge& GetCentrifuge() { return m_centrifuge; }
 
     /// Get a valve by ID.
-    hw::Valve& GetValve(int id) { return m_valves.at(id); }
+    Valve& GetValve(int id) { return m_valves.at(id); }
 
     /// Get a pump by ID.
-    hw::Pump& GetPump(int id) { return m_pumps.at(id); }
+    Pump& GetPump(int id) { return m_pumps.at(id); }
 
     /// Get the actuator thread.
     Thread& GetThread() { return m_thread; }
@@ -55,13 +58,16 @@ private:
 
     // Use standardized thread name for Active Object subsystem
     Thread m_thread{"ActuatorThread", 50, FullPolicy::DROP};
-    hw::Centrifuge m_centrifuge;
+    Centrifuge m_centrifuge;
 
-    std::map<int, hw::Valve> m_valves;
-    std::map<int, hw::Pump>  m_pumps;
+    std::map<int, Valve> m_valves;
+    std::map<int, Pump>  m_pumps;
 
     std::map<int, dmq::ScopedConnection> m_valveConns;
     std::map<int, dmq::ScopedConnection> m_pumpConns;
 };
+
+} // namespace actuators
+} // namespace cellutron
 
 #endif

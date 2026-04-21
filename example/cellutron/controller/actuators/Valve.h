@@ -1,11 +1,12 @@
-#ifndef _HW_VALVE_H
-#define _HW_VALVE_H
+#ifndef _VALVE_H
+#define _VALVE_H
 
 #include "DelegateMQ.h"
 #include "messages/ActuatorStatusMsg.h"
 #include <cstdio>
 
-namespace hw {
+namespace cellutron {
+namespace actuators {
 
 /// @brief Represents a single on/off solenoid valve.
 ///
@@ -43,6 +44,7 @@ private:
     bool    m_isOpen = false;
 };
 
-} // namespace hw
+} // namespace actuators
+} // namespace cellutron
 
-#endif // _HW_VALVE_H
+#endif // _VALVE_H

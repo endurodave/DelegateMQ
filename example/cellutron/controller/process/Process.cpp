@@ -5,6 +5,7 @@
 using namespace dmq;
 
 namespace cellutron {
+namespace process {
 
 Process::~Process() { Shutdown(); }
 
@@ -37,4 +38,5 @@ void Process::InternalStart() { m_cellProcess.StartProcess(); }
 void Process::InternalAbort() { m_cellProcess.AbortProcess(); }
 void Process::InternalFault() { m_cellProcess.GenerateFault(); }
 
+} // namespace process
 } // namespace cellutron

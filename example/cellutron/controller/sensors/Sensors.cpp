@@ -7,6 +7,9 @@
 
 using namespace dmq;
 
+namespace cellutron {
+namespace sensors {
+
 Sensors::~Sensors() {
     Shutdown();
 }
@@ -40,3 +43,6 @@ bool Sensors::InternalIsAirInLine() {
     DataBus::Publish<SensorStatusMsg>("hw/status/sensor", { SensorType::AIR_IN_LINE, (int16_t)(air ? 1 : 0) });
     return air;
 }
+
+} // namespace sensors
+} // namespace cellutron

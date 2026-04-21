@@ -6,6 +6,7 @@
 #include "actuators/Centrifuge.h"
 
 namespace cellutron {
+namespace process {
 
 class PumpProcess;
 
@@ -18,7 +19,7 @@ public:
     using StateMachine::OnExit;
     using StateMachine::OnCannotHappen;
 
-    CellProcess(hw::Centrifuge& centrifuge, PumpProcess& pumpProcess);
+    CellProcess(actuators::Centrifuge& centrifuge, PumpProcess& pumpProcess);
     ~CellProcess();
 
     virtual void SetThread(dmq::IThread& thread) override;
@@ -86,7 +87,7 @@ private:
     void OnTimerExpired();
     void OnPumpComplete();
 
-    hw::Centrifuge& m_centrifuge;
+    actuators::Centrifuge& m_centrifuge;
     PumpProcess& m_pumpProcess;
     dmq::ScopedConnection m_centrifugeConn;
     dmq::ScopedConnection m_valveConn;
@@ -98,6 +99,7 @@ private:
     bool  m_newChange = false;
 };
 
+} // namespace process
 } // namespace cellutron
 
 #endif

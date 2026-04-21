@@ -5,6 +5,9 @@
 #include "messages/SensorStatusMsg.h"
 #include "util/Constants.h"
 
+namespace cellutron {
+namespace sensors {
+
 /// @brief Simulates two air-in-line detectors: A1 (inlet) and A2 (outlet).
 ///
 /// Both sensors always report fluid present (no air). Poll() is called every
@@ -30,5 +33,8 @@ private:
     bool m_inletAir  = false;
     bool m_outletAir = false;
 };
+
+} // namespace sensors
+} // namespace cellutron
 
 #endif // _AIR_SENSOR_H

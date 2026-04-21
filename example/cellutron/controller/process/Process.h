@@ -7,6 +7,7 @@
 #include "actuators/Actuators.h"
 
 namespace cellutron {
+namespace process {
 
 /// @brief Singleton that owns CellProcess and the ProcessThread.
 ///
@@ -41,7 +42,7 @@ public:
     PumpProcess& GetPumpProcess() { return m_pumpProcess; }
 
 private:
-    Process() : m_cellProcess(Actuators::GetInstance().GetCentrifuge(), m_pumpProcess) {}
+    Process() : m_cellProcess(actuators::Actuators::GetInstance().GetCentrifuge(), m_pumpProcess) {}
     ~Process();
 
     Process(const Process&) = delete;
@@ -57,6 +58,7 @@ private:
     CellProcess       m_cellProcess;
 };
 
+} // namespace process
 } // namespace cellutron
 
 #endif // _PROCESS_H

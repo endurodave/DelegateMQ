@@ -1,5 +1,5 @@
-#ifndef _CONTROLLER_SYSTEM_H
-#define _CONTROLLER_SYSTEM_H
+#ifndef _SYSTEM_H
+#define _SYSTEM_H
 
 #include "DelegateMQ.h"
 #include "extras/databus/DeadlineSubscription.h"
@@ -25,12 +25,12 @@ public:
     /// Process periodic system maintenance.
     void Tick();
 
-    /// Get the communication thread.
-    Thread& GetCommThread() { return *m_commThread; }
+    /// Get the system thread.
+    Thread& GetThread() { return m_thread; }
 
 private:
     System() = default;
-    ~System();
+    ~System() = default;
 
     System(const System&) = delete;
     System& operator=(const System&) = delete;
@@ -40,7 +40,7 @@ private:
     void SetupHeartbeat();
     void SetupWatchdog();
 
-    Thread* m_commThread = nullptr;
+    Thread m_thread{"SystemThread", 200, FullPolicy::DROP};
 
     // Connections to the local DataBus
     dmq::ScopedConnection m_startConn;
@@ -49,7 +49,7 @@ private:
     dmq::ScopedConnection m_heartbeatConn;
 
     // Heartbeat state
-    Timer* m_heartbeatTimer = nullptr;
+    Timer       m_heartbeatTimer;
     uint32_t    m_heartbeatCount = 0;
 
     // Watchdog to monitor the Safety node's heartbeat
@@ -59,4 +59,4 @@ private:
 
 } // namespace cellutron
 
-#endif // _CONTROLLER_SYSTEM_H
+#endif // _SYSTEM_H

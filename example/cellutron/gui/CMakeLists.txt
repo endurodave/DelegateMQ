@@ -38,12 +38,32 @@ list(APPEND COMMON_SOURCES "${TOOLS_BRIDGE_DIR}/SpyBridge.cpp")
 list(APPEND COMMON_SOURCES "${TOOLS_BRIDGE_DIR}/NodeBridge.cpp")
 list(REMOVE_DUPLICATES COMMON_SOURCES)
 
+set(UI_FILES 
+    ui/UI.cpp
+    ui/UI.h
+)
+
+set(LOG_FILES 
+    logs/Logs.cpp
+    logs/Logs.h
+)
+
+set(ALARM_FILES 
+    alarms/Alarms.cpp
+    alarms/Alarms.h
+)
+
+set(SYSTEM_FILES 
+    system/System.cpp
+    system/System.h
+)
+
 add_executable(cellutron_gui 
     main.cpp 
-    system/System.cpp
-    ui/UI.cpp
-    logs/Logs.cpp
-    alarms/Alarms.cpp
+    ${UI_FILES}
+    ${LOG_FILES}
+    ${ALARM_FILES}
+    ${SYSTEM_FILES}
     ${COMMON_SOURCES}
     ${DMQ_LIB_SOURCES} 
     ${DMQ_PORT_SOURCES}
@@ -55,10 +75,15 @@ if(WIN32)
 endif()
 
 # Organize delegate source files within IDE (Visual Studio)
+source_group("Source Files" FILES main.cpp)
+source_group("UI Files" FILES ${UI_FILES})
+source_group("Log Files" FILES ${LOG_FILES})
+source_group("Alarm Files" FILES ${ALARM_FILES})
+source_group("System Files" FILES ${SYSTEM_FILES})
+source_group("Common Files" FILES ${COMMON_SOURCES})
 source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
 source_group("Port Files" FILES ${DMQ_PORT_ONLY_SOURCES})
 source_group("Extras Files" FILES ${DMQ_EXTRAS_SOURCES})
-source_group("Common Files" FILES ${COMMON_SOURCES})
 
 # Include directories
 target_include_directories(cellutron_gui PRIVATE 

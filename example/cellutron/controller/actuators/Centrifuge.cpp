@@ -5,7 +5,8 @@
 
 using namespace dmq;
 
-namespace hw {
+namespace cellutron {
+namespace actuators {
 
 Centrifuge::Centrifuge() :
     StateMachine(ST_MAX_STATES)
@@ -23,9 +24,9 @@ void Centrifuge::SetThread(dmq::IThread& thread)
     m_pollTimerConn = m_pollTimer.OnExpired.Connect(dmq::MakeDelegate(this, &Centrifuge::Poll, thread));
 }
 
-void Centrifuge::StartRamp(std::shared_ptr<const hw::Centrifuge::RampData> data)
+void Centrifuge::StartRamp(std::shared_ptr<const cellutron::actuators::Centrifuge::RampData> data)
 {
-    BEGIN_TRANSITION_MAP(hw::Centrifuge, StartRamp, data)
+    BEGIN_TRANSITION_MAP(cellutron::actuators::Centrifuge, StartRamp, data)
         TRANSITION_MAP_ENTRY(ST_START_RAMP) // ST_IDLE
         TRANSITION_MAP_ENTRY(ST_START_RAMP) // ST_START_RAMP
         TRANSITION_MAP_ENTRY(ST_START_RAMP) // ST_RAMPING
@@ -37,9 +38,9 @@ void Centrifuge::StartRamp(std::shared_ptr<const hw::Centrifuge::RampData> data)
     END_TRANSITION_MAP(data)
 }
 
-void Centrifuge::StopRamp(std::shared_ptr<const hw::Centrifuge::RampData> data)
+void Centrifuge::StopRamp(std::shared_ptr<const cellutron::actuators::Centrifuge::RampData> data)
 {
-    BEGIN_TRANSITION_MAP(hw::Centrifuge, StopRamp, data)
+    BEGIN_TRANSITION_MAP(cellutron::actuators::Centrifuge, StopRamp, data)
         TRANSITION_MAP_ENTRY(ST_START_STOP) // ST_IDLE
         TRANSITION_MAP_ENTRY(ST_START_STOP) // ST_START_RAMP
         TRANSITION_MAP_ENTRY(ST_START_STOP) // ST_RAMPING
@@ -53,7 +54,7 @@ void Centrifuge::StopRamp(std::shared_ptr<const hw::Centrifuge::RampData> data)
 
 void Centrifuge::Poll()
 {
-    BEGIN_TRANSITION_MAP(hw::Centrifuge, Poll)
+    BEGIN_TRANSITION_MAP(cellutron::actuators::Centrifuge, Poll)
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)    // ST_IDLE
         TRANSITION_MAP_ENTRY(ST_RAMPING)       // ST_START_RAMP
         TRANSITION_MAP_ENTRY(ST_RAMP_STEP)     // ST_RAMPING
@@ -65,7 +66,7 @@ void Centrifuge::Poll()
     END_TRANSITION_MAP(m_data)
 }
 
-STATE_DEFINE(hw::Centrifuge, Idle, NoEventData)
+STATE_DEFINE(cellutron::actuators::Centrifuge, Idle, NoEventData)
 {
     printf("Centrifuge: ST_IDLE\n");
     bool wasRamping = (m_currentRpm != 0);
@@ -79,7 +80,7 @@ STATE_DEFINE(hw::Centrifuge, Idle, NoEventData)
     }
 }
 
-STATE_DEFINE(hw::Centrifuge, StartRampState, hw::Centrifuge::RampData)
+STATE_DEFINE(cellutron::actuators::Centrifuge, StartRampState, cellutron::actuators::Centrifuge::RampData)
 {
     printf("Centrifuge: ST_START_RAMP (Target: %u RPM)\n", data->targetRpm);
     m_data = data;
@@ -100,7 +101,7 @@ STATE_DEFINE(hw::Centrifuge, StartRampState, hw::Centrifuge::RampData)
     }
 }
 
-STATE_DEFINE(hw::Centrifuge, Ramping, hw::Centrifuge::RampData)
+STATE_DEFINE(cellutron::actuators::Centrifuge, Ramping, cellutron::actuators::Centrifuge::RampData)
 {
     auto now = Clock::now();
     auto elapsed = now - m_rampStartTime;
@@ -120,12 +121,12 @@ STATE_DEFINE(hw::Centrifuge, Ramping, hw::Centrifuge::RampData)
     }
 }
 
-STATE_DEFINE(hw::Centrifuge, RampStep, hw::Centrifuge::RampData)
+STATE_DEFINE(cellutron::actuators::Centrifuge, RampStep, cellutron::actuators::Centrifuge::RampData)
 {
     InternalEvent(ST_RAMPING, data);
 }
 
-STATE_DEFINE(hw::Centrifuge, AtSpeed, NoEventData)
+STATE_DEFINE(cellutron::actuators::Centrifuge, AtSpeed, NoEventData)
 {
     printf("Centrifuge: ST_AT_SPEED (%u RPM)\n", m_currentRpm);
     StopPoll();
@@ -133,7 +134,7 @@ STATE_DEFINE(hw::Centrifuge, AtSpeed, NoEventData)
     OnTargetReached(m_currentRpm);
 }
 
-STATE_DEFINE(hw::Centrifuge, StartStopState, hw::Centrifuge::RampData)
+STATE_DEFINE(cellutron::actuators::Centrifuge, StartStopState, cellutron::actuators::Centrifuge::RampData)
 {
     printf("Centrifuge: ST_START_STOP\n");
     m_data = data;
@@ -145,7 +146,7 @@ STATE_DEFINE(hw::Centrifuge, StartStopState, hw::Centrifuge::RampData)
     InternalEvent(ST_STOPPING, data);
 }
 
-STATE_DEFINE(hw::Centrifuge, Stopping, hw::Centrifuge::RampData)
+STATE_DEFINE(cellutron::actuators::Centrifuge, Stopping, cellutron::actuators::Centrifuge::RampData)
 {
     auto now = Clock::now();
     auto elapsed = now - m_rampStartTime;
@@ -164,9 +165,10 @@ STATE_DEFINE(hw::Centrifuge, Stopping, hw::Centrifuge::RampData)
     }
 }
 
-STATE_DEFINE(hw::Centrifuge, StopStep, hw::Centrifuge::RampData)
+STATE_DEFINE(cellutron::actuators::Centrifuge, StopStep, cellutron::actuators::Centrifuge::RampData)
 {
     InternalEvent(ST_STOPPING, data);
 }
 
-} // namespace hw
+} // namespace actuators
+} // namespace cellutron

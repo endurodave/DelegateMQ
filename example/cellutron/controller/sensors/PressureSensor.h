@@ -5,6 +5,9 @@
 #include "messages/SensorStatusMsg.h"
 #include "util/Constants.h"
 
+namespace cellutron {
+namespace sensors {
+
 /// @brief Simulates two pressure sensors: P1 (inlet) and P2 (outlet).
 ///
 /// Both sensors always report a nominal "good" value. Poll() is called every
@@ -30,5 +33,8 @@ private:
     int16_t m_inletKPa  = 0;
     int16_t m_outletKPa = 0;
 };
+
+} // namespace sensors
+} // namespace cellutron
 
 #endif // _PRESSURE_SENSOR_H

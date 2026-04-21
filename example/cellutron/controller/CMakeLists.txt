@@ -36,22 +36,44 @@ foreach(FILE_PATH ${COMMON_SOURCES})
 endforeach()
 
 # Controller application sources
-file(GLOB SM_APP_SOURCES 
-    "${CMAKE_CURRENT_SOURCE_DIR}/process/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/actuators/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/sensors/*.cpp"
+set(PROCESS_FILES 
+    process/Process.cpp
+    process/Process.h
+    process/CellProcess.cpp
+    process/CellProcess.h
+    process/PumpProcess.cpp
+    process/PumpProcess.h
+)
+
+set(ACTUATOR_FILES 
+    actuators/Actuators.cpp
+    actuators/Actuators.h
+    actuators/Centrifuge.cpp
+    actuators/Centrifuge.h
+    actuators/Pump.h
+    actuators/Valve.h
+)
+
+set(SENSOR_FILES 
+    sensors/Sensors.cpp
+    sensors/Sensors.h
+    sensors/AirSensor.h
+    sensors/PressureSensor.h
+    sensors/RpmSensor.h
+)
+
+set(SYSTEM_FILES 
+    system/System.cpp
+    system/System.h
 )
 
 add_executable(cellutron_controller 
     main.cpp 
-    system/System.cpp
-    process/Process.cpp
-    process/CellProcess.cpp
-    process/PumpProcess.cpp
-    actuators/Centrifuge.cpp
+    ${PROCESS_FILES}
+    ${ACTUATOR_FILES}
+    ${SENSOR_FILES}
+    ${SYSTEM_FILES}
     ${COMMON_SOURCES}
-
-    ${SM_APP_SOURCES}
     ${DMQ_LIB_SOURCES} 
     ${DMQ_PORT_SOURCES}
     ${FREERTOS_SOURCES}
@@ -60,12 +82,16 @@ add_executable(cellutron_controller
 target_compile_definitions(cellutron_controller PRIVATE ${DMQ_COMPILE_DEFINITIONS})
 
 # Organize delegate source files within IDE (Visual Studio)
+source_group("Source Files" FILES main.cpp)
+source_group("Process Files" FILES ${PROCESS_FILES})
+source_group("Actuator Files" FILES ${ACTUATOR_FILES})
+source_group("Sensor Files" FILES ${SENSOR_FILES})
+source_group("System Files" FILES ${SYSTEM_FILES})
+source_group("Common Files" FILES ${COMMON_SOURCES})
 source_group("Delegate Files" FILES ${DMQ_LIB_SOURCES})
 source_group("Port Files" FILES ${DMQ_PORT_ONLY_SOURCES})
 source_group("Extras Files" FILES ${DMQ_EXTRAS_SOURCES})
 source_group("FreeRTOS Files" FILES ${FREERTOS_SOURCES})
-source_group("Process Files" FILES ${SM_APP_SOURCES})
-source_group("Common Files" FILES ${COMMON_SOURCES})
 
 target_include_directories(cellutron_controller PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}

@@ -5,7 +5,8 @@
 #include "state-machine/StateMachine.h"
 #include "extras/util/Timer.h"
 
-namespace hw {
+namespace cellutron {
+namespace actuators {
 
 /// @brief Centrifuge state machine simulates the physics of the centrifuge motor.
 class Centrifuge : public StateMachine
@@ -82,6 +83,7 @@ private:
     std::shared_ptr<const RampData> m_data;
 };
 
-} // namespace hw
+} // namespace actuators
+} // namespace cellutron
 
 #endif

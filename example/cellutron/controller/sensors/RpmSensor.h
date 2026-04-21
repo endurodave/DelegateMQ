@@ -6,6 +6,9 @@
 #include "util/Constants.h"
 #include <atomic>
 
+namespace cellutron {
+namespace sensors {
+
 /// @brief Simulates a centrifuge tachometer (RPM sensor).
 ///
 /// Subscribes to the commanded centrifuge speed topic and re-publishes it on
@@ -36,5 +39,8 @@ private:
     std::atomic<uint16_t> m_currentRpm{0};
     dmq::ScopedConnection m_conn;
 };
+
+} // namespace sensors
+} // namespace cellutron
 
 #endif // _RPM_SENSOR_H

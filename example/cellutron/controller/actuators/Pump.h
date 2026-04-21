@@ -1,12 +1,13 @@
-#ifndef _HW_PUMP_H
-#define _HW_PUMP_H
+#ifndef _PUMP_H
+#define _PUMP_H
 
 #include "DelegateMQ.h"
 #include "messages/ActuatorStatusMsg.h"
 #include <cstdint>
 #include <cstdio>
 
-namespace hw {
+namespace cellutron {
+namespace actuators {
 
 /// @brief Represents a single peristaltic pump.
 class Pump {
@@ -36,6 +37,7 @@ private:
     uint8_t m_speed = 0;
 };
 
-} // namespace hw
+} // namespace actuators
+} // namespace cellutron
 
-#endif // _HW_PUMP_H
+#endif // _PUMP_H
