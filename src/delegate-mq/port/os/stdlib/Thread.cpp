@@ -118,6 +118,10 @@ size_t Thread::GetQueueSize()
     return m_queue.size();
 }
 
+void Thread::Sleep(dmq::Duration timeout) {
+    std::this_thread::sleep_for(timeout);
+}
+
 //----------------------------------------------------------------------------
 // SetThreadName
 //----------------------------------------------------------------------------
@@ -255,6 +259,7 @@ void Thread::WatchdogCheck()
     // Watchdog expired?
     if (delta > m_watchdogTimeout.load())
     {
+        printf("[Thread] Watchdog detected unresponsive thread: %s\n", THREAD_NAME.c_str());
         LOG_ERROR("Watchdog detected unresponsive thread: {}", THREAD_NAME);
 
         // @TODO Optionally trigger recovery, restart, or further actions here
@@ -267,6 +272,7 @@ void Thread::WatchdogCheck()
 //----------------------------------------------------------------------------
 void Thread::ThreadCheck()
 {
+    m_lastAliveTime.store(Timer::GetNow());
 }
 
 //----------------------------------------------------------------------------

@@ -10,6 +10,19 @@ Serializer<void(ActuatorStatusMsg)>  serActuator;
 Serializer<void(SensorStatusMsg)>    serSensor;
 Serializer<void(HeartbeatMsg)>       serHeartbeat;
 
+void RegisterSerializers() {
+    dmq::DataBus::RegisterSerializer<StartProcessMsg>("cell/cmd/run", serStart);
+    dmq::DataBus::RegisterSerializer<StopProcessMsg>("cell/cmd/abort", serStop);
+    dmq::DataBus::RegisterSerializer<CentrifugeSpeedMsg>("cell/cmd/centrifuge_speed", serSpeed);
+    dmq::DataBus::RegisterSerializer<CentrifugeStatusMsg>("cell/status/centrifuge", serStatus);
+    dmq::DataBus::RegisterSerializer<RunStatusMsg>("cell/status/run", serRun);
+    dmq::DataBus::RegisterSerializer<FaultMsg>("cell/fault", serFault);
+    dmq::DataBus::RegisterSerializer<ActuatorStatusMsg>("hw/status/actuator", serActuator);
+    dmq::DataBus::RegisterSerializer<SensorStatusMsg>("hw/status/sensor", serSensor);
+    dmq::DataBus::RegisterSerializer<HeartbeatMsg>("sys/heartbeat/safety", serHeartbeat);
+    dmq::DataBus::RegisterSerializer<HeartbeatMsg>("sys/heartbeat/controller", serHeartbeat);
+}
+
 void RegisterStringifiers() {
     dmq::DataBus::RegisterStringifier<StartProcessMsg>("cell/cmd/run", [](const StartProcessMsg&) {
         return "START";

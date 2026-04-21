@@ -191,6 +191,11 @@ size_t Thread::GetQueueSize()
     return 0;
 }
 
+void Thread::Sleep(dmq::Duration timeout) {
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count();
+    vTaskDelay(pdMS_TO_TICKS(ms));
+}
+
 void Thread::SetThreadPriority(int priority) {
     m_priority = priority;
     if (m_thread) {
@@ -258,6 +263,7 @@ void Thread::WatchdogCheck()
     auto delta = now - lastAlive;
     if (delta > m_watchdogTimeout.load())
     {
+        printf("[Thread] Watchdog detected unresponsive thread: %s\n", THREAD_NAME.c_str());
         // @TODO trigger recovery or fault handler
     }
 }

@@ -12,9 +12,43 @@ Actuators::~Actuators() {
 }
 
 void Actuators::Initialize() {
-    // Enable DelegateMQ Watchdog (2 second timeout)
+    // 1. Start the thread
     m_thread.CreateThread(std::chrono::seconds(2));
+
+    // 2. Initialize Centrifuge
+    m_centrifuge.SetThread(m_thread);
+
+    // 3. Initialize Valves (IDs used in CellProcess: 1, 2, 3, 10)
+    int valveIds[] = {1, 2, 3, 10};
+    for (int id : valveIds) {
+        m_valves.emplace(std::piecewise_construct, std::forward_as_tuple(id), std::forward_as_tuple(id));
+        
+        // Connect internal valve signal to Actuators signal. 
+        // valve::OnStateChanged(int, bool) connects to Actuators::HandleValveChanged(int, bool)
+        m_valveConns[id] = m_valves.at(id).OnStateChanged.Connect(
+            dmq::MakeDelegate(this, &Actuators::HandleValveChanged, m_thread));
+    }
+
+    // 4. Initialize Pumps (IDs used in CellProcess: 1, 2, 3)
+    int pumpIds[] = {1, 2, 3};
+    for (int id : pumpIds) {
+        m_pumps.emplace(std::piecewise_construct, std::forward_as_tuple(id), std::forward_as_tuple(id));
+
+        // Connect internal pump signal to Actuators signal.
+        // pump::OnSpeedChanged(int, uint8_t) connects to Actuators::HandlePumpChanged(int, uint8_t)
+        m_pumpConns[id] = m_pumps.at(id).OnSpeedChanged.Connect(
+            dmq::MakeDelegate(this, &Actuators::HandlePumpChanged, m_thread));
+    }
+
     printf("Actuators: Subsystem initialized.\n");
+}
+
+void Actuators::HandleValveChanged(int id, bool open) {
+    OnValveChanged(id, open);
+}
+
+void Actuators::HandlePumpChanged(int id, uint8_t speed) {
+    OnPumpChanged(id, static_cast<int>(speed));
 }
 
 void Actuators::Shutdown() {
@@ -22,29 +56,35 @@ void Actuators::Shutdown() {
 }
 
 int Actuators::SetValve(int id, bool open) {
-    return dmq::MakeDelegate(this, &Actuators::InternalSetValve, m_thread)(id, open);
+    dmq::MakeDelegate(this, &Actuators::InternalSetValve, m_thread).AsyncInvoke(id, open);
+    return 0;
 }
 
 int Actuators::SetPump(int id, int speed) {
-    return dmq::MakeDelegate(this, &Actuators::InternalSetPump, m_thread)(id, speed);
+    dmq::MakeDelegate(this, &Actuators::InternalSetPump, m_thread).AsyncInvoke(id, speed);
+    return 0;
 }
 
 int Actuators::InternalSetValve(int id, bool open) {
-    printf("SNA [Thread: %s]: Setting Valve %d to %s...\n", 
-           m_thread.GetThreadName().c_str(), id, open ? "OPEN" : "CLOSED");
+    try {
+        m_valves.at(id).SetState(open);
+    } catch (const std::out_of_range&) {
+        printf("Actuators: ERROR - Valve ID %d not found!\n", id);
+        return -1;
+    }
     
-    DataBus::Publish<ActuatorStatusMsg>("hw/status/actuator", { ActuatorType::VALVE, (uint8_t)id, (uint8_t)(open ? 1 : 0) });
-    
-    vTaskDelay(pdMS_TO_TICKS(100));
+    Thread::Sleep(std::chrono::milliseconds(100));
     return 0; 
 }
 
 int Actuators::InternalSetPump(int id, int speed) {
-    printf("SNA [Thread: %s]: Setting Pump %d speed to %d%%...\n", 
-           m_thread.GetThreadName().c_str(), id, speed);
+    try {
+        m_pumps.at(id).SetSpeed(static_cast<uint8_t>(speed));
+    } catch (const std::out_of_range&) {
+        printf("Actuators: ERROR - Pump ID %d not found!\n", id);
+        return -1;
+    }
     
-    DataBus::Publish<ActuatorStatusMsg>("hw/status/actuator", { ActuatorType::PUMP, (uint8_t)id, (uint8_t)speed });
-    
-    vTaskDelay(pdMS_TO_TICKS(100));
+    Thread::Sleep(std::chrono::milliseconds(100));
     return 0;
 }

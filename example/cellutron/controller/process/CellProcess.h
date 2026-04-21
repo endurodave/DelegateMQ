@@ -3,13 +3,22 @@
 
 #include "DelegateMQ.h"
 #include "state-machine/StateMachine.h"
-#include "Centrifuge.h"
+#include "actuators/Centrifuge.h"
+
+namespace cellutron {
+
+class PumpProcess;
 
 /// @brief CellProcess state machine controls the high-level cell processing steps.
 class CellProcess : public StateMachine
 {
 public:
-    CellProcess(Centrifuge& centrifuge);
+    using StateMachine::OnTransition;
+    using StateMachine::OnEntry;
+    using StateMachine::OnExit;
+    using StateMachine::OnCannotHappen;
+
+    CellProcess(hw::Centrifuge& centrifuge, PumpProcess& pumpProcess);
     ~CellProcess();
 
     virtual void SetThread(dmq::IThread& thread) override;
@@ -65,13 +74,30 @@ protected:
 private:
     // External events
     void CentrifugeReached(uint16_t rpm);
+    void ValveChanged(int id, bool open);
+    void PumpChanged(int id, int speed);
+    void TimerExpired();
+    void PumpComplete();
     void FaultEvent();
 
     void OnCentrifugeTargetReached(uint16_t rpm);
+    void OnValveChanged(int id, bool open);
+    void OnPumpChanged(int id, int speed);
+    void OnTimerExpired();
+    void OnPumpComplete();
 
-    Centrifuge& m_centrifuge;
+    hw::Centrifuge& m_centrifuge;
+    PumpProcess& m_pumpProcess;
     dmq::ScopedConnection m_centrifugeConn;
-    bool m_abortPending = false;
+    dmq::ScopedConnection m_valveConn;
+    dmq::ScopedConnection m_pumpConn;
+    dmq::ScopedConnection m_timerConn;
+    dmq::ScopedConnection m_pumpCompleteConn;
+
+    Timer m_timer;
+    bool  m_newChange = false;
 };
+
+} // namespace cellutron
 
 #endif

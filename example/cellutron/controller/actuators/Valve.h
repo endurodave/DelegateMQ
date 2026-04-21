@@ -16,6 +16,11 @@ namespace hw {
 class Valve
 {
 public:
+    /// Signal emitted when valve state changes.
+    /// int: The valve ID.
+    /// bool: true if OPEN, false if CLOSED.
+    dmq::Signal<void(int, bool)> OnStateChanged;
+
     explicit Valve(uint8_t id) : m_id(id) {}
 
     /// Open or close the valve. Publishes the new state to the DataBus.
@@ -27,6 +32,7 @@ public:
         dmq::DataBus::Publish<ActuatorStatusMsg>(
             "hw/status/actuator",
             { ActuatorType::VALVE, m_id, open ? uint8_t(1) : uint8_t(0) });
+        OnStateChanged(m_id, open);
     }
 
     bool    IsOpen() const { return m_isOpen; }

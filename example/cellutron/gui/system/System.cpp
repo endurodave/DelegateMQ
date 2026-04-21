@@ -18,6 +18,7 @@ System::~System() {
 void System::Initialize() {
     printf("GUI: System initializing...\n");
 
+    RegisterSerializers();
     RegisterStringifiers();
     SetupNetwork();
     
@@ -62,11 +63,11 @@ void System::SetupNetwork() {
 }
 
 void System::StartTimerThread() {
-    m_timerThread.CreateThread();
+    m_timerThread.CreateThread(std::chrono::seconds(2));
     m_timerRunning = true;
     m_backgroundTimer = std::thread([this]() {
         while (m_timerRunning) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            Thread::Sleep(std::chrono::milliseconds(10));
             dmq::MakeDelegate([]() { Timer::ProcessTimers(); }, m_timerThread).AsyncInvoke();
         }
     });

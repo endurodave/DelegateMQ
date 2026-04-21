@@ -63,7 +63,7 @@ extern "C" void vApplicationGetTimerTaskMemory(StaticTask_t** p, StackType_t** s
 static void vSafetyTask(void* /*pvParams*/) {
     System::GetInstance().Initialize();
     for (;;) {
-        vTaskDelay(pdMS_TO_TICKS(100));
+        Thread::Sleep(std::chrono::milliseconds(100));
     }
 }
 

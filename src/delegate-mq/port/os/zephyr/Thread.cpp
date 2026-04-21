@@ -198,6 +198,11 @@ size_t Thread::GetQueueSize()
     return 0;
 }
 
+void Thread::Sleep(dmq::Duration timeout) {
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count();
+    k_sleep(K_MSEC(ms));
+}
+
 //----------------------------------------------------------------------------
 // DispatchDelegate
 //----------------------------------------------------------------------------

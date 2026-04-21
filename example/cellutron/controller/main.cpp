@@ -65,7 +65,7 @@ static void vControllerTask(void* /*pvParams*/) {
 
     for (;;) {
         System::GetInstance().Tick();
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        Thread::Sleep(std::chrono::milliseconds(1000));
     }
 }
 

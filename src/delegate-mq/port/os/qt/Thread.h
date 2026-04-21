@@ -86,6 +86,10 @@ public:
     /// Get current queue size
     size_t GetQueueSize() const { return m_queueSize.load(); }
 
+    /// Sleep for a duration.
+    /// @param[in] timeout - the duration to sleep.
+    static void Sleep(dmq::Duration timeout);
+
     // IThread Interface Implementation
     virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg) override;
 

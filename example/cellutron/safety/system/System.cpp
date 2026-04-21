@@ -15,6 +15,7 @@ System::~System() {
 void System::Initialize() {
     printf("Safety: System initializing...\n");
 
+    RegisterSerializers();
     RegisterStringifiers();
     m_thread.CreateThread(std::chrono::seconds(2));
 

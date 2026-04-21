@@ -45,6 +45,10 @@ file(GLOB SM_APP_SOURCES
 add_executable(cellutron_controller 
     main.cpp 
     system/System.cpp
+    process/Process.cpp
+    process/CellProcess.cpp
+    process/PumpProcess.cpp
+    actuators/Centrifuge.cpp
     ${COMMON_SOURCES}
 
     ${SM_APP_SOURCES}

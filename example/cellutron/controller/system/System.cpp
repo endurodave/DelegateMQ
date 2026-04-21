@@ -20,6 +20,7 @@ void System::Initialize() {
     printf("Controller: System initializing...\n");
     m_ticksWaited = 0;
 
+    RegisterSerializers();
     RegisterStringifiers();
 
     // 1. Create Communication/Sequencing Thread

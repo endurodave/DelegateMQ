@@ -94,6 +94,10 @@ public:
     /// Get size of thread message queue.
     size_t GetQueueSize();
 
+    /// Sleep for a duration.
+    /// @param[in] timeout - the duration to sleep.
+    static void Sleep(dmq::Duration timeout);
+
     /// Dispatch and invoke a delegate target on the destination thread.
     /// @param[in] msg - Delegate message containing target function 
     /// arguments.

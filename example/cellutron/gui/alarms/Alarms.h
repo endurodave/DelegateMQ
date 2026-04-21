@@ -11,6 +11,11 @@
 /// @brief Singleton class for centralized alarm handling in the GUI.
 class Alarms {
 public:
+    /// Signal emitted when an alarm state changes.
+    /// std::string: The human-readable alarm message.
+    /// bool: True if this is an active alarm (Red), False for "No Alarm" (Green).
+    dmq::Signal<void(std::string, bool)> OnAlarmChanged;
+
     static Alarms& GetInstance() {
         static Alarms instance;
         return instance;
@@ -24,11 +29,6 @@ public:
 
     /// Reset the current alarm state.
     void Reset();
-
-    /// Signal emitted when an alarm state changes.
-    /// std::string: The human-readable alarm message.
-    /// bool: True if this is an active alarm (Red), False for "No Alarm" (Green).
-    dmq::Signal<void(std::string, bool)> OnAlarmChanged;
 
 private:
     Alarms() = default;

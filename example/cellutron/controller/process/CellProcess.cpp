@@ -1,4 +1,5 @@
 #include "CellProcess.h"
+#include "PumpProcess.h"
 #include "messages/RunStatusMsg.h"
 #include "Constants.h"
 #include "actuators/Actuators.h"
@@ -7,11 +8,14 @@
 #include <cstdio>
 
 using namespace dmq;
-using namespace cellutron;
 
-CellProcess::CellProcess(Centrifuge& centrifuge) :
+namespace cellutron {
+
+CellProcess::CellProcess(hw::Centrifuge& centrifuge, PumpProcess& pumpProcess) :
     StateMachine(ST_MAX_STATES),
-    m_centrifuge(centrifuge)
+    m_centrifuge(centrifuge),
+    m_pumpProcess(pumpProcess),
+    m_newChange(true)
 {
 }
 
@@ -23,12 +27,16 @@ void CellProcess::SetThread(dmq::IThread& thread)
 {
     StateMachine::SetThread(thread);
     m_centrifugeConn = m_centrifuge.OnTargetReached.Connect(dmq::MakeDelegate(this, &CellProcess::OnCentrifugeTargetReached, thread));
+    m_valveConn = Actuators::GetInstance().OnValveChanged.Connect(dmq::MakeDelegate(this, &CellProcess::OnValveChanged, thread));
+    m_pumpConn = Actuators::GetInstance().OnPumpChanged.Connect(dmq::MakeDelegate(this, &CellProcess::OnPumpChanged, thread));
+    m_timerConn = m_timer.OnExpired.Connect(dmq::MakeDelegate(this, &CellProcess::OnTimerExpired, thread));
+    m_pumpCompleteConn = m_pumpProcess.OnComplete.Connect(dmq::MakeDelegate(this, &CellProcess::OnPumpComplete, thread));
+    (void)this->OnTransition.Connect(dmq::MakeDelegate([this](uint8_t, uint8_t) { m_newChange = true; }));
 }
 
 void CellProcess::StartProcess()
 {
-    m_abortPending = false;
-    BEGIN_TRANSITION_MAP(CellProcess, StartProcess)
+    BEGIN_TRANSITION_MAP(cellutron::CellProcess, StartProcess)
         TRANSITION_MAP_ENTRY(ST_FILL_SOLUTION_A) // ST_IDLE
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_FILL_SOLUTION_B
@@ -48,7 +56,7 @@ void CellProcess::GenerateFault()
 
 void CellProcess::FaultEvent()
 {
-    BEGIN_TRANSITION_MAP(CellProcess, FaultEvent)
+    BEGIN_TRANSITION_MAP(cellutron::CellProcess, FaultEvent)
         TRANSITION_MAP_ENTRY(ST_FAULT) // ST_IDLE
         TRANSITION_MAP_ENTRY(ST_FAULT) // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(ST_FAULT) // ST_FILL_SOLUTION_B
@@ -63,10 +71,7 @@ void CellProcess::FaultEvent()
 
 void CellProcess::AbortProcess()
 {
-    m_abortPending = true;
-    m_centrifuge.StopRamp();
-
-    BEGIN_TRANSITION_MAP(CellProcess, AbortProcess)
+    BEGIN_TRANSITION_MAP(cellutron::CellProcess, AbortProcess)
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_IDLE
         TRANSITION_MAP_ENTRY(ST_ABORTING)        // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(ST_ABORTING)        // ST_FILL_SOLUTION_B
@@ -84,11 +89,91 @@ void CellProcess::OnCentrifugeTargetReached(uint16_t rpm)
     this->CentrifugeReached(rpm);
 }
 
+void CellProcess::OnValveChanged(int id, bool open)
+{
+    this->ValveChanged(id, open);
+}
+
+void CellProcess::OnPumpChanged(int id, int speed)
+{
+    this->PumpChanged(id, speed);
+}
+
+void CellProcess::OnTimerExpired()
+{
+    this->TimerExpired();
+}
+
+void CellProcess::OnPumpComplete()
+{
+    this->PumpComplete();
+}
+
+void CellProcess::PumpComplete()
+{
+    BEGIN_TRANSITION_MAP(cellutron::CellProcess, PumpComplete)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_IDLE
+        TRANSITION_MAP_ENTRY(ST_FILL_SOLUTION_B) // ST_FILL_SOLUTION_A
+        TRANSITION_MAP_ENTRY(ST_FILL_CELLS)      // ST_FILL_SOLUTION_B
+        TRANSITION_MAP_ENTRY(ST_SPIN)            // ST_FILL_CELLS
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_SPIN
+        TRANSITION_MAP_ENTRY(ST_COMPLETE)        // ST_DRAIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_COMPLETE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_ABORTING
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_FAULT
+    END_TRANSITION_MAP(nullptr)
+}
+
+void CellProcess::ValveChanged(int id, bool open)
+{
+    BEGIN_TRANSITION_MAP(cellutron::CellProcess, ValveChanged, id, open)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_CELLS
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_DRAIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_ABORTING
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FAULT
+    END_TRANSITION_MAP(nullptr)
+}
+
+void CellProcess::PumpChanged(int id, int speed)
+{
+    BEGIN_TRANSITION_MAP(cellutron::CellProcess, PumpChanged, id, speed)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_CELLS
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_DRAIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_ABORTING
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FAULT
+    END_TRANSITION_MAP(nullptr)
+}
+
+void CellProcess::TimerExpired()
+{
+    BEGIN_TRANSITION_MAP(cellutron::CellProcess, TimerExpired)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_CELLS
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_DRAIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_ABORTING
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FAULT
+    END_TRANSITION_MAP(nullptr)
+}
+
 void CellProcess::CentrifugeReached(uint16_t rpm)
 {
     if (rpm > 0)
     {
-        BEGIN_TRANSITION_MAP(CellProcess, CentrifugeReached, rpm)
+        BEGIN_TRANSITION_MAP(cellutron::CellProcess, CentrifugeReached, rpm)
             TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
             TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
             TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
@@ -102,7 +187,7 @@ void CellProcess::CentrifugeReached(uint16_t rpm)
     }
     else // rpm == 0
     {
-        BEGIN_TRANSITION_MAP(CellProcess, CentrifugeReached, rpm)
+        BEGIN_TRANSITION_MAP(cellutron::CellProcess, CentrifugeReached, rpm)
             TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
             TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
             TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
@@ -116,99 +201,66 @@ void CellProcess::CentrifugeReached(uint16_t rpm)
     }
 }
 
-STATE_DEFINE(CellProcess, Idle, NoEventData)
+STATE_DEFINE(cellutron::CellProcess, Idle, NoEventData)
 {
     printf("CellProcess: ST_IDLE\n");
-    m_abortPending = false;
     DataBus::Publish<RunStatusMsg>("cell/status/run", { RunStatus::IDLE });
 }
 
-STATE_DEFINE(CellProcess, FillSolutionA, NoEventData)
+STATE_DEFINE(cellutron::CellProcess, FillSolutionA, NoEventData)
 {
-    if (m_abortPending) return;
-
     printf("CellProcess: ST_FILL_SOLUTION_A\n");
     DataBus::Publish<RunStatusMsg>("cell/status/run", { RunStatus::PROCESSING });
-    
-    Actuators::GetInstance().SetValve(1, true);
-    Actuators::GetInstance().SetPump(1, 50);
-    Sensors::GetInstance().IsAirInLine();
-    Actuators::GetInstance().SetPump(1, 0);
-    Actuators::GetInstance().SetValve(1, false);
-
-    if (!m_abortPending) InternalEvent(ST_FILL_SOLUTION_B);
+    m_pumpProcess.Start(std::make_shared<PumpData>(1, 1, 50, std::chrono::seconds(2)));
 }
 
-STATE_DEFINE(CellProcess, FillSolutionB, NoEventData)
+STATE_DEFINE(cellutron::CellProcess, FillSolutionB, NoEventData)
 {
-    if (m_abortPending) return;
-
     printf("CellProcess: ST_FILL_SOLUTION_B\n");
-    Actuators::GetInstance().SetValve(2, true);
-    Actuators::GetInstance().SetPump(1, 50);
-    Actuators::GetInstance().SetPump(1, 0);
-    Actuators::GetInstance().SetValve(2, false);
-
-    if (!m_abortPending) InternalEvent(ST_FILL_CELLS);
+    m_pumpProcess.Start(std::make_shared<PumpData>(2, 1, 50, std::chrono::seconds(2)));
 }
 
-STATE_DEFINE(CellProcess, FillCells, NoEventData)
+STATE_DEFINE(cellutron::CellProcess, FillCells, NoEventData)
 {
-    if (m_abortPending) return;
-
     printf("CellProcess: ST_FILL_CELLS\n");
-    Actuators::GetInstance().SetValve(3, true);
-    Actuators::GetInstance().SetPump(2, 25);
-    Actuators::GetInstance().SetPump(2, 0);
-    Actuators::GetInstance().SetValve(3, false);
-
-    if (!m_abortPending) InternalEvent(ST_SPIN);
+    m_pumpProcess.Start(std::make_shared<PumpData>(3, 2, 25, std::chrono::seconds(2)));
 }
 
-STATE_DEFINE(CellProcess, Spin, NoEventData)
+STATE_DEFINE(cellutron::CellProcess, Spin, NoEventData)
 {
-    if (m_abortPending) return;
-
     printf("CellProcess: ST_SPIN (Starting Centrifuge Ramp)\n");
-    m_centrifuge.StartRamp(MAX_CENTRIFUGE_RPM, std::chrono::milliseconds(5000));
+    m_centrifuge.StartRamp(std::make_shared<hw::Centrifuge::RampData>(MAX_CENTRIFUGE_RPM, std::chrono::milliseconds(5000)));
 }
 
-STATE_DEFINE(CellProcess, Drain, NoEventData)
+STATE_DEFINE(cellutron::CellProcess, Drain, NoEventData)
 {
-    if (m_abortPending) return;
-
-    printf("CellProcess: ST_DRAIN (Stopping Centrifuge)\n");
-    Actuators::GetInstance().SetValve(10, true);
-    Actuators::GetInstance().SetPump(3, 100);
-    Sensors::GetInstance().GetPressure();
-    Actuators::GetInstance().SetPump(3, 0);
-    Actuators::GetInstance().SetValve(10, false);
-
-    m_centrifuge.StopRamp();
+    printf("CellProcess: ST_DRAIN\n");
+    m_pumpProcess.Start(std::make_shared<PumpData>(10, 3, 100, std::chrono::seconds(3)));
 }
 
-STATE_DEFINE(CellProcess, Complete, NoEventData)
+STATE_DEFINE(cellutron::CellProcess, Complete, NoEventData)
 {
     printf("CellProcess: ST_COMPLETE\n");
     InternalEvent(ST_IDLE);
 }
 
-STATE_DEFINE(CellProcess, Aborting, NoEventData)
+STATE_DEFINE(cellutron::CellProcess, Aborting, NoEventData)
 {
     printf("CellProcess: ST_ABORTING (Decelerating Centrifuge)\n");
     DataBus::Publish<RunStatusMsg>("cell/status/run", { RunStatus::ABORTING });
-    m_centrifuge.StopRamp();
+    m_centrifuge.StopRamp(std::make_shared<hw::Centrifuge::RampData>(0, std::chrono::milliseconds(2000)));
 }
 
-STATE_DEFINE(CellProcess, Fault, NoEventData)
+STATE_DEFINE(cellutron::CellProcess, Fault, NoEventData)
 {
     printf("CellProcess: ST_FAULT\n");
-    m_abortPending = true; // Block any further automatic transitions
     DataBus::Publish<RunStatusMsg>("cell/status/run", { RunStatus::FAULT });
     
     Actuators::GetInstance().SetPump(1, 0);
     Actuators::GetInstance().SetPump(2, 0);
     Actuators::GetInstance().SetPump(3, 0);
     
-    m_centrifuge.StopRamp();
+    m_centrifuge.StopRamp(std::make_shared<hw::Centrifuge::RampData>(0, std::chrono::milliseconds(2000)));
 }
+
+} // namespace cellutron

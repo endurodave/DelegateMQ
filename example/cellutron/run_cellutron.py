@@ -17,7 +17,7 @@ def main():
         {
             "name": "DMQ Spy", 
             "path": "../../tools/build/Release/dmq-spy.exe",
-            "args": ["9999"]
+            "args": ["9999", "--log", "spy_logs.txt"]
         },
     ]
 

@@ -1,104 +1,87 @@
-#ifndef _HW_CENTRIFUGE_H
-#define _HW_CENTRIFUGE_H
+#ifndef _CENTRIFUGE_H
+#define _CENTRIFUGE_H
 
 #include "DelegateMQ.h"
-#include "messages/CentrifugeSpeedMsg.h"
+#include "state-machine/StateMachine.h"
 #include "extras/util/Timer.h"
-#include <cstdio>
 
 namespace hw {
 
-/// @brief Hardware centrifuge actuator with internal speed ramping.
-///
-/// SetSpeed() accepts a target RPM and ramp duration. An internal 50ms
-/// poll timer (running on the ActuatorThread) interpolates the current
-/// RPM along the ramp curve and publishes it to the DataBus each tick.
-/// When the target is reached the OnTargetReached signal fires.
-///
-/// This class owns the physics — the process state machine simply
-/// commands a speed and listens for OnTargetReached.
-class Centrifuge
+/// @brief Centrifuge state machine simulates the physics of the centrifuge motor.
+class Centrifuge : public StateMachine
 {
 public:
-    /// Signal fired when the commanded RPM is reached (or zero on stop).
-    /// Connect from the process layer to drive state transitions.
+    /// Signal fired when the target RPM is reached.
     dmq::Signal<void(uint16_t rpm)> OnTargetReached;
 
-    /// Connect the poll timer to the ActuatorsThread.
-    /// Must be called after the thread is created.
-    void SetThread(dmq::IThread& thread)
+    // Move struct here so it's available for the methods and macros
+    struct RampData : public EventData {
+        RampData(uint16_t r, dmq::Duration d) : targetRpm(r), duration(d) {}
+        uint16_t targetRpm;
+        dmq::Duration duration;
+    };
+
+    Centrifuge();
+    ~Centrifuge();
+
+    virtual void SetThread(dmq::IThread& thread) override;
+
+    /// Command a ramp to target speed.
+    void StartRamp(std::shared_ptr<const RampData> data);
+
+    /// Command an immediate stop (ramp to 0).
+    void StopRamp(std::shared_ptr<const RampData> data);
+
+protected:
+    enum States
     {
-        m_pollTimerConn = m_pollTimer.OnExpired.Connect(
-            dmq::MakeDelegate(this, &Centrifuge::Poll, thread));
-    }
+        ST_IDLE,
+        ST_START_RAMP,
+        ST_RAMPING,
+        ST_RAMP_STEP,
+        ST_AT_SPEED,
+        ST_START_STOP,
+        ST_STOPPING,
+        ST_STOP_STEP,
+        ST_MAX_STATES
+    };
 
-    /// Command the centrifuge to ramp to targetRpm over rampDuration.
-    /// Runs on the ActuatorThread (called via blocking delegate in Actuators).
-    void SetSpeed(uint16_t targetRpm, dmq::Duration rampDuration)
-    {
-        m_startRpm     = m_currentRpm;
-        m_targetRpm    = targetRpm;
-        m_rampDuration = rampDuration;
-        m_rampStart    = dmq::Clock::now();
+    STATE_DECLARE(Centrifuge, Idle, NoEventData)
+    STATE_DECLARE(Centrifuge, StartRampState, RampData)
+    STATE_DECLARE(Centrifuge, Ramping, RampData)
+    STATE_DECLARE(Centrifuge, RampStep, RampData)
+    STATE_DECLARE(Centrifuge, AtSpeed, NoEventData)
+    STATE_DECLARE(Centrifuge, StartStopState, RampData)
+    STATE_DECLARE(Centrifuge, Stopping, RampData)
+    STATE_DECLARE(Centrifuge, StopStep, RampData)
 
-        printf("[Centrifuge] Ramp: %u -> %u RPM over %lldms\n",
-               m_startRpm, m_targetRpm,
-               std::chrono::duration_cast<std::chrono::milliseconds>(rampDuration).count());
-
-        m_pollTimer.Start(std::chrono::milliseconds(50));
-    }
-
-    /// Ramp down to zero over 2 seconds.
-    /// Runs on the ActuatorThread.
-    void Stop()
-    {
-        SetSpeed(0, std::chrono::milliseconds(2000));
-    }
-
-    uint16_t GetCurrentRpm() const { return m_currentRpm; }
+    BEGIN_STATE_MAP
+        STATE_MAP_ENTRY(&Idle)
+        STATE_MAP_ENTRY(&StartRampState)
+        STATE_MAP_ENTRY(&Ramping)
+        STATE_MAP_ENTRY(&RampStep)
+        STATE_MAP_ENTRY(&AtSpeed)
+        STATE_MAP_ENTRY(&StartStopState)
+        STATE_MAP_ENTRY(&Stopping)
+        STATE_MAP_ENTRY(&StopStep)
+    END_STATE_MAP
 
 private:
-    /// Called every 50ms on the ActuatorThread.
-    void Poll()
-    {
-        auto elapsed = dmq::Clock::now() - m_rampStart;
+    void Poll();
+    void StartPoll() { m_pollTimer.Start(std::chrono::milliseconds(100)); }
+    void StopPoll() { m_pollTimer.Stop(); }
 
-        if (elapsed >= m_rampDuration)
-        {
-            // Ramp complete
-            m_currentRpm = m_targetRpm;
-            m_pollTimer.Stop();
-            PublishRpm();
-            printf("[Centrifuge] Target reached: %u RPM\n", m_currentRpm);
-            OnTargetReached(m_currentRpm);
-        }
-        else
-        {
-            // Interpolate along ramp curve
-            float t = static_cast<float>(elapsed.count()) /
-                      static_cast<float>(m_rampDuration.count());
-            m_currentRpm = static_cast<uint16_t>(
-                m_startRpm + static_cast<int32_t>(m_targetRpm - m_startRpm) * t);
-            PublishRpm();
-        }
-    }
-
-    void PublishRpm()
-    {
-        dmq::DataBus::Publish<CentrifugeSpeedMsg>(
-            "cell/cmd/centrifuge_speed", { m_currentRpm });
-    }
-
-    uint16_t      m_currentRpm   = 0;
-    uint16_t      m_startRpm     = 0;
-    uint16_t      m_targetRpm    = 0;
+    uint16_t m_currentRpm = 0;
+    uint16_t m_startRpm = 0;
+    uint16_t m_targetRpm = 0;
     dmq::Duration m_rampDuration = std::chrono::milliseconds(0);
-    dmq::TimePoint m_rampStart   = {};
+    dmq::TimePoint m_rampStartTime;
 
-    Timer                 m_pollTimer;
+    Timer m_pollTimer;
     dmq::ScopedConnection m_pollTimerConn;
+    std::shared_ptr<const RampData> m_data;
 };
 
 } // namespace hw
 
-#endif // _HW_CENTRIFUGE_H
+#endif

@@ -162,6 +162,11 @@ bool Thread::IsCurrentThread()
     return GetThreadId() == GetCurrentThreadId();
 }
 
+void Thread::Sleep(dmq::Duration timeout) {
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count();
+    QThread::msleep(static_cast<unsigned long>(ms));
+}
+
 //----------------------------------------------------------------------------
 // DispatchDelegate
 //----------------------------------------------------------------------------

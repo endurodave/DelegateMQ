@@ -4,14 +4,15 @@
 
 using namespace dmq;
 
+namespace cellutron {
+
 Process::~Process() { Shutdown(); }
 
 void Process::Initialize()
 {
     m_thread.CreateThread(std::chrono::seconds(2));
-    m_centrifuge.SetThread(m_thread);
+    m_pumpProcess.SetThread(m_thread);
     m_cellProcess.SetThread(m_thread);
-    m_centrifugeProcess.SetThread(m_thread);
     printf("Process: Subsystem initialized.\n");
 }
 
@@ -35,3 +36,5 @@ void Process::Fault()
 void Process::InternalStart() { m_cellProcess.StartProcess(); }
 void Process::InternalAbort() { m_cellProcess.AbortProcess(); }
 void Process::InternalFault() { m_cellProcess.GenerateFault(); }
+
+} // namespace cellutron

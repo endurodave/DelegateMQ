@@ -92,6 +92,10 @@ public:
     /// Get current queue size
     size_t GetQueueSize();
 
+    /// Sleep for a duration.
+    /// @param[in] timeout - the duration to sleep.
+    static void Sleep(dmq::Duration timeout);
+
     virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg) override;
 
 private:

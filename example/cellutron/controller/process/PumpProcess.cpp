@@ -1,0 +1,171 @@
+#include "PumpProcess.h"
+#include "actuators/Actuators.h"
+#include <cstdio>
+
+using namespace dmq;
+
+namespace cellutron {
+
+PumpProcess::PumpProcess() :
+    StateMachine(ST_MAX_STATES)
+{
+}
+
+PumpProcess::~PumpProcess()
+{
+}
+
+void PumpProcess::SetThread(dmq::IThread& thread)
+{
+    StateMachine::SetThread(thread);
+    m_valveConn = Actuators::GetInstance().OnValveChanged.Connect(dmq::MakeDelegate(this, &PumpProcess::OnValveChanged, thread));
+    m_pumpConn = Actuators::GetInstance().OnPumpChanged.Connect(dmq::MakeDelegate(this, &PumpProcess::OnPumpChanged, thread));
+    m_timerConn = m_timer.OnExpired.Connect(dmq::MakeDelegate(this, &PumpProcess::OnTimerExpired, thread));
+}
+
+void PumpProcess::Start(std::shared_ptr<const cellutron::PumpData> data)
+{
+    BEGIN_TRANSITION_MAP(cellutron::PumpProcess, Start, data)
+        TRANSITION_MAP_ENTRY(ST_VALVE_OPEN) // ST_IDLE
+        TRANSITION_MAP_ENTRY(ST_VALVE_OPEN) // ST_VALVE_OPEN
+        TRANSITION_MAP_ENTRY(ST_VALVE_OPEN) // ST_PUMP_ON
+        TRANSITION_MAP_ENTRY(ST_VALVE_OPEN) // ST_WAITING
+        TRANSITION_MAP_ENTRY(ST_VALVE_OPEN) // ST_PUMP_OFF
+        TRANSITION_MAP_ENTRY(ST_VALVE_OPEN) // ST_VALVE_CLOSE
+        TRANSITION_MAP_ENTRY(ST_VALVE_OPEN) // ST_COMPLETE
+    END_TRANSITION_MAP(data)
+}
+
+void PumpProcess::OnValveChanged(int id, bool open) 
+{
+    if (m_data && id == m_data->valveId)
+    {
+        if (open) ValveOpened();
+        else ValveClosed();
+    }
+}
+
+void PumpProcess::OnPumpChanged(int id, int speed) 
+{
+    if (m_data && id == m_data->pumpId)
+    {
+        if (speed == m_data->speed) PumpStarted();
+        else if (speed == 0) PumpStopped();
+    }
+}
+
+void PumpProcess::OnTimerExpired() 
+{
+    TimerDone();
+}
+
+void PumpProcess::ValveOpened()
+{
+    BEGIN_TRANSITION_MAP(cellutron::PumpProcess, ValveOpened)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
+        TRANSITION_MAP_ENTRY(ST_PUMP_ON)     // ST_VALVE_OPEN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_PUMP_ON
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_WAITING
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_PUMP_OFF
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_VALVE_CLOSE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
+    END_TRANSITION_MAP(m_data)
+}
+
+void PumpProcess::ValveClosed()
+{
+    BEGIN_TRANSITION_MAP(cellutron::PumpProcess, ValveClosed)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_VALVE_OPEN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_PUMP_ON
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_WAITING
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_PUMP_OFF
+        TRANSITION_MAP_ENTRY(ST_COMPLETE)    // ST_VALVE_CLOSE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
+    END_TRANSITION_MAP(m_data)
+}
+
+void PumpProcess::PumpStarted()
+{
+    BEGIN_TRANSITION_MAP(cellutron::PumpProcess, PumpStarted)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_VALVE_OPEN
+        TRANSITION_MAP_ENTRY(ST_WAITING)     // ST_PUMP_ON
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_WAITING
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_PUMP_OFF
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_VALVE_CLOSE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
+    END_TRANSITION_MAP(m_data)
+}
+
+void PumpProcess::PumpStopped()
+{
+    BEGIN_TRANSITION_MAP(cellutron::PumpProcess, PumpStopped)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_VALVE_OPEN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_PUMP_ON
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_WAITING
+        TRANSITION_MAP_ENTRY(ST_VALVE_CLOSE) // ST_PUMP_OFF
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_VALVE_CLOSE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
+    END_TRANSITION_MAP(m_data)
+}
+
+void PumpProcess::TimerDone()
+{
+    BEGIN_TRANSITION_MAP(cellutron::PumpProcess, TimerDone)
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_VALVE_OPEN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_PUMP_ON
+        TRANSITION_MAP_ENTRY(ST_PUMP_OFF)    // ST_WAITING
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_PUMP_OFF
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_VALVE_CLOSE
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
+    END_TRANSITION_MAP(m_data)
+}
+
+STATE_DEFINE(cellutron::PumpProcess, Idle, NoEventData)
+{
+    printf("PumpProcess: ST_IDLE\n");
+    m_data = nullptr;
+}
+
+STATE_DEFINE(cellutron::PumpProcess, ValveOpen, cellutron::PumpData)
+{
+    m_data = data;
+    printf("PumpProcess: ST_VALVE_OPEN (ID: %d)\n", data->valveId);
+    Actuators::GetInstance().SetValve(data->valveId, true);
+}
+
+STATE_DEFINE(cellutron::PumpProcess, PumpOn, cellutron::PumpData)
+{
+    printf("PumpProcess: ST_PUMP_ON (ID: %d, Speed: %d%%)\n", data->pumpId, data->speed);
+    Actuators::GetInstance().SetPump(data->pumpId, data->speed);
+}
+
+STATE_DEFINE(cellutron::PumpProcess, Waiting, cellutron::PumpData)
+{
+    printf("PumpProcess: ST_WAITING (%lld ms)\n", data->duration.count());
+    m_timer.Start(data->duration, true);
+}
+
+STATE_DEFINE(cellutron::PumpProcess, PumpOff, cellutron::PumpData)
+{
+    printf("PumpProcess: ST_PUMP_OFF (ID: %d)\n", data->pumpId);
+    Actuators::GetInstance().SetPump(data->pumpId, 0);
+}
+
+STATE_DEFINE(cellutron::PumpProcess, ValveClose, cellutron::PumpData)
+{
+    printf("PumpProcess: ST_VALVE_CLOSE (ID: %d)\n", data->valveId);
+    Actuators::GetInstance().SetValve(data->valveId, false);
+}
+
+STATE_DEFINE(cellutron::PumpProcess, Complete, NoEventData)
+{
+    printf("PumpProcess: ST_COMPLETE\n");
+    OnComplete();
+    InternalEvent(ST_IDLE);
+}
+
+} // namespace cellutron

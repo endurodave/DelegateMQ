@@ -98,6 +98,10 @@ public:
     /// Get current queue size
     size_t GetQueueSize();
 
+    /// Sleep for a duration.
+    /// @param[in] timeout - the duration to sleep.
+    static void Sleep(dmq::Duration timeout);
+
     /// Set the FreeRTOS Task Priority.
     /// Can be called before or after CreateThread().
     /// @param priority FreeRTOS priority level (0 to configMAX_PRIORITIES-1)
