@@ -50,11 +50,12 @@ class ThreadMsg;
 /// @details Controls the behavior of DispatchDelegate() when the queue has no space.
 ///   - DROP:  xQueueSend() with timeout 0 — returns immediately, message discarded.
 ///   - BLOCK: xQueueSend() with portMAX_DELAY — caller blocks until space is available.
+///   - FAULT: xQueueSend() with timeout 0 - returns immediately, triggers a system fault if queue full.
 ///
-/// BLOCK is the default to match all other ports. For embedded targets where the
+/// FAULT is the default. For embedded targets where the
 /// caller may be an ISR or high-priority task, consider using DROP to avoid
 /// priority inversion or blocking at an unsafe context.
-enum class FullPolicy { BLOCK, DROP };
+enum class FullPolicy { BLOCK, DROP, FAULT };
 
 class Thread : public dmq::IThread
 {
@@ -65,8 +66,8 @@ public:
     /// Constructor
     /// @param threadName Name for the FreeRTOS task
     /// @param maxQueueSize Max number of messages in queue (0 = Default 20)
-    /// @param fullPolicy Action when queue is full: BLOCK the caller (default) or DROP the message.
-    Thread(const std::string& threadName, size_t maxQueueSize = 0, FullPolicy fullPolicy = FullPolicy::BLOCK);
+    /// @param fullPolicy Action when queue is full: FAULT (default), BLOCK or DROP.
+    Thread(const std::string& threadName, size_t maxQueueSize = 0, FullPolicy fullPolicy = FullPolicy::FAULT);
 
     /// Destructor
     ~Thread();

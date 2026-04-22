@@ -34,7 +34,7 @@ private:
     std::mutex m_mutex;
     
     // Use standardized thread name for Active Object subsystem
-    Thread m_thread{"LogThread"};
+    Thread m_thread{"LogsThread"};
 
     // Scoped connections for DataBus
     dmq::ScopedConnection m_startConn;

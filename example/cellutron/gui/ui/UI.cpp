@@ -45,18 +45,18 @@ void UI::Start() {
     m_thread.CreateThread(std::chrono::seconds(2));
 
     // 2. Setup DataBus Subscriptions
-    auto statusConn = DataBus::Subscribe<CentrifugeStatusMsg>("cell/status/centrifuge", [](CentrifugeStatusMsg msg) {
+    auto statusConn = DataBus::Subscribe<CentrifugeStatusMsg>(topics::STATUS_CENTRIFUGE, [](CentrifugeStatusMsg msg) {
         auto* screen = ScreenInteractive::Active();
         if (screen) screen->PostEvent(Event::Custom);
     }, &m_thread);
 
-    auto cmdConn = DataBus::Subscribe<CentrifugeSpeedMsg>("cell/cmd/centrifuge_speed", [](CentrifugeSpeedMsg msg) {
+    auto cmdConn = DataBus::Subscribe<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, [](CentrifugeSpeedMsg msg) {
         g_currentRpm = msg.rpm;
         auto* screen = ScreenInteractive::Active();
         if (screen) screen->PostEvent(Event::Custom);
     }, &m_thread);
 
-    auto runConn = DataBus::Subscribe<RunStatusMsg>("cell/status/run", [](RunStatusMsg msg) {
+    auto runConn = DataBus::Subscribe<RunStatusMsg>(topics::STATUS_RUN, [](RunStatusMsg msg) {
         std::string status_text;
         switch (msg.status) {
             case RunStatus::IDLE: status_text = "IDLE"; break;
@@ -70,7 +70,7 @@ void UI::Start() {
         if (screen) screen->PostEvent(Event::Custom);
     }, &m_thread);
 
-    auto faultConn = DataBus::Subscribe<FaultMsg>("cell/fault", [](FaultMsg msg) {
+    auto faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [](FaultMsg msg) {
         AddLog(">>> CRITICAL FAULT RECEIVED <<<");
         auto* screen = ScreenInteractive::Active();
         if (screen) screen->PostEvent(Event::Custom);
@@ -90,10 +90,10 @@ void UI::Start() {
 
         if (g_runStatus.load() == RunStatus::IDLE) {
             AddLog("Command: START Process");
-            DataBus::Publish<StartProcessMsg>("cell/cmd/run", {});
+            DataBus::Publish<StartProcessMsg>(topics::CMD_RUN, {});
         } else if (g_runStatus.load() == RunStatus::PROCESSING) {
             AddLog("Command: ABORT Process");
-            DataBus::Publish<StopProcessMsg>("cell/cmd/abort", {});
+            DataBus::Publish<StopProcessMsg>(topics::CMD_ABORT, {});
         }
     });
 

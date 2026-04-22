@@ -98,13 +98,21 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 
     EnterCriticalSection(&m_cs);
 
-    // [BACK PRESSURE / DROP LOGIC]
+    // [BACK PRESSURE / DROP / FAULT LOGIC]
     if (MAX_QUEUE_SIZE > 0 && m_queue.size() >= MAX_QUEUE_SIZE)
     {
         if (FULL_POLICY == FullPolicy::DROP)
         {
             LeaveCriticalSection(&m_cs);
             return; // silently discard
+        }
+
+        if (FULL_POLICY == FullPolicy::FAULT)
+        {
+            LeaveCriticalSection(&m_cs);
+            printf("[Thread] CRITICAL: Queue full on thread '%s'! TRIGGERING FAULT.\n", THREAD_NAME.c_str());
+            ASSERT_TRUE(false);
+            return;
         }
 
         // BLOCK: wait while queue is full, BUT stop waiting if m_exit is true.

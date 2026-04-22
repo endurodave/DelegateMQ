@@ -3,6 +3,7 @@
 
 #include "DelegateMQ.h"
 #include "messages/ActuatorStatusMsg.h"
+#include "util/Constants.h"
 #include <cstdint>
 #include <cstdio>
 
@@ -24,7 +25,7 @@ public:
         m_speed = speed;
         printf("[Pump %d] -> %d%%\n", m_id, m_speed);
         dmq::DataBus::Publish<ActuatorStatusMsg>(
-            "hw/status/actuator",
+            topics::STATUS_ACTUATOR,
             { ActuatorType::PUMP, m_id, static_cast<int16_t>(m_speed) });
         OnSpeedChanged(m_id, m_speed);
     }

@@ -58,11 +58,11 @@ void System::SetupNetwork() {
     Network::GetInstance().Initialize(5010, "GUI");
 
     // Incoming Topics
-    Network::GetInstance().RegisterIncomingTopic<RunStatusMsg>("cell/status/run", RID_RUN_STATUS, serRun);
-    Network::GetInstance().RegisterIncomingTopic<CentrifugeSpeedMsg>("cell/cmd/centrifuge_speed", RID_CENTRIFUGE_SPEED, serSpeed);
+    Network::GetInstance().RegisterIncomingTopic<RunStatusMsg>(topics::STATUS_RUN, RID_RUN_STATUS, serRun);
+    Network::GetInstance().RegisterIncomingTopic<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, RID_CENTRIFUGE_SPEED, serSpeed);
     Network::GetInstance().RegisterIncomingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
-    Network::GetInstance().RegisterIncomingTopic<ActuatorStatusMsg>("hw/status/actuator", RID_ACTUATOR_STATUS, serActuator);
-    Network::GetInstance().RegisterIncomingTopic<SensorStatusMsg>("hw/status/sensor", RID_SENSOR_STATUS, serSensor);
+    Network::GetInstance().RegisterIncomingTopic<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, RID_ACTUATOR_STATUS, serActuator);
+    Network::GetInstance().RegisterIncomingTopic<SensorStatusMsg>(topics::STATUS_SENSOR, RID_SENSOR_STATUS, serSensor);
     Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::SAFETY_HEARTBEAT, RID_SAFETY_HB, serHeartbeat);
     Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
 
@@ -70,8 +70,8 @@ void System::SetupNetwork() {
     Network::GetInstance().AddRemoteNode("Controller", "127.0.0.1", 5011);
     Network::GetInstance().AddRemoteNode("Safety", "127.0.0.1", 5013);
 
-    Network::GetInstance().RegisterOutgoingTopic<StartProcessMsg>("cell/cmd/run", RID_START_PROCESS, serStart);
-    Network::GetInstance().RegisterOutgoingTopic<StopProcessMsg>("cell/cmd/abort", RID_STOP_PROCESS, serStop);
+    Network::GetInstance().RegisterOutgoingTopic<StartProcessMsg>(topics::CMD_RUN, RID_START_PROCESS, serStart);
+    Network::GetInstance().RegisterOutgoingTopic<StopProcessMsg>(topics::CMD_ABORT, RID_STOP_PROCESS, serStop);
     Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
     Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
 }

@@ -74,7 +74,8 @@ protected:
 
 private:
     // External events
-    void CentrifugeReached(uint16_t rpm);
+    void CentrifugeAtSpeed();
+    void CentrifugeStopped();
     void ValveChanged(int id, bool open);
     void PumpChanged(int id, int speed);
     void TimerExpired();

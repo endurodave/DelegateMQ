@@ -57,7 +57,7 @@ private:
     void HandlePumpChanged(int id, int speed);
 
     // Use standardized thread name for Active Object subsystem
-    Thread m_thread{"ActuatorThread", 50, FullPolicy::DROP};
+    Thread m_thread{"ActuatorsThread", 50, FullPolicy::DROP};
     Centrifuge m_centrifuge;
 
     std::map<int, Valve> m_valves;

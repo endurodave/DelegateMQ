@@ -1,0 +1,65 @@
+<svg width="400" height="700" viewBox="0 0 400 700" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="700" fill="#ffffff" />
+  
+  <!-- Styles -->
+  <style>
+    .state { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .state-text { font-family: sans-serif; font-size: 12px; font-weight: bold; text-anchor: middle; }
+    .transition { fill: none; stroke: #666; stroke-width: 1.5; marker-end: url(#arrowhead); }
+    .transition-text { font-family: sans-serif; font-size: 10px; fill: #d63384; }
+  </style>
+
+  <!-- Markers -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+    </marker>
+  </defs>
+
+  <!-- States (Main Column X=200) -->
+  <rect x="140" y="30" width="120" height="40" rx="5" class="state" />
+  <text x="200" y="55" class="state-text">IDLE</text>
+
+  <rect x="130" y="120" width="140" height="40" rx="5" class="state" />
+  <text x="200" y="145" class="state-text">FILL_SOLUTION_A</text>
+
+  <rect x="130" y="210" width="140" height="40" rx="5" class="state" />
+  <text x="200" y="235" class="state-text">FILL_SOLUTION_B</text>
+
+  <rect x="130" y="300" width="140" height="40" rx="5" class="state" />
+  <text x="200" y="325" class="state-text">FILL_CELLS</text>
+
+  <rect x="140" y="390" width="120" height="40" rx="5" class="state" />
+  <text x="200" y="415" class="state-text">SPIN</text>
+
+  <rect x="140" y="480" width="120" height="40" rx="5" class="state" />
+  <text x="200" y="505" class="state-text">DRAIN</text>
+
+  <rect x="140" y="570" width="120" height="40" rx="5" class="state" />
+  <text x="200" y="595" class="state-text">COMPLETE</text>
+
+  <!-- Transitions (Vertical Flow) -->
+  <path d="M 200,70 L 200,120" class="transition" />
+  <text x="205" y="100" class="transition-text">StartProcess</text>
+
+  <path d="M 200,160 L 200,210" class="transition" />
+  <text x="205" y="190" class="transition-text">PumpComplete</text>
+
+  <path d="M 200,250 L 200,300" class="transition" />
+  <text x="205" y="280" class="transition-text">PumpComplete</text>
+
+  <path d="M 200,340 L 200,390" class="transition" />
+  <text x="205" y="370" class="transition-text">PumpComplete</text>
+
+  <path d="M 200,430 L 200,480" class="transition" />
+  <text x="205" y="460" class="transition-text">CentAtSpeed</text>
+
+  <path d="M 200,520 L 200,570" class="transition" />
+  <text x="205" y="550" class="transition-text">CentStopped</text>
+
+  <!-- Loop back to IDLE -->
+  <path d="M 200,610 L 200,650 L 60,650 L 60,50 L 140,50" class="transition" />
+  <text x="70" y="640" class="transition-text">InternalEvent(ST_IDLE)</text>
+
+</svg>

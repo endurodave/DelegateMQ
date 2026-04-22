@@ -219,11 +219,18 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 
     std::unique_lock<std::mutex> lk(m_mutex);
 
-    // [BACK PRESSURE / DROP LOGIC]
+    // [BACK PRESSURE / DROP / FAULT LOGIC]
     if (MAX_QUEUE_SIZE > 0 && m_queue.size() >= MAX_QUEUE_SIZE)
     {
         if (FULL_POLICY == FullPolicy::DROP)
             return;  // silently discard — caller is not stalled, no allocation wasted
+
+        if (FULL_POLICY == FullPolicy::FAULT)
+        {
+            printf("[Thread] CRITICAL: Queue full on thread '%s'! TRIGGERING FAULT.\n", THREAD_NAME.c_str());
+            ASSERT_TRUE(false);
+            return;
+        }
 
         // BLOCK: wait until the consumer drains a slot or the thread exits
         m_cvNotFull.wait(lk, [this]() {

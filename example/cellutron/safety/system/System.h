@@ -30,7 +30,7 @@ private:
     void SetupNetwork();
     void SetupWatchdog();
 
-    Thread m_thread{"SafetyThread", 50, FullPolicy::DROP};
+    Thread m_thread{"SystemThread", 50, FullPolicy::DROP};
 
     dmq::ScopedConnection m_speedConn;
     dmq::ScopedConnection m_faultConn;

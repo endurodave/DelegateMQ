@@ -7,11 +7,13 @@
 #include "messages/FaultMsg.h"
 #include "messages/ActuatorStatusMsg.h"
 #include "messages/SensorStatusMsg.h"
+#include "Constants.h"
 #include <iomanip>
 #include <sstream>
 #include <chrono>
 
 using namespace dmq;
+using namespace cellutron;
 
 Logs::~Logs() {
     Shutdown();
@@ -24,21 +26,21 @@ void Logs::Initialize() {
     // Enable DelegateMQ Watchdog (2 second timeout)
     m_thread.CreateThread(std::chrono::seconds(2));
 
-    m_startConn = DataBus::Subscribe<StartProcessMsg>("cell/cmd/run", [this](StartProcessMsg) {
+    m_startConn = DataBus::Subscribe<StartProcessMsg>(topics::CMD_RUN, [this](StartProcessMsg) {
         WriteToFile("[CMD] START Process Command Sent");
     }, &m_thread);
 
-    m_stopConn = DataBus::Subscribe<StopProcessMsg>("cell/cmd/abort", [this](StopProcessMsg) {
+    m_stopConn = DataBus::Subscribe<StopProcessMsg>(topics::CMD_ABORT, [this](StopProcessMsg) {
         WriteToFile("[CMD] ABORT Process Command Sent");
     }, &m_thread);
 
-    m_speedConn = DataBus::Subscribe<CentrifugeSpeedMsg>("cell/cmd/centrifuge_speed", [this](CentrifugeSpeedMsg msg) {
+    m_speedConn = DataBus::Subscribe<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, [this](CentrifugeSpeedMsg msg) {
         std::stringstream ss;
         ss << "[STATUS] Centrifuge Speed: " << msg.rpm << " RPM";
         WriteToFile(ss.str());
     }, &m_thread);
 
-    m_runConn = DataBus::Subscribe<RunStatusMsg>("cell/status/run", [this](RunStatusMsg msg) {
+    m_runConn = DataBus::Subscribe<RunStatusMsg>(topics::STATUS_RUN, [this](RunStatusMsg msg) {
         std::string status_text;
         switch (msg.status) {
             case RunStatus::IDLE: status_text = "IDLE"; break;
@@ -49,12 +51,12 @@ void Logs::Initialize() {
         WriteToFile("[STATUS] System State: " + status_text);
     }, &m_thread);
 
-    m_faultConn = DataBus::Subscribe<FaultMsg>("cell/fault", [this](FaultMsg) {
+    m_faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg) {
         WriteToFile("[CRITICAL] FAULT DETECTED BY SAFETY NODE");
     }, &m_thread);
 
     // Hardware Logging
-    m_actuatorConn = DataBus::Subscribe<ActuatorStatusMsg>("hw/status/actuator", [this](ActuatorStatusMsg msg) {
+    m_actuatorConn = DataBus::Subscribe<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, [this](ActuatorStatusMsg msg) {
         std::stringstream ss;
         if (msg.type == ActuatorType::VALVE) {
             ss << "[HW] Valve " << (int)msg.id << " changed to " << (msg.value ? "OPEN" : "CLOSED");
@@ -64,7 +66,7 @@ void Logs::Initialize() {
         WriteToFile(ss.str());
     }, &m_thread);
 
-    m_sensorConn = DataBus::Subscribe<SensorStatusMsg>("hw/status/sensor", [this](SensorStatusMsg msg) {
+    m_sensorConn = DataBus::Subscribe<SensorStatusMsg>(topics::STATUS_SENSOR, [this](SensorStatusMsg msg) {
         std::stringstream ss;
         if (msg.type == SensorType::PRESSURE) {
             ss << "[HW] Pressure Sensor: " << msg.value;

@@ -274,7 +274,7 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     }
 
     // Send pointer to queue
-    // Set wait option based on FullPolicy: TX_WAIT_FOREVER for BLOCK, TX_NO_WAIT for DROP.
+    // Set wait option based on FullPolicy: TX_WAIT_FOREVER for BLOCK, TX_NO_WAIT for DROP/FAULT.
     UINT wait_option = (FULL_POLICY == FullPolicy::BLOCK) ? TX_WAIT_FOREVER : TX_NO_WAIT;
 
     // Option #2: Implement High priority using tx_queue_front_send.
@@ -286,6 +286,11 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 
     if (ret != TX_SUCCESS)
     {
+        if (FULL_POLICY == FullPolicy::FAULT)
+        {
+            printf("[Thread] CRITICAL: Queue full on thread '%s'! TRIGGERING FAULT.\n", THREAD_NAME.c_str());
+            ASSERT_TRUE(ret == TX_SUCCESS);
+        }
         delete threadMsg; // Failed to enqueue, prevent leak
     }
 }

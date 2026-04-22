@@ -208,14 +208,20 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     if (!threadMsg) return;
 
     // 2. Send pointer to queue
-    // Set timeout based on FullPolicy: osWaitForever for BLOCK, 0 for DROP.
+    // Set timeout based on FullPolicy: osWaitForever for BLOCK, 0 for DROP/FAULT.
     uint32_t timeout = (FULL_POLICY == FullPolicy::BLOCK) ? osWaitForever : 0;
 
     // Option #2: Implement High priority using msg_prio.
     uint8_t msg_prio = (msg->GetPriority() == Priority::HIGH) ? 1 : 0;
 
-    if (osMessageQueuePut(m_msgq, &threadMsg, msg_prio, timeout) != osOK)
+    osStatus_t ret = osMessageQueuePut(m_msgq, &threadMsg, msg_prio, timeout);
+    if (ret != osOK)
     {
+        if (FULL_POLICY == FullPolicy::FAULT)
+        {
+            printf("[Thread] CRITICAL: Queue full on thread '%s'! TRIGGERING FAULT.\n", THREAD_NAME.c_str());
+            ASSERT_TRUE(ret == osOK);
+        }
         // Failed to send (queue full)
         delete threadMsg;
     }

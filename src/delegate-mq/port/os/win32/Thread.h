@@ -52,11 +52,12 @@ struct ThreadMsgComparator {
 /// @details Only meaningful when maxQueueSize > 0.
 ///   - BLOCK: DispatchDelegate() blocks the caller until space is available (back pressure).
 ///   - DROP:  DispatchDelegate() silently discards the message and returns immediately.
+///   - FAULT: DispatchDelegate() triggers a system fault if the queue is full.
 ///
 /// Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where
 /// a stale sample is preferable to stalling the publisher. Use BLOCK for critical topics
-/// (commands, state transitions) where no message may be lost.
-enum class FullPolicy { BLOCK, DROP };
+/// (commands, state transitions) where no message may be lost. FAULT is the default.
+enum class FullPolicy { BLOCK, DROP, FAULT };
 
 /// @brief Windows-native thread for systems using the Win32 API.
 /// @details The Thread class creates a worker thread capable of dispatching and
@@ -68,9 +69,9 @@ public:
     /// @param threadName The name of the thread for debugging.
     /// @param maxQueueSize The maximum number of messages allowed in the queue.
     ///                     0 means unlimited (no back pressure).
-    /// @param fullPolicy When the queue is full: BLOCK the caller or DROP the message.
+    /// @param fullPolicy When the queue is full: FAULT (default), BLOCK or DROP.
     ///                   Only meaningful when maxQueueSize > 0.
-    Thread(const std::string& threadName, size_t maxQueueSize = 0, FullPolicy fullPolicy = FullPolicy::BLOCK);
+    Thread(const std::string& threadName, size_t maxQueueSize = 0, FullPolicy fullPolicy = FullPolicy::FAULT);
 
     /// Destructor
     virtual ~Thread();

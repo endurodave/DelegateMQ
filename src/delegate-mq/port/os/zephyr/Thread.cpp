@@ -215,11 +215,17 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     if (!threadMsg) return;
 
     // 2. Send pointer to queue
-    // Set timeout based on FullPolicy: K_FOREVER for BLOCK, K_NO_WAIT for DROP.
+    // Set timeout based on FullPolicy: K_FOREVER for BLOCK, K_NO_WAIT for DROP/FAULT.
     k_timeout_t timeout = (FULL_POLICY == FullPolicy::BLOCK) ? K_FOREVER : K_NO_WAIT;
 
-    if (k_msgq_put(&m_msgq, &threadMsg, timeout) != 0)
+    int ret = k_msgq_put(&m_msgq, &threadMsg, timeout);
+    if (ret != 0)
     {
+        if (FULL_POLICY == FullPolicy::FAULT)
+        {
+            printf("[Thread] CRITICAL: Queue full on thread '%s'! TRIGGERING FAULT.\n", THREAD_NAME.c_str());
+            ASSERT_TRUE(ret == 0);
+        }
         // Failed to enqueue (queue full)
         delete threadMsg;
     }

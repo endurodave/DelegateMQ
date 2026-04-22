@@ -12,37 +12,37 @@ Serializer<void(SensorStatusMsg)>    serSensor;
 Serializer<void(HeartbeatMsg)>       serHeartbeat;
 
 void RegisterSerializers() {
-    dmq::DataBus::RegisterSerializer<StartProcessMsg>("cell/cmd/run", serStart);
-    dmq::DataBus::RegisterSerializer<StopProcessMsg>("cell/cmd/abort", serStop);
-    dmq::DataBus::RegisterSerializer<CentrifugeSpeedMsg>("cell/cmd/centrifuge_speed", serSpeed);
-    dmq::DataBus::RegisterSerializer<CentrifugeStatusMsg>("cell/status/centrifuge", serStatus);
-    dmq::DataBus::RegisterSerializer<RunStatusMsg>("cell/status/run", serRun);
+    dmq::DataBus::RegisterSerializer<StartProcessMsg>(cellutron::topics::CMD_RUN, serStart);
+    dmq::DataBus::RegisterSerializer<StopProcessMsg>(cellutron::topics::CMD_ABORT, serStop);
+    dmq::DataBus::RegisterSerializer<CentrifugeSpeedMsg>(cellutron::topics::CMD_CENTRIFUGE_SPEED, serSpeed);
+    dmq::DataBus::RegisterSerializer<CentrifugeStatusMsg>(cellutron::topics::STATUS_CENTRIFUGE, serStatus);
+    dmq::DataBus::RegisterSerializer<RunStatusMsg>(cellutron::topics::STATUS_RUN, serRun);
     dmq::DataBus::RegisterSerializer<FaultMsg>(cellutron::topics::FAULT, serFault);
-    dmq::DataBus::RegisterSerializer<ActuatorStatusMsg>("hw/status/actuator", serActuator);
-    dmq::DataBus::RegisterSerializer<SensorStatusMsg>("hw/status/sensor", serSensor);
+    dmq::DataBus::RegisterSerializer<ActuatorStatusMsg>(cellutron::topics::STATUS_ACTUATOR, serActuator);
+    dmq::DataBus::RegisterSerializer<SensorStatusMsg>(cellutron::topics::STATUS_SENSOR, serSensor);
     dmq::DataBus::RegisterSerializer<HeartbeatMsg>(cellutron::topics::SAFETY_HEARTBEAT, serHeartbeat);
     dmq::DataBus::RegisterSerializer<HeartbeatMsg>(cellutron::topics::CONTROLLER_HEARTBEAT, serHeartbeat);
     dmq::DataBus::RegisterSerializer<HeartbeatMsg>(cellutron::topics::GUI_HEARTBEAT, serHeartbeat);
 }
 
 void RegisterStringifiers() {
-    dmq::DataBus::RegisterStringifier<StartProcessMsg>("cell/cmd/run", [](const StartProcessMsg&) {
+    dmq::DataBus::RegisterStringifier<StartProcessMsg>(cellutron::topics::CMD_RUN, [](const StartProcessMsg&) {
         return "START";
     });
 
-    dmq::DataBus::RegisterStringifier<StopProcessMsg>("cell/cmd/abort", [](const StopProcessMsg&) {
+    dmq::DataBus::RegisterStringifier<StopProcessMsg>(cellutron::topics::CMD_ABORT, [](const StopProcessMsg&) {
         return "ABORT";
     });
 
-    dmq::DataBus::RegisterStringifier<CentrifugeSpeedMsg>("cell/cmd/centrifuge_speed", [](const CentrifugeSpeedMsg& msg) {
+    dmq::DataBus::RegisterStringifier<CentrifugeSpeedMsg>(cellutron::topics::CMD_CENTRIFUGE_SPEED, [](const CentrifugeSpeedMsg& msg) {
         return std::to_string(msg.rpm) + " RPM";
     });
 
-    dmq::DataBus::RegisterStringifier<CentrifugeStatusMsg>("cell/status/centrifuge", [](const CentrifugeStatusMsg& msg) {
+    dmq::DataBus::RegisterStringifier<CentrifugeStatusMsg>(cellutron::topics::STATUS_CENTRIFUGE, [](const CentrifugeStatusMsg& msg) {
         return std::to_string(msg.rpm) + " RPM";
     });
 
-    dmq::DataBus::RegisterStringifier<RunStatusMsg>("cell/status/run", [](const RunStatusMsg& msg) {
+    dmq::DataBus::RegisterStringifier<RunStatusMsg>(cellutron::topics::STATUS_RUN, [](const RunStatusMsg& msg) {
         switch(msg.status) {
             case RunStatus::IDLE: return "IDLE";
             case RunStatus::PROCESSING: return "PROCESSING";
@@ -56,12 +56,12 @@ void RegisterStringifiers() {
         return "FAULT CODE: " + std::to_string(msg.faultCode);
     });
 
-    dmq::DataBus::RegisterStringifier<ActuatorStatusMsg>("hw/status/actuator", [](const ActuatorStatusMsg& msg) {
+    dmq::DataBus::RegisterStringifier<ActuatorStatusMsg>(cellutron::topics::STATUS_ACTUATOR, [](const ActuatorStatusMsg& msg) {
         std::string type = (msg.type == ActuatorType::VALVE) ? "VALVE" : "PUMP";
         return type + " " + std::to_string(msg.id) + ": " + std::to_string(msg.value);
     });
 
-    dmq::DataBus::RegisterStringifier<SensorStatusMsg>("hw/status/sensor", [](const SensorStatusMsg& msg) {
+    dmq::DataBus::RegisterStringifier<SensorStatusMsg>(cellutron::topics::STATUS_SENSOR, [](const SensorStatusMsg& msg) {
         std::string type = (msg.type == SensorType::PRESSURE) ? "PRESSURE" : "AIR";
         return type + ": " + std::to_string(msg.value);
     });

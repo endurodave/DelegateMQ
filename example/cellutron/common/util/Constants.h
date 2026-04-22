@@ -18,13 +18,22 @@ namespace cellutron {
         static const char* const CONTROLLER_HEARTBEAT = "sys/heartbeat/controller";
         static const char* const GUI_HEARTBEAT        = "sys/heartbeat/gui";
 
+        static const char* const CMD_RUN              = "cell/cmd/run";
+        static const char* const CMD_ABORT            = "cell/cmd/abort";
+        static const char* const CMD_CENTRIFUGE_SPEED = "cell/cmd/centrifuge_speed";
+
+        static const char* const STATUS_RUN           = "cell/status/run";
+        static const char* const STATUS_CENTRIFUGE     = "cell/status/centrifuge";
+        static const char* const STATUS_ACTUATOR      = "hw/status/actuator";
+        static const char* const STATUS_SENSOR        = "hw/status/sensor";
+        
+        static const char* const FAULT                = "cell/fault";
+
         static const char* const PRESSURE_INLET       = "hw/sensor/pressure_inlet";
         static const char* const PRESSURE_OUTLET      = "hw/sensor/pressure_outlet";
         static const char* const AIR_INLET            = "hw/sensor/air_inlet";
         static const char* const AIR_OUTLET           = "hw/sensor/air_outlet";
         static const char* const RPM                  = "hw/sensor/rpm";
-        
-        static const char* const FAULT                = "cell/fault";
     }
 
     // Fault codes

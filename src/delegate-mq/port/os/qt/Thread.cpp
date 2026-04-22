@@ -6,6 +6,11 @@
 #include "Thread.h"
 #include <QDebug>
 
+// Define ASSERT_TRUE if not already defined
+#ifndef ASSERT_TRUE
+#define ASSERT_TRUE(x) Q_ASSERT(x)
+#endif
+
 // Register the metatype ID once
 static int registerId = qRegisterMetaType<std::shared_ptr<dmq::DelegateMsg>>();
 
@@ -182,6 +187,14 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
             {
                 m_mutex.unlock();
                 return; // silently discard
+            }
+
+            if (m_fullPolicy == FullPolicy::FAULT)
+            {
+                m_mutex.unlock();
+                printf("[Thread] CRITICAL: Queue full on thread '%s'! TRIGGERING FAULT.\n", m_threadName.c_str());
+                ASSERT_TRUE(m_queueSize < m_maxQueueSize);
+                return;
             }
 
             // BLOCK: wait while queue is full

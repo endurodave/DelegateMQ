@@ -20,7 +20,7 @@ void Alarms::Initialize() {
     g_alarmGraceTimer->Start(std::chrono::milliseconds(1000));
 
     // 1. Subscribe to system faults
-    m_faultConn = DataBus::Subscribe<FaultMsg>("cell/fault", [this](FaultMsg msg) {
+    m_faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg msg) {
         // If we are already showing an alarm, don't overwrite it with a generic one
         if (m_alarmActive && msg.faultCode == FAULT_OVERSPEED) {
              // Let overspeed through as it is high priority

@@ -19,7 +19,7 @@ public:
     void Initialize(dmq::IThread& thread)
     {
         m_conn = dmq::DataBus::Subscribe<CentrifugeSpeedMsg>(
-            "cell/cmd/centrifuge_speed",
+            topics::CMD_CENTRIFUGE_SPEED,
             [this](CentrifugeSpeedMsg msg) {
                 m_currentRpm.store(msg.rpm);
             },

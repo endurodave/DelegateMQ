@@ -227,7 +227,8 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 
     // DROP: non-blocking — discard if queue is full, caller is never stalled.
     // BLOCK: wait indefinitely — guarantees delivery, caller blocks until space is available.
-    TickType_t timeout = (FULL_POLICY == FullPolicy::DROP) ? 0 : portMAX_DELAY;
+    // FAULT: non-blocking - trigger fault if queue full.
+    TickType_t timeout = (FULL_POLICY == FullPolicy::BLOCK) ? portMAX_DELAY : 0;
 
     // Option #2: Implement High priority using xQueueSendToFront. 
     // All other priorities use default FIFO (SendToBack).
@@ -238,7 +239,11 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
         status = xQueueSendToBack(m_queue, &threadMsg, timeout);
 
     if (status != pdPASS) {
-        delete threadMsg;  // queue full, message dropped per DROP policy
+        if (FULL_POLICY == FullPolicy::FAULT) {
+            printf("[Thread] CRITICAL: Queue full on thread '%s'! TRIGGERING FAULT.\n", THREAD_NAME.c_str());
+            ASSERT_TRUE(status == pdPASS);
+        }
+        delete threadMsg;  // queue full, message dropped per DROP/FAULT policy
     }
 }
 

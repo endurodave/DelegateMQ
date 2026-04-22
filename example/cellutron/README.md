@@ -28,73 +28,119 @@
 
 ## Why Cellutron?
 
-The Cellutron project serves as a "Real-World" demonstration of DelegateMQ in a multi-processor, safety-critical context. Unlike simple library examples, it showcases how DelegateMQ solves the challenges inherent in medical device engineering:
-
-- **Safety Critical Isolation**: The system implements a dedicated **Safety CPU**. In medical devices, hardware interlocks must often be independent of the main control logic. Cellutron demonstrates an autonomous watchdog that can override the Controller if hardware limits are exceeded.
-- **Heterogeneous Environments**: It runs identical application logic across diverse environments. The **GUI CPU** runs on a standard desktop OS, while the **Controller** and **Safety** nodes run on the **FreeRTOS Win32 Simulator**. This "sandbox" allows real RTOS kernel code and task-based logic to execute as standard Windows processes, providing a high-fidelity simulation of the microcontrollers found in modern instruments.
-- **Distributed Triangle Monitoring**: Reliability is ensured via a "Triangle Monitoring" heartbeat architecture. Every node in the system (Controller, Safety, GUI) publishes a heartbeat and monitors the health of the other two. If any node stops responding (Loss of Signal), the entire system enters a non-recoverable safety fault.
-- **Traceability and Audit Trails**: The **logs** subsystem demonstrates non-intrusive monitoring. It "spies" on the distributed bus to provide a timestamped audit trail of all commands, status changes, and raw hardware actions (valves/sensors)—a fundamental requirement for regulatory compliance (e.g., FDA/CE).
-- **Concurrency without Locks**: Each processor uses the **Active Object** pattern. DelegateMQ's asynchronous delegates handle all data marshalling, allowing developers to write thread-safe state machines without the risk of deadlocks associated with manual mutex management.
+The Cellutron project serves as a "Real-World" demonstration of DelegateMQ in a multi-processor, safety-critical context. It showcases how DelegateMQ middleware runs on top of Windows/Linux and FreeRTOS using async signals/slots, DataBus, and multithreading to solve the challenges inherent in modern instrument engineering.
 
 ---
 
 ## DelegateMQ Feature Showcase
 
-Cellutron is designed to be the definitive reference for DelegateMQ, exercising all major functional areas of the library in a single integrated application.
+Cellutron demonstrates all major DelegateMQ functional areas in a single integrated application.
 
-### 1. Distributed DataBus (Local & Remote)
-- **Many-to-Many**: Data flows seamlessly between three distributed CPUs and dozens of internal threads.
-- **Location Transparency**: Publishers and Subscribers interact via named topics without knowing if the counterpart is in the same thread or across the network.
-- **QoS (Last Value Cache)**: Critical state topics like `status/run` use LVC. If the GUI is restarted mid-process, it immediately receives the current instrument state from the bus.
-
-### 2. Active Objects & Thread Marshalling
-- **Dedicated Execution**: Every major subsystem (State Machines, Network, UI, Logs, Actuators, Sensors) is an independent **Active Object** owning its own thread.
-- **Zero-Lock Concurrency**: DelegateMQ handles all inter-thread data marshalling. Developers write standard sequential code within state functions while the library ensures thread-safety without manual mutexes.
-
-### 3. Synchronous-over-Asynchronous APIs
-- **Blocking Hardware Abstraction**: The `actuators` and `sensors` subsystems return values (`int`), forcing the calling process thread to **block** until the hardware thread confirms completion. This demonstrates how to build a synchronous, easy-to-read API for asynchronous hardware interactions.
-
-### 4. Signal & Slot (Multicast)
-- **RAII Safety**: Uses `dmq::Signal` with `dmq::ScopedConnection` for internal events. This ensures that if a component is destroyed, its callbacks are automatically disconnected, preventing "latent" calls to dead objects and fixing `[[nodiscard]]` compiler warnings.
-- **Event-Driven Design**: The `CellProcess` state machine is driven by asynchronous signals from the `Centrifuge` motor simulation.
-
-### 5. Non-Intrusive Spying & Monitoring
-- **Bus Monitoring**: The **logs** subsystem uses the `DataBus::Monitor()` feature to "spy" on every message flowing through the bus, providing a full audit trail without modifying a single line of code in the Controller or Safety CPUs.
-- **Failure Detection**: Uses `SubscribeUnhandled()` to detect and log messages that were published but had no active subscribers.
-
-### 6. Distributed Watchdog (Triangle Heartbeat)
-- **Componentized Monitoring**: Uses a generalized `Heartbeat` utility class to manage cross-node health. 
-- **Loss of Signal (LOS)**: Every node monitors its peers via `dmq::DeadlineSubscription`. If a heartbeat is missed for more than 2 seconds, a system-wide `FAULT` is triggered.
-- **Warmup Protection**: Built-in logic ignores timeouts during the first 15 seconds of system boot-up to allow all nodes to synchronize.
-- **Fault Storm Protection**: Logic ensures that even if multiple nodes detect a failure simultaneously, the system enters the safety state cleanly without redundant message flooding.
-
-### 7. Multi-OS Portability
-- **Heterogeneous Interop**: Identical application source code runs on **Standard C++ (GUI CPU)** and **FreeRTOS (Controller/Safety CPUs)**, showcasing the library's ability to abstract the underlying operating system and threading models.
+- **Distributed DataBus**: Many-to-Many communication between three distributed CPUs and dozens of internal threads using location-transparent named topics.
+- **QoS (Last Value Cache)**: Critical status topics use LVC to ensure new subscribers (like a late-starting GUI) immediately receive the current instrument state.
+- **Active Objects**: Every major subsystem (State Machines, UI, Actuators) is an independent Active Object owning its own thread.
+- **Zero-Lock Concurrency**: Asynchronous delegates handle all inter-thread data marshalling, allowing thread-safe state machines without manual mutexes.
+- **Synchronous-over-Asynchronous**: Demonstrates blocking hardware abstractions where a thread blocks until an asynchronous hardware operation confirms completion.
+- **RAII Signal & Slot**: Uses `dmq::Signal` with `dmq::ScopedConnection` for automatic cleanup of internal events when components are destroyed.
+- **Non-Intrusive Monitoring**: Uses the `Monitor()` feature to "spy" on the distributed bus for audit logging without modifying core application logic.
+- **Triangle Heartbeat**: Cross-node health monitoring via `dmq::DeadlineSubscription`. Missed heartbeats trigger a coordinated system-wide `FAULT`.
+- **Multi-OS Portability**: Identical application source code runs on **Standard C++ (GUI CPU)** and **FreeRTOS (Controller/Safety CPUs)**.
+- **Safe Error Handling**: Uses the `FullPolicy::FAULT` to ensure that any message queue overflow is treated as a critical system failure.
 
 ---
 
 ## Architecture Overview
 
-### Distributed Topology
+### Hardware Topology
 ![Cellutron Architecture](cellutron_architecture.svg)
 
-The system is distributed across three independent processors connected via UDP.
+The system is distributed across three independent processors (CPUs) communicating over a UDP-based distributed **DataBus**.
 
-| Processor | Role | OS / Port | Port |
-|:---|:---|:---|:---|
-| **GUI CPU** | Operator interface & Data logging | Windows/Linux | 5010 |
-| **Controller CPU** | Main process state machines & Sequencing | FreeRTOS (Win32) | 5011 |
-| **Safety CPU** | Independent monitor & Interlock verification | FreeRTOS (Win32) | 5013 |
+| CPU Node | Operating System | Primary Responsibility |
+|:---|:---|:---|
+| **GUI CPU** | Windows/Linux (stdlib) | HMI, Data Visualization, and System-wide Logging. |
+| **Controller CPU** | FreeRTOS (Win32 Sim) | Process orchestration and hardware sequencing. |
+| **Safety CPU** | FreeRTOS (Win32 Sim) | Independent hardware monitoring and interlock enforcement. |
+
+### Thread Topology
+
+Every CPU in the system uses a standardized thread architecture to handle network communication and DataBus (Active Object) dispatching. All threads (excluding the OS Main Thread) are monitored by the **DelegateMQ Watchdog** with a 2-second timeout to detect and handle deadlocks.
+
+#### GUI CPU
+| Thread | Role | Description |
+|:---|:---|:---|
+| **Main Thread** | UI Event Loop | Handles FTXUI keyboard/mouse input and terminal rendering. |
+| **NetworkThread** | UDP Receiver | Managed by the `Network` singleton. Listens for status updates from other CPUs. |
+| **SystemThread** | Active Object SM | Standardized thread for running system logic, state machines, and DataBus callbacks. |
+| **LogsThread** | File I/O | Dedicated thread for writing the `logs.txt` audit trail. |
+
+#### Controller CPU
+| Thread | Role | Description |
+|:---|:---|:---|
+| **Main/Timer Thread** | OS Orchestration | Handles OS startup and DelegateMQ `Timer` processing. |
+| **NetworkThread** | UDP Receiver | Managed by the `Network` singleton. Listens for commands from the GUI. |
+| **ProcessThread** | Active Object SM | Standardized thread for running system logic, state machines, and DataBus callbacks. |
+| **ActuatorsThread** | Hardware Output | Dedicated thread for executing valve and pump commands via blocking sync calls. |
+| **SensorsThread** | Hardware Input | Dedicated thread for querying pressure and air-in-line sensors. |
+| **Controller Thread** | Main FreeRTOS Loop | Primary application thread used for system setup and network initialization. |
+
+#### Safety CPU
+| Thread | Role | Description |
+|:---|:---|:---|
+| **Main/Timer Thread** | OS Orchestration | Handles OS startup and DelegateMQ `Timer` processing. |
+| **NetworkThread** | UDP Receiver | Managed by the `Network` singleton. Listens for real-time RPM updates. |
+| **SystemThread** | Active Object SM | Standardized thread for running system logic, state machines, and DataBus callbacks. |
+| **Safety Thread** | Main FreeRTOS Loop | Primary application thread used for system setup and periodic checks. |
 
 ### Pneumatics System
 ![Cellutron Pneumatics](pneumatics.svg)
 
 The instrument controls a fluid path using a manifold of valves and a single peristaltic pump:
 - **Valves V1-V3**: Divert fluids (Solution A, B, or Cells) into the main process line.
-- **Pump (ID 1)**: Precise flow control across the fluid path.
+- **Pump (ID 1)**: Precise bi-directional flow control (Forward for filling, Reverse for draining).
 - **Centrifuge**: High-speed separation chamber for cell processing.
 - **Valve V4**: Controls the final drain path to waste.
 - **Sensors**: Real-time pressure (P) and air-in-line (A) monitoring at the inlet and outlet of the pump manifold.
+
+---
+
+## Communication Model (Distributed DataBus)
+
+Cellutron uses a "DDS-Lite" approach where data is exchanged via named **Topics**. The DataBus abstracts the network, allowing publishers and subscribers to interact seamlessly across CPU boundaries.
+
+### Topic Mapping
+
+| Topic | Publisher | Subscribers | Description |
+|:---|:---|:---|:---|
+| `Command` | GUI CPU | Controller CPU | Commands to start or abort the cell processing sequence. |
+| `Status` | Controller CPU | GUI CPU | High-level system state (Idle, Processing, Aborting, Fault). |
+| `Control` | Controller CPU | GUI CPU, Safety CPU | Real-time centrifuge RPM setpoints. |
+| `Hardware`| Controller CPU | GUI CPU (logs) | Feedback on valve toggles, pump speed, and sensor snapshots. |
+| `Fault` | Safety CPU | Controller CPU, GUI CPU | Critical safety violation event. |
+
+---
+
+## Controller State Machines
+
+The Controller CPU orchestration is driven by nested state machines. The high-level process manages the overall sequence, while sub-processes handle atomic hardware actions.
+
+### CellProcess State Machine
+The `CellProcess` state machine (Active Object) manages the high-level instrument sequence. It coordinates with the `PumpProcess` and the `Centrifuge` actuator to move fluid and process cells.
+
+![CellProcess State Machine](cell_process_sm.svg)
+
+### PumpProcess State Machine
+The `PumpProcess` is a sub-state machine used by `CellProcess` to perform a standardized fluid transfer. It ensures that a valve is opened, the pump reaches speed, a duration expires, the pump is stopped, and the valve is closed in a deterministic, synchronous sequence.
+
+![PumpProcess State Machine](pump_process_sm.svg)
+
+---
+
+## Implementation Details
+
+- **Serialization**: Uses the `msg_serialize` port for compact binary transmission.
+- **Shared Constants**: Centralized in `common/util/Constants.h`.
+- **Async Marshalling**: Cross-thread and cross-processor logic is unified via DelegateMQ delegates.
 
 ---
 
@@ -105,17 +151,3 @@ The project uses a strict nested namespace architecture for clarity and to preve
 - `cellutron::actuators`: Hardware driver abstractions (Valve, Pump, Centrifuge).
 - `cellutron::sensors`: Hardware sensor abstractions (Pressure, Air).
 - `cellutron::hw`: Shared hardware data types.
-
----
-
-## Communication Logic
-
-- **Commands**: **GUI CPU** publishes `cmd/run` or `cmd/abort` to the bus. The **Controller CPU** subscribes and drives the state machine.
-- **Control**: **Controller CPU** calculates the centrifuge ramp and publishes `cmd/speed` at high frequency.
-- **Hardware Feedback**: The **actuators** and **sensors** subsystems on the Controller publish their internal states to `hw/status/actuator` and `hw/status/sensor`.
-- **System Monitoring**: Both the **GUI CPU** (for UI/Logs) and **Safety CPU** (for interlocks) subscribe to the relevant status topics.
-- **Safety Overrides**: If limits are exceeded or a heartbeat is lost, any node can publish a `fault` message. All nodes react immediately to enter a non-recoverable safe state.
-
----
-
-For detailed hardware layout and flow paths, see [ARCHITECTURE.md](ARCHITECTURE.md).
