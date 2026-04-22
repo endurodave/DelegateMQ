@@ -13,11 +13,12 @@ struct PumpData : public EventData
 {
     uint8_t valveId;
     uint8_t speed;
+    bool reverse;
     std::chrono::milliseconds duration;
 
     // Default to Pump ID 1 for all operations
-    PumpData(uint8_t v, uint8_t s, std::chrono::milliseconds d) :
-        valveId(v), speed(s), duration(d) {}
+    PumpData(uint8_t v, uint8_t s, std::chrono::milliseconds d, bool r = false) :
+        valveId(v), speed(s), duration(d), reverse(r) {}
 };
 
 /// @brief Sub-process state machine that handles: Valve Open -> Pump On -> Wait -> Pump Off -> Valve Close.

@@ -51,7 +51,8 @@ void PumpProcess::OnPumpChanged(int id, int speed)
     // We only have one pump (ID 1)
     if (m_data && id == 1)
     {
-        if (speed == m_data->speed) PumpStarted();
+        int targetSpeed = m_data->reverse ? -static_cast<int>(m_data->speed) : static_cast<int>(m_data->speed);
+        if (speed == targetSpeed) PumpStarted();
         else if (speed == 0) PumpStopped();
     }
 }
@@ -141,9 +142,11 @@ STATE_DEFINE(cellutron::process::PumpProcess, ValveOpen, cellutron::process::Pum
 
 STATE_DEFINE(cellutron::process::PumpProcess, PumpOn, cellutron::process::PumpData)
 {
-    printf("PumpProcess: ST_PUMP_ON (Speed: %d%%)\n", data->speed);
-    // Use fixed Pump ID 1
-    actuators::Actuators::GetInstance().SetPump(1, data->speed);
+    printf("PumpProcess: ST_PUMP_ON (Speed: %d%%, Reverse: %s)\n", 
+        data->speed, data->reverse ? "YES" : "NO");
+    // Use fixed Pump ID 1. Apply negative speed for reverse direction.
+    int targetSpeed = data->reverse ? -static_cast<int>(data->speed) : static_cast<int>(data->speed);
+    actuators::Actuators::GetInstance().SetPump(1, targetSpeed);
 }
 
 STATE_DEFINE(cellutron::process::PumpProcess, Waiting, cellutron::process::PumpData)

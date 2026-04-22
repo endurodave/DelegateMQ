@@ -10,10 +10,10 @@ struct ActuatorStatusMsg : public serialize::I
 {
     ActuatorType type = ActuatorType::VALVE;
     uint8_t id = 0;
-    uint8_t value = 0; // 0/1 for valve, 0-100 for pump
+    int16_t value = 0; // 0/1 for valve, -100 to 100 for pump
 
     ActuatorStatusMsg() = default;
-    ActuatorStatusMsg(ActuatorType t, uint8_t i, uint8_t v) : type(t), id(i), value(v) {}
+    ActuatorStatusMsg(ActuatorType t, uint8_t i, int16_t v) : type(t), id(i), value(v) {}
 
     virtual std::istream& read(serialize& ms, std::istream& is) override {
         uint8_t t;

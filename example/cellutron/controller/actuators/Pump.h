@@ -14,27 +14,27 @@ class Pump {
 public:
     /// Signal emitted when pump speed changes.
     /// int: The pump ID.
-    /// uint8_t: The new speed (0-100).
-    dmq::Signal<void(int, uint8_t)> OnSpeedChanged;
+    /// int: The new speed (-100 to 100).
+    dmq::Signal<void(int, int)> OnSpeedChanged;
 
     Pump(uint8_t id) : m_id(id) {}
 
-    /// Set speed (0-100%).
-    void SetSpeed(uint8_t speed) {
+    /// Set speed (-100 to 100%).
+    void SetSpeed(int speed) {
         m_speed = speed;
         printf("[Pump %d] -> %d%%\n", m_id, m_speed);
         dmq::DataBus::Publish<ActuatorStatusMsg>(
             "hw/status/actuator",
-            { ActuatorType::PUMP, m_id, m_speed });
+            { ActuatorType::PUMP, m_id, static_cast<int16_t>(m_speed) });
         OnSpeedChanged(m_id, m_speed);
     }
 
-    uint8_t GetSpeed() const { return m_speed; }
+    int GetSpeed() const { return m_speed; }
     uint8_t GetId()    const { return m_id; }
 
 private:
     uint8_t m_id;
-    uint8_t m_speed = 0;
+    int m_speed = 0;
 };
 
 } // namespace actuators

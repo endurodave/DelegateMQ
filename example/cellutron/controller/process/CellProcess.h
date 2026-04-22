@@ -19,6 +19,20 @@ public:
     using StateMachine::OnExit;
     using StateMachine::OnCannotHappen;
 
+    enum States
+    {
+        ST_IDLE,
+        ST_FILL_SOLUTION_A,
+        ST_FILL_SOLUTION_B,
+        ST_FILL_CELLS,
+        ST_SPIN,
+        ST_DRAIN,
+        ST_COMPLETE,
+        ST_ABORTING,
+        ST_FAULT,
+        ST_MAX_STATES
+    };
+
     CellProcess(actuators::Centrifuge& centrifuge, PumpProcess& pumpProcess);
     ~CellProcess();
 
@@ -34,20 +48,6 @@ public:
     void GenerateFault();
 
 protected:
-    enum States
-    {
-        ST_IDLE,
-        ST_FILL_SOLUTION_A,
-        ST_FILL_SOLUTION_B,
-        ST_FILL_CELLS,
-        ST_SPIN,
-        ST_DRAIN,
-        ST_COMPLETE,
-        ST_ABORTING,
-        ST_FAULT,
-        ST_MAX_STATES
-    };
-
     // States
     STATE_DECLARE(CellProcess, Idle, NoEventData)
     STATE_DECLARE(CellProcess, FillSolutionA, NoEventData)

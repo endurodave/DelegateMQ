@@ -57,7 +57,7 @@ void System::SetupLocalSubscriptions() {
     }, &m_thread);
 
     m_faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [](FaultMsg msg) {
-        if (process::Process::GetInstance().GetCellProcess().GetCurrentState() != 25) { // 25 = ST_FAULT
+        if (process::Process::GetInstance().GetCellProcess().GetCurrentState() != process::CellProcess::ST_FAULT) {
             printf("Controller: >>>> CRITICAL FAULT RECEIVED (Code: %d) <<<<\n", msg.faultCode);
             process::Process::GetInstance().Fault();
         }

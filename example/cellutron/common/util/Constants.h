@@ -7,7 +7,6 @@
 namespace cellutron {
     // Centrifuge constants
     static constexpr uint16_t MAX_CENTRIFUGE_RPM = 1000;
-    static constexpr uint16_t SAFE_CENTRIFUGE_RPM = 900;
 
     // Heartbeat constants
     static constexpr std::chrono::milliseconds HEARTBEAT_PERIOD{500};

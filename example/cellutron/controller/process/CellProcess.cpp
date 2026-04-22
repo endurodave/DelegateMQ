@@ -212,22 +212,22 @@ STATE_DEFINE(cellutron::process::CellProcess, FillSolutionA, NoEventData)
 {
     printf("CellProcess: ST_FILL_SOLUTION_A\n");
     DataBus::Publish<RunStatusMsg>("cell/status/run", { RunStatus::PROCESSING });
-    // Use Pump ID 1
-    m_pumpProcess.Start(std::make_shared<PumpData>(1, 50, std::chrono::seconds(2)));
+    // Use Pump ID 1, Valve 1, Forward
+    m_pumpProcess.Start(std::make_shared<PumpData>(1, 50, std::chrono::seconds(2), false));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, FillSolutionB, NoEventData)
 {
     printf("CellProcess: ST_FILL_SOLUTION_B\n");
-    // Use Pump ID 1
-    m_pumpProcess.Start(std::make_shared<PumpData>(2, 50, std::chrono::seconds(2)));
+    // Use Pump ID 1, Valve 2, Forward
+    m_pumpProcess.Start(std::make_shared<PumpData>(2, 50, std::chrono::seconds(2), false));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, FillCells, NoEventData)
 {
     printf("CellProcess: ST_FILL_CELLS\n");
-    // Use Pump ID 1
-    m_pumpProcess.Start(std::make_shared<PumpData>(3, 25, std::chrono::seconds(2)));
+    // Use Pump ID 1, Valve 3, Forward
+    m_pumpProcess.Start(std::make_shared<PumpData>(3, 25, std::chrono::seconds(2), false));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, Spin, NoEventData)
@@ -239,8 +239,8 @@ STATE_DEFINE(cellutron::process::CellProcess, Spin, NoEventData)
 STATE_DEFINE(cellutron::process::CellProcess, Drain, NoEventData)
 {
     printf("CellProcess: ST_DRAIN\n");
-    // Use Pump ID 1, Valve 10
-    m_pumpProcess.Start(std::make_shared<PumpData>(10, 100, std::chrono::seconds(3)));
+    // Use Pump ID 1, Valve 4, Reverse
+    m_pumpProcess.Start(std::make_shared<PumpData>(4, 100, std::chrono::seconds(3), true));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, Complete, NoEventData)

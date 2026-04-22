@@ -21,8 +21,8 @@ void Actuators::Initialize() {
     // 2. Initialize Centrifuge
     m_centrifuge.SetThread(m_thread);
 
-    // 3. Initialize Valves (IDs used in CellProcess: 1, 2, 3, 10)
-    int valveIds[] = {1, 2, 3, 10};
+    // 3. Initialize Valves (IDs used in CellProcess: 1, 2, 3, 4)
+    int valveIds[] = {1, 2, 3, 4};
     for (int id : valveIds) {
         m_valves.emplace(std::piecewise_construct, std::forward_as_tuple(id), std::forward_as_tuple(id));
         
@@ -47,8 +47,8 @@ void Actuators::HandleValveChanged(int id, bool open) {
     OnValveChanged(id, open);
 }
 
-void Actuators::HandlePumpChanged(int id, uint8_t speed) {
-    OnPumpChanged(id, static_cast<int>(speed));
+void Actuators::HandlePumpChanged(int id, int speed) {
+    OnPumpChanged(id, speed);
 }
 
 void Actuators::Shutdown() {
@@ -79,7 +79,7 @@ int Actuators::InternalSetValve(int id, bool open) {
 
 int Actuators::InternalSetPump(int id, int speed) {
     try {
-        m_pumps.at(id).SetSpeed(static_cast<uint8_t>(speed));
+        m_pumps.at(id).SetSpeed(speed);
     } catch (const std::out_of_range&) {
         printf("Actuators: ERROR - Pump ID %d not found!\n", id);
         return -1;

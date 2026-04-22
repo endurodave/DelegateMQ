@@ -27,25 +27,25 @@
   <text x="275" y="305" text-anchor="middle" class="port-text">Port: 5013</text>
 
   <!-- Connections -->
-  <!-- GUI to Controller -->
+  <!-- GUI to Controller (Command) -->
   <path d="M 170 80 L 350 80" stroke="#007bff" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
-  <text x="260" y="75" text-anchor="middle" class="topic-text">cmd/run</text>
+  <text x="260" y="75" text-anchor="middle" class="topic-text">Command</text>
 
-  <!-- Controller to GUI -->
+  <!-- Controller to GUI (Status) -->
   <path d="M 350 100 L 170 100" stroke="#fd7e14" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
-  <text x="260" y="115" text-anchor="middle" class="topic-text">status/run</text>
+  <text x="260" y="115" text-anchor="middle" class="topic-text">Status</text>
 
-  <!-- Controller to Safety -->
-  <path d="M 425 130 L 350 260" stroke="#fd7e14" stroke-width="1.5" marker-end="url(#arrow-orange)" fill="none"/>
-  <text x="430" y="200" text-anchor="middle" class="topic-text">cmd/speed</text>
+  <!-- Controller to Safety (Control) -->
+  <path d="M 425 130 L 350 250" stroke="#fd7e14" stroke-width="1.5" marker-end="url(#arrow-orange)" fill="none"/>
+  <text x="415" y="200" text-anchor="middle" class="topic-text">Control</text>
 
-  <!-- Safety to Controller -->
-  <path d="M 275 250 L 370 130" stroke="#dc3545" stroke-width="1.5" marker-end="url(#arrow-red)" fill="none"/>
-  <text x="310" y="180" text-anchor="middle" class="fault-text">fault</text>
+  <!-- Safety to Controller (Fault) -->
+  <path d="M 325 250 L 375 130" stroke="#dc3545" stroke-width="1.5" marker-end="url(#arrow-red)" fill="none"/>
+  <text x="330" y="180" text-anchor="middle" class="fault-text">Fault</text>
 
-  <!-- Safety to GUI -->
-  <path d="M 200 290 L 110 130" stroke="#dc3545" stroke-width="1.5" marker-end="url(#arrow-red)" fill="none"/>
-  <text x="140" y="240" text-anchor="middle" class="fault-text">fault</text>
+  <!-- Safety to GUI (Fault) -->
+  <path d="M 225 250 L 140 130" stroke="#dc3545" stroke-width="1.5" marker-end="url(#arrow-red)" fill="none"/>
+  <text x="160" y="210" text-anchor="middle" class="fault-text">Fault</text>
 
   <!-- Arrow heads -->
   <defs>

@@ -1,10 +1,10 @@
 # Cellutron Software Architecture
 
-This document describes the software design and distributed topology of the Cellutron instrument.
+This document describes the software design and hardware topology of the Cellutron instrument.
 
 ---
 
-## Distributed Topology
+## Hardware Topology
 
 The system consists of three independent processing nodes (CPUs) communicating over a UDP-based distributed **DataBus**.
 
@@ -55,13 +55,11 @@ Cellutron uses a "DDS-Lite" approach where data is exchanged via named **Topics*
 
 | Topic | Publisher | Subscribers | Description |
 |:---|:---|:---|:---|
-| `cmd/run` | GUI CPU | Controller CPU | Commands to start the cell processing sequence. |
-| `cmd/abort` | GUI CPU | Controller CPU | User-initiated stop request. |
-| `status/run` | Controller CPU | GUI CPU | High-level system state (Idle, Processing, Aborting, Fault). |
-| `cmd/speed` | Controller CPU | GUI CPU, Safety CPU | Real-time centrifuge RPM setpoints. |
-| `hw/status/actuator`| Controller CPU | GUI CPU (logs) | Feedback on valve toggles and pump speed changes. |
-| `hw/status/sensor` | Controller CPU | GUI CPU (logs) | Periodic snapshots of pressure and air sensors. |
-| `fault` | Safety CPU | Controller CPU, GUI CPU | Critical safety violation event. |
+| `Command` | GUI CPU | Controller CPU | Commands to start or abort the cell processing sequence. |
+| `Status` | Controller CPU | GUI CPU | High-level system state (Idle, Processing, Aborting, Fault). |
+| `Control` | Controller CPU | GUI CPU, Safety CPU | Real-time centrifuge RPM setpoints. |
+| `Hardware`| Controller CPU | GUI CPU (logs) | Feedback on valve toggles, pump speed, and sensor snapshots. |
+| `Fault` | Safety CPU | Controller CPU, GUI CPU | Critical safety violation event. |
 
 ---
 

@@ -54,7 +54,7 @@ private:
     int InternalSetPump(int id, int speed);
 
     void HandleValveChanged(int id, bool open);
-    void HandlePumpChanged(int id, uint8_t speed);
+    void HandlePumpChanged(int id, int speed);
 
     // Use standardized thread name for Active Object subsystem
     Thread m_thread{"ActuatorThread", 50, FullPolicy::DROP};

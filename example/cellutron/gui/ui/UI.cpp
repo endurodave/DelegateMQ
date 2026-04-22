@@ -45,7 +45,7 @@ void UI::Start() {
     m_thread.CreateThread(std::chrono::seconds(2));
 
     // 2. Setup DataBus Subscriptions
-    auto statusConn = DataBus::Subscribe<CentrifugeStatusMsg>("cell/status/centrifuge_speed", [](CentrifugeStatusMsg msg) {
+    auto statusConn = DataBus::Subscribe<CentrifugeStatusMsg>("cell/status/centrifuge", [](CentrifugeStatusMsg msg) {
         auto* screen = ScreenInteractive::Active();
         if (screen) screen->PostEvent(Event::Custom);
     }, &m_thread);
@@ -79,7 +79,15 @@ void UI::Start() {
     // 3. Build FTXUI Components
     std::string btnLabel = " START ";
     
+    static auto lastClickTime = std::chrono::steady_clock::now();
+
     auto btnControl = Button(&btnLabel, [] {
+        auto now = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClickTime).count() < 500) {
+            return;
+        }
+        lastClickTime = now;
+
         if (g_runStatus.load() == RunStatus::IDLE) {
             AddLog("Command: START Process");
             DataBus::Publish<StartProcessMsg>("cell/cmd/run", {});

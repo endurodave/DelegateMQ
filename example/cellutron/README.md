@@ -6,7 +6,7 @@
 
 ## Quick Start
 
-1.  **Initialize Workspace**: From the repository root, run the setup scripts to fetch dependencies and build tools:
+1.  **Initialize Workspace**: Ensure `DelegateMQ` is placed inside a workspace directory (e.g., `DelegateMQWorkspace`). From the repository root, run the setup scripts to fetch dependencies and build tools:
     ```powershell
     python 01_fetch_repos.py
     python 02_build_libs.py
@@ -93,7 +93,7 @@ The instrument controls a fluid path using a manifold of valves and a single per
 - **Valves V1-V3**: Divert fluids (Solution A, B, or Cells) into the main process line.
 - **Pump (ID 1)**: Precise flow control across the fluid path.
 - **Centrifuge**: High-speed separation chamber for cell processing.
-- **Valve V10**: Controls the final drain path to waste.
+- **Valve V4**: Controls the final drain path to waste.
 - **Sensors**: Real-time pressure (P) and air-in-line (A) monitoring at the inlet and outlet of the pump manifold.
 
 ---
