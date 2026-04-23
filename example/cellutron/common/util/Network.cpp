@@ -28,6 +28,10 @@ void Network::Initialize(uint16_t subPort, const std::string& nodeName) {
     // Set a short receive timeout so the ReceiverThread can check m_running periodically
     m_subTransport.SetRecvTimeout(std::chrono::milliseconds(100));
 
+#ifndef DMQ_THREAD_STDLIB
+    m_thread.SetThreadPriority(PRIORITY_NETWORK);
+#endif
+
     m_running = true;
     
     // Enable watchdog for this thread. ProcessIncoming() timeout ensures periodic check-ins.
@@ -130,6 +134,7 @@ void Network::ReceiverThread() {
     //
     // The "loop" speed is governed by the transport receive timeout (100ms).
     if (m_running) {
+        Thread::Sleep(std::chrono::milliseconds(10));
         dmq::MakeDelegate(this, &Network::ReceiverThread, m_thread).AsyncInvoke();
     }
 }

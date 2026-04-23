@@ -36,7 +36,7 @@ private:
     Thread m_thread{"SystemThread", 200, FullPolicy::DROP};
     
     std::atomic<bool> m_timerRunning{false};
-    Thread m_backgroundTimer{"BackgroundTimerThread"};
+    Thread m_backgroundTimer{"BackgroundTimerThread", 10, FullPolicy::DROP};
 
     util::Heartbeat m_heartbeat;
 };

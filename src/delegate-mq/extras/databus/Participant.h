@@ -40,10 +40,21 @@ public:
                 return -1; // Protocol error
             }
 
+            dmq::DelegateRemoteId id = header.GetId();
+            uint16_t seqNum = header.GetSeqNum();
+
+            // Filter out duplicate messages (retries)
+            if (id != dmq::ACK_REMOTE_ID) {
+                std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+                if (m_history[id].is_duplicate(seqNum)) {
+                    return 0; // Silently drop duplicate
+                }
+            }
+
             std::shared_ptr<void> channelLifetime; // keeps channel alive across lock gap
             {
                 std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
-                auto it = m_channels.find(header.GetId());
+                auto it = m_channels.find(id);
                 if (it != m_channels.end()) {
                     channelLifetime = it->second.channel;
                     invoker = it->second.invoker;
@@ -141,6 +152,23 @@ private:
     std::unordered_map<std::string, dmq::DelegateRemoteId> m_topicToRemoteId;
     std::unordered_map<dmq::DelegateRemoteId, ChannelInvoker> m_channels;
     std::unordered_map<dmq::DelegateRemoteId, std::type_index> m_channelTypes;
+
+    // --- Duplicate Filtering ---
+    struct SeqHistory {
+        static constexpr size_t SIZE = 8;
+        uint16_t buffer[SIZE] = { 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF };
+        size_t head = 0;
+
+        bool is_duplicate(uint16_t seq) {
+            for (size_t i = 0; i < SIZE; ++i) {
+                if (buffer[i] == seq) return true;
+            }
+            buffer[head] = seq;
+            head = (head + 1) % SIZE;
+            return false;
+        }
+    };
+    std::unordered_map<dmq::DelegateRemoteId, SeqHistory> m_history;
 };
 
 } // namespace dmq

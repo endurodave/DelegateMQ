@@ -38,7 +38,7 @@ private:
     void SetupNetwork();
     void SetupWatchdog();
 
-    Thread m_thread{"SystemThread", 200, FullPolicy::DROP};
+    Thread m_thread{"SystemThread", 200, FullPolicy::BLOCK};
 
     // Connections to the local DataBus
     dmq::ScopedConnection m_startConn;

@@ -84,7 +84,7 @@ void System::StartTimerThread() {
     m_backgroundTimer.CreateThread();
     dmq::MakeDelegate([this]() {
         while (m_timerRunning) {
-            Thread::Sleep(std::chrono::milliseconds(1000));
+            Thread::Sleep(std::chrono::milliseconds(100));
             dmq::MakeDelegate([]() { Timer::ProcessTimers(); }, m_thread).AsyncInvoke();
         }
     }, m_backgroundTimer).AsyncInvoke();

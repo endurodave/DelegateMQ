@@ -84,7 +84,7 @@ int main(void) {
     TimerHandle_t sysTimer = xTimerCreate("SysTimer", pdMS_TO_TICKS(10), pdTRUE, NULL, [](TimerHandle_t) { Timer::ProcessTimers(); });
     xTimerStart(sysTimer, 0);
 
-    xTaskCreate(vSafetyTask, "Safety", 2048, NULL, 5, NULL);
+    xTaskCreate(vSafetyTask, "Safety", 2048, NULL, PRIORITY_LOW, NULL);
 
     vTaskStartScheduler();
     for (;;);

@@ -97,6 +97,7 @@ void UI::Start() {
             AddLog("Command: ABORT Process");
             DataBus::Publish<StopProcessMsg>(topics::CMD_ABORT, {});
         }
+        // Button is ignored if in ABORTING or FAULT state
     });
 
     auto component = Container::Vertical({ btnControl });

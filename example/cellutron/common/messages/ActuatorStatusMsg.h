@@ -17,18 +17,18 @@ struct ActuatorStatusMsg : public serialize::I
 
     virtual std::istream& read(serialize& ms, std::istream& is) override {
         uint8_t t;
-        ms.read(is, t, false);
+        ms.read(is, t);
         type = static_cast<ActuatorType>(t);
-        ms.read(is, id, false);
-        ms.read(is, value, false);
+        ms.read(is, id);
+        ms.read(is, value);
         return is;
     }
 
     virtual std::ostream& write(serialize& ms, std::ostream& os) override {
         uint8_t t = static_cast<uint8_t>(type);
-        ms.write(os, t, false);
-        ms.write(os, id, false);
-        ms.write(os, value, false);
+        ms.write(os, t);
+        ms.write(os, id);
+        ms.write(os, value);
         return os;
     }
 };

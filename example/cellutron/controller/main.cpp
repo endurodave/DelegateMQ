@@ -84,7 +84,7 @@ int main(void) {
     TimerHandle_t sysTimer = xTimerCreate("SysTimer", pdMS_TO_TICKS(10), pdTRUE, NULL, [](TimerHandle_t) { Timer::ProcessTimers(); });
     xTimerStart(sysTimer, 0);
 
-    xTaskCreate(vControllerTask, "Controller", 4096, NULL, 5, NULL);
+    xTaskCreate(vControllerTask, "Controller", 4096, NULL, PRIORITY_LOW, NULL);
 
     vTaskStartScheduler();
     for (;;);

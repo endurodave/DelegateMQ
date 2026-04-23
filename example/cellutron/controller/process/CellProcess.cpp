@@ -175,7 +175,7 @@ void CellProcess::TimerExpired()
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_DRAIN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_ABORTING
+        TRANSITION_MAP_ENTRY(ST_IDLE)        // ST_ABORTING
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FAULT
     END_TRANSITION_MAP(nullptr)
 }
@@ -200,10 +200,10 @@ void CellProcess::CentrifugeStopped()
 {
     BEGIN_TRANSITION_MAP(cellutron::process::CellProcess, CentrifugeStopped)
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_IDLE
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(ST_IDLE)        // ST_FILL_SOLUTION_A
+        TRANSITION_MAP_ENTRY(ST_IDLE)        // ST_FILL_SOLUTION_B
+        TRANSITION_MAP_ENTRY(ST_IDLE)        // ST_FILL_CELLS
+        TRANSITION_MAP_ENTRY(ST_IDLE)        // ST_SPIN_UP
         TRANSITION_MAP_ENTRY(ST_DRAIN)       // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(ST_COMPLETE)    // ST_DRAIN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
@@ -216,6 +216,7 @@ STATE_DEFINE(cellutron::process::CellProcess, Idle, NoEventData)
 {
     printf("CellProcess: ST_IDLE\n");
     DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::IDLE });
+    m_timer.Stop();
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, FillSolutionA, NoEventData)
@@ -267,9 +268,17 @@ STATE_DEFINE(cellutron::process::CellProcess, Complete, NoEventData)
 
 STATE_DEFINE(cellutron::process::CellProcess, Aborting, NoEventData)
 {
-    printf("CellProcess: ST_ABORTING (Decelerating Centrifuge)\n");
+    printf("CellProcess: ST_ABORTING (Shutting down hardware)\n");
     DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::ABORTING });
-    m_centrifuge.StopRamp(std::make_shared<actuators::Centrifuge::RampData>(0, std::chrono::milliseconds(2000)));
+
+    // Stop single pump immediately
+    actuators::Actuators::GetInstance().SetPump(1, 0);
+
+    // Stop centrifuge ramp
+    m_centrifuge.StopRamp(std::make_shared<actuators::Centrifuge::RampData>(0, std::chrono::milliseconds(1000)));
+
+    // Set a safety timeout to ensure we return to IDLE even if centrifuge already stopped
+    m_timer.Start(std::chrono::milliseconds(2000));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, Fault, NoEventData)

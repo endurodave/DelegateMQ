@@ -13,6 +13,8 @@ void System::Initialize() {
 
     cellutron::RegisterSerializers();
     cellutron::RegisterStringifiers();
+    
+    m_thread.SetThreadPriority(PRIORITY_PROCESS);
     m_thread.CreateThread(WATCHDOG_TIMEOUT);
 
     SetupLocalSubscriptions();

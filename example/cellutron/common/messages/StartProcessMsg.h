@@ -10,11 +10,11 @@ struct StartProcessMsg : public serialize::I
     uint8_t dummy = 0xAA;
 
     virtual std::istream& read(serialize& ms, std::istream& is) override {
-        return ms.read(is, dummy, false);
+        return ms.read(is, dummy);
     }
 
     virtual std::ostream& write(serialize& ms, std::ostream& os) override {
-        return ms.write(os, dummy, false);
+        return ms.write(os, dummy);
     }
 };
 

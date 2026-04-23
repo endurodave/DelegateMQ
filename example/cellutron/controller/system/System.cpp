@@ -18,6 +18,7 @@ void System::Initialize() {
     cellutron::RegisterStringifiers();
 
     // 1. Create System Thread
+    m_thread.SetThreadPriority(PRIORITY_SYSTEM);
     if (!m_thread.CreateThread(WATCHDOG_TIMEOUT)) {
         printf("Controller: ERROR - Failed to create system thread!\n");
         return;

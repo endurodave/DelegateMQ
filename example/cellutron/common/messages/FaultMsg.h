@@ -13,11 +13,11 @@ struct FaultMsg : public serialize::I
     FaultMsg(uint8_t code) : faultCode(code) {}
 
     virtual std::istream& read(serialize& ms, std::istream& is) override {
-        return ms.read(is, faultCode, false);
+        return ms.read(is, faultCode);
     }
 
     virtual std::ostream& write(serialize& ms, std::ostream& os) override {
-        return ms.write(os, faultCode, false);
+        return ms.write(os, faultCode);
     }
 };
 

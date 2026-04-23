@@ -36,7 +36,7 @@ private:
     dmq::Mutex m_mutex;
     
     // Use standardized thread name for Active Object subsystem
-    Thread m_thread{"LogsThread"};
+    Thread m_thread{"LogsThread", 100, FullPolicy::DROP};
 
     // Scoped connections for DataBus
     dmq::ScopedConnection m_startConn;

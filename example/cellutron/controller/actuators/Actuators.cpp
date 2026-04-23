@@ -17,6 +17,7 @@ Actuators::~Actuators() {
 
 void Actuators::Initialize() {
     // 1. Start the thread
+    m_thread.SetThreadPriority(PRIORITY_HARDWARE);
     m_thread.CreateThread(WATCHDOG_TIMEOUT);
 
     // 2. Initialize Centrifuge

@@ -87,6 +87,7 @@ channel(42, 3.14f, "config");   // all 3 args serialized and sent
     - **topic**: The unique string name of the data topic.
     - **value**: A stringified version of the data (provided by user-registered stringifiers).
     - **timestamp_us**: A high-resolution timestamp (microseconds since epoch) taken when the publisher called `DataBus::Publish`.
+5. **Duplicate Protection**: `Participant` automatically filters out redundant network packets (retries) using a history of recently seen sequence numbers, ensuring that redundant messages are not re-processed by the application logic.
 
 ---
 
@@ -182,14 +183,17 @@ When a subscriber is registered with a worker thread, `DataBus::Publish()` posts
 
 | Policy | Behavior when full | Publisher stalled? |
 |:---|:---|:---|
-| `FullPolicy::BLOCK` (default) | `DispatchDelegate()` blocks the caller until the consumer drains a slot | Yes |
+| `FullPolicy::FAULT` (default) | `DispatchDelegate()` triggers a system fault and terminates the application | No (Crash) |
+| `FullPolicy::BLOCK` | `DispatchDelegate()` blocks the caller until the consumer drains a slot | Yes |
 | `FullPolicy::DROP` | `DispatchDelegate()` discards the message and returns immediately | No |
 
 **Choosing a policy**
 
+Use `FAULT` (the default) for safety-critical systems where an overfilled queue represents a fundamental design failure or a violation of real-time constraints. It ensures that the system does not continue running in an unpredictable state if data is being lost.
+
 Use `DROP` for topics where losing an occasional sample is acceptable and stalling the publisher is not. High-rate sensor telemetry, display updates, and best-effort multicast data are natural fits — a missed reading is superseded by the next one.
 
-Use `BLOCK` for topics where every message must be delivered. Commands, configuration updates, and state transitions fall into this category. BLOCK ensures the publisher waits until the consumer has capacity, providing back pressure that naturally limits the rate to what the consumer can sustain.
+Use `BLOCK` for topics where every message must be delivered but application termination is not desired. Commands, configuration updates, and state transitions fall into this category. BLOCK ensures the publisher waits until the consumer has capacity, providing back pressure that naturally limits the rate to what the consumer can sustain.
 
 ```cpp
 // Sensor thread: drop stale readings rather than stall the publisher
@@ -394,6 +398,15 @@ The `DataBus` supports two primary patterns for network distribution: **Unicast*
 - **Behavior**: Data is published to a multicast group (e.g., `239.1.1.1`). Any number of clients can "join" the group to receive the data stream simultaneously.
 - **Reliability**: "Best Effort." There are no individual ACKs from subscribers. If a packet is lost, it is not retransmitted.
 - **Use Case**: High-frequency sensor data, telemetry, discovery, and the [DelegateMQ Spy](#databus-spy) tool. Multicast is extremely efficient as the network hardware handles cloning the packets for all subscribers.
+
+### Duplicate Packet Protection
+
+The `DataBus` (via the `Participant` class) provides built-in protection against duplicate network packets. This is critical for reliable topics where a sender might re-transmit a packet if an Acknowledgment (ACK) was lost or delayed.
+
+- **Mechanism**: Each `Participant` maintains a circular history buffer of the last several sequence numbers received for each `Remote ID`.
+- **Filtering**: When a packet arrives, its sequence number is checked against the history. If it matches a recently seen number, the packet is identified as a duplicate and is silently discarded.
+- **Ordered/Unordered Transports**: This approach protects against duplicates on all transport types. Because it uses a history set rather than a simple "last seen" counter, it correctly handles out-of-order packets on unordered transports like UDP (e.g., if packet #10 arrives before packet #9, both are still accepted exactly once).
+- **Semantics**: Combined with the Reliability Layer, this ensures "Execute-Once" semantics for critical system commands.
 
 ### Comparison Table
 

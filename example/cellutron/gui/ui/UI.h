@@ -44,7 +44,7 @@ private:
     std::chrono::steady_clock::time_point m_lastClickTime = std::chrono::steady_clock::now();
 
     // Use standardized thread name for Active Object subsystem
-    Thread m_thread{"UIThread"};
+    Thread m_thread{"UIThread", 50, FullPolicy::DROP};
 };
 
 } // namespace gui

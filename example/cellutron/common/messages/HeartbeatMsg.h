@@ -12,11 +12,11 @@ struct HeartbeatMsg : public serialize::I
     HeartbeatMsg(uint32_t c) : counter(c) {}
 
     virtual std::istream& read(serialize& ms, std::istream& is) override {
-        return ms.read(is, counter, false);
+        return ms.read(is, counter);
     }
 
     virtual std::ostream& write(serialize& ms, std::ostream& os) override {
-        return ms.write(os, counter, false);
+        return ms.write(os, counter);
     }
 };
 

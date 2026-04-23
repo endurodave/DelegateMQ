@@ -1,3 +1,12 @@
+/**
+ * @file PumpProcess.h
+ * @brief Atomic fluidics sequence state machine.
+ * 
+ * Handles the coordinated sequence of opening a valve, running a pump
+ * for a specific duration, stopping the pump, and closing the valve.
+ * Used as a sub-process by the CellProcess state machine.
+ */
+
 #ifndef _PUMP_PROCESS_H
 #define _PUMP_PROCESS_H
 

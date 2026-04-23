@@ -14,11 +14,11 @@ struct CentrifugeSpeedMsg : public serialize::I
     CentrifugeSpeedMsg(uint16_t val) : rpm(val) {}
 
     virtual std::istream& read(serialize& ms, std::istream& is) override {
-        return ms.read(is, rpm, false); // false = no type prepended
+        return ms.read(is, rpm);
     }
 
     virtual std::ostream& write(serialize& ms, std::ostream& os) override {
-        return ms.write(os, rpm, false); // false = no type prepended
+        return ms.write(os, rpm);
     }
 };
 

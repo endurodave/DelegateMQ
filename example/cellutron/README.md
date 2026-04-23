@@ -8,6 +8,8 @@
 
 ## Quick Start
 
+The Cellutron system is designed to run entirely on Windows, with the Controller and Safety nodes operating within a **FreeRTOS Win32 simulation** to emulate embedded hardware behavior.
+
 1.  **Initialize Workspace**: Ensure `DelegateMQ` is placed inside a workspace directory (e.g., `DelegateMQWorkspace`). From the repository root, run the setup scripts to fetch dependencies and build tools:
     ```powershell
     python 01_fetch_repos.py
@@ -21,7 +23,7 @@
     cmake -B build .
     cmake --build build --config Debug
     ```
-3.  **Run Cellutron**: Launch all three processors:
+3.  **Run Cellutron**: Launch all three processors and spy tools:
     ```powershell
     python run_cellutron.py
     ```
@@ -149,7 +151,10 @@ The `PumpProcess` is a sub-state machine used by `CellProcess` to perform a stan
 ## Namespace Organization
 
 The project uses a strict nested namespace architecture for clarity and to prevent collisions:
-- `cellutron::process`: High-level process logic and state machines.
+- `cellutron::process`: High-level process logic and state machines (Controller).
+- `cellutron::gui`: User interface terminal logic and visualization (GUI).
+- `cellutron::safety`: Independent safety monitoring and fault logic (Safety).
 - `cellutron::actuators`: Hardware driver abstractions (Valve, Pump, Centrifuge).
 - `cellutron::sensors`: Hardware sensor abstractions (Pressure, Air).
+- `cellutron::util`: Networking, data serialization, and common system utilities.
 - `cellutron::hw`: Shared hardware data types.

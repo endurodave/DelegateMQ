@@ -14,11 +14,11 @@ struct CentrifugeStatusMsg : public serialize::I
     CentrifugeStatusMsg(uint16_t val) : rpm(val) {}
 
     virtual std::istream& read(serialize& ms, std::istream& is) override {
-        return ms.read(is, rpm, false);
+        return ms.read(is, rpm);
     }
 
     virtual std::ostream& write(serialize& ms, std::ostream& os) override {
-        return ms.write(os, rpm, false);
+        return ms.write(os, rpm);
     }
 };
 

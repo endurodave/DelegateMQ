@@ -71,7 +71,7 @@ private:
     std::shared_ptr<dmq::Participant> m_subParticipant;
     
     // Standardized thread name for Active Object subsystem. 
-    Thread m_thread{"NetworkThread", 100, FullPolicy::DROP};
+    Thread m_thread{"NetworkThread", 100, FullPolicy::FAULT};
 
     struct RemoteNode {
         std::unique_ptr<UdpTransport> rawTransport;

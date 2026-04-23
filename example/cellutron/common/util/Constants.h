@@ -16,6 +16,14 @@ namespace cellutron {
     static constexpr std::chrono::seconds      HEARTBEAT_TIMEOUT{20};
     static constexpr std::chrono::seconds      HEARTBEAT_WARMUP{60};
 
+    // Thread Priorities (FreeRTOS levels - range 0 to configMAX_PRIORITIES-1)
+    // Note: configMAX_PRIORITIES=7. Timer Task is 6. We stay <= 5.
+    static constexpr int PRIORITY_NETWORK   = 5;
+    static constexpr int PRIORITY_HARDWARE  = 4;
+    static constexpr int PRIORITY_PROCESS   = 4;
+    static constexpr int PRIORITY_SYSTEM    = 3;
+    static constexpr int PRIORITY_LOW       = 2;
+
     namespace topics {
         static const char* const SAFETY_HEARTBEAT     = "sys/heartbeat/safety";
         static const char* const CONTROLLER_HEARTBEAT = "sys/heartbeat/controller";

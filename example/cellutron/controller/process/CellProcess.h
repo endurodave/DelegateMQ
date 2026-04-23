@@ -1,3 +1,12 @@
+/**
+ * @file CellProcess.h
+ * @brief High-level cell processing sequence state machine.
+ * 
+ * Orchestrates the full lifecycle of a cell processing run, including
+ * filling solutions, cell loading, centrifuge spinning, and draining.
+ * It coordinates with the PumpProcess for fluidics and Centrifuge for speed control.
+ */
+
 #ifndef _CELL_PROCESS_H
 #define _CELL_PROCESS_H
 
