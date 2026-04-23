@@ -48,8 +48,8 @@ void System::Shutdown() {
     }
 }
 
-void System::Tick() {
-    m_heartbeat.Tick();
+void System::Tick(uint32_t ms) {
+    m_heartbeat.Tick(ms);
 }
 
 void System::SetupNetwork() {
@@ -86,6 +86,7 @@ void System::StartTimerThread() {
         while (m_timerRunning) {
             Thread::Sleep(std::chrono::milliseconds(100));
             dmq::MakeDelegate([]() { Timer::ProcessTimers(); }, m_thread).AsyncInvoke();
+            this->Tick(100);
         }
     }, m_backgroundTimer).AsyncInvoke();
 }

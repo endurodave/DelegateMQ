@@ -27,11 +27,13 @@ void Sensors::Shutdown() {
 }
 
 int Sensors::GetPressure() {
-    return dmq::MakeDelegate(this, &Sensors::InternalGetPressure, m_thread)();
+    auto result = dmq::MakeDelegate(this, &Sensors::InternalGetPressure, m_thread, SYNC_INVOKE_TIMEOUT).AsyncInvoke();
+    return result.has_value() ? result.value() : -1; // Return -1 on failure
 }
 
 bool Sensors::IsAirInLine() {
-    return dmq::MakeDelegate(this, &Sensors::InternalIsAirInLine, m_thread)();
+    auto result = dmq::MakeDelegate(this, &Sensors::InternalIsAirInLine, m_thread, SYNC_INVOKE_TIMEOUT).AsyncInvoke();
+    return result.has_value() ? result.value() : true; // Fail safe: assume air if call fails
 }
 
 int Sensors::InternalGetPressure() {

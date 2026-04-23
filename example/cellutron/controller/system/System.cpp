@@ -43,8 +43,8 @@ void System::Initialize() {
     printf("Controller: System ready.\n");
 }
 
-void System::Tick() {
-    m_heartbeat.Tick();
+void System::Tick(uint32_t ms) {
+    m_heartbeat.Tick(ms);
 }
 
 void System::SetupLocalSubscriptions() {

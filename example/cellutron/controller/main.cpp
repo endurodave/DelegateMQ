@@ -71,8 +71,8 @@ static void vControllerTask(void* /*pvParams*/) {
     cellutron::System::GetInstance().Initialize();
 
     for (;;) {
-        cellutron::System::GetInstance().Tick();
-        Thread::Sleep(std::chrono::milliseconds(1000));
+        cellutron::System::GetInstance().Tick(100);
+        Thread::Sleep(std::chrono::milliseconds(100));
     }
 }
 
@@ -84,7 +84,7 @@ int main(void) {
     TimerHandle_t sysTimer = xTimerCreate("SysTimer", pdMS_TO_TICKS(10), pdTRUE, NULL, [](TimerHandle_t) { Timer::ProcessTimers(); });
     xTimerStart(sysTimer, 0);
 
-    xTaskCreate(vControllerTask, "Controller", 4096, NULL, PRIORITY_LOW, NULL);
+    xTaskCreate(vControllerTask, "Controller", 4096, NULL, 6, NULL);
 
     vTaskStartScheduler();
     for (;;);

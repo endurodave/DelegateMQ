@@ -8,6 +8,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include <atomic>
 
 namespace cellutron {
 namespace util {
@@ -33,8 +34,9 @@ public:
     /// @param nodeName The human-readable name of the monitored node.
     void MonitorNode(const char* remoteTopic, FaultCode faultCode, const std::string& nodeName);
 
-    /// Update the internal tick counter (call once per second from system Tick).
-    void Tick();
+    /// Update the internal tick counter.
+    /// @param ms Milliseconds elapsed since last tick.
+    void Tick(uint32_t ms);
 
 private:
     void OnTimerExpired();
@@ -55,7 +57,8 @@ private:
     };
     std::vector<Monitor> m_monitors;
 
-    uint32_t m_secondsElapsed = 0;
+    std::atomic<uint32_t> m_secondsElapsed{0};
+    uint32_t m_msAccumulator = 0;
     bool     m_faultTriggered = false;
 };
 

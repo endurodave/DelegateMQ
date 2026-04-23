@@ -58,13 +58,13 @@ void Actuators::Shutdown() {
 }
 
 int Actuators::SetValve(int id, bool open) {
-    dmq::MakeDelegate(this, &Actuators::InternalSetValve, m_thread).AsyncInvoke(id, open);
-    return 0;
+    auto result = dmq::MakeDelegate(this, &Actuators::InternalSetValve, m_thread, SYNC_INVOKE_TIMEOUT).AsyncInvoke(id, open);
+    return result.has_value() ? result.value() : -1;
 }
 
 int Actuators::SetPump(int id, int speed) {
-    dmq::MakeDelegate(this, &Actuators::InternalSetPump, m_thread).AsyncInvoke(id, speed);
-    return 0;
+    auto result = dmq::MakeDelegate(this, &Actuators::InternalSetPump, m_thread, SYNC_INVOKE_TIMEOUT).AsyncInvoke(id, speed);
+    return result.has_value() ? result.value() : -1;
 }
 
 int Actuators::InternalSetValve(int id, bool open) {

@@ -31,8 +31,8 @@ int main() {
 
     dmq::MakeDelegate([]() {
         while (true) {
-            cellutron::System::GetInstance().Tick();
-            Thread::Sleep(std::chrono::milliseconds(1000));
+            cellutron::System::GetInstance().Tick(100);
+            Thread::Sleep(std::chrono::milliseconds(100));
         }
     }, tickThread).AsyncInvoke();
 

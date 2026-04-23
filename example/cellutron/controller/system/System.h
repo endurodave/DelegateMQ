@@ -22,7 +22,8 @@ public:
     void Initialize();
 
     /// Process periodic system maintenance.
-    void Tick();
+    /// @param ms Milliseconds since last tick.
+    void Tick(uint32_t ms);
 
     /// Get the system thread.
     Thread& GetThread() { return m_thread; }

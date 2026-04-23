@@ -23,10 +23,10 @@ struct PumpData : public EventData
     uint8_t valveId;
     uint8_t speed;
     bool reverse;
-    std::chrono::milliseconds duration;
+    dmq::Duration duration;
 
     // Default to Pump ID 1 for all operations
-    PumpData(uint8_t v, uint8_t s, std::chrono::milliseconds d, bool r = false) :
+    PumpData(uint8_t v, uint8_t s, dmq::Duration d, bool r = false) :
         valveId(v), speed(s), duration(d), reverse(r) {}
 };
 

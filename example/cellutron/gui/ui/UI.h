@@ -3,6 +3,8 @@
 
 #include "DelegateMQ.h"
 #include "messages/RunStatusMsg.h"
+#include "messages/ActuatorStatusMsg.h"
+#include "messages/HeartbeatMsg.h"
 #include "Constants.h"
 #include <atomic>
 #include <string>
@@ -39,12 +41,16 @@ private:
     std::atomic<uint16_t> m_currentRpm{0};
     std::atomic<int16_t> m_currentPumpSpeed{0};
     std::atomic<RunStatus> m_runStatus{RunStatus::IDLE};
+    std::atomic<bool> m_isOffline{false};
+
     dmq::Mutex m_uiMutex;
     std::vector<std::string> m_logs;
-    std::chrono::steady_clock::time_point m_lastClickTime = std::chrono::steady_clock::now();
+    dmq::TimePoint m_lastClickTime = dmq::Clock::now();
 
     // Use standardized thread name for Active Object subsystem
     Thread m_thread{"UIThread", 50, FullPolicy::DROP};
+
+    std::unique_ptr<dmq::DeadlineSubscription<HeartbeatMsg>> m_controllerWatchdog;
 };
 
 } // namespace gui

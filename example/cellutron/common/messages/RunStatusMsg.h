@@ -24,7 +24,7 @@ struct RunStatusMsg : public serialize::I
 
     virtual std::ostream& write(serialize& ms, std::ostream& os) override {
         uint8_t s = static_cast<uint8_t>(status);
-        return ms.write(os, s);
+        ms.write(os, s);
         return os;
     }
 };

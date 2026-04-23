@@ -15,7 +15,7 @@ public:
     }
 
     void Initialize();
-    void Tick();
+    void Tick(uint32_t ms);
 
     Thread& GetThread() { return m_thread; }
 

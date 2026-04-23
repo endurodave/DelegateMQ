@@ -6,6 +6,7 @@
 #include "messages/StopProcessMsg.h"
 #include "messages/FaultMsg.h"
 #include "messages/ActuatorStatusMsg.h"
+#include "messages/HeartbeatMsg.h"
 #include "Constants.h"
 
 #include <ftxui/dom/elements.hpp>
@@ -76,28 +77,54 @@ void UI::Start() {
 
     auto faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg msg) {
         AddLog(">>> CRITICAL FAULT RECEIVED <<<");
+        m_runStatus = RunStatus::FAULT;
+        m_currentRpm = 0;
+        m_currentPumpSpeed = 0;
         auto* screen = ScreenInteractive::Active();
         if (screen) screen->PostEvent(Event::Custom);
     }, &m_thread);
 
-    // 3. Build FTXUI Components
+    // 3. Controller Presence Watchdog: Monitor periodic heartbeat for offline detection
+    m_controllerWatchdog = std::make_unique<dmq::DeadlineSubscription<HeartbeatMsg>>(
+        topics::CONTROLLER_HEARTBEAT,
+        HEARTBEAT_TIMEOUT,
+        [this](const HeartbeatMsg&) {
+            // Heartbeat received -> Controller is online
+            if (m_isOffline.load()) {
+                m_isOffline = false;
+                auto* screen = ScreenInteractive::Active();
+                if (screen) screen->PostEvent(Event::Custom);
+            }
+        },
+        [this]() {
+            // No heartbeat for HEARTBEAT_TIMEOUT -> Controller is offline
+            m_isOffline = true;
+            m_currentRpm = 0;
+            m_currentPumpSpeed = 0;
+            auto* screen = ScreenInteractive::Active();
+            if (screen) screen->PostEvent(Event::Custom);
+        },
+        &m_thread
+    );
+
+    // 4. Build FTXUI Components
     std::string btnLabel = " START ";
 
     auto btnControl = Button(&btnLabel, [this] {
-        auto now = std::chrono::steady_clock::now();
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastClickTime).count() < 500) {
+        auto now = dmq::Clock::now();
+        if (std::chrono::duration_cast<dmq::Duration>(now - m_lastClickTime).count() < 500) {
             return;
         }
         m_lastClickTime = now;
 
-        if (m_runStatus.load() == RunStatus::IDLE) {
+        RunStatus current = m_runStatus.load();
+        if (current == RunStatus::IDLE) {
             AddLog("Command: START Process");
             DataBus::Publish<StartProcessMsg>(topics::CMD_RUN, {});
-        } else if (m_runStatus.load() == RunStatus::PROCESSING) {
+        } else if (current == RunStatus::PROCESSING) {
             AddLog("Command: ABORT Process");
             DataBus::Publish<StopProcessMsg>(topics::CMD_ABORT, {});
         }
-        // Button is ignored if in ABORTING or FAULT state
     });
 
     auto component = Container::Vertical({ btnControl });
@@ -115,22 +142,29 @@ void UI::Start() {
         std::string status_text;
         Color status_color = Color::White;
 
+        bool isOffline = m_isOffline.load();
         RunStatus currentStatus = m_runStatus.load();
 
-        switch (currentStatus) {
-            case RunStatus::IDLE: status_text = "IDLE"; status_color = Color::GrayDark; break;
-            case RunStatus::PROCESSING: status_text = "PROCESSING"; status_color = Color::Green; break;
-            case RunStatus::ABORTING: status_text = "ABORTING"; status_color = Color::Red; break;
-            case RunStatus::FAULT: status_text = "FAULT"; status_color = Color::Red; break;
+        if (isOffline) {
+            status_text = "OFFLINE";
+            status_color = Color::Yellow;
+            btnLabel = " DISCONN";
+        } else {
+            switch (currentStatus) {
+                case RunStatus::IDLE: status_text = "IDLE"; status_color = Color::GrayDark; break;
+                case RunStatus::PROCESSING: status_text = "PROCESSING"; status_color = Color::Green; break;
+                case RunStatus::ABORTING: status_text = "ABORTING"; status_color = Color::Red; break;
+                case RunStatus::FAULT: status_text = "FAULT"; status_color = Color::Red; break;
+            }
+
+            if (currentStatus == RunStatus::PROCESSING) btnLabel = " STOP  ";
+            else if (currentStatus == RunStatus::ABORTING) btnLabel = " STOP  ";
+            else if (currentStatus == RunStatus::FAULT) btnLabel = "LOCKED ";
+            else btnLabel = " START ";
         }
 
-        if (currentStatus == RunStatus::PROCESSING) btnLabel = " STOP  ";
-        else if (currentStatus == RunStatus::ABORTING) btnLabel = " STOP  ";
-        else if (currentStatus == RunStatus::FAULT) btnLabel = "LOCKED ";
-        else btnLabel = " START ";
-
-        auto rpm_gauge = gauge(rpm_fraction) | vscroll_indicator | frame | size(HEIGHT, EQUAL, 3) | color(Color::Blue);
-        auto pump_gauge = gauge(pump_fraction) | vscroll_indicator | frame | size(HEIGHT, EQUAL, 3) | color(Color::Green);
+        auto rpm_gauge = gauge(rpm_fraction) | vscroll_indicator | frame | size(HEIGHT, EQUAL, 3) | color(isOffline ? Color::GrayDark : Color::Blue);
+        auto pump_gauge = gauge(pump_fraction) | vscroll_indicator | frame | size(HEIGHT, EQUAL, 3) | color(isOffline ? Color::GrayDark : Color::Green);
         
         Elements log_elements;
         int start_idx = std::max(0, (int)m_logs.size() - 6);
@@ -148,11 +182,11 @@ void UI::Start() {
                     vbox({
                         text("Centrifuge RPM") | center,
                         rpm_gauge,
-                        text(std::to_string(rpm) + " RPM") | center | bold,
+                        text(isOffline ? "--- RPM" : (std::to_string(rpm) + " RPM")) | center | bold,
                         separator(),
                         text("Pump Speed") | center,
                         pump_gauge,
-                        text(std::to_string(pumpSpeed) + "%" + pump_dir) | center | bold,
+                        text(isOffline ? "--- %" : (std::to_string(pumpSpeed) + "%" + pump_dir)) | center | bold,
                     }) | flex,
                     separator(),
                     vbox({
@@ -176,18 +210,19 @@ void UI::Start() {
         }) | border;
     });
 
-    // 4. Run Screen (blocks)
+    // 5. Run Screen (blocks)
     try {
         auto screen = ScreenInteractive::TerminalOutput();
         screen.Loop(renderer);
     } catch (const std::exception&) {
     }
 
-    // 5. Cleanup after UI exit
+    // 6. Cleanup after UI exit
     Shutdown();
 }
 
 void UI::Shutdown() {
+    m_controllerWatchdog.reset();
     m_thread.ExitThread();
 }
 
