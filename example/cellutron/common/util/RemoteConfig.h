@@ -13,6 +13,8 @@
 #include "messages/SensorStatusMsg.h"
 #include "messages/HeartbeatMsg.h"
 
+namespace cellutron {
+
 // Remote IDs
 static constexpr dmq::DelegateRemoteId RID_START_PROCESS     = 100;
 static constexpr dmq::DelegateRemoteId RID_STOP_PROCESS      = 104;
@@ -39,5 +41,7 @@ extern Serializer<void(HeartbeatMsg)>       serHeartbeat;
 
 void RegisterSerializers();
 void RegisterStringifiers();
+
+} // namespace cellutron
 
 #endif

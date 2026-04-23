@@ -17,7 +17,7 @@ Sensors::~Sensors() {
 
 void Sensors::Initialize() {
     // Enable DelegateMQ Watchdog (2 second timeout)
-    m_thread.CreateThread(std::chrono::seconds(2));
+    m_thread.CreateThread(WATCHDOG_TIMEOUT);
     printf("Sensors: Subsystem initialized.\n");
 }
 

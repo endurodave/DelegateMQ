@@ -1,6 +1,8 @@
 #include "RemoteConfig.h"
 #include "util/Constants.h"
 
+namespace cellutron {
+
 Serializer<void(StartProcessMsg)>    serStart;
 Serializer<void(StopProcessMsg)>     serStop;
 Serializer<void(CentrifugeSpeedMsg)> serSpeed;
@@ -78,20 +80,25 @@ void RegisterStringifiers() {
         return "GUI HB: " + std::to_string(msg.counter);
     });
 
-    // Register stringifiers for topic strings that are used in code
     dmq::DataBus::RegisterStringifier<SensorStatusMsg>(cellutron::topics::PRESSURE_INLET, [](const SensorStatusMsg& msg) {
-        return "P1: " + std::to_string(msg.value);
+        return "Pressure: " + std::to_string(msg.value);
     });
+
     dmq::DataBus::RegisterStringifier<SensorStatusMsg>(cellutron::topics::PRESSURE_OUTLET, [](const SensorStatusMsg& msg) {
-        return "P2: " + std::to_string(msg.value);
+        return "Pressure: " + std::to_string(msg.value);
     });
+
     dmq::DataBus::RegisterStringifier<SensorStatusMsg>(cellutron::topics::AIR_INLET, [](const SensorStatusMsg& msg) {
-        return "A1: " + std::string(msg.value ? "AIR" : "FLUID");
+        return "Air: " + std::string(msg.value ? "YES" : "NO");
     });
+
     dmq::DataBus::RegisterStringifier<SensorStatusMsg>(cellutron::topics::AIR_OUTLET, [](const SensorStatusMsg& msg) {
-        return "A2: " + std::string(msg.value ? "AIR" : "FLUID");
+        return "Air: " + std::string(msg.value ? "YES" : "NO");
     });
+
     dmq::DataBus::RegisterStringifier<CentrifugeSpeedMsg>(cellutron::topics::RPM, [](const CentrifugeSpeedMsg& msg) {
         return "RPM: " + std::to_string(msg.rpm);
     });
 }
+
+} // namespace cellutron

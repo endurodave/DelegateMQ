@@ -18,16 +18,16 @@ System::~System() {
 void System::Initialize() {
     printf("GUI: System initializing...\n");
 
-    RegisterSerializers();
-    RegisterStringifiers();
+    cellutron::RegisterSerializers();
+    cellutron::RegisterStringifiers();
     
-    m_thread.CreateThread(std::chrono::seconds(2));
+    m_thread.CreateThread(WATCHDOG_TIMEOUT);
 
     SetupNetwork();
     SetupWatchdog();
     
-    Logs::GetInstance().Initialize();
-    Alarms::GetInstance().Initialize();
+    util::Logs::GetInstance().Initialize();
+    util::Alarms::GetInstance().Initialize();
 
     StartTimerThread();
 
@@ -39,14 +39,12 @@ void System::Initialize() {
 void System::Shutdown() {
     if (m_timerRunning) {
         m_timerRunning = false;
-        if (m_backgroundTimer.joinable()) {
-            m_backgroundTimer.join();
-        }
+        m_backgroundTimer.ExitThread();
         m_thread.ExitThread();
 
-        Alarms::GetInstance().Shutdown();
-        Logs::GetInstance().Shutdown();
-        Network::GetInstance().Shutdown();
+        util::Alarms::GetInstance().Shutdown();
+        util::Logs::GetInstance().Shutdown();
+        util::Network::GetInstance().Shutdown();
     }
 }
 
@@ -55,25 +53,25 @@ void System::Tick() {
 }
 
 void System::SetupNetwork() {
-    Network::GetInstance().Initialize(5010, "GUI");
+    util::Network::GetInstance().Initialize(5010, "GUI");
 
     // Incoming Topics
-    Network::GetInstance().RegisterIncomingTopic<RunStatusMsg>(topics::STATUS_RUN, RID_RUN_STATUS, serRun);
-    Network::GetInstance().RegisterIncomingTopic<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, RID_CENTRIFUGE_SPEED, serSpeed);
-    Network::GetInstance().RegisterIncomingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
-    Network::GetInstance().RegisterIncomingTopic<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, RID_ACTUATOR_STATUS, serActuator);
-    Network::GetInstance().RegisterIncomingTopic<SensorStatusMsg>(topics::STATUS_SENSOR, RID_SENSOR_STATUS, serSensor);
-    Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::SAFETY_HEARTBEAT, RID_SAFETY_HB, serHeartbeat);
-    Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
+    util::Network::GetInstance().RegisterIncomingTopic<RunStatusMsg>(topics::STATUS_RUN, RID_RUN_STATUS, serRun);
+    util::Network::GetInstance().RegisterIncomingTopic<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, RID_CENTRIFUGE_SPEED, serSpeed);
+    util::Network::GetInstance().RegisterIncomingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
+    util::Network::GetInstance().RegisterIncomingTopic<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, RID_ACTUATOR_STATUS, serActuator);
+    util::Network::GetInstance().RegisterIncomingTopic<SensorStatusMsg>(topics::STATUS_SENSOR, RID_SENSOR_STATUS, serSensor);
+    util::Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::SAFETY_HEARTBEAT, RID_SAFETY_HB, serHeartbeat);
+    util::Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
 
     // Outgoing Topics
-    Network::GetInstance().AddRemoteNode("Controller", "127.0.0.1", 5011);
-    Network::GetInstance().AddRemoteNode("Safety", "127.0.0.1", 5013);
+    util::Network::GetInstance().AddRemoteNode("Controller", "127.0.0.1", 5011);
+    util::Network::GetInstance().AddRemoteNode("Safety", "127.0.0.1", 5013);
 
-    Network::GetInstance().RegisterOutgoingTopic<StartProcessMsg>(topics::CMD_RUN, RID_START_PROCESS, serStart);
-    Network::GetInstance().RegisterOutgoingTopic<StopProcessMsg>(topics::CMD_ABORT, RID_STOP_PROCESS, serStop);
-    Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
-    Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
+    util::Network::GetInstance().RegisterOutgoingTopic<StartProcessMsg>(topics::CMD_RUN, RID_START_PROCESS, serStart, util::Network::Reliability::RELIABLE);
+    util::Network::GetInstance().RegisterOutgoingTopic<StopProcessMsg>(topics::CMD_ABORT, RID_STOP_PROCESS, serStop, util::Network::Reliability::RELIABLE);
+    util::Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
+    util::Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault, util::Network::Reliability::RELIABLE);
 }
 
 void System::SetupWatchdog() {
@@ -83,12 +81,13 @@ void System::SetupWatchdog() {
 
 void System::StartTimerThread() {
     m_timerRunning = true;
-    m_backgroundTimer = std::thread([this]() {
+    m_backgroundTimer.CreateThread();
+    dmq::MakeDelegate([this]() {
         while (m_timerRunning) {
-            Thread::Sleep(std::chrono::milliseconds(10));
+            Thread::Sleep(std::chrono::milliseconds(1000));
             dmq::MakeDelegate([]() { Timer::ProcessTimers(); }, m_thread).AsyncInvoke();
         }
-    });
+    }, m_backgroundTimer).AsyncInvoke();
 }
 
 } // namespace cellutron

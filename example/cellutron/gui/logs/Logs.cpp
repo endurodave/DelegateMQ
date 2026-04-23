@@ -13,7 +13,9 @@
 #include <chrono>
 
 using namespace dmq;
-using namespace cellutron;
+
+namespace cellutron {
+namespace util {
 
 Logs::~Logs() {
     Shutdown();
@@ -23,8 +25,8 @@ void Logs::Initialize() {
     m_file.open("logs.txt", std::ios::out | std::ios::trunc);
     WriteToFile("--- Logging Started ---");
 
-    // Enable DelegateMQ Watchdog (2 second timeout)
-    m_thread.CreateThread(std::chrono::seconds(2));
+    // Enable DelegateMQ Watchdog
+    m_thread.CreateThread(WATCHDOG_TIMEOUT);
 
     m_startConn = DataBus::Subscribe<StartProcessMsg>(topics::CMD_RUN, [this](StartProcessMsg) {
         WriteToFile("[CMD] START Process Command Sent");
@@ -86,7 +88,7 @@ void Logs::Shutdown() {
 }
 
 void Logs::WriteToFile(const std::string& msg) {
-    std::lock_guard<std::mutex> lock(m_mutex);
+    LockGuard<Mutex> lock(m_mutex);
     if (m_file.is_open()) {
         m_file << GetTimestamp() << " " << msg << std::endl;
         m_file.flush();
@@ -103,3 +105,6 @@ std::string Logs::GetTimestamp() {
     ss << '.' << std::setfill('0') << std::setw(3) << ms.count();
     return ss.str();
 }
+
+} // namespace util
+} // namespace cellutron

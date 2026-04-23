@@ -114,6 +114,17 @@ public:
         m_connFd = m_socket = -1;
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        if (m_connFd >= 0)
+        {
+            struct timeval tv;
+            tv.tv_sec = timeout.count() / 1000;
+            tv.tv_usec = (timeout.count() % 1000) * 1000;
+            setsockopt(m_connFd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+        }
+    }
+
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         if (m_connFd < 0) return -1;

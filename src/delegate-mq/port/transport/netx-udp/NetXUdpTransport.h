@@ -130,6 +130,15 @@ public:
         tx_mutex_put(&m_mutex);
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        tx_mutex_get(&m_mutex, TX_WAIT_FOREVER);
+        // Convert ms to ThreadX ticks
+        m_recvTimeout = (ULONG)((timeout.count() * TX_TIMER_TICKS_PER_SECOND) / 1000);
+        if (m_recvTimeout == 0 && timeout.count() > 0) m_recvTimeout = 1;
+        tx_mutex_put(&m_mutex);
+    }
+
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         tx_mutex_get(&m_mutex, TX_WAIT_FOREVER);
@@ -227,8 +236,8 @@ public:
 
         NX_PACKET* packet_ptr = nullptr;
         
-        // 1 tick wait to keep loop responsive
-        UINT ret = nx_udp_socket_receive(&m_socket, &packet_ptr, 1); 
+        // Use configured timeout
+        UINT ret = nx_udp_socket_receive(&m_socket, &packet_ptr, m_recvTimeout); 
 
         if (ret != NX_SUCCESS) {
             tx_mutex_put(&m_mutex);
@@ -327,6 +336,8 @@ private:
     UINT  m_port = 0;
 
     Type m_type = Type::PUB;
+
+    ULONG m_recvTimeout = 1; // Default 1 tick
 
     ITransport* m_sendTransport = nullptr;
     ITransport* m_recvTransport = nullptr;

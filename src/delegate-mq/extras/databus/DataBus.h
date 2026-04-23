@@ -81,6 +81,11 @@ public:
         GetInstance().InternalRegisterStringifier<T>(topic, std::move(func));
     }
 
+    // Enable/Disable Last Value Cache (LVC) for a topic.
+    static void LastValueCache(const std::string& topic, bool enabled) {
+        GetInstance().InternalLastValueCache(topic, enabled);
+    }
+
     // Subscribe to all bus traffic (topic and stringified value).
     // Monitor all traffic on the DataBus.
     // NOTE: priority is only applied when thread != nullptr; passing a non-default
@@ -111,6 +116,11 @@ public:
     }
 
 private:
+    void InternalLastValueCache(const std::string& topic, bool enabled) {
+        std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+        m_topicQos[topic].lastValueCache = enabled;
+    }
+
     DataBus() = default;
     ~DataBus() = default;
 

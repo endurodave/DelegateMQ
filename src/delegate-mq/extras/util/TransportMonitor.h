@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <chrono>
 #include <vector>
+#include <iostream>
 
 /// @brief A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.
 /// 
@@ -39,7 +40,7 @@ public:
     /// Subscribers receive: (remoteId, seqNum, status)
     dmq::Signal<void(dmq::DelegateRemoteId, uint16_t, Status)> OnSendStatus;
 
-    TransportMonitor(const dmq::Duration timeout) : TRANSPORT_TIMEOUT(timeout)
+    TransportMonitor(const dmq::Duration timeout = std::chrono::seconds(2)) : TRANSPORT_TIMEOUT(timeout)
     {
     }
 
@@ -112,9 +113,6 @@ public:
         // Meanwhile Thread B -> Send -> Add(Wait for Lock A)
         for (const auto& item : expiredItems)
         {
-            // Simple logging to console
-            // Note: std::cerr is generally safe, but on embedded might be redirected or empty.
-            std::cerr << "TransportMonitor::Process TIMEOUT RemoteID: " << item.data.remoteId << " Seq: " << item.seq << std::endl;
             OnSendStatus(item.data.remoteId, item.seq, Status::TIMEOUT);
         }
     }

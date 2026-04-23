@@ -92,6 +92,14 @@ public:
         }
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        // Named pipes on Windows use different mechanisms for timeouts 
+        // than sockets (e.g. SetCommTimeouts for serial or ReadFile with OVERLAPPED).
+        // Since this transport currently uses PIPE_NOWAIT, we'll just store it.
+        m_recvTimeout = timeout;
+    }
+
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         if (os.bad() || os.fail())
@@ -201,6 +209,7 @@ private:
 
     Type m_type = Type::PUB;
     HANDLE m_hPipe = INVALID_HANDLE_VALUE;
+    std::chrono::milliseconds m_recvTimeout = std::chrono::milliseconds(2000);
 };
 
 #endif

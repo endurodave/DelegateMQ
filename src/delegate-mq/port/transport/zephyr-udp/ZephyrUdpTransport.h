@@ -132,6 +132,17 @@ public:
         }
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        if (m_socket >= 0)
+        {
+            struct timeval tv;
+            tv.tv_sec = timeout.count() / 1000;
+            tv.tv_usec = (timeout.count() % 1000) * 1000;
+            setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+        }
+    }
+
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         if (os.bad() || os.fail()) {

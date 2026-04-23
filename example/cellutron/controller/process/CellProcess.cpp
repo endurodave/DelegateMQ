@@ -32,7 +32,7 @@ void CellProcess::SetThread(dmq::IThread& thread)
     m_pumpConn = actuators::Actuators::GetInstance().OnPumpChanged.Connect(dmq::MakeDelegate(this, &CellProcess::OnPumpChanged, thread));
     m_timerConn = m_timer.OnExpired.Connect(dmq::MakeDelegate(this, &CellProcess::OnTimerExpired, thread));
     m_pumpCompleteConn = m_pumpProcess.OnComplete.Connect(dmq::MakeDelegate(this, &CellProcess::OnPumpComplete, thread));
-    (void)this->OnTransition.Connect(dmq::MakeDelegate([this](uint8_t, uint8_t) { m_newChange = true; }));
+    m_transitionConn = this->OnTransition.Connect(dmq::MakeDelegate([this](uint8_t, uint8_t) { m_newChange = true; }));
 }
 
 void CellProcess::StartProcess()
@@ -42,7 +42,8 @@ void CellProcess::StartProcess()
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_FILL_SOLUTION_B
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_SPIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_DRAIN
         TRANSITION_MAP_ENTRY(ST_FILL_SOLUTION_A) // ST_COMPLETE
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_ABORTING
@@ -62,7 +63,8 @@ void CellProcess::FaultEvent()
         TRANSITION_MAP_ENTRY(ST_FAULT) // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(ST_FAULT) // ST_FILL_SOLUTION_B
         TRANSITION_MAP_ENTRY(ST_FAULT) // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(ST_FAULT) // ST_SPIN
+        TRANSITION_MAP_ENTRY(ST_FAULT) // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(ST_FAULT) // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(ST_FAULT) // ST_DRAIN
         TRANSITION_MAP_ENTRY(ST_FAULT) // ST_COMPLETE
         TRANSITION_MAP_ENTRY(ST_FAULT) // ST_ABORTING
@@ -77,7 +79,8 @@ void CellProcess::AbortProcess()
         TRANSITION_MAP_ENTRY(ST_ABORTING)        // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(ST_ABORTING)        // ST_FILL_SOLUTION_B
         TRANSITION_MAP_ENTRY(ST_ABORTING)        // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(ST_ABORTING)        // ST_SPIN
+        TRANSITION_MAP_ENTRY(ST_ABORTING)        // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(ST_ABORTING)        // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(ST_ABORTING)        // ST_DRAIN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_COMPLETE
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_ABORTING
@@ -119,8 +122,9 @@ void CellProcess::PumpComplete()
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_IDLE
         TRANSITION_MAP_ENTRY(ST_FILL_SOLUTION_B) // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(ST_FILL_CELLS)      // ST_FILL_SOLUTION_B
-        TRANSITION_MAP_ENTRY(ST_SPIN)            // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_SPIN
+        TRANSITION_MAP_ENTRY(ST_SPIN_UP)         // ST_FILL_CELLS
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(ST_COMPLETE)        // ST_DRAIN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_COMPLETE
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)      // ST_ABORTING
@@ -135,7 +139,8 @@ void CellProcess::ValveChanged(int id, bool open)
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_DRAIN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_ABORTING
@@ -150,7 +155,8 @@ void CellProcess::PumpChanged(int id, int speed)
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_DRAIN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_ABORTING
@@ -165,7 +171,8 @@ void CellProcess::TimerExpired()
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_DRAIN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_ABORTING
@@ -180,7 +187,8 @@ void CellProcess::CentrifugeAtSpeed()
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(ST_DRAIN)       // ST_SPIN
+        TRANSITION_MAP_ENTRY(ST_SPIN_DOWN)   // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_DRAIN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_ABORTING
@@ -195,7 +203,8 @@ void CellProcess::CentrifugeStopped()
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_A
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_SOLUTION_B
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_FILL_CELLS
-        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN
+        TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_SPIN_UP
+        TRANSITION_MAP_ENTRY(ST_DRAIN)       // ST_SPIN_DOWN
         TRANSITION_MAP_ENTRY(ST_COMPLETE)    // ST_DRAIN
         TRANSITION_MAP_ENTRY(EVENT_IGNORED)  // ST_COMPLETE
         TRANSITION_MAP_ENTRY(ST_IDLE)        // ST_ABORTING
@@ -231,10 +240,16 @@ STATE_DEFINE(cellutron::process::CellProcess, FillCells, NoEventData)
     m_pumpProcess.Start(std::make_shared<PumpData>(3, 25, std::chrono::seconds(2), false));
 }
 
-STATE_DEFINE(cellutron::process::CellProcess, Spin, NoEventData)
+STATE_DEFINE(cellutron::process::CellProcess, SpinUp, NoEventData)
 {
-    printf("CellProcess: ST_SPIN (Starting Centrifuge Ramp)\n");
+    printf("CellProcess: ST_SPIN_UP (Starting Centrifuge Ramp)\n");
     m_centrifuge.StartRamp(std::make_shared<actuators::Centrifuge::RampData>(MAX_CENTRIFUGE_RPM, std::chrono::milliseconds(5000)));
+}
+
+STATE_DEFINE(cellutron::process::CellProcess, SpinDown, NoEventData)
+{
+    printf("CellProcess: ST_SPIN_DOWN (Decelerating Centrifuge)\n");
+    m_centrifuge.StopRamp(std::make_shared<actuators::Centrifuge::RampData>(0, std::chrono::milliseconds(5000)));
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, Drain, NoEventData)

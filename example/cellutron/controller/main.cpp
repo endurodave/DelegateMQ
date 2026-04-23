@@ -1,6 +1,13 @@
 /**
  * @file controller/main.cpp
  * @brief Controller CPU — Process Sequencing & Hardware Control
+ * 
+ * The Controller is the "brain" of the instrument. It runs on FreeRTOS 
+ * (Win32 Sim) and is responsible for:
+ * 1. Orchestrating the high-level cell processing sequence (CellProcess SM).
+ * 2. Executing atomic hardware actions (PumpProcess SM).
+ * 3. Providing real-time setpoints to the centrifuge and actuators.
+ * 4. Publishing system status and hardware feedback to the DataBus.
  */
 
 #include "DelegateMQ.h"
@@ -61,10 +68,10 @@ extern "C" void vApplicationGetTimerTaskMemory(StaticTask_t** p, StackType_t** s
 // ---------------------------------------------------------------------------
 
 static void vControllerTask(void* /*pvParams*/) {
-    System::GetInstance().Initialize();
+    cellutron::System::GetInstance().Initialize();
 
     for (;;) {
-        System::GetInstance().Tick();
+        cellutron::System::GetInstance().Tick();
         Thread::Sleep(std::chrono::milliseconds(1000));
     }
 }

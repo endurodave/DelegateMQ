@@ -4,12 +4,24 @@
 #include "DelegateMQ.h"
 #include "SpyBridge.h"
 #include "NodeBridge.h"
+#include "extras/util/TransportMonitor.h"
+#include "extras/util/RetryMonitor.h"
+#include "extras/util/ReliableTransport.h"
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <vector>
+
+namespace cellutron {
+namespace util {
 
 class Network {
 public:
+    enum class Reliability {
+        UNRELIABLE,
+        RELIABLE
+    };
+
     static Network& GetInstance() {
         static Network instance;
         return instance;
@@ -24,16 +36,19 @@ public:
     /// Add a remote node to the network.
     void AddRemoteNode(const std::string& nodeName, const std::string& addr, uint16_t port);
 
-    /// Map a topic to a specific remote node.
-    void MapTopicToRemote(const std::string& topic, dmq::DelegateRemoteId remoteId, const std::string& nodeName);
-
     /// Register a serializer for an outgoing topic.
     template <typename T>
-    void RegisterOutgoingTopic(const std::string& topic, dmq::DelegateRemoteId remoteId, dmq::ISerializer<void(T)>& serializer) {
+    void RegisterOutgoingTopic(const std::string& topic, dmq::DelegateRemoteId remoteId, dmq::ISerializer<void(T)>& serializer, Reliability reliability = Reliability::UNRELIABLE) {
         dmq::DataBus::RegisterSerializer<T>(topic, serializer);
-        m_outgoingTopics.push_back({topic, remoteId});
+        m_outgoingTopics.push_back({topic, remoteId, reliability});
+        
+        // Add to all existing remote nodes
         for (auto& [name, node] : m_remoteNodes) {
-            node.participant->AddRemoteTopic(topic, remoteId);
+            if (reliability == Reliability::RELIABLE) {
+                node.reliableParticipant->AddRemoteTopic(topic, remoteId);
+            } else {
+                node.unreliableParticipant->AddRemoteTopic(topic, remoteId);
+            }
         }
     }
 
@@ -55,16 +70,31 @@ private:
     UdpTransport m_subTransport;
     std::shared_ptr<dmq::Participant> m_subParticipant;
     
-    // Standardized thread name for Active Object subsystem
-    Thread m_thread{"NetworkThread"};
+    // Standardized thread name for Active Object subsystem. 
+    Thread m_thread{"NetworkThread", 100, FullPolicy::DROP};
 
     struct RemoteNode {
-        std::unique_ptr<UdpTransport> transport;
-        std::shared_ptr<dmq::Participant> participant;
+        std::unique_ptr<UdpTransport> rawTransport;
+        std::unique_ptr<TransportMonitor> transportMonitor;
+        std::unique_ptr<RetryMonitor> retryMonitor;
+        std::unique_ptr<ReliableTransport> reliableTransport;
+        
+        std::shared_ptr<dmq::Participant> reliableParticipant;
+        std::shared_ptr<dmq::Participant> unreliableParticipant;
     };
+
+    struct OutgoingTopic {
+        std::string topic;
+        dmq::DelegateRemoteId remoteId;
+        Reliability reliability;
+    };
+
     std::unordered_map<std::string, RemoteNode> m_remoteNodes;
-    std::vector<std::pair<std::string, dmq::DelegateRemoteId>> m_outgoingTopics;
+    std::vector<OutgoingTopic> m_outgoingTopics;
     std::string m_nodeName;
 };
+
+} // namespace util
+} // namespace cellutron
 
 #endif

@@ -5,6 +5,7 @@
 using namespace dmq;
 
 namespace cellutron {
+namespace util {
 
 Heartbeat::Heartbeat(const std::string& name, const char* localTopic, Thread& thread) :
     m_name(name),
@@ -73,4 +74,5 @@ void Heartbeat::TriggerFault(const std::string& nodeName, FaultCode faultCode)
     DataBus::Publish<FaultMsg>(topics::FAULT, { static_cast<uint8_t>(faultCode) });
 }
 
+} // namespace util
 } // namespace cellutron

@@ -14,11 +14,11 @@ namespace cellutron {
 void System::Initialize() {
     printf("Controller: System initializing...\n");
 
-    RegisterSerializers();
-    RegisterStringifiers();
+    cellutron::RegisterSerializers();
+    cellutron::RegisterStringifiers();
 
     // 1. Create System Thread
-    if (!m_thread.CreateThread(std::chrono::seconds(2))) {
+    if (!m_thread.CreateThread(WATCHDOG_TIMEOUT)) {
         printf("Controller: ERROR - Failed to create system thread!\n");
         return;
     }
@@ -31,6 +31,7 @@ void System::Initialize() {
     sensors::Sensors::GetInstance().Initialize();
 
     // 4. Setup Wiring
+    DataBus::LastValueCache(topics::STATUS_RUN, true);
     SetupLocalSubscriptions();
     SetupNetwork();
     SetupWatchdog();
@@ -65,25 +66,25 @@ void System::SetupLocalSubscriptions() {
 }
 
 void System::SetupNetwork() {
-    Network::GetInstance().Initialize(5011, "Controller"); 
+    util::Network::GetInstance().Initialize(5011, "Controller"); 
     
     // Incoming from Network
-    Network::GetInstance().RegisterIncomingTopic<StartProcessMsg>(topics::CMD_RUN, RID_START_PROCESS, serStart);
-    Network::GetInstance().RegisterIncomingTopic<StopProcessMsg>(topics::CMD_ABORT, RID_STOP_PROCESS, serStop);
-    Network::GetInstance().RegisterIncomingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
-    Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::SAFETY_HEARTBEAT, RID_SAFETY_HB, serHeartbeat);
-    Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
+    util::Network::GetInstance().RegisterIncomingTopic<StartProcessMsg>(topics::CMD_RUN, RID_START_PROCESS, serStart);
+    util::Network::GetInstance().RegisterIncomingTopic<StopProcessMsg>(topics::CMD_ABORT, RID_STOP_PROCESS, serStop);
+    util::Network::GetInstance().RegisterIncomingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
+    util::Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::SAFETY_HEARTBEAT, RID_SAFETY_HB, serHeartbeat);
+    util::Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
 
     // Setup Outgoing Topics
-    Network::GetInstance().AddRemoteNode("GUI", "127.0.0.1", 5010);
-    Network::GetInstance().AddRemoteNode("Safety", "127.0.0.1", 5013);
+    util::Network::GetInstance().AddRemoteNode("GUI", "127.0.0.1", 5010);
+    util::Network::GetInstance().AddRemoteNode("Safety", "127.0.0.1", 5013);
 
-    Network::GetInstance().RegisterOutgoingTopic<RunStatusMsg>(topics::STATUS_RUN, RID_RUN_STATUS, serRun);
-    Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
-    Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
-    Network::GetInstance().RegisterOutgoingTopic<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, RID_CENTRIFUGE_SPEED, serSpeed);
-    Network::GetInstance().RegisterOutgoingTopic<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, RID_ACTUATOR_STATUS, serActuator);
-    Network::GetInstance().RegisterOutgoingTopic<SensorStatusMsg>(topics::STATUS_SENSOR, RID_SENSOR_STATUS, serSensor);
+    util::Network::GetInstance().RegisterOutgoingTopic<RunStatusMsg>(topics::STATUS_RUN, RID_RUN_STATUS, serRun, util::Network::Reliability::RELIABLE);
+    util::Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault, util::Network::Reliability::RELIABLE);
+    util::Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
+    util::Network::GetInstance().RegisterOutgoingTopic<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, RID_CENTRIFUGE_SPEED, serSpeed);
+    util::Network::GetInstance().RegisterOutgoingTopic<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, RID_ACTUATOR_STATUS, serActuator);
+    util::Network::GetInstance().RegisterOutgoingTopic<SensorStatusMsg>(topics::STATUS_SENSOR, RID_SENSOR_STATUS, serSensor);
 }
 
 void System::SetupWatchdog() {

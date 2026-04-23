@@ -11,9 +11,9 @@ namespace cellutron {
 void System::Initialize() {
     printf("Safety: System initializing...\n");
 
-    RegisterSerializers();
-    RegisterStringifiers();
-    m_thread.CreateThread(std::chrono::seconds(2));
+    cellutron::RegisterSerializers();
+    cellutron::RegisterStringifiers();
+    m_thread.CreateThread(WATCHDOG_TIMEOUT);
 
     SetupLocalSubscriptions();
     SetupNetwork();
@@ -43,17 +43,17 @@ void System::SetupLocalSubscriptions() {
 }
 
 void System::SetupNetwork() {
-    Network::GetInstance().Initialize(5013, "Safety"); 
-    Network::GetInstance().RegisterIncomingTopic<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, RID_CENTRIFUGE_SPEED, serSpeed);
-    Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
-    Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
-    Network::GetInstance().RegisterIncomingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
+    util::Network::GetInstance().Initialize(5013, "Safety"); 
+    util::Network::GetInstance().RegisterIncomingTopic<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, RID_CENTRIFUGE_SPEED, serSpeed);
+    util::Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
+    util::Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
+    util::Network::GetInstance().RegisterIncomingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
 
-    Network::GetInstance().AddRemoteNode("Controller", "127.0.0.1", 5011);
-    Network::GetInstance().AddRemoteNode("GUI", "127.0.0.1", 5010);
+    util::Network::GetInstance().AddRemoteNode("Controller", "127.0.0.1", 5011);
+    util::Network::GetInstance().AddRemoteNode("GUI", "127.0.0.1", 5010);
 
-    Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
-    Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::SAFETY_HEARTBEAT, RID_SAFETY_HB, serHeartbeat);
+    util::Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault, util::Network::Reliability::RELIABLE);
+    util::Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::SAFETY_HEARTBEAT, RID_SAFETY_HB, serHeartbeat);
 }
 
 void System::SetupWatchdog() {

@@ -370,31 +370,50 @@ static void FullPolicy_Block_DeliversAll()
     std::cout << "FullPolicy_Block_DeliversAll() complete!" << std::endl;
 }
 
-// Default constructor (no policy arg) still behaves as BLOCK.
-static void FullPolicy_DefaultIsBlock()
+// Default constructor (no policy arg) behaves as FAULT.
+static void FullPolicy_DefaultIsFault()
 {
-    // maxQueueSize set, no FullPolicy arg — must default to BLOCK.
-    Thread defaultThread("DefaultPolicyThread", 3);
+    // maxQueueSize set, no FullPolicy arg — must default to FAULT.
+    // We stay within the limit (3 messages) to avoid triggering the fault handler 
+    // which would terminate the test process.
+    Thread defaultThread("DefaultPolicyThread", 5);
     defaultThread.CreateThread();
 
     std::atomic<int> deliveredCount{ 0 };
-    const int SEND_COUNT = 6;
+    const int SEND_COUNT = 3;
 
-    std::thread sender([&]() {
-        for (int i = 0; i < SEND_COUNT; i++)
-            MakeDelegate([&deliveredCount]() { deliveredCount++; }, defaultThread)();
-    });
-    sender.join();
+    for (int i = 0; i < SEND_COUNT; i++)
+        MakeDelegate([&deliveredCount]() { deliveredCount++; }, defaultThread)();
 
     while (defaultThread.GetQueueSize() != 0)
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-    // All delivered — BLOCK never drops.
     ASSERT_TRUE(deliveredCount == SEND_COUNT);
 
     defaultThread.ExitThread();
-    std::cout << "FullPolicy_DefaultIsBlock() complete!" << std::endl;
+    std::cout << "FullPolicy_DefaultIsFault() complete!" << std::endl;
+}
+
+// FAULT policy: verify it works as expected when not full.
+// NOTE: We cannot easily test the "Full" case because it terminates the application.
+static void FullPolicy_Fault_WorksWhenNotFull()
+{
+    Thread faultThread("FaultThread", 10, FullPolicy::FAULT);
+    faultThread.CreateThread();
+
+    std::atomic<int> deliveredCount{ 0 };
+    for (int i = 0; i < 5; i++)
+        MakeDelegate([&deliveredCount]() { deliveredCount++; }, faultThread)();
+
+    while (faultThread.GetQueueSize() != 0)
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+    ASSERT_TRUE(deliveredCount == 5);
+
+    faultThread.ExitThread();
+    std::cout << "FullPolicy_Fault_WorksWhenNotFull() complete!" << std::endl;
 }
 
 // Unlimited queue (maxQueueSize=0): FullPolicy has no effect; all messages delivered.
@@ -424,7 +443,8 @@ static void ThreadFullPolicyTests()
     FullPolicy_Drop_DropsWhenFull();
     FullPolicy_Drop_DeliversAllWhenBelowLimit();
     FullPolicy_Block_DeliversAll();
-    FullPolicy_DefaultIsBlock();
+    FullPolicy_DefaultIsFault();
+    FullPolicy_Fault_WorksWhenNotFull();
     FullPolicy_UnlimitedQueue_DeliversAll();
 }
 

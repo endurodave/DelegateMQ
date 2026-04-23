@@ -104,6 +104,11 @@ public:
     /// arguments.
     virtual void DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg) override;
 
+    /// Update the last alive time for the watchdog. 
+    /// @details Normally called automatically by internal timers. For threads with 
+    /// blocking loops (e.g. Network receiver), call this manually to prevent timeouts.
+    void ThreadCheck();
+
 private:
     Thread(const Thread&) = delete;
     Thread& operator=(const Thread&) = delete;
@@ -118,12 +123,6 @@ private:
     /// In a real-time OS, Timer::ProcessTimers() typically is called by the highest
     /// priority task in the system.
     void WatchdogCheck();
-
-    /// Timer expiration function used to check that thread loop is running.
-    /// This function is called by this thread context (m_thread). The 
-    /// Thread::Process() function must be called periodically even if no
-    /// other user delegate events to be handled.
-    void ThreadCheck();
 
     std::optional<std::thread> m_thread;
     std::atomic<bool> m_exit;

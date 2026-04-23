@@ -25,7 +25,8 @@ public:
         ST_FILL_SOLUTION_A,
         ST_FILL_SOLUTION_B,
         ST_FILL_CELLS,
-        ST_SPIN,
+        ST_SPIN_UP,
+        ST_SPIN_DOWN,
         ST_DRAIN,
         ST_COMPLETE,
         ST_ABORTING,
@@ -53,7 +54,8 @@ protected:
     STATE_DECLARE(CellProcess, FillSolutionA, NoEventData)
     STATE_DECLARE(CellProcess, FillSolutionB, NoEventData)
     STATE_DECLARE(CellProcess, FillCells, NoEventData)
-    STATE_DECLARE(CellProcess, Spin, NoEventData)
+    STATE_DECLARE(CellProcess, SpinUp, NoEventData)
+    STATE_DECLARE(CellProcess, SpinDown, NoEventData)
     STATE_DECLARE(CellProcess, Drain, NoEventData)
     STATE_DECLARE(CellProcess, Complete, NoEventData)
     STATE_DECLARE(CellProcess, Aborting, NoEventData)
@@ -65,7 +67,8 @@ protected:
         STATE_MAP_ENTRY(&FillSolutionA)
         STATE_MAP_ENTRY(&FillSolutionB)
         STATE_MAP_ENTRY(&FillCells)
-        STATE_MAP_ENTRY(&Spin)
+        STATE_MAP_ENTRY(&SpinUp)
+        STATE_MAP_ENTRY(&SpinDown)
         STATE_MAP_ENTRY(&Drain)
         STATE_MAP_ENTRY(&Complete)
         STATE_MAP_ENTRY(&Aborting)
@@ -95,6 +98,7 @@ private:
     dmq::ScopedConnection m_pumpConn;
     dmq::ScopedConnection m_timerConn;
     dmq::ScopedConnection m_pumpCompleteConn;
+    dmq::ScopedConnection m_transitionConn;
 
     Timer m_timer;
     bool  m_newChange = false;

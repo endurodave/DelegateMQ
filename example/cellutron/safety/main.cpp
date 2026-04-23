@@ -1,6 +1,13 @@
 /**
  * @file safety/main.cpp
  * @brief Safety CPU — Independent Hardware Monitor & Interlock
+ * 
+ * The Safety node is an autonomous monitor running on FreeRTOS (Win32 Sim).
+ * It ensures the instrument remains in a safe state by:
+ * 1. Monitoring real-time centrifuge RPM for overspeed conditions.
+ * 2. Verifying the presence of "heartbeats" from the Controller and GUI.
+ * 3. Enforcing hardware interlocks independently of the main sequence logic.
+ * 4. Publishing a global FAULT topic to halt the system upon any violation.
  */
 
 #include "DelegateMQ.h"
@@ -61,9 +68,10 @@ extern "C" void vApplicationGetTimerTaskMemory(StaticTask_t** p, StackType_t** s
 // ---------------------------------------------------------------------------
 
 static void vSafetyTask(void* /*pvParams*/) {
-    System::GetInstance().Initialize();
+    cellutron::System::GetInstance().Initialize();
+
     for (;;) {
-        System::GetInstance().Tick();
+        cellutron::System::GetInstance().Tick();
         Thread::Sleep(std::chrono::milliseconds(1000));
     }
 }

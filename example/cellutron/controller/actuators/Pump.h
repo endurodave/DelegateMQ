@@ -22,7 +22,11 @@ public:
 
     /// Set speed (-100 to 100%).
     void SetSpeed(int speed) {
-        m_speed = speed;
+        // Clamp speed to valid range
+        if (speed > 100) m_speed = 100;
+        else if (speed < -100) m_speed = -100;
+        else m_speed = speed;
+
         printf("[Pump %d] -> %d%%\n", m_id, m_speed);
         dmq::DataBus::Publish<ActuatorStatusMsg>(
             topics::STATUS_ACTUATOR,

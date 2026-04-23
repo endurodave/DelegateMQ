@@ -36,9 +36,9 @@ private:
     Thread m_thread{"SystemThread", 200, FullPolicy::DROP};
     
     std::atomic<bool> m_timerRunning{false};
-    std::thread m_backgroundTimer;
+    Thread m_backgroundTimer{"BackgroundTimerThread"};
 
-    Heartbeat m_heartbeat;
+    util::Heartbeat m_heartbeat;
 };
 
 } // namespace cellutron

@@ -1,6 +1,6 @@
-<svg width="400" height="700" viewBox="0 0 400 700" xmlns="http://www.w3.org/2000/svg">
+<svg width="400" height="750" viewBox="0 0 400 750" xmlns="http://www.w3.org/2000/svg">
   <!-- Background -->
-  <rect width="400" height="700" fill="#ffffff" />
+  <rect width="400" height="750" fill="#ffffff" />
   
   <!-- Styles -->
   <style>
@@ -31,13 +31,16 @@
   <text x="200" y="325" class="state-text">FILL_CELLS</text>
 
   <rect x="140" y="390" width="120" height="40" rx="5" class="state" />
-  <text x="200" y="415" class="state-text">SPIN</text>
+  <text x="200" y="415" class="state-text">SPIN_UP</text>
 
   <rect x="140" y="480" width="120" height="40" rx="5" class="state" />
-  <text x="200" y="505" class="state-text">DRAIN</text>
+  <text x="200" y="505" class="state-text">SPIN_DOWN</text>
 
   <rect x="140" y="570" width="120" height="40" rx="5" class="state" />
-  <text x="200" y="595" class="state-text">COMPLETE</text>
+  <text x="200" y="595" class="state-text">DRAIN</text>
+
+  <rect x="140" y="660" width="120" height="40" rx="5" class="state" />
+  <text x="200" y="685" class="state-text">COMPLETE</text>
 
   <!-- Transitions (Vertical Flow) -->
   <path d="M 200,70 L 200,120" class="transition" />
@@ -58,8 +61,11 @@
   <path d="M 200,520 L 200,570" class="transition" />
   <text x="205" y="550" class="transition-text">CentStopped</text>
 
+  <path d="M 200,610 L 200,660" class="transition" />
+  <text x="205" y="640" class="transition-text">PumpComplete</text>
+
   <!-- Loop back to IDLE -->
-  <path d="M 200,610 L 200,650 L 60,650 L 60,50 L 140,50" class="transition" />
-  <text x="70" y="640" class="transition-text">InternalEvent(ST_IDLE)</text>
+  <path d="M 200,700 L 200,740 L 60,740 L 60,50 L 140,50" class="transition" />
+  <text x="70" y="730" class="transition-text">InternalEvent(ST_IDLE)</text>
 
 </svg>

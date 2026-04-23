@@ -143,7 +143,7 @@ public:
                 dmq::ConditionVariable cv;   // Generic CV
                 XALLOCATOR
             };
-            auto state = xmake_shared<SyncState>();
+            auto state = std::make_shared<SyncState>();
             dmq::DelegateRemoteId remoteId = endpoint.GetRemoteId();
 
             // 3. [Caller Thread] Define the callback that wakes us up later.
@@ -179,7 +179,7 @@ public:
             if (retVal.has_value() && retVal.value() == true)
             {
                 // 8. [Caller Thread] BLOCK and Wait.
-                std::unique_lock<dmq::Mutex> lock(state->mtx);
+                dmq::UniqueLock<dmq::Mutex> lock(state->mtx);
                 // wait_for returns false if the predicate is still false after the timeout
                 state->cv.wait_for(lock, RECV_TIMEOUT, [&] {
                     return state->complete;
@@ -216,7 +216,7 @@ public:
                 dmq::ConditionVariable cv;
                 XALLOCATOR
             };
-            auto state = xmake_shared<SyncState>();
+            auto state = std::make_shared<SyncState>();
             dmq::DelegateRemoteId remoteId = channel.GetRemoteId();
 
             std::function<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)> statusCbFunc =
@@ -245,7 +245,7 @@ public:
 
             if (retVal.has_value() && retVal.value() == true)
             {
-                std::unique_lock<dmq::Mutex> lock(state->mtx);
+                dmq::UniqueLock<dmq::Mutex> lock(state->mtx);
                 state->cv.wait_for(lock, RECV_TIMEOUT, [&] { return state->complete; });
             }
 

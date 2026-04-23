@@ -35,7 +35,7 @@ private:
     dmq::ScopedConnection m_speedConn;
     dmq::ScopedConnection m_faultConn;
 
-    Heartbeat m_heartbeat;
+    util::Heartbeat m_heartbeat;
     bool      m_faulted = false;
 };
 

@@ -14,13 +14,8 @@ int DataBusQosTestMain() {
         std::cout << "Testing LVC..." << std::endl;
         dmq::DataBus::ResetForTesting();
         
-        // Ensure LVC is enabled for this topic by doing a dummy subscription or 
-        // using a future "EnableLVC" method. For now, a subscription does it.
-        {
-            dmq::QoS qos;
-            qos.lastValueCache = true;
-            auto conn = dmq::DataBus::Subscribe<int>("status", [](int){}, nullptr, qos);
-        }
+        // Use the new explicit method to enable LVC for a topic
+        dmq::DataBus::LastValueCache("status", true);
 
         // Publish before the "real" subscriber
         dmq::DataBus::Publish<int>("status", 10);
@@ -73,12 +68,9 @@ int DataBusQosTestMain() {
         std::cout << "Testing Lifespan..." << std::endl;
         dmq::DataBus::ResetForTesting();
 
-        // Arm LVC for the topic
-        {
-            dmq::QoS qos;
-            qos.lastValueCache = true;
-            auto conn = dmq::DataBus::Subscribe<int>("lvc/topic", [](int){}, nullptr, qos);
-        }
+        // Use the new explicit method to enable LVC for a topic
+        dmq::DataBus::LastValueCache("lvc/topic", true);
+
         dmq::DataBus::Publish<int>("lvc/topic", 42);
 
         // 3a. Within lifespan: LVC should be delivered
@@ -206,11 +198,9 @@ int DataBusQosTestMain() {
         {
             dmq::DataBus::ResetForTesting();
 
-            {
-                dmq::QoS qos;
-                qos.lastValueCache = true;
-                auto conn = dmq::DataBus::Subscribe<int>("lvc/fast", [](int){}, nullptr, qos);
-            }
+            // Use the new explicit method to enable LVC for a topic
+            dmq::DataBus::LastValueCache("lvc/fast", true);
+
             dmq::DataBus::Publish<int>("lvc/fast", 99);
 
             int deliveryCount = 0;

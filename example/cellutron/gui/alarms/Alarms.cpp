@@ -1,23 +1,25 @@
 #include "Alarms.h"
 #include "Constants.h"
+#include "messages/RunStatusMsg.h"
 #include <iostream>
 
 using namespace dmq;
-using namespace cellutron;
 
-static Timer* g_alarmGraceTimer = nullptr;
-static dmq::ScopedConnection g_alarmGraceConn;
+namespace cellutron {
+namespace util {
 
 void Alarms::Initialize() {
-    m_thread.CreateThread(std::chrono::seconds(2));
+    m_thread.CreateThread(WATCHDOG_TIMEOUT);
     m_ticksWaited = 0;
 
     // 1-second timer to track startup grace period
-    g_alarmGraceTimer = new Timer();
-    g_alarmGraceConn = g_alarmGraceTimer->OnExpired.Connect(dmq::MakeDelegate([this]() {
+    if (!m_alarmGraceTimer) {
+        m_alarmGraceTimer = std::make_unique<Timer>();
+    }
+    m_alarmGraceConn = m_alarmGraceTimer->OnExpired.Connect(dmq::MakeDelegate([this]() {
         m_ticksWaited++;
     }, m_thread));
-    g_alarmGraceTimer->Start(std::chrono::milliseconds(1000));
+    m_alarmGraceTimer->Start(std::chrono::milliseconds(1000));
 
     // 1. Subscribe to system faults
     m_faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg msg) {
@@ -40,13 +42,25 @@ void Alarms::Initialize() {
         SetAlarm(message, true);
     }, &m_thread);
 
-    // 2. Setup Watchdog for safety heartbeat
+    // 2. Filtered subscription to run status. Only receive when the system is in FAULT.
+    // This demonstrates the DataBus::SubscribeFilter feature.
+    m_runStatusConn = DataBus::SubscribeFilter<RunStatusMsg>(
+        topics::STATUS_RUN, 
+        [this](RunStatusMsg) {
+            SetAlarm("ALARM: System-wide Fault Detected", true);
+        }, 
+        [](const RunStatusMsg& msg) {
+            return msg.status == RunStatus::FAULT;
+        },
+        &m_thread);
+
+    // 3. Setup Watchdog for safety heartbeat
     m_safetyWatchdog = std::make_unique<dmq::DeadlineSubscription<HeartbeatMsg>>(
         topics::SAFETY_HEARTBEAT,
-        std::chrono::seconds(2),
+        HEARTBEAT_TIMEOUT,
         [](const HeartbeatMsg&) {},
         [this]() {
-            if (!m_alarmActive && m_ticksWaited >= 15) {
+            if (!m_alarmActive && m_ticksWaited >= HEARTBEAT_WARMUP.count()) {
                 SetAlarm("ALARM: Safety Node Heartbeat Lost", true);
             }
         },
@@ -56,10 +70,10 @@ void Alarms::Initialize() {
     // 3. Setup Watchdog for controller heartbeat
     m_controllerWatchdog = std::make_unique<dmq::DeadlineSubscription<HeartbeatMsg>>(
         topics::CONTROLLER_HEARTBEAT,
-        std::chrono::seconds(2),
+        HEARTBEAT_TIMEOUT,
         [](const HeartbeatMsg&) {},
         [this]() {
-            if (!m_alarmActive && m_ticksWaited >= 15) {
+            if (!m_alarmActive && m_ticksWaited >= HEARTBEAT_WARMUP.count()) {
                 SetAlarm("ALARM: Controller Node Heartbeat Lost", true);
             }
         },
@@ -68,10 +82,11 @@ void Alarms::Initialize() {
 }
 
 void Alarms::Shutdown() {
-    if (g_alarmGraceTimer) g_alarmGraceTimer->Stop();
+    if (m_alarmGraceTimer) m_alarmGraceTimer->Stop();
     m_safetyWatchdog.reset();
     m_controllerWatchdog.reset();
     m_faultConn.Disconnect();
+    m_runStatusConn.Disconnect();
     m_thread.ExitThread();
 }
 
@@ -86,3 +101,6 @@ void Alarms::SetAlarm(const std::string& message, bool active) {
     // Emit signal to Notify UI (and anyone else)
     OnAlarmChanged(m_currentMessage, m_alarmActive);
 }
+
+} // namespace util
+} // namespace cellutron

@@ -46,7 +46,7 @@ private:
     dmq::ScopedConnection m_faultConn;
 
     // Heartbeat component
-    Heartbeat m_heartbeat;
+    util::Heartbeat m_heartbeat;
 };
 
 } // namespace cellutron

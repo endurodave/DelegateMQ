@@ -1,13 +1,20 @@
 /**
  * @file gui/main.cpp
  * @brief GUI CPU — Human Machine Interface & Data Logger
+ * 
+ * This node provides the operator interface for the Cellutron system. 
+ * It runs on a standard desktop OS (Windows/Linux) and handles:
+ * 1. User commands (Start/Abort) via FTXUI terminal interface.
+ * 2. Real-time visualization of instrument telemetry (RPM, Pump Speed).
+ * 3. System-wide audit logging to 'logs.txt'.
+ * 4. Active alarm monitoring and visualization.
  */
 
 #include "system/System.h"
 #include "ui/UI.h"
 #include "extras/util/NetworkConnect.h"
+#include "DelegateMQ.h"
 #include <iostream>
-#include <thread>
 
 using namespace cellutron;
 
@@ -15,22 +22,24 @@ int main() {
     static NetworkContext networkContext;
     std::cout << "Cellutron GUI Processor starting..." << std::endl;
 
-    System::GetInstance().Initialize();
+    cellutron::System::GetInstance().Initialize();
 
     // Start a background thread to tick the system (heartbeat warmup, etc.)
     // since UI::Start() is a blocking call.
-    std::thread tickThread([]() {
+    static Thread tickThread{"TickThread"};
+    tickThread.CreateThread();
+
+    dmq::MakeDelegate([]() {
         while (true) {
-            System::GetInstance().Tick();
+            cellutron::System::GetInstance().Tick();
             Thread::Sleep(std::chrono::milliseconds(1000));
         }
-    });
-    tickThread.detach();
+    }, tickThread).AsyncInvoke();
 
     // 4. Start the User Interface (blocks until UI exit)
-    UI::GetInstance().Start();
+    cellutron::gui::UI::GetInstance().Start();
 
-    System::GetInstance().Shutdown();
+    cellutron::System::GetInstance().Shutdown();
 
     return 0;
 }

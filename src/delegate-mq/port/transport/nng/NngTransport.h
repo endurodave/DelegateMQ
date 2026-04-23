@@ -167,6 +167,16 @@ public:
         m_nngSocket = NNG_SOCKET_INITIALIZER;
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+        if (nng_socket_id(m_nngSocket) != 0)
+        {
+            nng_duration ms = static_cast<nng_duration>(timeout.count());
+            nng_socket_set_ms(m_nngSocket, NNG_OPT_RECVTIMEO, ms);
+        }
+    }
+
     void Destroy()
     {
         Close();

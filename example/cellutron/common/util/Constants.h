@@ -8,10 +8,13 @@ namespace cellutron {
     // Centrifuge constants
     static constexpr uint16_t MAX_CENTRIFUGE_RPM = 1000;
 
+    // Watchdog constants
+    static constexpr std::chrono::seconds WATCHDOG_TIMEOUT = std::chrono::seconds(20);
+
     // Heartbeat constants
-    static constexpr std::chrono::milliseconds HEARTBEAT_PERIOD{500};
-    static constexpr std::chrono::seconds      HEARTBEAT_TIMEOUT{2};
-    static constexpr std::chrono::seconds      HEARTBEAT_WARMUP{15};
+    static constexpr std::chrono::milliseconds HEARTBEAT_PERIOD{1000};
+    static constexpr std::chrono::seconds      HEARTBEAT_TIMEOUT{20};
+    static constexpr std::chrono::seconds      HEARTBEAT_WARMUP{60};
 
     namespace topics {
         static const char* const SAFETY_HEARTBEAT     = "sys/heartbeat/safety";

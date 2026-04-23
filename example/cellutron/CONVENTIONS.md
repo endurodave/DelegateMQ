@@ -26,9 +26,10 @@ All external event methods (public methods that trigger a transition) must follo
 ### Asynchronous Signaling
 When a state machine waits for an external signal (e.g., from hardware or another thread):
 1.  **Store Configuration**: Store the current configuration (IDs, speeds, etc.) in a member variable (e.g., `m_data`) during the entry state.
-2.  **Verify Feedback**: In the signal handler, verify that the incoming hardware ID matches `m_data`.
-3.  **Trigger Transitions**: If verified, call a private event method that uses a `BEGIN_TRANSITION_MAP` to advance the state.
-4.  **No `InternalEvent` in Handlers**: Do not use `InternalEvent` inside an asynchronous signal handler; it bypasses thread safety and can cause the machine to get stuck. Use the macro-driven event methods instead.
+2.  **Verify Feedback**: In the private signal handler (e.g., `OnValveChanged`), verify that the incoming hardware ID matches `m_data`.
+3.  **Signal Handler Logic**: Signal handlers are **not** external events. They may contain `if/else` logic to evaluate the signal data and determine which semantic action to take.
+4.  **Trigger Transitions**: Use the signal handler to call a dedicated **External Event** method (e.g., `ValveOpened()`) that uses `BEGIN_TRANSITION_MAP` to advance the state.
+5.  **No `InternalEvent` in Handlers**: Do not use `InternalEvent` inside an asynchronous signal handler; it bypasses thread safety and can cause the machine to get stuck. Use declarative macro-driven event methods instead.
 
 ## 2. Naming & Placement Conventions
 *   **Signals**: All `dmq::Signal` members must be prefixed with `On` (e.g., `OnComplete`, `OnValveChanged`, `OnTargetReached`).

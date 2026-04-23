@@ -4,7 +4,9 @@
 #include "DelegateMQ.h"
 #include <string>
 #include <fstream>
-#include <mutex>
+
+namespace cellutron {
+namespace util {
 
 /// @brief Singleton class for system-wide data logging to a file.
 class Logs {
@@ -31,7 +33,7 @@ private:
     std::string GetTimestamp();
 
     std::ofstream m_file;
-    std::mutex m_mutex;
+    dmq::Mutex m_mutex;
     
     // Use standardized thread name for Active Object subsystem
     Thread m_thread{"LogsThread"};
@@ -45,5 +47,8 @@ private:
     dmq::ScopedConnection m_actuatorConn;
     dmq::ScopedConnection m_sensorConn;
 };
+
+} // namespace util
+} // namespace cellutron
 
 #endif

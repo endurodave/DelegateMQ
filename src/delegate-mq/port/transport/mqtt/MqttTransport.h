@@ -195,8 +195,7 @@ public:
         std::unique_lock<std::mutex> lock(m_queueMtx);
         
         // Wait for data or stop signal
-        // We use a 1s timeout to allow periodic checks, though CV wakeups are efficient
-        if (m_queueCv.wait_for(lock, std::chrono::milliseconds(1000), [this] { return !m_rxQueue.empty() || m_stop; }))
+        if (m_queueCv.wait_for(lock, m_recvTimeout, [this] { return !m_rxQueue.empty() || m_stop; }))
         {
             if (m_stop) return -1;
 
@@ -249,6 +248,11 @@ public:
         m_transportMonitor = transportMonitor;
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        m_recvTimeout = timeout;
+    }
+
 private:
     static void delivered(void* context, MQTTClient_deliveryToken dt)
     {
@@ -286,6 +290,8 @@ private:
     MQTTClient m_client = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
     Type m_type = Type::PUB;
+
+    std::chrono::milliseconds m_recvTimeout = std::chrono::milliseconds(1000);
 
     // Thread-safe Queue for bridging Paho callback to ITransport::Receive
     std::queue<std::vector<char>> m_rxQueue;

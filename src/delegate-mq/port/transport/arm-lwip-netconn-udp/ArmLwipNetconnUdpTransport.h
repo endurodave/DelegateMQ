@@ -103,6 +103,14 @@ public:
         }
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        if (m_conn)
+        {
+            netconn_set_recvtimeout(m_conn, static_cast<int>(timeout.count()));
+        }
+    }
+
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         if (os.bad() || os.fail() || !m_conn) {

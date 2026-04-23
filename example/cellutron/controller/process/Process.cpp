@@ -11,7 +11,7 @@ Process::~Process() { Shutdown(); }
 
 void Process::Initialize()
 {
-    m_thread.CreateThread(std::chrono::seconds(2));
+    m_thread.CreateThread(WATCHDOG_TIMEOUT);
     m_pumpProcess.SetThread(m_thread);
     m_cellProcess.SetThread(m_thread);
     printf("Process: Subsystem initialized.\n");

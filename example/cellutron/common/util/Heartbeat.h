@@ -10,6 +10,7 @@
 #include <functional>
 
 namespace cellutron {
+namespace util {
 
 /// @brief Generalized heartbeat emitter and monitor component.
 /// 
@@ -58,6 +59,7 @@ private:
     bool     m_faultTriggered = false;
 };
 
+} // namespace util
 } // namespace cellutron
 
 #endif // _HEARTBEAT_H

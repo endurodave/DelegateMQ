@@ -19,7 +19,9 @@ NetworkEngine::NetworkEngine()
     : m_thread("NetworkEngine"),
     m_transportMonitor(RECV_TIMEOUT),
     m_recvThread("NetworkRecv")
-#if defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
+#if defined(DMQ_TRANSPORT_ZEROMQ)
+    // No extra init needed for ZeroMQ
+#elif defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP)
     , m_retryMonitor(m_sendTransport, m_transportMonitor)
     , m_reliableTransport(m_sendTransport, m_retryMonitor)
 #elif defined(DMQ_TRANSPORT_STM32_UART)
@@ -228,16 +230,6 @@ void NetworkEngine::RegisterEndpoint(dmq::DelegateRemoteId id, dmq::IRemoteInvok
 // RecvThread
 //------------------------------------------------------------------------------
 /// @brief The main loop for the background receive thread.
-/// 
-/// @details This function continuously polls the underlying transport layer for 
-/// incoming data. When a packet is successfully received:
-/// 1. It extracts the header and payload into a stream.
-/// 2. It marshals the data to the internal `NetworkEngine` thread by asynchronously 
-///    invoking `Incoming()`.
-/// 
-/// The `INVOKE_TIMEOUT` ensures that if the main Network Thread is deadlocked or 
-/// its queue is full, this receive thread won't hang indefinitely trying to 
-/// enqueue the message.
 void NetworkEngine::RecvThread()
 {
     // Timeout for enqueuing the message to the main thread.
@@ -247,7 +239,7 @@ void NetworkEngine::RecvThread()
     {
         DmqHeader header;
         // Use a shared_ptr for the stream to efficiently pass data between threads
-        auto arg_data = xmake_shared<xstringstream>(std::ios::in | std::ios::out | std::ios::binary);
+        auto arg_data = make_shared<xstringstream>(std::ios::in | std::ios::out | std::ios::binary);
 
         // Block reading from the physical transport
         int error = m_recvTransport.Receive(*arg_data, header);
@@ -265,16 +257,6 @@ void NetworkEngine::RecvThread()
 // Incoming
 //------------------------------------------------------------------------------
 /// @brief Handles incoming messages on the main Network Thread.
-/// 
-/// @details This function acts as the central dispatcher. It:
-/// 1. Ignores ACK messages (which are typically handled by the TransportMonitor 
-///    or blocking wait logic).
-/// 2. Looks up the registered `IRemoteInvoker` endpoint associated with the message ID.
-/// 3. Invokes the endpoint to deserialize the arguments and trigger the 
-///    corresponding application callback.
-/// 
-/// @param[in] header The message header containing the Remote ID.
-/// @param[in] arg_data The serialized payload stream.
 void NetworkEngine::Incoming(DmqHeader& header, std::shared_ptr<xstringstream> arg_data)
 {
     // Filter out ACKs; we only dispatch application data here.
@@ -291,16 +273,16 @@ void NetworkEngine::Incoming(DmqHeader& header, std::shared_ptr<xstringstream> a
 
 void NetworkEngine::Timeout() { m_transportMonitor.Process(); }
 
-void NetworkEngine::InternalErrorHandler(DelegateRemoteId id, DelegateError error, DelegateErrorAux aux) {
+void NetworkEngine::InternalErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux) {
     OnError(id, error, aux);
 }
 
-void NetworkEngine::InternalStatusHandler(DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
+void NetworkEngine::InternalStatusHandler(dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
     OnStatus(id, seq, status);
 }
 
 // Default virtual implementations
-void NetworkEngine::OnError(DelegateRemoteId, DelegateError, DelegateErrorAux) {}
-void NetworkEngine::OnStatus(DelegateRemoteId, uint16_t, TransportMonitor::Status) {}
+void NetworkEngine::OnError(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux) {}
+void NetworkEngine::OnStatus(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status) {}
 
 #endif // Defined Transport Check

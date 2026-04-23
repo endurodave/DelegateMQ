@@ -1,5 +1,6 @@
 #include "Actuators.h"
 #include "messages/ActuatorStatusMsg.h"
+#include "util/Constants.h"
 #include <cstdio>
 
 #include "FreeRTOS.h"
@@ -16,7 +17,7 @@ Actuators::~Actuators() {
 
 void Actuators::Initialize() {
     // 1. Start the thread
-    m_thread.CreateThread(std::chrono::seconds(2));
+    m_thread.CreateThread(WATCHDOG_TIMEOUT);
 
     // 2. Initialize Centrifuge
     m_centrifuge.SetThread(m_thread);

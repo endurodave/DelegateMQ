@@ -205,6 +205,11 @@ public:
         return 0;
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        m_recvTimeout = timeout;
+    }
+
     void SetTransportMonitor(ITransportMonitor* tm) { m_transportMonitor = tm; }
     void SetSendTransport(ITransport* st) { m_sendTransport = st; }
     void SetRecvTransport(ITransport* rt) { m_recvTransport = rt; }
@@ -230,6 +235,7 @@ private:
     ITransport* m_sendTransport = nullptr;
     ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
+    std::chrono::milliseconds m_recvTimeout = std::chrono::milliseconds(2000);
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE] = { 0 };
 };

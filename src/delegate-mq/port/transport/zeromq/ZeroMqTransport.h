@@ -157,6 +157,16 @@ public:
         }
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+        if (m_zmq)
+        {
+            int ms = static_cast<int>(timeout.count());
+            zmq_setsockopt(m_zmq, ZMQ_RCVTIMEO, &ms, sizeof(ms));
+        }
+    }
+
     void Destroy()
     {
         Close();

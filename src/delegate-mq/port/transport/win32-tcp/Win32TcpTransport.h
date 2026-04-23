@@ -118,6 +118,15 @@ public:
         }
     }
 
+    void SetRecvTimeout(std::chrono::milliseconds timeout)
+    {
+        if (m_clientSocket != INVALID_SOCKET)
+        {
+            DWORD ms = static_cast<DWORD>(timeout.count());
+            setsockopt(m_clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&ms, sizeof(ms));
+        }
+    }
+
     virtual int Send(xostringstream& os, const DmqHeader& header) override
     {
         if (m_clientSocket == INVALID_SOCKET) return -1;
