@@ -1,6 +1,6 @@
 # Signal — Publish / Subscribe
 
-`dmq::Signal<Sig>` is the recommended way to implement publish/subscribe within a process. It returns a `dmq::ScopedConnection` handle from `Connect()` that automatically disconnects when it goes out of scope — no manual unsubscribe needed.
+`dmq::Signal<Sig>` is the recommended way to implement publish/subscribe within a process. It returns a `dmq::ScopedConnection` handle from `Connect()` that automatically disconnects when it goes out of scope — no manual unsubscribe needed. `Connect()` is `[[nodiscard]]`: discarding the return value causes an immediate disconnect, leaving no active subscription.
 
 ---
 

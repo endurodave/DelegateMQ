@@ -84,13 +84,16 @@ void System::SetupWatchdog() {
 void System::StartTimerThread() {
     m_timerRunning = true;
     m_backgroundTimer.CreateThread();
-    dmq::MakeDelegate([this]() {
-        while (m_timerRunning) {
-            Thread::Sleep(std::chrono::milliseconds(100));
-            dmq::MakeDelegate([]() { Timer::ProcessTimers(); }, m_thread).AsyncInvoke();
-            this->Tick(100);
-        }
-    }, m_backgroundTimer).AsyncInvoke();
+    (void)dmq::MakeDelegate(this, &System::TimerTick, m_backgroundTimer).AsyncInvoke();
+}
+
+void System::TimerTick() {
+    Timer::ProcessTimers();
+    Tick(100);
+    if (m_timerRunning) {
+        Thread::Sleep(std::chrono::milliseconds(100));
+        (void)dmq::MakeDelegate(this, &System::TimerTick, m_backgroundTimer).AsyncInvoke();
+    }
 }
 
 } // namespace cellutron

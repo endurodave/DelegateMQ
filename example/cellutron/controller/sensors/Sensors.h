@@ -33,8 +33,7 @@ private:
     int InternalGetPressure();
     bool InternalIsAirInLine();
 
-    // Use standardized thread name for Active Object subsystem
-    dmq::os::Thread m_thread{"SensorsThread"};
+    dmq::os::Thread m_thread{"SensorsThread", 50, dmq::os::FullPolicy::BLOCK};
 };
 
 } // namespace sensors

@@ -293,17 +293,21 @@ The `dmq::os::Thread` class uses an underlying `std::priority_queue` to ensure h
 
 #### dmq::os::FullPolicy (Back Pressure / Drop)
 
-When a thread's message queue has a fixed size (`maxQueueSize > 0`), `dmq::os::FullPolicy` controls what `DispatchDelegate()` does when the queue is full. The default is `dmq::os::FullPolicy::BLOCK`.
+When a thread's message queue has a fixed size (`maxQueueSize > 0`), `dmq::os::FullPolicy` controls what `DispatchDelegate()` does when the queue is full. The default is `dmq::os::FullPolicy::FAULT`.
 
 ```cpp
+// Fault on overflow — appropriate for threads that must never silently lose messages
+dmq::os::Thread cmdThread("CmdThread", /*maxQueueSize=*/50, dmq::os::FullPolicy::FAULT);
+
 // Never drop — block the publisher until the consumer has room
-dmq::os::Thread cmdThread("CmdThread", /*maxQueueSize=*/50, dmq::os::FullPolicy::BLOCK);
+dmq::os::Thread safetyThread("SafetyThread", /*maxQueueSize=*/50, dmq::os::FullPolicy::BLOCK);
 
 // Drop stale samples rather than stall the publisher
 dmq::os::Thread sensorThread("SensorThread", /*maxQueueSize=*/10, dmq::os::FullPolicy::DROP);
 ```
 
-- **`dmq::os::FullPolicy::BLOCK`** *(default)*: `DispatchDelegate()` blocks the caller until the consumer drains a slot. This provides automatic back pressure, slowing the producer to match the consumer's rate. Use for critical topics (commands, state transitions) where no message may be lost.
+- **`dmq::os::FullPolicy::FAULT`** *(default)*: `DispatchDelegate()` triggers a system fault if the queue is full. This makes overflow immediately visible during development and integration testing rather than silently degrading. Use when a full queue indicates a design error (producer outrunning consumer) that should not be masked.
+- **`dmq::os::FullPolicy::BLOCK`**: `DispatchDelegate()` blocks the caller until the consumer drains a slot. This provides automatic back pressure, slowing the producer to match the consumer's rate. Use for critical topics (commands, state transitions) where no message may be lost and stalling the publisher is acceptable.
 - **`dmq::os::FullPolicy::DROP`**: `DispatchDelegate()` silently discards the message and returns immediately without stalling the caller. Ideal for high-rate best-effort data (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher.
 
 Setting `maxQueueSize = 0` disables the limit entirely — `dmq::os::FullPolicy` has no effect and all messages are queued regardless of consumer speed.

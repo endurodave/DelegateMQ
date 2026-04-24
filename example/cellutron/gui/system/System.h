@@ -32,11 +32,12 @@ private:
     void SetupNetwork();
     void SetupWatchdog();
     void StartTimerThread();
+    void TimerTick();
 
     dmq::os::Thread m_thread{"SystemThread", 200, dmq::os::FullPolicy::DROP};
     
     std::atomic<bool> m_timerRunning{false};
-    dmq::os::Thread m_backgroundTimer{"BackgroundTimerThread", 10, dmq::os::FullPolicy::DROP};
+    dmq::os::Thread m_backgroundTimer{"BackgroundTimerThread", 10, dmq::os::FullPolicy::BLOCK};
 
     util::Heartbeat m_heartbeat;
 };

@@ -44,7 +44,7 @@ void Network::Initialize(uint16_t subPort, const std::string& nodeName) {
     NodeBridge::StartMulticast(m_nodeName, "239.1.1.1", 9998);
 
     // Post the receiver loop to the standardized worker thread
-    dmq::MakeDelegate(this, &Network::ReceiverThread, m_thread).AsyncInvoke();
+    (void)dmq::MakeDelegate(this, &Network::ReceiverThread, m_thread).AsyncInvoke();
     
     std::cout << "Network: Receiver thread started on port " << subPort << std::endl;
 }
@@ -137,7 +137,7 @@ void Network::ReceiverThread() {
     // The "loop" speed is governed by the transport receive timeout (100ms).
     if (m_running) {
         Thread::Sleep(std::chrono::milliseconds(10));
-        dmq::MakeDelegate(this, &Network::ReceiverThread, m_thread).AsyncInvoke();
+        (void)dmq::MakeDelegate(this, &Network::ReceiverThread, m_thread).AsyncInvoke();
     }
 }
 

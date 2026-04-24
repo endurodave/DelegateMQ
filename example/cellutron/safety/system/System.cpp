@@ -33,11 +33,18 @@ void System::Tick(uint32_t ms) {
 }
 
 void System::SetupLocalSubscriptions() {
+    // Intentional safety latch: once faulted, the fault is NOT cleared automatically.
+    // Recovery requires a deliberate operator action (system restart). This prevents
+    // the safety node from silently resuming enforcement after a fault event.
     m_speedConn = dmq::databus::DataBus::Subscribe<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, [this](CentrifugeSpeedMsg msg) {
-        if (!m_faulted && msg.rpm > MAX_CENTRIFUGE_RPM) {
-            m_faulted = true;
-            printf("Safety: CRITICAL - Centrifuge speed exceeded limit! (%u RPM). TRIGGERING FAULT.\n", msg.rpm);
-            dmq::databus::DataBus::Publish<FaultMsg>(topics::FAULT, { FAULT_OVERSPEED });
+        if (msg.rpm > MAX_CENTRIFUGE_RPM) {
+            if (!m_faulted) {
+                m_faulted = true;
+                printf("Safety: CRITICAL - Centrifuge speed exceeded limit! (%u RPM). TRIGGERING FAULT.\n", msg.rpm);
+                dmq::databus::DataBus::Publish<FaultMsg>(topics::FAULT, { FAULT_OVERSPEED });
+            } else {
+                printf("Safety: Overspeed still active (%u RPM). System already faulted.\n", msg.rpm);
+            }
         }
     }, &m_thread);
 

@@ -23,23 +23,30 @@ void Alarms::Initialize() {
     }, m_thread));
     m_alarmGraceTimer->Start(std::chrono::milliseconds(1000));
 
+    // Priority model: FAULT_OVERSPEED is a hardware safety fault and may override any
+    // active alarm. All other faults are suppressed when an alarm is already showing.
+    // New fault codes must be explicitly assigned to a tier here — omission means suppressed.
+    auto canOverrideActiveAlarm = [](uint32_t code) -> bool {
+        switch (code) {
+            case FAULT_OVERSPEED: return true;   // hardware safety — always surfaced
+            default:              return false;  // operational faults do not displace active alarm
+        }
+    };
+
     // 1. Subscribe to system faults
-    m_faultConn = dmq::databus::DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg msg) {
-        // If we are already showing an alarm, don't overwrite it with a generic one
-        if (m_alarmActive && msg.faultCode == FAULT_OVERSPEED) {
-             // Let overspeed through as it is high priority
-        } else if (m_alarmActive) {
+    m_faultConn = dmq::databus::DataBus::Subscribe<FaultMsg>(topics::FAULT, [this, canOverrideActiveAlarm](FaultMsg msg) {
+        if (m_alarmActive && !canOverrideActiveAlarm(msg.faultCode)) {
             return;
         }
 
         std::string message;
         switch (msg.faultCode) {
-            case FAULT_OVERSPEED:   message = "ALARM: Centrifuge Overspeed"; break;
-            case FAULT_SAFETY_LOST: message = "ALARM: Safety Node Lost"; break;
-            case FAULT_AIR_INLET:   message = "ALARM: Air Detected in Inlet"; break;
-            case FAULT_BLOCKAGE:    message = "ALARM: Outlet Blockage Detected"; break;
+            case FAULT_OVERSPEED:       message = "ALARM: Centrifuge Overspeed"; break;
+            case FAULT_SAFETY_LOST:     message = "ALARM: Safety Node Lost"; break;
+            case FAULT_AIR_INLET:       message = "ALARM: Air Detected in Inlet"; break;
+            case FAULT_BLOCKAGE:        message = "ALARM: Outlet Blockage Detected"; break;
             case FAULT_CONTROLLER_LOST: message = "ALARM: Controller Node Lost"; break;
-            default:                message = "ALARM: Unknown System Fault (" + std::to_string(msg.faultCode) + ")"; break;
+            default:                    message = "ALARM: Unknown System Fault (" + std::to_string(msg.faultCode) + ")"; break;
         }
         SetAlarm(message, true);
     }, &m_thread);
@@ -84,6 +91,9 @@ void Alarms::Initialize() {
 }
 
 void Alarms::Shutdown() {
+    // Disconnect before Stop() so any callback already queued on m_thread is dropped
+    // when the thread processes it rather than firing after shutdown begins.
+    m_alarmGraceConn.Disconnect();
     if (m_alarmGraceTimer) m_alarmGraceTimer->Stop();
     m_safetyWatchdog.reset();
     m_controllerWatchdog.reset();
@@ -93,7 +103,7 @@ void Alarms::Shutdown() {
 }
 
 void Alarms::Reset() {
-    dmq::MakeDelegate(this, &Alarms::SetAlarm, m_thread).AsyncInvoke("No Alarm", false);
+    (void)dmq::MakeDelegate(this, &Alarms::SetAlarm, m_thread).AsyncInvoke("No Alarm", false);
 }
 
 void Alarms::SetAlarm(const std::string& message, bool active) {

@@ -2,7 +2,6 @@
 #define REMOTE_CONFIG_H
 
 #include "DelegateMQ.h"
-#include "port/serialize/serialize/Serializer.h"
 #include "messages/CentrifugeSpeedMsg.h"
 #include "messages/CentrifugeStatusMsg.h"
 #include "messages/RunStatusMsg.h"

@@ -270,14 +270,13 @@ void AppThreadLoop() {
 
 ```cpp
 // Type definition — no IDL, no codegen
-class SensorData : public dmq::serialize::I {
-public:
+struct SensorData : public serialize::I {
     int x = 0, y = 0; std::string msg;
-    std::ostream& write(dmq::serialize& ms, std::ostream& os) override {
-        ms.write(os, x); ms.write(os, y); ms.write(os, msg); return os;
+    std::ostream& write(serialize& ms, std::ostream& os) override {
+        ms.write(os, x); ms.write(os, y); return ms.write(os, msg);
     }
-    std::istream& read(dmq::serialize& ms, std::istream& is) override {
-        ms.read(is, x); ms.read(is, y); ms.read(is, msg); return is;
+    std::istream& read(serialize& ms, std::istream& is) override {
+        ms.read(is, x); ms.read(is, y); return ms.read(is, msg);
     }
 };
 
@@ -317,7 +316,7 @@ private:
 | Thread dispatch on receive | Manual (listener on DDS thread → queue → your thread) | Automatic (Poll runs on your thread) |
 | Discovery | Automatic (multicast/unicast, topic matching) | Partial (via Multicast group) |
 | QoS policies | Rich (reliability, durability, history, lifespan, ...) | LVC, Lifespan, Min Separation, Deadline Monitoring, Fixed-block, Reliable/Best-Effort |
-| Transport | RTPS over UDP/TCP, multicast, secure | Pluggable `dmq::transport::ITransport` — Unicast & Multicast UDP |
+| Transport | RTPS over UDP/TCP, multicast, secure | Pluggable `dmq::transport::ITransport` — built-in: UDP (Win32/Linux/Zephyr/LwIP/NetX), TCP (Win32/Linux), ZeroMQ, NNG, MQTT, UART, Serial, Win32 Pipe |
 | IDL / build tool required | Yes | No |
 | Embedded / RTOS support | Limited | Yes |
 | Interoperability standard | RTPS (vendor-interoperable) | No standard |

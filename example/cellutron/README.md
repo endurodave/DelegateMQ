@@ -49,7 +49,7 @@ Cellutron demonstrates all major DelegateMQ functional areas in a single integra
 - **Non-Intrusive Monitoring**: Uses the `Monitor()` feature to "spy" on the distributed bus for audit logging without modifying core application logic.
 - **Triangle Heartbeat**: Cross-node health monitoring via `dmq::databus::DeadlineSubscription`. Missed heartbeats trigger a coordinated system-wide `FAULT`.
 - **Multi-OS Portability**: Identical application source code runs on **Standard C++ (GUI CPU)** and **FreeRTOS (Controller/Safety CPUs)**.
-- **Safe Error Handling**: Uses the `FullPolicy::FAULT` to ensure that any message queue overflow is treated as a critical system failure.
+- **Explicit Queue Policy**: Every active object thread declares an explicit `FullPolicy` — `BLOCK` for reliability-critical threads (Controller/Safety system and process threads), `FAULT` for the network receiver, and `DROP` for non-critical display threads (UI, Logs). No thread silently inherits an unintended default.
 
 ---
 
@@ -68,33 +68,35 @@ The system is distributed across three independent processors (CPUs) communicati
 
 ### Thread Topology
 
-Every CPU in the system uses a standardized thread architecture to handle network communication and DataBus (Active Object) dispatching. All threads (excluding the OS Main Thread) are monitored by the **DelegateMQ Watchdog** with a 2-second timeout to detect and handle deadlocks.
+Every CPU in the system uses a standardized thread architecture to handle network communication and DataBus (Active Object) dispatching. All threads (excluding the OS Main Thread) are monitored by the **DelegateMQ Watchdog** with a 5-second timeout to detect and handle deadlocks.
 
 #### GUI CPU
 | Thread | Role | Description |
 |:---|:---|:---|
 | **Main Thread** | UI Event Loop | Handles FTXUI keyboard/mouse input and terminal rendering. |
 | **NetworkThread** | UDP Receiver | Managed by the `Network` singleton. Listens for status updates from other CPUs. |
-| **SystemThread** | Active Object SM | Standardized thread for running system logic, state machines, and DataBus callbacks. |
+| **SystemThread** | Active Object SM | Runs system-level logic, coordinates heartbeat, and dispatches DataBus callbacks. |
+| **BackgroundTimerThread** | Timer Dispatch | Drives `Timer::ProcessTimers()` and the periodic system tick at 100 ms. |
+| **UIThread** | DataBus Callbacks | Receives DataBus subscription callbacks and triggers FTXUI screen refresh events. |
+| **AlarmsThread** | Alarm Monitor | Processes fault events and deadline watchdog callbacks for the alarm subsystem. |
 | **LogsThread** | File I/O | Dedicated thread for writing the `logs.txt` audit trail. |
 
 #### Controller CPU
 | Thread | Role | Description |
 |:---|:---|:---|
-| **Main/Timer Thread** | OS Orchestration | Handles OS startup and DelegateMQ `Timer` processing. |
+| **Main/Timer Thread** | OS Orchestration | FreeRTOS application task; handles startup, system init, and `Timer` processing. |
 | **NetworkThread** | UDP Receiver | Managed by the `Network` singleton. Listens for commands from the GUI. |
-| **ProcessThread** | Active Object SM | Standardized thread for running system logic, state machines, and DataBus callbacks. |
+| **SystemThread** | Active Object SM | Runs system-level logic and dispatches DataBus callbacks (start/stop/fault). |
+| **ProcessThread** | Process State Machine | Runs `CellProcess` and `PumpProcess` state machines for instrument sequencing. |
 | **ActuatorsThread** | Hardware Output | Dedicated thread for executing valve and pump commands via blocking sync calls. |
 | **SensorsThread** | Hardware Input | Dedicated thread for querying pressure and air-in-line sensors. |
-| **Controller Thread** | Main FreeRTOS Loop | Primary application thread used for system setup and network initialization. |
 
 #### Safety CPU
 | Thread | Role | Description |
 |:---|:---|:---|
-| **Main/Timer Thread** | OS Orchestration | Handles OS startup and DelegateMQ `Timer` processing. |
+| **Main/Timer Thread** | OS Orchestration | FreeRTOS application task; handles startup, system init, and `Timer` processing. |
 | **NetworkThread** | UDP Receiver | Managed by the `Network` singleton. Listens for real-time RPM updates. |
-| **SystemThread** | Active Object SM | Standardized thread for running system logic, state machines, and DataBus callbacks. |
-| **Safety Thread** | Main FreeRTOS Loop | Primary application thread used for system setup and periodic checks. |
+| **SystemThread** | Active Object SM | Monitors centrifuge speed and publishes fault events when limits are exceeded. |
 
 ### Pneumatics System
 ![Cellutron Pneumatics](pneumatics.svg)
