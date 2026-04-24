@@ -102,21 +102,39 @@ $(function(){initNavTree('_data_bus_qos_8h_source.html',''); initResizable(true)
 <a href="_data_bus_qos_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef DMQ_DATABUSQOS_H</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define DMQ_DATABUSQOS_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedmq.html">dmq</a> {</div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// Quality of Service settings for a topic.</span></div>
-<div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structdmq_1_1_qo_s.html">    7</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structdmq_1_1_qo_s.html">QoS</a> {</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structdmq_1_1_qo_s.html#a7d2789149c70c83936f33fd316e25529">    8</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structdmq_1_1_qo_s.html#a7d2789149c70c83936f33fd316e25529">lastValueCache</a> = <span class="keyword">false</span>; <span class="comment">// If true, new subscribers receive the last published value.</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>};</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_opt_8h.html">delegate/DelegateOpt.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedmq_1_1databus.html">dmq::databus</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// Quality of Service settings for a topic subscription.</span></div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structdmq_1_1databus_1_1_qo_s.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structdmq_1_1databus_1_1_qo_s.html">QoS</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="comment">// If true, new subscribers receive the last published value immediately on subscribe.</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structdmq_1_1databus_1_1_qo_s.html#a947158f15627b2803d3f202e5bc8d813">   12</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structdmq_1_1databus_1_1_qo_s.html#a947158f15627b2803d3f202e5bc8d813">lastValueCache</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="comment">// Maximum age of a cached LVC value. If the cached value is older than this duration</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="comment">// when a new subscriber connects, it is considered stale and not delivered.</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="comment">// Only meaningful when lastValueCache = true.</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structdmq_1_1databus_1_1_qo_s.html#a4db3687969729681ace79f02c24429c4">   17</a></span>    std::optional&lt;dmq::Duration&gt; <a class="code hl_variable" href="structdmq_1_1databus_1_1_qo_s.html#a4db3687969729681ace79f02c24429c4">lifespan</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="comment">// Minimum time between deliveries to this subscriber. Publishes that arrive faster</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="comment">// than this interval are silently dropped for this subscriber only. Other subscribers</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="comment">// with a different (or no) minSeparation are unaffected.</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structdmq_1_1databus_1_1_qo_s.html#a1e6df4e2603196550356d80c624b4df2">   22</a></span>    std::optional&lt;dmq::Duration&gt; <a class="code hl_variable" href="structdmq_1_1databus_1_1_qo_s.html#a1e6df4e2603196550356d80c624b4df2">minSeparation</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>};</div>
 </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>} <span class="comment">// namespace dmq</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#endif </span><span class="comment">// DMQ_DATABUSQOS_H</span></div>
-<div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
-<div class="ttc" id="astructdmq_1_1_qo_s_html"><div class="ttname"><a href="structdmq_1_1_qo_s.html">dmq::QoS</a></div><div class="ttdef"><b>Definition</b> DataBusQos.h:7</div></div>
-<div class="ttc" id="astructdmq_1_1_qo_s_html_a7d2789149c70c83936f33fd316e25529"><div class="ttname"><a href="structdmq_1_1_qo_s.html#a7d2789149c70c83936f33fd316e25529">dmq::QoS::lastValueCache</a></div><div class="ttdeci">bool lastValueCache</div><div class="ttdef"><b>Definition</b> DataBusQos.h:8</div></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>} <span class="comment">// namespace dmq::databus</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#endif </span><span class="comment">// DMQ_DATABUSQOS_H</span></div>
+<div class="ttc" id="a_delegate_opt_8h_html"><div class="ttname"><a href="_delegate_opt_8h.html">DelegateOpt.h</a></div><div class="ttdoc">Delegate library options header file.</div></div>
+<div class="ttc" id="anamespacedmq_1_1databus_html"><div class="ttname"><a href="namespacedmq_1_1databus.html">dmq::databus</a></div><div class="ttdef"><b>Definition</b> DataBus.h:24</div></div>
+<div class="ttc" id="astructdmq_1_1databus_1_1_qo_s_html"><div class="ttname"><a href="structdmq_1_1databus_1_1_qo_s.html">dmq::databus::QoS</a></div><div class="ttdef"><b>Definition</b> DataBusQos.h:10</div></div>
+<div class="ttc" id="astructdmq_1_1databus_1_1_qo_s_html_a1e6df4e2603196550356d80c624b4df2"><div class="ttname"><a href="structdmq_1_1databus_1_1_qo_s.html#a1e6df4e2603196550356d80c624b4df2">dmq::databus::QoS::minSeparation</a></div><div class="ttdeci">std::optional&lt; dmq::Duration &gt; minSeparation</div><div class="ttdef"><b>Definition</b> DataBusQos.h:22</div></div>
+<div class="ttc" id="astructdmq_1_1databus_1_1_qo_s_html_a4db3687969729681ace79f02c24429c4"><div class="ttname"><a href="structdmq_1_1databus_1_1_qo_s.html#a4db3687969729681ace79f02c24429c4">dmq::databus::QoS::lifespan</a></div><div class="ttdeci">std::optional&lt; dmq::Duration &gt; lifespan</div><div class="ttdef"><b>Definition</b> DataBusQos.h:17</div></div>
+<div class="ttc" id="astructdmq_1_1databus_1_1_qo_s_html_a947158f15627b2803d3f202e5bc8d813"><div class="ttname"><a href="structdmq_1_1databus_1_1_qo_s.html#a947158f15627b2803d3f202e5bc8d813">dmq::databus::QoS::lastValueCache</a></div><div class="ttdeci">bool lastValueCache</div><div class="ttdef"><b>Definition</b> DataBusQos.h:12</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

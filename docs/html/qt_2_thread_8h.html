@@ -97,28 +97,84 @@ $(function(){initNavTree('qt_2_thread_8h.html',''); initResizable(true); });
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle"><div class="title">Thread.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="_i_thread_8h_source.html">delegate/IThread.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_timer_8h_source.html">extras/util/Timer.h</a>&quot;</code><br />
 <code>#include &lt;QThread&gt;</code><br />
 <code>#include &lt;QObject&gt;</code><br />
 <code>#include &lt;QMutex&gt;</code><br />
 <code>#include &lt;QWaitCondition&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
 </div>
 <p><a href="qt_2_thread_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thread.html">Thread</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).  <a href="class_thread.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_worker.html">Worker</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ac773a80f0cec3cb1117af7380c6198cc" id="r_ac773a80f0cec3cb1117af7380c6198cc"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac773a80f0cec3cb1117af7380c6198cc">FullPolicy</a> { <br />
+&#160;&#160;<a class="el" href="#ac773a80f0cec3cb1117af7380c6198cca4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ac773a80f0cec3cb1117af7380c6198ccabf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ac773a80f0cec3cb1117af7380c6198cca893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ac773a80f0cec3cb1117af7380c6198cca4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <br />
+&#160;&#160;<a class="el" href="#ac773a80f0cec3cb1117af7380c6198ccabf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ac773a80f0cec3cb1117af7380c6198cca893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ac773a80f0cec3cb1117af7380c6198cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy applied when the thread message queue is full.  <a href="#ac773a80f0cec3cb1117af7380c6198cc">More...</a><br /></td></tr>
+<tr class="separator:ac773a80f0cec3cb1117af7380c6198cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ac773a80f0cec3cb1117af7380c6198cc" name="ac773a80f0cec3cb1117af7380c6198cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac773a80f0cec3cb1117af7380c6198cc">&#9670;&#160;</a></span>FullPolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#ac773a80f0cec3cb1117af7380c6198cc">FullPolicy</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Policy applied when the thread message queue is full. </p>
+<p>Only meaningful when maxQueueSize &gt; 0.</p><ul>
+<li>BLOCK: DispatchDelegate() blocks the caller until space is available (back pressure).</li>
+<li>DROP: DispatchDelegate() silently discards the message and returns immediately.</li>
+<li>FAULT: DispatchDelegate() triggers a system fault if the queue is full.</li>
+</ul>
+<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. Use BLOCK for critical topics (commands, state transitions) where no message may be lost. FAULT is the default. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ac773a80f0cec3cb1117af7380c6198cca4d34f53389ed7f28ca91fc31ea360a66" name="ac773a80f0cec3cb1117af7380c6198cca4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac773a80f0cec3cb1117af7380c6198ccabf8f3be424eb6a72b21549fbb24ffb57" name="ac773a80f0cec3cb1117af7380c6198ccabf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac773a80f0cec3cb1117af7380c6198cca893b3aaf1661e3717b18e8335ff93a72" name="ac773a80f0cec3cb1117af7380c6198cca893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac773a80f0cec3cb1117af7380c6198cca4d34f53389ed7f28ca91fc31ea360a66" name="ac773a80f0cec3cb1117af7380c6198cca4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac773a80f0cec3cb1117af7380c6198ccabf8f3be424eb6a72b21549fbb24ffb57" name="ac773a80f0cec3cb1117af7380c6198ccabf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac773a80f0cec3cb1117af7380c6198cca893b3aaf1661e3717b18e8335ff93a72" name="ac773a80f0cec3cb1117af7380c6198cca893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

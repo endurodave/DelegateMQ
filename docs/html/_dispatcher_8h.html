@@ -97,7 +97,8 @@ $(function(){initNavTree('_dispatcher_8h.html',''); initResizable(true); });
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">Dispatcher.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -113,18 +114,24 @@ $(function(){initNavTree('_dispatcher_8h.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_dispatcher.html">Dispatcher</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_dispatcher.html" title="Dispatcher sends data to the transport for transmission to the endpoint.">Dispatcher</a> sends data to the transport for transmission to the endpoint.  <a href="class_dispatcher.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1_dispatcher.html">dmq::Dispatcher</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdmq_1_1_dispatcher.html" title="Dispatcher sends data to the transport for transmission to the endpoint.">Dispatcher</a> sends data to the transport for transmission to the endpoint.  <a href="classdmq_1_1_dispatcher.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The bridge between the serialization layer and the physical transport layer. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
-<p>The <code><a class="el" href="class_dispatcher.html" title="Dispatcher sends data to the transport for transmission to the endpoint.">Dispatcher</a></code> class is responsible for packaging serialized function arguments into a valid DelegateMQ message and handing it off to the transport.</p>
+<p>The <code>Dispatcher</code> class is responsible for packaging serialized function arguments into a valid DelegateMQ message and handing it off to the transport.</p>
 <p><b>Key Responsibilities:</b></p><ol type="1">
-<li><b>Message Construction:</b> Creates the protocol header (<code><a class="el" href="class_dmq_header.html" title="Header for remote delegate messages.">DmqHeader</a></code>) containing the Remote ID and a monotonic Sequence Number.</li>
+<li><b>Message Construction:</b> Creates the protocol header (<code>DmqHeader</code>) containing the Remote ID and a monotonic Sequence Number.</li>
 <li><b>Stream Management:</b> Validates that the output stream is compatible (expects <code>xostringstream</code>).</li>
-<li><b>Dispatch:</b> Forwards the header and the serialized payload (stream) to the registered <code><a class="el" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">ITransport::Send()</a></code> method.</li>
+<li><b>Dispatch:</b> Forwards the header and the serialized payload (stream) to the registered <code>ITransport::Send()</code> method.</li>
 </ol>
 <p><b>Usage:</b> This class is typically used internally by <code>DelegateRemote</code> to finalize a remote procedure call before transmission. </p>
 </div></div><!-- contents -->

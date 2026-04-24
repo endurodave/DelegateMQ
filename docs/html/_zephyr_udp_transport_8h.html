@@ -126,7 +126,7 @@ Classes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Zephyr RTOS UDP transport implementation for DelegateMQ. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2026.</dd></dl>
-<p>This class implements the <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a> interface using the Zephyr Networking Subsystem (BSD Socket API). It is designed for embedded targets running Zephyr RTOS.</p>
+<p>This class implements the ITransport interface using the Zephyr Networking Subsystem (BSD Socket API). It is designed for embedded targets running Zephyr RTOS.</p>
 <p><b>Prerequisites:</b></p><ul>
 <li>Enable BSD Sockets: <code>CONFIG_NET_SOCKETS=y</code></li>
 <li>Enable POSIX Names: <code>CONFIG_NET_SOCKETS_POSIX_NAMES=y</code> (Default)</li>
@@ -135,7 +135,7 @@ Classes</h2></td></tr>
 <p><b>Key Features:</b></p><ol type="1">
 <li><b>Direct Execution</b>: Executes network operations directly on the calling thread, avoiding context switch overhead and preventing deadlocks.</li>
 <li><b>Zero-Copy Friendly</b>: Uses the standard BSD API which Zephyr optimizes internally.</li>
-<li><b>Reliability</b>: Fully integrated with <code><a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a></code> for ACKs/Retries.</li>
+<li><b>Reliability</b>: Fully integrated with <code>TransportMonitor</code> for ACKs/Retries.</li>
 <li><b>Endianness</b>: Uses <code>htons</code>/<code>ntohs</code> for standard network byte order compatibility. </li>
 </ol>
 </div></div><!-- contents -->

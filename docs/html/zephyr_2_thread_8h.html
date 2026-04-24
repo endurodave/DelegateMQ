@@ -97,7 +97,9 @@ $(function(){initNavTree('zephyr_2_thread_8h.html',''); initResizable(true); });
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle"><div class="title">Thread.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -105,28 +107,68 @@ $(function(){initNavTree('zephyr_2_thread_8h.html',''); initResizable(true); });
 <p>Zephyr RTOS implementation of the DelegateMQ IThread interface.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_i_thread_8h_source.html">delegate/IThread.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_timer_8h_source.html">extras/util/Timer.h</a>&quot;</code><br />
 <code>#include &lt;zephyr/kernel.h&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;atomic&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
 </div>
 <p><a href="zephyr_2_thread_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_thread.html">Thread</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).  <a href="class_thread.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1os_1_1_thread.html">dmq::os::Thread</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).  <a href="classdmq_1_1os_1_1_thread.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1os.html">dmq::os</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ab586fc445563046cfef7bfed3d721030" id="r_ab586fc445563046cfef7bfed3d721030"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030">dmq::os::FullPolicy</a> { <br />
+&#160;&#160;<a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">dmq::os::BLOCK</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">dmq::os::DROP</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">dmq::os::FAULT</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">dmq::os::BLOCK</a>
+, <br />
+&#160;&#160;<a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">dmq::os::DROP</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">dmq::os::FAULT</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">dmq::os::BLOCK</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">dmq::os::DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">dmq::os::FAULT</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">dmq::os::BLOCK</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">dmq::os::DROP</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">dmq::os::FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">dmq::os::BLOCK</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">dmq::os::DROP</a>
+, <a class="el" href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">dmq::os::FAULT</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ab586fc445563046cfef7bfed3d721030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy applied when the thread message queue is full.  <a href="namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030">More...</a><br /></td></tr>
+<tr class="separator:ab586fc445563046cfef7bfed3d721030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Zephyr RTOS implementation of the DelegateMQ IThread interface. </p>
 <dl class="section note"><dt>Note</dt><dd>This implementation is a basic port. For reference, the stdlib and win32 implementations provide additional features:<ol type="1">
 <li>Priority Support: Uses a priority queue to respect <a class="el" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a>.</li>
-<li>Back Pressure: DispatchDelegate() blocks if the queue is full.</li>
-<li>Watchdog: Includes a ThreadCheck() heartbeat mechanism.</li>
-<li>Synchronized Startup: CreateThread() blocks until the worker thread is ready. </li>
+<li>Synchronized Startup: CreateThread() blocks until the worker thread is ready.</li>
 </ol>
 </dd></dl>
+<p><b>Key Features:</b></p><ul>
+<li><b>Task Integration:</b> Wraps <code>k_thread_create</code> to establish a dedicated worker loop.</li>
+<li><b>FullPolicy Support:</b> Configurable back-pressure (BLOCK or DROP) when the message queue is full.</li>
+<li><b>Queue-Based Dispatch:</b> Uses <code>k_msgq</code> to receive and process incoming delegate messages in a thread-safe manner.</li>
+<li><b>Watchdog Integration:</b> Optional heartbeat mechanism detects stalled or deadlocked threads. Enable by passing a timeout to CreateThread(). Requires Timer::ProcessTimers() to be called from a context that can preempt watched threads — typically a hardware timer ISR or the highest-priority task in the system. </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

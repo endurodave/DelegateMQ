@@ -38,6 +38,6 @@ var searchData=
   ['iserializer_3c_20rettype_28args_2e_2e_2e_29_3e_35',['ISerializer&lt; RetType(Args...)&gt;',['../classdmq_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
   ['ithread_36',['IThread',['../classdmq_1_1_i_thread.html',1,'dmq']]],
   ['ithreadinvoker_37',['IThreadInvoker',['../classdmq_1_1_i_thread_invoker.html',1,'dmq']]],
-  ['itransport_38',['ITransport',['../class_i_transport.html',1,'']]],
-  ['itransportmonitor_39',['ITransportMonitor',['../class_i_transport_monitor.html',1,'']]]
+  ['itransport_38',['ITransport',['../classdmq_1_1transport_1_1_i_transport.html',1,'dmq::transport']]],
+  ['itransportmonitor_39',['ITransportMonitor',['../classdmq_1_1transport_1_1_i_transport_monitor.html',1,'dmq::transport']]]
 ];

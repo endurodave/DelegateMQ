@@ -1,4 +1,4 @@
 var _network_connect_8h =
 [
-    [ "NetworkContext", "class_network_context.html", "class_network_context" ]
+    [ "dmq::util::NetworkContext", "classdmq_1_1util_1_1_network_context.html", "classdmq_1_1util_1_1_network_context" ]
 ];

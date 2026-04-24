@@ -97,6 +97,7 @@ $(function(){initNavTree('_async_invoke_8h.html',''); initResizable(true); });
 
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">AsyncInvoke.h File Reference</div></div>
 </div><!--header-->
@@ -104,7 +105,11 @@ $(function(){initNavTree('_async_invoke_8h.html',''); initResizable(true); });
 
 <p>Helper functions for simplified, one-line asynchronous function invocation.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_m_q_8h_source.html">DelegateMQ.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_remote_8h_source.html">delegate/DelegateRemote.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_delegate_async_8h_source.html">delegate/DelegateAsync.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_thread_8h_source.html">delegate/IThread.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_delegate_opt_8h_source.html">delegate/DelegateOpt.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_remote_channel_8h_source.html">extras/dispatcher/RemoteChannel.h</a>&quot;</code><br />
 <code>#include &lt;functional&gt;</code><br />
 <code>#include &lt;type_traits&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
@@ -113,24 +118,33 @@ $(function(){initNavTree('_async_invoke_8h.html',''); initResizable(true); });
 </div>
 <p><a href="_async_invoke_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1util.html">dmq::util</a></td></tr>
+<tr class="memdesc:namespacedmq_1_1util"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII wrapper to initialize and cleanup network stacks. Instantiate this ONCE at the top of main(). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a99ebea3e2f28d5c5650539df12e588e7" id="r_a99ebea3e2f28d5c5650539df12e588e7"><td class="memTemplParams" colspan="2">template&lt;class Func , class... Args&gt; </td></tr>
-<tr class="memitem:a99ebea3e2f28d5c5650539df12e588e7"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a99ebea3e2f28d5c5650539df12e588e7">AsyncInvoke</a> (Func func, <a class="el" href="class_thread.html">Thread</a> &amp;thread, const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &amp;timeout, Args &amp;&amp;... args)</td></tr>
-<tr class="separator:a99ebea3e2f28d5c5650539df12e588e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68fe82b75a7cbb68dd483fe3a0fc4cf6" id="r_a68fe82b75a7cbb68dd483fe3a0fc4cf6"><td class="memTemplParams" colspan="2">template&lt;class TClass , class Func , class... Args&gt; </td></tr>
-<tr class="memitem:a68fe82b75a7cbb68dd483fe3a0fc4cf6"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a68fe82b75a7cbb68dd483fe3a0fc4cf6">AsyncInvoke</a> (TClass *tclass, Func func, <a class="el" href="class_thread.html">Thread</a> &amp;thread, const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &amp;timeout, Args &amp;&amp;... args)</td></tr>
-<tr class="separator:a68fe82b75a7cbb68dd483fe3a0fc4cf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1eec4208f133862da13befa8be48405" id="r_af1eec4208f133862da13befa8be48405"><td class="memTemplParams" colspan="2">template&lt;class TClass , class Func , class... Args&gt; </td></tr>
-<tr class="memitem:af1eec4208f133862da13befa8be48405"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af1eec4208f133862da13befa8be48405">AsyncInvoke</a> (std::shared_ptr&lt; TClass &gt; tclass, Func func, <a class="el" href="class_thread.html">Thread</a> &amp;thread, const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &amp;timeout, Args &amp;&amp;... args)</td></tr>
-<tr class="separator:af1eec4208f133862da13befa8be48405"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e01cfd719d30a8ecef745888a4bd99a" id="r_a0e01cfd719d30a8ecef745888a4bd99a"><td class="memTemplParams" colspan="2">template&lt;class Func , class... Args&gt; </td></tr>
+<tr class="memitem:a0e01cfd719d30a8ecef745888a4bd99a"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1util.html#a0e01cfd719d30a8ecef745888a4bd99a">dmq::util::AsyncInvoke</a> (Func func, <a class="el" href="classdmq_1_1_i_thread.html">dmq::IThread</a> &amp;thread, const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &amp;timeout, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:a0e01cfd719d30a8ecef745888a4bd99a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5012f8da613e6914f35e3074b79da412" id="r_a5012f8da613e6914f35e3074b79da412"><td class="memTemplParams" colspan="2">template&lt;class TClass , class Func , class... Args&gt; </td></tr>
+<tr class="memitem:a5012f8da613e6914f35e3074b79da412"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1util.html#a5012f8da613e6914f35e3074b79da412">dmq::util::AsyncInvoke</a> (TClass *tclass, Func func, <a class="el" href="classdmq_1_1_i_thread.html">dmq::IThread</a> &amp;thread, const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &amp;timeout, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:a5012f8da613e6914f35e3074b79da412"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adab55ad8bbe226c539bbdc1642a1be38" id="r_adab55ad8bbe226c539bbdc1642a1be38"><td class="memTemplParams" colspan="2">template&lt;class TClass , class Func , class... Args&gt; </td></tr>
+<tr class="memitem:adab55ad8bbe226c539bbdc1642a1be38"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1util.html#adab55ad8bbe226c539bbdc1642a1be38">dmq::util::AsyncInvoke</a> (std::shared_ptr&lt; TClass &gt; tclass, Func func, <a class="el" href="classdmq_1_1_i_thread.html">dmq::IThread</a> &amp;thread, const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &amp;timeout, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:adab55ad8bbe226c539bbdc1642a1be38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Helper functions for simplified, one-line asynchronous function invocation. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
 <p>The <code>AsyncInvoke</code> helper functions provide a convenient wrapper around the DelegateMQ library to execute any callable (free function, lambda, or member function) on a specific target thread.</p>
 <p><b>Key Features:</b></p><ul>
-<li><b>Automatic Context Switching:</b> Automatically detects if the caller is already executing on the target thread.<ul>
+<li><b>Automatic Context Switching:</b> Automatically detects if the caller is already execute on the target thread.<ul>
 <li>If <b>Yes</b>: It executes the function synchronously (immediately) to avoid overhead.</li>
 <li>If <b>No</b>: It creates a temporary asynchronous delegate, marshals the arguments, and executes the function on the target thread.</li>
 </ul>
@@ -138,146 +152,7 @@ Functions</h2></td></tr>
 <li><b>Blocking Wait:</b> Supports a timeout parameter to wait for the asynchronous execution to complete and return a value.</li>
 <li><b>Return Value Handling:</b> Safely retrieves the return value from the target function across thread boundaries. </li>
 </ul>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a99ebea3e2f28d5c5650539df12e588e7" name="a99ebea3e2f28d5c5650539df12e588e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a99ebea3e2f28d5c5650539df12e588e7">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[1/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class Func , class... Args&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">auto AsyncInvoke </td>
-          <td>(</td>
-          <td class="paramtype">Func</td>          <td class="paramname"><span class="paramname"><em>func</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="class_thread.html">Thread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Helper function to simplify asynchronous invoke of a free function/lambda. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">func</td><td>- the function/lambda to invoke </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thread</td><td>- the thread to invoke func on </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">timeout</td><td>- the time to wait for invoke to complete </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td>- the function argument(s) passed to func </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="af1eec4208f133862da13befa8be48405" name="af1eec4208f133862da13befa8be48405"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af1eec4208f133862da13befa8be48405">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class TClass , class Func , class... Args&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">auto AsyncInvoke </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; TClass &gt;</td>          <td class="paramname"><span class="paramname"><em>tclass</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Func</td>          <td class="paramname"><span class="paramname"><em>func</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="class_thread.html">Thread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Helper function to simplify asynchronous invoke of a member function using a shared pointer. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">tclass</td><td>- the class instance (shared_ptr) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">func</td><td>- the member function pointer </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thread</td><td>- the thread to invoke func on </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">timeout</td><td>- the time to wait for invoke to complete </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td>- the function argument(s) passed to func </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a68fe82b75a7cbb68dd483fe3a0fc4cf6" name="a68fe82b75a7cbb68dd483fe3a0fc4cf6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68fe82b75a7cbb68dd483fe3a0fc4cf6">&#9670;&#160;</a></span>AsyncInvoke() <span class="overload">[3/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class TClass , class Func , class... Args&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">auto AsyncInvoke </td>
-          <td>(</td>
-          <td class="paramtype">TClass *</td>          <td class="paramname"><span class="paramname"><em>tclass</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Func</td>          <td class="paramname"><span class="paramname"><em>func</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="class_thread.html">Thread</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>thread</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Helper function to simplify asynchronous invoke of a member function using a raw pointer. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">tclass</td><td>- the class instance (pointer) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">func</td><td>- the member function pointer </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thread</td><td>- the thread to invoke func on </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">timeout</td><td>- the time to wait for invoke to complete </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td>- the function argument(s) passed to func </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

@@ -1,4 +1,4 @@
 var _win32_udp_transport_8h =
 [
-    [ "UdpTransport", "class_udp_transport.html", "class_udp_transport" ]
+    [ "dmq::transport::Win32UdpTransport", "classdmq_1_1transport_1_1_win32_udp_transport.html", "classdmq_1_1transport_1_1_win32_udp_transport" ]
 ];

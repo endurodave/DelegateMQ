@@ -97,6 +97,7 @@ $(function(){initNavTree('xnew_8h.html',''); initResizable(true); });
 
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">xnew.h File Reference</div></div>
 </div><!--header-->
@@ -108,82 +109,28 @@ $(function(){initNavTree('xnew_8h.html',''); initResizable(true); });
 </div>
 <p><a href="xnew_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac54e2b2f79ec5717e58fd6c3d2779656" id="r_ac54e2b2f79ec5717e58fd6c3d2779656"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
-<tr class="memitem:ac54e2b2f79ec5717e58fd6c3d2779656"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac54e2b2f79ec5717e58fd6c3d2779656">xnew</a> (Args &amp;&amp;... args)</td></tr>
-<tr class="memdesc:ac54e2b2f79ec5717e58fd6c3d2779656"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate and construct T in the fixed-block pool.  <br /></td></tr>
-<tr class="separator:ac54e2b2f79ec5717e58fd6c3d2779656"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a884ae556ebbfac2b3e5ee912730b5466" id="r_a884ae556ebbfac2b3e5ee912730b5466"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a884ae556ebbfac2b3e5ee912730b5466"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a884ae556ebbfac2b3e5ee912730b5466">xdelete</a> (T *p)</td></tr>
-<tr class="memdesc:a884ae556ebbfac2b3e5ee912730b5466"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy T and return its memory to the fixed-block pool.  <br /></td></tr>
-<tr class="separator:a884ae556ebbfac2b3e5ee912730b5466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad568c96484a6b6df174d0d597080c5fd" id="r_ad568c96484a6b6df174d0d597080c5fd"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:ad568c96484a6b6df174d0d597080c5fd"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#ad568c96484a6b6df174d0d597080c5fd">dmq::xnew</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:ad568c96484a6b6df174d0d597080c5fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate and construct T in the fixed-block pool.  <br /></td></tr>
+<tr class="separator:ad568c96484a6b6df174d0d597080c5fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a301d4b5ade45a49f32a348dfb42fb2b2" id="r_a301d4b5ade45a49f32a348dfb42fb2b2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a301d4b5ade45a49f32a348dfb42fb2b2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a301d4b5ade45a49f32a348dfb42fb2b2">dmq::xdelete</a> (T *p)</td></tr>
+<tr class="memdesc:a301d4b5ade45a49f32a348dfb42fb2b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy T and return its memory to the fixed-block pool.  <br /></td></tr>
+<tr class="separator:a301d4b5ade45a49f32a348dfb42fb2b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Fixed-block pool equivalents of operator new / delete. </p>
 <p>xnew&lt;T&gt;(args...) allocates from the xallocator fixed-block pool and constructs T in-place via placement new. xdelete&lt;T&gt;(p) calls the destructor then returns the memory to the pool via <a class="el" href="xallocator_8cpp.html#a976e14808b9247ec952c262553f09f8f">xfree()</a>.</p>
 <p>These are the pool-aware counterparts of new(std::nothrow) / delete for types that do not carry the XALLOCATOR macro (e.g. user argument types marshalled through make_tuple_heap). </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a884ae556ebbfac2b3e5ee912730b5466" name="a884ae556ebbfac2b3e5ee912730b5466"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a884ae556ebbfac2b3e5ee912730b5466">&#9670;&#160;</a></span>xdelete()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void xdelete </td>
-          <td>(</td>
-          <td class="paramtype">T *</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Destroy T and return its memory to the fixed-block pool. </p>
-
-</div>
-</div>
-<a id="ac54e2b2f79ec5717e58fd6c3d2779656" name="ac54e2b2f79ec5717e58fd6c3d2779656"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac54e2b2f79ec5717e58fd6c3d2779656">&#9670;&#160;</a></span>xnew()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T , typename... Args&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">T * xnew </td>
-          <td>(</td>
-          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Allocate and construct T in the fixed-block pool. </p>
-<dl class="section return"><dt>Returns</dt><dd>Pointer to the constructed object, or nullptr if xmalloc fails. </dd></dl>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

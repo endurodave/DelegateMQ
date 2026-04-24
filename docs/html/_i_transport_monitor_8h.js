@@ -1,4 +1,4 @@
 var _i_transport_monitor_8h =
 [
-    [ "ITransportMonitor", "class_i_transport_monitor.html", "class_i_transport_monitor" ]
+    [ "dmq::transport::ITransportMonitor", "classdmq_1_1transport_1_1_i_transport_monitor.html", "classdmq_1_1transport_1_1_i_transport_monitor" ]
 ];

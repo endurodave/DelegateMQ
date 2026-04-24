@@ -98,6 +98,7 @@ $(function(){initNavTree('msgpack_2_serializer_8h.html',''); initResizable(true)
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">Serializer.h File Reference</div></div>
 </div><!--header-->
@@ -113,44 +114,30 @@ $(function(){initNavTree('msgpack_2_serializer_8h.html',''); initResizable(true)
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html">Serializer&lt; RetType(Args...)&gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1serialization_1_1msgpack_1_1_serializer_3_01_ret_type_07_args_8_8_8_08_4.html">dmq::serialization::msgpack::Serializer&lt; RetType(Args...)&gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1serialization.html">dmq::serialization</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1serialization_1_1msgpack.html">dmq::serialization::msgpack</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a16f45cc16e7c158ae2883e1f09afe642" id="r_a16f45cc16e7c158ae2883e1f09afe642"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
-<tr class="memitem:a16f45cc16e7c158ae2883e1f09afe642"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a16f45cc16e7c158ae2883e1f09afe642">make_serialized</a> (msgpack::sbuffer &amp;buffer, Args &amp;&amp;... args)</td></tr>
-<tr class="separator:a16f45cc16e7c158ae2883e1f09afe642"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a014bda498ee6bb5753660dedd095f514" id="r_a014bda498ee6bb5753660dedd095f514"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
+<tr class="memitem:a014bda498ee6bb5753660dedd095f514"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1serialization_1_1msgpack.html#a014bda498ee6bb5753660dedd095f514">dmq::serialization::msgpack::make_serialized</a> (::msgpack::sbuffer &amp;buffer, Args &amp;&amp;... args)</td></tr>
+<tr class="separator:a014bda498ee6bb5753660dedd095f514"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
 <p>Serialize callable argument data using MessagePack library for transport to a remote. Endianness correctly handled by MessagePack library. <br  />
  </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a16f45cc16e7c158ae2883e1f09afe642" name="a16f45cc16e7c158ae2883e1f09afe642"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a16f45cc16e7c158ae2883e1f09afe642">&#9670;&#160;</a></span>make_serialized()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename... Args&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void make_serialized </td>
-          <td>(</td>
-          <td class="paramtype">msgpack::sbuffer &amp;</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

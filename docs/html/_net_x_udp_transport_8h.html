@@ -137,7 +137,7 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>NetX (ThreadX) UDP transport implementation for DelegateMQ. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2026.</dd></dl>
-<p>This class implements the <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a> interface using the Azure RTOS NetX (or NetX Duo) network stack. It is designed for embedded targets running ThreadX.</p>
+<p>This class implements the ITransport interface using the Azure RTOS NetX (or NetX Duo) network stack. It is designed for embedded targets running ThreadX.</p>
 <p><b>Dependencies:</b></p><ul>
 <li>ThreadX (<code>tx_api.h</code>)</li>
 <li>NetX (<code>nx_api.h</code>)</li>
@@ -145,8 +145,8 @@ Functions</h2></td></tr>
 </ul>
 <p><b>Key Features:</b></p><ol type="1">
 <li><b>Direct Execution</b>: Executes network operations directly on the calling thread.</li>
-<li><b><a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> Safety</b>: Uses a <code>TX_MUTEX</code> to protect the NetX socket.</li>
-<li><b>Reliability</b>: Integrated with <code><a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a></code> for ACKs/Retries.</li>
+<li><b><a class="el" href="class_thread.html">Thread</a> Safety</b>: Uses a <code>TX_MUTEX</code> to protect the NetX socket.</li>
+<li><b>Reliability</b>: Integrated with <code>TransportMonitor</code> for ACKs/Retries.</li>
 <li><b>Robustness</b>: Validates packet allocation and append results to prevent corruption. </li>
 </ol>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>

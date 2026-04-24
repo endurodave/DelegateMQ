@@ -1,4 +1,4 @@
 var _dispatcher_8h =
 [
-    [ "Dispatcher", "class_dispatcher.html", "class_dispatcher" ]
+    [ "dmq::Dispatcher", "classdmq_1_1_dispatcher.html", "classdmq_1_1_dispatcher" ]
 ];

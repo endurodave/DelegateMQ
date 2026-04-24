@@ -109,11 +109,8 @@ $(function(){initNavTree('class_netconn_udp_transport.html',''); initResizable(t
 Inheritance diagram for NetconnUdpTransport:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="class_netconn_udp_transport.png" usemap="#NetconnUdpTransport_map" alt=""/>
-  <map id="NetconnUdpTransport_map" name="NetconnUdpTransport_map">
-<area href="class_i_transport.html" title="DelegateMQ transport interface." alt="ITransport" shape="rect" coords="0,0,135,24"/>
-  </map>
-</div></div>
+  <img src="class_netconn_udp_transport.png" alt=""/>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -133,17 +130,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2a8811dfea5e822090ec43ff380e86e1" id="r_a2a8811dfea5e822090ec43ff380e86e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2a8811dfea5e822090ec43ff380e86e1">Close</a> ()</td></tr>
 <tr class="memdesc:a2a8811dfea5e822090ec43ff380e86e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up the netconn resources.  <br /></td></tr>
 <tr class="separator:a2a8811dfea5e822090ec43ff380e86e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91f4f20520a87a3b6a11bad619fd07b4" id="r_a91f4f20520a87a3b6a11bad619fd07b4"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91f4f20520a87a3b6a11bad619fd07b4">Send</a> (<a class="el" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> &amp;os, const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
+<tr class="memitem:a38da5cc5b1e442a98eee7cb3ac042340" id="r_a38da5cc5b1e442a98eee7cb3ac042340"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38da5cc5b1e442a98eee7cb3ac042340">SetRecvTimeout</a> (std::chrono::milliseconds timeout)</td></tr>
+<tr class="separator:a38da5cc5b1e442a98eee7cb3ac042340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91f4f20520a87a3b6a11bad619fd07b4" id="r_a91f4f20520a87a3b6a11bad619fd07b4"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91f4f20520a87a3b6a11bad619fd07b4">Send</a> (xostringstream &amp;os, const DmqHeader &amp;header) override</td></tr>
 <tr class="separator:a91f4f20520a87a3b6a11bad619fd07b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ab0bf97d068f52abc179313a46462f6" id="r_a3ab0bf97d068f52abc179313a46462f6"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ab0bf97d068f52abc179313a46462f6">Receive</a> (<a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> &amp;is, <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;header) override</td></tr>
+<tr class="memitem:a3ab0bf97d068f52abc179313a46462f6" id="r_a3ab0bf97d068f52abc179313a46462f6"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ab0bf97d068f52abc179313a46462f6">Receive</a> (xstringstream &amp;is, DmqHeader &amp;header) override</td></tr>
 <tr class="separator:a3ab0bf97d068f52abc179313a46462f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae655e1d13b19062bf79c4a7123e9ac62" id="r_ae655e1d13b19062bf79c4a7123e9ac62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae655e1d13b19062bf79c4a7123e9ac62">SetTransportMonitor</a> (<a class="el" href="class_i_transport_monitor.html">ITransportMonitor</a> *monitor)</td></tr>
+<tr class="memitem:ae655e1d13b19062bf79c4a7123e9ac62" id="r_ae655e1d13b19062bf79c4a7123e9ac62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae655e1d13b19062bf79c4a7123e9ac62">SetTransportMonitor</a> (ITransportMonitor *monitor)</td></tr>
 <tr class="separator:ae655e1d13b19062bf79c4a7123e9ac62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3da6158bc5a1d05b7748c74c79f2199" id="r_aa3da6158bc5a1d05b7748c74c79f2199"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3da6158bc5a1d05b7748c74c79f2199">SetSendTransport</a> (<a class="el" href="class_i_transport.html">ITransport</a> *transport)</td></tr>
+<tr class="memitem:aa3da6158bc5a1d05b7748c74c79f2199" id="r_aa3da6158bc5a1d05b7748c74c79f2199"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3da6158bc5a1d05b7748c74c79f2199">SetSendTransport</a> (ITransport *transport)</td></tr>
 <tr class="separator:aa3da6158bc5a1d05b7748c74c79f2199"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26d6f2612d6b15ef40538009dea77c44" id="r_a26d6f2612d6b15ef40538009dea77c44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a26d6f2612d6b15ef40538009dea77c44">SetRecvTransport</a> (<a class="el" href="class_i_transport.html">ITransport</a> *transport)</td></tr>
+<tr class="memitem:a26d6f2612d6b15ef40538009dea77c44" id="r_a26d6f2612d6b15ef40538009dea77c44"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a26d6f2612d6b15ef40538009dea77c44">SetRecvTransport</a> (ITransport *transport)</td></tr>
 <tr class="separator:a26d6f2612d6b15ef40538009dea77c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_class_i_transport"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_i_transport')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_i_transport.html">ITransport</a></td></tr>
 </table>
 <h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a4f9f5d16e4b70fbb5101cb583ab00d9c" name="a4f9f5d16e4b70fbb5101cb583ab00d9c"></a>
@@ -306,12 +304,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual int NetconnUdpTransport::Receive </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>is</em></span>, </td>
+          <td class="paramtype">xstringstream &amp;</td>          <td class="paramname"><span class="paramname"><em>is</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
+          <td class="paramtype">DmqHeader &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -320,16 +318,6 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Receive data from a remote </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">is</td><td>The received incoming data bytes, not including the header. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">header</td><td>Incoming delegate message header. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 if success. </dd></dl>
-
-<p>Implements <a class="el" href="class_i_transport.html#a5ecc4885a8c3210519c234298c48c427">ITransport</a>.</p>
 
 </div>
 </div>
@@ -345,12 +333,12 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual int NetconnUdpTransport::Send </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>, </td>
+          <td class="paramtype">xostringstream &amp;</td>          <td class="paramname"><span class="paramname"><em>os</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="class_dmq_header.html">DmqHeader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
+          <td class="paramtype">const DmqHeader &amp;</td>          <td class="paramname"><span class="paramname"><em>header</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -359,16 +347,31 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Send data to a remote </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">os</td><td>Output stream to send. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">header</td><td>The header to send. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 if success. </dd></dl>
 
-<p>Implements <a class="el" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">ITransport</a>.</p>
+</div>
+</div>
+<a id="a38da5cc5b1e442a98eee7cb3ac042340" name="a38da5cc5b1e442a98eee7cb3ac042340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38da5cc5b1e442a98eee7cb3ac042340">&#9670;&#160;</a></span>SetRecvTimeout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NetconnUdpTransport::SetRecvTimeout </td>
+          <td>(</td>
+          <td class="paramtype">std::chrono::milliseconds</td>          <td class="paramname"><span class="paramname"><em>timeout</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -384,7 +387,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void NetconnUdpTransport::SetRecvTransport </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_i_transport.html">ITransport</a> *</td>          <td class="paramname"><span class="paramname"><em>transport</em></span></td><td>)</td>
+          <td class="paramtype">ITransport *</td>          <td class="paramname"><span class="paramname"><em>transport</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -409,7 +412,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void NetconnUdpTransport::SetSendTransport </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_i_transport.html">ITransport</a> *</td>          <td class="paramname"><span class="paramname"><em>transport</em></span></td><td>)</td>
+          <td class="paramtype">ITransport *</td>          <td class="paramname"><span class="paramname"><em>transport</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -434,7 +437,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void NetconnUdpTransport::SetTransportMonitor </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_i_transport_monitor.html">ITransportMonitor</a> *</td>          <td class="paramname"><span class="paramname"><em>monitor</em></span></td><td>)</td>
+          <td class="paramtype">ITransportMonitor *</td>          <td class="paramname"><span class="paramname"><em>monitor</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

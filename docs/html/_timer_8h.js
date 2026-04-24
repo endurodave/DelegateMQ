@@ -1,4 +1,4 @@
 var _timer_8h =
 [
-    [ "Timer", "class_timer.html", "class_timer" ]
+    [ "dmq::util::Timer", "classdmq_1_1util_1_1_timer.html", "classdmq_1_1util_1_1_timer" ]
 ];

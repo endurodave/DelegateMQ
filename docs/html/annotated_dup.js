@@ -1,8 +1,43 @@
 var annotated_dup =
 [
     [ "dmq", "namespacedmq.html", [
+      [ "databus", "namespacedmq_1_1databus.html", [
+        [ "DataBus", "classdmq_1_1databus_1_1_data_bus.html", null ],
+        [ "DeadlineSubscription", "classdmq_1_1databus_1_1_deadline_subscription.html", "classdmq_1_1databus_1_1_deadline_subscription" ],
+        [ "Participant", "classdmq_1_1databus_1_1_participant.html", "classdmq_1_1databus_1_1_participant" ],
+        [ "QoS", "structdmq_1_1databus_1_1_qo_s.html", "structdmq_1_1databus_1_1_qo_s" ],
+        [ "SpyPacket", "structdmq_1_1databus_1_1_spy_packet.html", "structdmq_1_1databus_1_1_spy_packet" ]
+      ] ],
       [ "detail", "namespacedmq_1_1detail.html", [
         [ "Connection", "classdmq_1_1detail_1_1_connection.html", "classdmq_1_1detail_1_1_connection" ]
+      ] ],
+      [ "os", "namespacedmq_1_1os.html", [
+        [ "BareMetalClock", "structdmq_1_1os_1_1_bare_metal_clock.html", "structdmq_1_1os_1_1_bare_metal_clock" ],
+        [ "CmsisRtos2Clock", "structdmq_1_1os_1_1_cmsis_rtos2_clock.html", "structdmq_1_1os_1_1_cmsis_rtos2_clock" ],
+        [ "CmsisRtos2Mutex", "classdmq_1_1os_1_1_cmsis_rtos2_mutex.html", "classdmq_1_1os_1_1_cmsis_rtos2_mutex" ],
+        [ "CmsisRtos2RecursiveMutex", "classdmq_1_1os_1_1_cmsis_rtos2_recursive_mutex.html", "classdmq_1_1os_1_1_cmsis_rtos2_recursive_mutex" ],
+        [ "FreeRTOSClock", "structdmq_1_1os_1_1_free_r_t_o_s_clock.html", "structdmq_1_1os_1_1_free_r_t_o_s_clock" ],
+        [ "Thread", "classdmq_1_1os_1_1_thread.html", "classdmq_1_1os_1_1_thread" ],
+        [ "ThreadMsg", "classdmq_1_1os_1_1_thread_msg.html", "classdmq_1_1os_1_1_thread_msg" ],
+        [ "ThreadMsgComparator", "structdmq_1_1os_1_1_thread_msg_comparator.html", "structdmq_1_1os_1_1_thread_msg_comparator" ]
+      ] ],
+      [ "serialization", "namespacedmq_1_1serialization.html", [
+        [ "cereal", "namespacedmq_1_1serialization_1_1cereal.html", [
+          [ "Serializer", "structdmq_1_1serialization_1_1cereal_1_1_serializer.html", null ],
+          [ "Serializer< RetType(Args...)>", "classdmq_1_1serialization_1_1cereal_1_1_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1serialization_1_1cereal_1_1_serializer_3_01_ret_type_07_args_8_8_8_08_4" ]
+        ] ],
+        [ "msgpack", "namespacedmq_1_1serialization_1_1msgpack.html", [
+          [ "Serializer", "structdmq_1_1serialization_1_1msgpack_1_1_serializer.html", null ],
+          [ "Serializer< RetType(Args...)>", "classdmq_1_1serialization_1_1msgpack_1_1_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1serialization_1_1msgpack_1_1_serializer_3_01_ret_type_07_args_8_8_8_08_4" ]
+        ] ],
+        [ "rapidjson", "namespacedmq_1_1serialization_1_1rapidjson.html", [
+          [ "Serializer", "structdmq_1_1serialization_1_1rapidjson_1_1_serializer.html", null ],
+          [ "Serializer< RetType(Args...)>", "classdmq_1_1serialization_1_1rapidjson_1_1_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1serialization_1_1rapidjson_1_1_serializer_3_01_ret_type_07_args_8_8_8_08_4" ]
+        ] ],
+        [ "serializer", "namespacedmq_1_1serialization_1_1serializer.html", [
+          [ "Serializer", "structdmq_1_1serialization_1_1serializer_1_1_serializer.html", null ],
+          [ "Serializer< RetType(Args...)>", "classdmq_1_1serialization_1_1serializer_1_1_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1serialization_1_1serializer_1_1_serializer_3_01_ret_type_07_args_8_8_8_08_4" ]
+        ] ]
       ] ],
       [ "trait", "namespacedmq_1_1trait.html", [
         [ "function_traits", "structdmq_1_1trait_1_1function__traits.html", null ],
@@ -19,11 +54,29 @@ var annotated_dup =
         [ "is_std_function", "structdmq_1_1trait_1_1is__std__function.html", null ],
         [ "is_std_function< std::function< Sig > >", "structdmq_1_1trait_1_1is__std__function_3_01std_1_1function_3_01_sig_01_4_01_4.html", null ]
       ] ],
-      [ "BareMetalClock", "structdmq_1_1_bare_metal_clock.html", "structdmq_1_1_bare_metal_clock" ],
-      [ "CmsisRtos2Clock", "structdmq_1_1_cmsis_rtos2_clock.html", "structdmq_1_1_cmsis_rtos2_clock" ],
-      [ "CmsisRtos2Mutex", "classdmq_1_1_cmsis_rtos2_mutex.html", "classdmq_1_1_cmsis_rtos2_mutex" ],
-      [ "CmsisRtos2RecursiveMutex", "classdmq_1_1_cmsis_rtos2_recursive_mutex.html", "classdmq_1_1_cmsis_rtos2_recursive_mutex" ],
-      [ "DataBus", "classdmq_1_1_data_bus.html", null ],
+      [ "transport", "namespacedmq_1_1transport.html", [
+        [ "DmqHeader", "classdmq_1_1transport_1_1_dmq_header.html", "classdmq_1_1transport_1_1_dmq_header" ],
+        [ "ITransport", "classdmq_1_1transport_1_1_i_transport.html", "classdmq_1_1transport_1_1_i_transport" ],
+        [ "ITransportMonitor", "classdmq_1_1transport_1_1_i_transport_monitor.html", "classdmq_1_1transport_1_1_i_transport_monitor" ],
+        [ "LinuxUdpTransport", "classdmq_1_1transport_1_1_linux_udp_transport.html", "classdmq_1_1transport_1_1_linux_udp_transport" ],
+        [ "MulticastTransport", "classdmq_1_1transport_1_1_multicast_transport.html", "classdmq_1_1transport_1_1_multicast_transport" ],
+        [ "NngTransport", "classdmq_1_1transport_1_1_nng_transport.html", "classdmq_1_1transport_1_1_nng_transport" ],
+        [ "SerialTransport", "classdmq_1_1transport_1_1_serial_transport.html", "classdmq_1_1transport_1_1_serial_transport" ],
+        [ "Win32PipeTransport", "classdmq_1_1transport_1_1_win32_pipe_transport.html", "classdmq_1_1transport_1_1_win32_pipe_transport" ],
+        [ "Win32TcpTransport", "classdmq_1_1transport_1_1_win32_tcp_transport.html", "classdmq_1_1transport_1_1_win32_tcp_transport" ],
+        [ "Win32UdpTransport", "classdmq_1_1transport_1_1_win32_udp_transport.html", "classdmq_1_1transport_1_1_win32_udp_transport" ],
+        [ "ZeroMqTransport", "classdmq_1_1transport_1_1_zero_mq_transport.html", "classdmq_1_1transport_1_1_zero_mq_transport" ]
+      ] ],
+      [ "util", "namespacedmq_1_1util.html", [
+        [ "NetworkContext", "classdmq_1_1util_1_1_network_context.html", "classdmq_1_1util_1_1_network_context" ],
+        [ "ReliableTransport", "classdmq_1_1util_1_1_reliable_transport.html", "classdmq_1_1util_1_1_reliable_transport" ],
+        [ "RemoteEndpoint", "structdmq_1_1util_1_1_remote_endpoint.html", null ],
+        [ "RemoteEndpoint< TClass, RetType(Args...)>", "structdmq_1_1util_1_1_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "structdmq_1_1util_1_1_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
+        [ "RemoteEndpoint< void, RetType(Args...)>", "structdmq_1_1util_1_1_remote_endpoint_3_01void_00_01_ret_type_07_args_8_8_8_08_4.html", "structdmq_1_1util_1_1_remote_endpoint_3_01void_00_01_ret_type_07_args_8_8_8_08_4" ],
+        [ "RetryMonitor", "classdmq_1_1util_1_1_retry_monitor.html", "classdmq_1_1util_1_1_retry_monitor" ],
+        [ "Timer", "classdmq_1_1util_1_1_timer.html", "classdmq_1_1util_1_1_timer" ],
+        [ "TransportMonitor", "classdmq_1_1util_1_1_transport_monitor.html", "classdmq_1_1util_1_1_transport_monitor" ]
+      ] ],
       [ "Delegate", "classdmq_1_1_delegate.html", null ],
       [ "Delegate< RetType(Args...)>", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],
       [ "DelegateAsyncMsg", "classdmq_1_1_delegate_async_msg.html", "classdmq_1_1_delegate_async_msg" ],
@@ -51,7 +104,7 @@ var annotated_dup =
       [ "DelegateMemberSp", "classdmq_1_1_delegate_member_sp.html", null ],
       [ "DelegateMemberSp< TClass, RetType(Args...)>", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
       [ "DelegateMsg", "classdmq_1_1_delegate_msg.html", "classdmq_1_1_delegate_msg" ],
-      [ "FreeRTOSClock", "structdmq_1_1_free_r_t_o_s_clock.html", "structdmq_1_1_free_r_t_o_s_clock" ],
+      [ "Dispatcher", "classdmq_1_1_dispatcher.html", "classdmq_1_1_dispatcher" ],
       [ "FreeRTOSConditionVariable", "classdmq_1_1_free_r_t_o_s_condition_variable.html", "classdmq_1_1_free_r_t_o_s_condition_variable" ],
       [ "FreeRTOSMutex", "classdmq_1_1_free_r_t_o_s_mutex.html", "classdmq_1_1_free_r_t_o_s_mutex" ],
       [ "FreeRTOSRecursiveMutex", "classdmq_1_1_free_r_t_o_s_recursive_mutex.html", "classdmq_1_1_free_r_t_o_s_recursive_mutex" ],
@@ -78,9 +131,7 @@ var annotated_dup =
       [ "MulticastDelegateSafe", "classdmq_1_1_multicast_delegate_safe.html", null ],
       [ "MulticastDelegateSafe< RetType(Args...)>", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4" ],
       [ "NullMutex", "structdmq_1_1_null_mutex.html", "structdmq_1_1_null_mutex" ],
-      [ "Participant", "classdmq_1_1_participant.html", "classdmq_1_1_participant" ],
       [ "PortableLockGuard", "classdmq_1_1_portable_lock_guard.html", "classdmq_1_1_portable_lock_guard" ],
-      [ "QoS", "structdmq_1_1_qo_s.html", "structdmq_1_1_qo_s" ],
       [ "RemoteArg", "classdmq_1_1_remote_arg.html", "classdmq_1_1_remote_arg" ],
       [ "RemoteArg< Arg & >", "classdmq_1_1_remote_arg_3_01_arg_01_6_01_4.html", "classdmq_1_1_remote_arg_3_01_arg_01_6_01_4" ],
       [ "RemoteArg< Arg * >", "classdmq_1_1_remote_arg_3_01_arg_01_5_01_4.html", "classdmq_1_1_remote_arg_3_01_arg_01_5_01_4" ],
@@ -89,7 +140,6 @@ var annotated_dup =
       [ "ScopedConnection", "classdmq_1_1_scoped_connection.html", "classdmq_1_1_scoped_connection" ],
       [ "Signal", "classdmq_1_1_signal.html", null ],
       [ "Signal< RetType(Args...)>", "classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4" ],
-      [ "SpyPacket", "structdmq_1_1_spy_packet.html", "structdmq_1_1_spy_packet" ],
       [ "ThreadXClock", "structdmq_1_1_thread_x_clock.html", "structdmq_1_1_thread_x_clock" ],
       [ "ThreadXConditionVariable", "classdmq_1_1_thread_x_condition_variable.html", "classdmq_1_1_thread_x_condition_variable" ],
       [ "ThreadXMutex", "classdmq_1_1_thread_x_mutex.html", "classdmq_1_1_thread_x_mutex" ],
@@ -97,6 +147,7 @@ var annotated_dup =
       [ "UnicastDelegate< RetType(Args...)>", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4" ],
       [ "UnicastDelegateSafe", "classdmq_1_1_unicast_delegate_safe.html", null ],
       [ "UnicastDelegateSafe< RetType(Args...)>", "classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html", "classdmq_1_1_unicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4" ],
+      [ "xlist", "classdmq_1_1xlist.html", null ],
       [ "ZephyrClock", "structdmq_1_1_zephyr_clock.html", "structdmq_1_1_zephyr_clock" ],
       [ "ZephyrMutex", "classdmq_1_1_zephyr_mutex.html", "classdmq_1_1_zephyr_mutex" ]
     ] ],
@@ -119,38 +170,19 @@ var annotated_dup =
     ] ],
     [ "Allocator", "class_allocator.html", "class_allocator" ],
     [ "AllocatorPool", "class_allocator_pool.html", "class_allocator_pool" ],
-    [ "Dispatcher", "class_dispatcher.html", "class_dispatcher" ],
-    [ "DmqHeader", "class_dmq_header.html", "class_dmq_header" ],
-    [ "ITransport", "class_i_transport.html", "class_i_transport" ],
-    [ "ITransportMonitor", "class_i_transport_monitor.html", "class_i_transport_monitor" ],
     [ "MqttTransport", "class_mqtt_transport.html", "class_mqtt_transport" ],
     [ "MulticastTransport", "class_multicast_transport.html", "class_multicast_transport" ],
     [ "NetconnUdpTransport", "class_netconn_udp_transport.html", "class_netconn_udp_transport" ],
-    [ "NetworkContext", "class_network_context.html", "class_network_context" ],
     [ "NetXUdpTransport", "class_net_x_udp_transport.html", "class_net_x_udp_transport" ],
-    [ "NngTransport", "class_nng_transport.html", "class_nng_transport" ],
-    [ "ReliableTransport", "class_reliable_transport.html", "class_reliable_transport" ],
-    [ "RemoteEndpoint", "struct_remote_endpoint.html", null ],
-    [ "RemoteEndpoint< TClass, RetType(Args...)>", "class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html", "class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4" ],
-    [ "RetryMonitor", "class_retry_monitor.html", "class_retry_monitor" ],
     [ "serialize", "classserialize.html", "classserialize" ],
-    [ "Serializer", "struct_serializer.html", null ],
-    [ "Serializer< RetType(Args...)>", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4.html", "class_serializer_3_01_ret_type_07_args_8_8_8_08_4" ],
-    [ "SerialTransport", "class_serial_transport.html", "class_serial_transport" ],
     [ "stl_allocator", "classstl__allocator.html", "classstl__allocator" ],
     [ "stl_allocator< void >", "classstl__allocator_3_01void_01_4.html", "classstl__allocator_3_01void_01_4" ],
     [ "Stm32UartTransport", "class_stm32_uart_transport.html", "class_stm32_uart_transport" ],
     [ "TcpTransport", "class_tcp_transport.html", "class_tcp_transport" ],
     [ "Thread", "class_thread.html", "class_thread" ],
     [ "ThreadMsg", "class_thread_msg.html", "class_thread_msg" ],
-    [ "ThreadMsgComparator", "struct_thread_msg_comparator.html", "struct_thread_msg_comparator" ],
-    [ "Timer", "class_timer.html", "class_timer" ],
-    [ "TransportMonitor", "class_transport_monitor.html", "class_transport_monitor" ],
     [ "UartRingBuffer", "class_uart_ring_buffer.html", "class_uart_ring_buffer" ],
     [ "UdpTransport", "class_udp_transport.html", "class_udp_transport" ],
-    [ "Win32PipeTransport", "class_win32_pipe_transport.html", "class_win32_pipe_transport" ],
     [ "Worker", "class_worker.html", "class_worker" ],
-    [ "xlist", "classxlist.html", null ],
-    [ "ZephyrUdpTransport", "class_zephyr_udp_transport.html", "class_zephyr_udp_transport" ],
-    [ "ZeroMqTransport", "class_zero_mq_transport.html", "class_zero_mq_transport" ]
+    [ "ZephyrUdpTransport", "class_zephyr_udp_transport.html", "class_zephyr_udp_transport" ]
 ];

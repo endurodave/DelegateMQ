@@ -125,7 +125,7 @@ Macros</h2></td></tr>
 <li><b>Universal Target Support:</b> Binds to free functions, class member functions, static functions, lambdas, and <code>std::function</code>.</li>
 <li><b>Any Signature:</b> Handles any function signature with any number of arguments or return values.</li>
 <li><b>Argument Safety:</b> Supports all argument types (value, pointer, pointer-to-pointer, reference) and safely marshals them across thread boundaries for asynchronous calls.</li>
-<li><b><a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> Control:</b> Unlike <code>std::async</code> (which uses a random thread pool), DelegateMQ executes the target function on a <em>specific</em> destination thread you control.</li>
+<li><b><a class="el" href="class_thread.html">Thread</a> Control:</b> Unlike <code>std::async</code> (which uses a random thread pool), DelegateMQ executes the target function on a <em>specific</em> destination thread you control.</li>
 <li><b>Remote Invocation:</b> Capable of serializing arguments and invoking functions across network boundaries (UDP, TCP, ZeroMQ, etc.).</li>
 </ul>
 <p><b>Delegate Capabilities:</b> A delegate instance behaves like a first-class object:</p><ul>

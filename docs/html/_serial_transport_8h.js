@@ -1,4 +1,4 @@
 var _serial_transport_8h =
 [
-    [ "SerialTransport", "class_serial_transport.html", "class_serial_transport" ]
+    [ "dmq::transport::SerialTransport", "classdmq_1_1transport_1_1_serial_transport.html", "classdmq_1_1transport_1_1_serial_transport" ]
 ];

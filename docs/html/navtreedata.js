@@ -56,6 +56,7 @@ var NAVTREE =
         [ "Functions", "globals_func.html", null ],
         [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
+        [ "Enumerations", "globals_enum.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -65,15 +66,17 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"class_mqtt_transport.html#a4f9c4248fdaef02310f1931ddd2c44fc",
-"class_thread_msg.html#ac02d40fd2f1de2201f0ed13db547bf42",
-"classdmq_1_1_delegate_free_3_01_ret_type_07_args_8_8_8_08_4.html#afc4cf3dc7ff161d65728f83b9b67f5d2",
-"classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#a3a3e55a3bf7f5f21f203370b24ed6dcf",
-"classdmq_1_1_delegate_member_async_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#ad405bdac6f32fc3af90b34f22b7ee763",
-"classdmq_1_1_i_thread.html#a79a35ad35dd7564be046e01bade22433",
-"classdmq_1_1_thread_x_mutex.html#a2bacb126f9d838d49f3e4e03d990ff58",
-"dir_297d0e02809d5fb19417d449e1232921.html",
-"structdmq_1_1_cmsis_rtos2_clock.html#a6ed5a9889f4a505296743d0259c0ed4b"
+"class_net_x_udp_transport.html#a198c12124c0d84412d09c647f9135b98",
+"classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#aa2e9f3ac0d2253e81a560dba0028e61f",
+"classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#ab805f096f0efde8274cf9fb48ae80eeb",
+"classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a2355f4be220c01ab92bd88260ee731a7",
+"classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a30ddda028ef2df79d998ec91f6389c00",
+"classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a88f26d20dc25d2959bfa748d1a7b9f4d",
+"classdmq_1_1os_1_1_thread.html#ac76fc5962fa650252a03b5a02fa091b3",
+"classdmq_1_1transport_1_1_win32_pipe_transport.html#a975c4c00e04cb262760887d978bb8f01",
+"cmsis-rtos2_2_thread_8h.html#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72",
+"namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66",
+"structdmq_1_1trait_1_1function__traits_3_01_ret_type_07_class_type_1_1_5_08_07_args_8_8_8_08_01const_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

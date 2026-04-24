@@ -2,7 +2,7 @@ var _delegate_opt_8h =
 [
     [ "dmq::PortableLockGuard< T >", "classdmq_1_1_portable_lock_guard.html", "classdmq_1_1_portable_lock_guard" ],
     [ "dmq::NullMutex", "structdmq_1_1_null_mutex.html", "structdmq_1_1_null_mutex" ],
-    [ "xlist< T, Alloc >", "classxlist.html", null ],
+    [ "dmq::xlist< T, Alloc >", "classdmq_1_1xlist.html", null ],
     [ "BAD_ALLOC", "_delegate_opt_8h.html#abe89b46e296c7421855410a08d6d31fe", null ],
     [ "DMQ_ASSERTS", "_delegate_opt_8h.html#a6d017f6688a2ece9c701ea71062fc6b9", null ],
     [ "DMQ_SERIALIZE_NONE", "_delegate_opt_8h.html#a397bf7b998e327455052c135f305e352", null ],
@@ -16,10 +16,10 @@ var _delegate_opt_8h =
     [ "Mutex", "_delegate_opt_8h.html#a8698347146f2270db3906748c029c529", null ],
     [ "RecursiveMutex", "_delegate_opt_8h.html#a32a836d0420b059412e11bb2f8dbfe76", null ],
     [ "TimePoint", "_delegate_opt_8h.html#a8ff86233aa2d05f03cada0b63ebf8aef", null ],
-    [ "xostringstream", "_delegate_opt_8h.html#a54ea4f69408adaa1bb31d8d0de42c2bc", null ],
-    [ "xstring", "_delegate_opt_8h.html#a8e4b2760271c0d353bc1e58de15aeb44", null ],
-    [ "xstringstream", "_delegate_opt_8h.html#ada87f2b80dc83f6d2f182655488948ae", null ],
-    [ "xdelete", "_delegate_opt_8h.html#a884ae556ebbfac2b3e5ee912730b5466", null ],
-    [ "xmake_shared", "_delegate_opt_8h.html#a897146520ab3fe3629d618cf8efb925c", null ],
-    [ "xnew", "_delegate_opt_8h.html#ac54e2b2f79ec5717e58fd6c3d2779656", null ]
+    [ "xostringstream", "_delegate_opt_8h.html#aa67d7309f9b005cc369e448ec28f8129", null ],
+    [ "xstring", "_delegate_opt_8h.html#a11cea01eb8d1af200d992657af94c7fb", null ],
+    [ "xstringstream", "_delegate_opt_8h.html#a96216b70259f3d7e0a6462222e96e3b0", null ],
+    [ "xdelete", "_delegate_opt_8h.html#a301d4b5ade45a49f32a348dfb42fb2b2", null ],
+    [ "xmake_shared", "_delegate_opt_8h.html#a9ee8623ed66c2814916b42dcf49418f1", null ],
+    [ "xnew", "_delegate_opt_8h.html#ad568c96484a6b6df174d0d597080c5fd", null ]
 ];

@@ -97,16 +97,22 @@ $(function(){initNavTree('_retry_monitor_8h.html',''); initResizable(true); });
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">RetryMonitor.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Automatic retransmission manager for DelegateMQ remote calls.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_m_q_8h_source.html">DelegateMQ.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_opt_8h_source.html">delegate/DelegateOpt.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_delegate_remote_8h_source.html">delegate/DelegateRemote.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_transport_8h_source.html">port/transport/ITransport.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_dmq_header_8h_source.html">port/transport/DmqHeader.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_transport_monitor_8h_source.html">TransportMonitor.h</a>&quot;</code><br />
 <code>#include &lt;map&gt;</code><br />
+<code>#include &lt;mutex&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 </div>
@@ -114,20 +120,29 @@ $(function(){initNavTree('_retry_monitor_8h.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_retry_monitor.html">RetryMonitor</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1util_1_1_retry_monitor.html">dmq::util::RetryMonitor</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_retry_monitor_1_1_retry_entry.html">RetryMonitor::RetryEntry</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage for a message that might need retransmission.  <a href="struct_retry_monitor_1_1_retry_entry.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1util_1_1_retry_monitor_1_1_retry_entry.html">dmq::util::RetryMonitor::RetryEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage for a message that might need retransmission.  <a href="structdmq_1_1util_1_1_retry_monitor_1_1_retry_entry.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1util.html">dmq::util</a></td></tr>
+<tr class="memdesc:namespacedmq_1_1util"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII wrapper to initialize and cleanup network stacks. Instantiate this ONCE at the top of main(). <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Automatic retransmission manager for DelegateMQ remote calls. </p>
-<p>The <a class="el" href="class_retry_monitor.html">RetryMonitor</a> acts as a reliability decorator for any <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a> implementation. It bridges the gap between detection (<a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a>) and recovery (Physical Transport).</p>
+<p>The RetryMonitor acts as a reliability decorator for any ITransport implementation. It bridges the gap between detection (TransportMonitor) and recovery (Physical Transport).</p>
 <h3><a class="anchor" id="autotoc_md31"></a>
 Core Responsibilities</h3>
 <ol type="1">
 <li><b>Data Persistence</b>: Stores the fully serialized binary payload of every outgoing remote delegate call, indexed by its unique Sequence Number.</li>
-<li><b>Timeout Handling</b>: Subscribes to the <code><a class="el" href="class_transport_monitor.html#ad7c677d7bc5478f3c42a77aa6d098802">TransportMonitor::OnSendStatus</a></code> signal.</li>
+<li><b>Timeout Handling</b>: Subscribes to the <code>TransportMonitor::OnSendStatus</code> signal.</li>
 <li><b>Automatic Recovery</b>: If a TIMEOUT status is received, it decrements the retry counter and re-submits the exact binary packet to the transport.</li>
 <li><b>Cleanup</b>: Discards stored packets upon SUCCESS (ACK received) or when <code>maxRetries</code> is exhausted.</li>
 </ol>
@@ -136,7 +151,7 @@ Sequence Number Integrity</h3>
 <p>Retries use the <b>original</b> sequence number. This allows the Receiver to perform idempotency checks (filtering out duplicate calls if an ACK was lost but the function was already executed).</p>
 <h3><a class="anchor" id="autotoc_md33"></a>
 Reentrancy Note</h3>
-<p>This class calls <code><a class="el" href="class_i_transport.html#a5d901674c5ff4e1c52ac651280adde71">ITransport::Send()</a></code>. If the underlying transport (e.g., <a class="el" href="class_serial_transport.html">SerialTransport</a>) routes its high-level <code>Send()</code> back into this monitor, the transport MUST implement a reentrancy guard to prevent infinite recursion.</p>
+<p>This class calls <code>ITransport::Send()</code>. If the underlying transport (e.g., SerialTransport) routes its high-level <code>Send()</code> back into this monitor, the transport MUST implement a reentrancy guard to prevent infinite recursion.</p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> </dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->

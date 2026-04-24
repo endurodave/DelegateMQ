@@ -10,6 +10,7 @@ var class_zephyr_udp_transport =
     [ "Create", "class_zephyr_udp_transport.html#a17140fbe27394d8477f45cd2e0f01661", null ],
     [ "Receive", "class_zephyr_udp_transport.html#ad976a6a40485578f92766cbf51f7cbc4", null ],
     [ "Send", "class_zephyr_udp_transport.html#a7776785dd35f7ea2a5635837f6899962", null ],
+    [ "SetRecvTimeout", "class_zephyr_udp_transport.html#a0f8f26f527fe6579df626f45a27b4aa3", null ],
     [ "SetRecvTransport", "class_zephyr_udp_transport.html#adc96c6925110de6f23cdf9081db35f10", null ],
     [ "SetSendTransport", "class_zephyr_udp_transport.html#a189fb8380595e2f17da3b4919d7d52e7", null ],
     [ "SetTransportMonitor", "class_zephyr_udp_transport.html#a2193702e48e302deb4f38c94b8105703", null ]

@@ -97,7 +97,8 @@ $(function(){initNavTree('_nng_transport_8h.html',''); initResizable(true); });
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">NngTransport.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -122,23 +123,32 @@ $(function(){initNavTree('_nng_transport_8h.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_nng_transport.html">NngTransport</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">NNG transport class.  <a href="class_nng_transport.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1transport_1_1_nng_transport.html">dmq::transport::NngTransport</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">NNG transport class.  <a href="classdmq_1_1transport_1_1_nng_transport.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1transport.html">dmq::transport</a></td></tr>
+<tr class="memdesc:namespacedmq_1_1transport"><td class="mdescLeft">&#160;</td><td class="mdescRight">Win32 UDP transport implementation for DelegateMQ. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>NNG transport implementation for DelegateMQ. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
-<p>This class implements the <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a> interface using the NNG (Nanomsg Next Gen) lightweight messaging library. It supports multiple scalability protocols including PAIR (1-to-1 bidrectional) and PUB/SUB (1-to-many unidirectional).</p>
+<p>This class implements the ITransport interface using the NNG (Nanomsg Next Gen) lightweight messaging library. It supports multiple scalability protocols including PAIR (1-to-1 bidrectional) and PUB/SUB (1-to-many unidirectional).</p>
 <p>Key Features:</p><ol type="1">
-<li><b><a class="el" href="class_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">Thread</a> Safety</b>: Uses a <code>std::recursive_mutex</code> to protect the NNG socket, allowing safe concurrent access from the Send and Receive threads (NNG sockets are not inherently thread-safe).</li>
+<li><b><a class="el" href="class_thread.html">Thread</a> Safety</b>: Uses a <code>std::recursive_mutex</code> to protect the NNG socket, allowing safe concurrent access from the Send and Receive threads (NNG sockets are not inherently thread-safe).</li>
 <li><b>Scalability Protocols</b>: flexible configuration for different topologies:<ul>
 <li><code>PAIR_CLIENT</code>/<code>PAIR_SERVER</code>: Exclusive 1-to-1 connection.</li>
 <li><code>PUB</code>/<code>SUB</code>: Efficient distribution to multiple subscribers.</li>
 </ul>
 </li>
 <li><b>Non-Blocking</b>: Uses asynchronous messaging patterns provided by NNG.</li>
-<li><b>Reliability</b>: Integrates with <code><a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a></code> to providing sequence tracking and ACKs even over PUB/SUB (when a return channel is available).</li>
+<li><b>Reliability</b>: Integrates with <code>TransportMonitor</code> to providing sequence tracking and ACKs even over PUB/SUB (when a return channel is available).</li>
 </ol>
 <dl class="section note"><dt>Note</dt><dd>Requires the <code>libnng</code> library. </dd></dl>
 </div></div><!-- contents -->

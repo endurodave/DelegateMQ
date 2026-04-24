@@ -97,7 +97,8 @@ $(function(){initNavTree('_win32_tcp_transport_8h.html',''); initResizable(true)
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">Win32TcpTransport.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -119,17 +120,25 @@ $(function(){initNavTree('_win32_tcp_transport_8h.html',''); initResizable(true)
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tcp_transport.html">TcpTransport</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linux TCP transport implementation for DelegateMQ.  <a href="class_tcp_transport.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1transport_1_1_win32_tcp_transport.html">dmq::transport::Win32TcpTransport</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1transport.html">dmq::transport</a></td></tr>
+<tr class="memdesc:namespacedmq_1_1transport"><td class="mdescLeft">&#160;</td><td class="mdescRight">Win32 UDP transport implementation for DelegateMQ. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Win32 TCP transport implementation for DelegateMQ. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
-<p>This class implements the <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a> interface using Windows Sockets (Winsock2). It supports both CLIENT and SERVER modes for transmitting serialized delegate data.</p>
+<p>This class implements the ITransport interface using Windows Sockets (Winsock2). It supports both CLIENT and SERVER modes for transmitting serialized delegate data.</p>
 <p>Key Features:</p><ol type="1">
 <li><b>Direct I/O</b>: Executes socket operations directly on the calling thread, relying on OS-level thread safety to avoid deadlocks.</li>
-<li><b>Reliability Support</b>: Integrates with <code><a class="el" href="class_transport_monitor.html" title="A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.">TransportMonitor</a></code> to track sequence numbers and acknowledge (ACK) receipts.</li>
+<li><b>Reliability Support</b>: Integrates with <code>TransportMonitor</code> to track sequence numbers and acknowledge (ACK) receipts.</li>
 <li><b>Non-Blocking I/O</b>: Utilizes <code>select()</code> in the receive loop to prevent thread blocking when no data is available, facilitating clean shutdowns.</li>
 <li><b>Socket Management</b>: Use WinsockConnect class in main() for <code>WSAStartup</code> and socket creation/cleanup. </li>
 </ol>

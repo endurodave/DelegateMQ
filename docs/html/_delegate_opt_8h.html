@@ -126,7 +126,7 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1_null_mutex.html">dmq::NullMutex</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classxlist.html">xlist&lt; T, Alloc &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1xlist.html">dmq::xlist&lt; T, Alloc &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -154,11 +154,11 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a6f1a53bf2de6867efba33b34410fb827" id="r_a6f1a53bf2de6867efba33b34410fb827"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a6f1a53bf2de6867efba33b34410fb827">dmq::Clock</a> = <a class="el" href="structdmq_1_1_bare_metal_clock.html">dmq::BareMetalClock</a></td></tr>
+<tr class="memitem:a6f1a53bf2de6867efba33b34410fb827" id="r_a6f1a53bf2de6867efba33b34410fb827"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a6f1a53bf2de6867efba33b34410fb827">dmq::Clock</a> = dmq::BareMetalClock</td></tr>
 <tr class="separator:a6f1a53bf2de6867efba33b34410fb827"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b8f2ad24a4b0df29243c60121e10b7f" id="r_a9b8f2ad24a4b0df29243c60121e10b7f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> = typename <a class="el" href="structdmq_1_1_bare_metal_clock.html#aeaa03581ab7d239bdc8fc57520f58dae">Clock::duration</a></td></tr>
+<tr class="memitem:a9b8f2ad24a4b0df29243c60121e10b7f" id="r_a9b8f2ad24a4b0df29243c60121e10b7f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> = typename Clock::duration</td></tr>
 <tr class="separator:a9b8f2ad24a4b0df29243c60121e10b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ff86233aa2d05f03cada0b63ebf8aef" id="r_a8ff86233aa2d05f03cada0b63ebf8aef"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> = typename <a class="el" href="structdmq_1_1_bare_metal_clock.html#aa130534971f2dd3cbf1649c6a5765f6d">Clock::time_point</a></td></tr>
+<tr class="memitem:a8ff86233aa2d05f03cada0b63ebf8aef" id="r_a8ff86233aa2d05f03cada0b63ebf8aef"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> = typename Clock::time_point</td></tr>
 <tr class="separator:a8ff86233aa2d05f03cada0b63ebf8aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8698347146f2270db3906748c029c529" id="r_a8698347146f2270db3906748c029c529"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a8698347146f2270db3906748c029c529">dmq::Mutex</a> = <a class="el" href="structdmq_1_1_null_mutex.html">NullMutex</a></td></tr>
 <tr class="separator:a8698347146f2270db3906748c029c529"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,24 +167,26 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a3630077fab3ab296436584a9b6dab522" id="r_a3630077fab3ab296436584a9b6dab522"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a3630077fab3ab296436584a9b6dab522"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a3630077fab3ab296436584a9b6dab522">dmq::LockGuard</a> = <a class="el" href="classdmq_1_1_portable_lock_guard.html">PortableLockGuard</a>&lt;T&gt;</td></tr>
 <tr class="separator:a3630077fab3ab296436584a9b6dab522"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54ea4f69408adaa1bb31d8d0de42c2bc" id="r_a54ea4f69408adaa1bb31d8d0de42c2bc"><td class="memItemLeft" align="right" valign="top">typedef std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></td></tr>
-<tr class="separator:a54ea4f69408adaa1bb31d8d0de42c2bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada87f2b80dc83f6d2f182655488948ae" id="r_ada87f2b80dc83f6d2f182655488948ae"><td class="memItemLeft" align="right" valign="top">typedef std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></td></tr>
-<tr class="separator:ada87f2b80dc83f6d2f182655488948ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e4b2760271c0d353bc1e58de15aeb44" id="r_a8e4b2760271c0d353bc1e58de15aeb44"><td class="memItemLeft" align="right" valign="top">typedef std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a></td></tr>
-<tr class="separator:a8e4b2760271c0d353bc1e58de15aeb44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa67d7309f9b005cc369e448ec28f8129" id="r_aa67d7309f9b005cc369e448ec28f8129"><td class="memItemLeft" align="right" valign="top">typedef std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#aa67d7309f9b005cc369e448ec28f8129">dmq::xostringstream</a></td></tr>
+<tr class="separator:aa67d7309f9b005cc369e448ec28f8129"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96216b70259f3d7e0a6462222e96e3b0" id="r_a96216b70259f3d7e0a6462222e96e3b0"><td class="memItemLeft" align="right" valign="top">typedef std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a96216b70259f3d7e0a6462222e96e3b0">dmq::xstringstream</a></td></tr>
+<tr class="separator:a96216b70259f3d7e0a6462222e96e3b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11cea01eb8d1af200d992657af94c7fb" id="r_a11cea01eb8d1af200d992657af94c7fb"><td class="memItemLeft" align="right" valign="top">typedef std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a11cea01eb8d1af200d992657af94c7fb">dmq::xstring</a></td></tr>
+<tr class="separator:a11cea01eb8d1af200d992657af94c7fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a897146520ab3fe3629d618cf8efb925c" id="r_a897146520ab3fe3629d618cf8efb925c"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
-<tr class="memitem:a897146520ab3fe3629d618cf8efb925c"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a897146520ab3fe3629d618cf8efb925c">xmake_shared</a> (Args &amp;&amp;... args)</td></tr>
-<tr class="separator:a897146520ab3fe3629d618cf8efb925c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac54e2b2f79ec5717e58fd6c3d2779656" id="r_ac54e2b2f79ec5717e58fd6c3d2779656"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
-<tr class="memitem:ac54e2b2f79ec5717e58fd6c3d2779656"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac54e2b2f79ec5717e58fd6c3d2779656">xnew</a> (Args &amp;&amp;... args)</td></tr>
-<tr class="separator:ac54e2b2f79ec5717e58fd6c3d2779656"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a884ae556ebbfac2b3e5ee912730b5466" id="r_a884ae556ebbfac2b3e5ee912730b5466"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a884ae556ebbfac2b3e5ee912730b5466"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a884ae556ebbfac2b3e5ee912730b5466">xdelete</a> (T *p)</td></tr>
-<tr class="separator:a884ae556ebbfac2b3e5ee912730b5466"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ee8623ed66c2814916b42dcf49418f1" id="r_a9ee8623ed66c2814916b42dcf49418f1"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:a9ee8623ed66c2814916b42dcf49418f1"><td class="memTemplItemLeft" align="right" valign="top">std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a9ee8623ed66c2814916b42dcf49418f1">dmq::xmake_shared</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="separator:a9ee8623ed66c2814916b42dcf49418f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad568c96484a6b6df174d0d597080c5fd" id="r_ad568c96484a6b6df174d0d597080c5fd"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Args&gt; </td></tr>
+<tr class="memitem:ad568c96484a6b6df174d0d597080c5fd"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#ad568c96484a6b6df174d0d597080c5fd">dmq::xnew</a> (Args &amp;&amp;... args)</td></tr>
+<tr class="memdesc:ad568c96484a6b6df174d0d597080c5fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate and construct T in the fixed-block pool.  <br /></td></tr>
+<tr class="separator:ad568c96484a6b6df174d0d597080c5fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a301d4b5ade45a49f32a348dfb42fb2b2" id="r_a301d4b5ade45a49f32a348dfb42fb2b2"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a301d4b5ade45a49f32a348dfb42fb2b2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a301d4b5ade45a49f32a348dfb42fb2b2">dmq::xdelete</a> (T *p)</td></tr>
+<tr class="memdesc:a301d4b5ade45a49f32a348dfb42fb2b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy T and return its memory to the fixed-block pool.  <br /></td></tr>
+<tr class="separator:a301d4b5ade45a49f32a348dfb42fb2b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Delegate library options header file. </p>
@@ -299,131 +301,6 @@ Functions</h2></td></tr>
           <td class="memname">#define XALLOCATOR</td>
         </tr>
       </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a id="a54ea4f69408adaa1bb31d8d0de42c2bc" name="a54ea4f69408adaa1bb31d8d0de42c2bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54ea4f69408adaa1bb31d8d0de42c2bc">&#9670;&#160;</a></span>xostringstream</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::basic_ostringstream&lt;char, std::char_traits&lt;char&gt; &gt; <a class="el" href="#a54ea4f69408adaa1bb31d8d0de42c2bc">xostringstream</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a8e4b2760271c0d353bc1e58de15aeb44" name="a8e4b2760271c0d353bc1e58de15aeb44"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e4b2760271c0d353bc1e58de15aeb44">&#9670;&#160;</a></span>xstring</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::string <a class="el" href="#a8e4b2760271c0d353bc1e58de15aeb44">xstring</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ada87f2b80dc83f6d2f182655488948ae" name="ada87f2b80dc83f6d2f182655488948ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ada87f2b80dc83f6d2f182655488948ae">&#9670;&#160;</a></span>xstringstream</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::basic_stringstream&lt;char, std::char_traits&lt;char&gt; &gt; <a class="el" href="#ada87f2b80dc83f6d2f182655488948ae">xstringstream</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a884ae556ebbfac2b3e5ee912730b5466" name="a884ae556ebbfac2b3e5ee912730b5466"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a884ae556ebbfac2b3e5ee912730b5466">&#9670;&#160;</a></span>xdelete()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void xdelete </td>
-          <td>(</td>
-          <td class="paramtype">T *</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a897146520ab3fe3629d618cf8efb925c" name="a897146520ab3fe3629d618cf8efb925c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a897146520ab3fe3629d618cf8efb925c">&#9670;&#160;</a></span>xmake_shared()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T , typename... Args&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt; T &gt; xmake_shared </td>
-          <td>(</td>
-          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac54e2b2f79ec5717e58fd6c3d2779656" name="ac54e2b2f79ec5717e58fd6c3d2779656"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac54e2b2f79ec5717e58fd6c3d2779656">&#9670;&#160;</a></span>xnew()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T , typename... Args&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">T * xnew </td>
-          <td>(</td>
-          <td class="paramtype">Args &amp;&amp;...</td>          <td class="paramname"><span class="paramname"><em>args</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 </div>

@@ -102,410 +102,484 @@ $(function(){initNavTree('_data_bus_8h_source.html',''); initResizable(true); })
 <a href="_data_bus_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef DMQ_DATABUS_H</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define DMQ_DATABUS_H</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_m_q_8h.html">DelegateMQ.h</a>&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_participant_8h.html">Participant.h</a>&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_data_bus_qos_8h.html">DataBusQos.h</a>&quot;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_spy_packet_8h.html">SpyPacket.h</a>&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_fault_8h.html">extras/util/Fault.h</a>&quot;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="_network_connect_8h.html">extras/util/NetworkConnect.h</a>&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;typeindex&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedmq.html">dmq</a> {</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">// The DataBus is a central registry for topic-based communication.</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">// It allows components to publish and subscribe to data topics identified by strings.</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">//</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">// LIFETIME NOTE: This class assumes that any external ISerializer or ITransport objects </span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">// passed to it (e.g., via AddParticipant or RegisterSerializer) will outlive </span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// the DataBus instance or its Reset() calls.</span></div>
-<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html">   27</a></span><span class="keyword">class </span><a class="code hl_class" href="classdmq_1_1_data_bus.html">DataBus</a> {</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="comment">// Subscribe to a topic with optional QoS and thread dispatching.</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="comment">// NOTE: Signal connection is established before LVC delivery to ensure </span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// no messages are missed.</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> F&gt;</div>
-<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html#acf8bbe3d3567f671761cb13ccf120f82">   33</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> <a class="code hl_function" href="classdmq_1_1_data_bus.html#acf8bbe3d3567f671761cb13ccf120f82">Subscribe</a>(<span class="keyword">const</span> std::string&amp; topic, F&amp;&amp; func, <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a>* thread = <span class="keyword">nullptr</span>, <a class="code hl_struct" href="structdmq_1_1_qo_s.html">QoS</a> qos = {}) {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">return</span> GetInstance().InternalSubscribe&lt;T&gt;(topic, std::forward&lt;F&gt;(func), thread, qos);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="_signal_8h.html">delegate/Signal.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_remote_8h.html">delegate/DelegateRemote.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_async_8h.html">delegate/DelegateAsync.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="_i_thread_8h.html">delegate/IThread.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="_delegate_opt_8h.html">delegate/DelegateOpt.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="_participant_8h.html">Participant.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="_data_bus_qos_8h.html">DataBusQos.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="_spy_packet_8h.html">SpyPacket.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="_fault_8h.html">extras/util/Fault.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="_network_connect_8h.html">extras/util/NetworkConnect.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;typeindex&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespacedmq_1_1databus.html">   24</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedmq_1_1databus.html">dmq::databus</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// The DataBus is a central registry for topic-based communication.</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">// It allows components to publish and subscribe to data topics identified by strings.</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">//</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">// LIFETIME NOTE: This class assumes that any external ISerializer or ITransport objects </span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">// passed to it (e.g., via AddParticipant or RegisterSerializer) will outlive </span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment">// the DataBus instance or its Reset() calls.</span></div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html">   32</a></span><span class="keyword">class </span><a class="code hl_class" href="classdmq_1_1databus_1_1_data_bus.html">DataBus</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="comment">// Subscribe to a topic with optional QoS and thread dispatching.</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="comment">// NOTE: Signal connection is established before LVC delivery to ensure </span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="comment">// no messages are missed.</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> F&gt;</div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#a611fedd778549ec3b70d9e6d0ca2f037">   38</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#a611fedd778549ec3b70d9e6d0ca2f037">Subscribe</a>(<span class="keyword">const</span> std::string&amp; topic, F&amp;&amp; func, <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a>* thread = <span class="keyword">nullptr</span>, <a class="code hl_struct" href="structdmq_1_1databus_1_1_qo_s.html">QoS</a> qos = {}) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">return</span> GetInstance().InternalSubscribe&lt;T&gt;(topic, std::forward&lt;F&gt;(func), thread, qos);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
 </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="comment">// Subscribe to a topic with a filter.</span></div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> F, <span class="keyword">typename</span> P&gt;</div>
-<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html#a6e0e6a4d05447c0cfcf9f1546bc41d65">   39</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> <a class="code hl_function" href="classdmq_1_1_data_bus.html#a6e0e6a4d05447c0cfcf9f1546bc41d65">SubscribeFilter</a>(<span class="keyword">const</span> std::string&amp; topic, F&amp;&amp; func, P&amp;&amp; predicate, <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a>* thread = <span class="keyword">nullptr</span>, <a class="code hl_struct" href="structdmq_1_1_qo_s.html">QoS</a> qos = {}) {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">auto</span> filterFunc = [f = std::forward&lt;F&gt;(func), p = std::forward&lt;P&gt;(predicate)](T data) {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keywordflow">if</span> (p(data)) {</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                f(data);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            }</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        };</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> GetInstance().InternalSubscribe&lt;T&gt;(topic, std::move(filterFunc), thread, qos);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="comment">// Subscribe to a topic with a filter.</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> F, <span class="keyword">typename</span> P&gt;</div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#aac2ffd21ea6db04aa627db65c1cab269">   44</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#aac2ffd21ea6db04aa627db65c1cab269">SubscribeFilter</a>(<span class="keyword">const</span> std::string&amp; topic, F&amp;&amp; func, P&amp;&amp; predicate, <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a>* thread = <span class="keyword">nullptr</span>, <a class="code hl_struct" href="structdmq_1_1databus_1_1_qo_s.html">QoS</a> qos = {}) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">auto</span> filterFunc = [f = std::forward&lt;F&gt;(func), p = std::forward&lt;P&gt;(predicate)](T data) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keywordflow">if</span> (p(data)) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                f(data);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        };</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> GetInstance().InternalSubscribe&lt;T&gt;(topic, std::move(filterFunc), thread, qos);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
 </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="comment">// Publish data to a topic.</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00050" data-start="{" data-end="}">
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html#a5cfdd95ccd3d67dea8ae6a591deae284">   50</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1_data_bus.html#a5cfdd95ccd3d67dea8ae6a591deae284">Publish</a>(<span class="keyword">const</span> std::string&amp; topic, <span class="keyword">const</span> T&amp; data) {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        GetInstance().InternalPublish&lt;T&gt;(topic, data);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
-</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="comment">// Add a remote participant to the bus.</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">// Publish data to a topic.</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="foldopen" id="foldopen00055" data-start="{" data-end="}">
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html#a1c08358b90bb6f0c0ae0d123f18436f2">   55</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1_data_bus.html#a1c08358b90bb6f0c0ae0d123f18436f2">AddParticipant</a>(std::shared_ptr&lt;Participant&gt; participant) {</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        GetInstance().InternalAddParticipant(participant);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#aefae844605e43ff33a8e5ae2b5a84a8d">   55</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#aefae844605e43ff33a8e5ae2b5a84a8d">Publish</a>(<span class="keyword">const</span> std::string&amp; topic, <span class="keyword">const</span> T&amp; data) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        GetInstance().InternalPublish&lt;T&gt;(topic, data);</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
 </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="comment">// Register a serializer for a topic (required for remote distribution).</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00061" data-start="{" data-end="}">
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html#abdeb11a1b961ebf7dcc5d18db2e17b48">   61</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1_data_bus.html#abdeb11a1b961ebf7dcc5d18db2e17b48">RegisterSerializer</a>(<span class="keyword">const</span> std::string&amp; topic, <a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;<span class="keywordtype">void</span>(T)&gt;&amp; serializer) {</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        GetInstance().InternalRegisterSerializer&lt;T&gt;(topic, serializer);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="comment">// Add a remote participant to the bus.</span></div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#a16919ade4c2c00a8d1ffd64b5438d845">   60</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#a16919ade4c2c00a8d1ffd64b5438d845">AddParticipant</a>(std::shared_ptr&lt;Participant&gt; participant) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        GetInstance().InternalAddParticipant(participant);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
 </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="comment">// Register an incoming remote topic and automatically republish received data to the local bus.</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="comment">// Replaces the boilerplate RegisterHandler lambda pattern:</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="comment">//   participant.RegisterHandler&lt;T&gt;(remoteId, serializer, [topic](T msg) {</span></div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment">//       DataBus::Publish&lt;T&gt;(topic, std::move(msg));</span></div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="comment">//   });</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html#a6ede4c036f01c4c2012c582b5af20799">   71</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1_data_bus.html#a6ede4c036f01c4c2012c582b5af20799">AddIncomingTopic</a>(<span class="keyword">const</span> std::string&amp; topic, <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId, <a class="code hl_class" href="classdmq_1_1_participant.html">Participant</a>&amp; participant, <a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;<span class="keywordtype">void</span>(T)&gt;&amp; serializer) {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        participant.<a class="code hl_function" href="classdmq_1_1_participant.html#ae25ceb08a7fe5931d18503eaddbda601">RegisterHandler</a>&lt;T&gt;(remoteId, serializer, [topic](<span class="keyword">const</span> T&amp; msg) {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <a class="code hl_function" href="classdmq_1_1_data_bus.html#a5cfdd95ccd3d67dea8ae6a591deae284">DataBus::Publish&lt;T&gt;</a>(topic, msg);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        });</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="comment">// Register a serializer for a topic (required for remote distribution).</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="}">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#a644874eee295aedcc9e570b9bec5c7ee">   66</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#a644874eee295aedcc9e570b9bec5c7ee">RegisterSerializer</a>(<span class="keyword">const</span> std::string&amp; topic, <a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;<span class="keywordtype">void</span>(T)&gt;&amp; serializer) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        GetInstance().InternalRegisterSerializer&lt;T&gt;(topic, serializer);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
 </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="comment">// Register a stringifier for a topic to enable spying/logging.</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="foldopen" id="foldopen00079" data-start="{" data-end="}">
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html#a50a817364768fe3ddaaa09cc4523f196">   79</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1_data_bus.html#a50a817364768fe3ddaaa09cc4523f196">RegisterStringifier</a>(<span class="keyword">const</span> std::string&amp; topic, std::function&lt;std::string(<span class="keyword">const</span> T&amp;)&gt; func) {</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        GetInstance().InternalRegisterStringifier&lt;T&gt;(topic, std::move(func));</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="comment">// Register an incoming remote topic and automatically republish received data to the local bus.</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="comment">// Replaces the boilerplate RegisterHandler lambda pattern:</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="comment">//   participant.RegisterHandler&lt;T&gt;(remoteId, serializer, [topic](T msg) {</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="comment">//       DataBus::Publish&lt;T&gt;(topic, std::move(msg));</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="comment">//   });</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#ae80038cb8a88ffebf555ccf1f166f086">   76</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#ae80038cb8a88ffebf555ccf1f166f086">AddIncomingTopic</a>(<span class="keyword">const</span> std::string&amp; topic, <a class="code hl_typedef" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId, <a class="code hl_class" href="classdmq_1_1databus_1_1_participant.html">Participant</a>&amp; participant, <a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;<span class="keywordtype">void</span>(T)&gt;&amp; serializer) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        participant.<a class="code hl_function" href="classdmq_1_1databus_1_1_participant.html#a2029a33755db718eafadfeec4d45e10b">RegisterHandler</a>&lt;T&gt;(remoteId, serializer, [topic](<span class="keyword">const</span> T&amp; msg) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#aefae844605e43ff33a8e5ae2b5a84a8d">DataBus::Publish&lt;T&gt;</a>(topic, msg);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        });</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
 </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="comment">// Subscribe to all bus traffic (topic and stringified value).</span></div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="comment">// NOTE: priority is only applied when thread != nullptr; passing a non-default</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="comment">// priority without a thread is a programming error and triggers FaultHandler.</span></div>
-<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html#ae6eee3befd7bcb1daa24f34ff5447917">   86</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> <a class="code hl_function" href="classdmq_1_1_data_bus.html#ae6eee3befd7bcb1daa24f34ff5447917">Monitor</a>(std::function&lt;<span class="keywordtype">void</span>(<span class="keyword">const</span> <a class="code hl_struct" href="structdmq_1_1_spy_packet.html">SpyPacket</a>&amp;)&gt; func, <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a>* thread = <span class="keyword">nullptr</span>, <a class="code hl_enumeration" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a> priority = <a class="code hl_enumvalue" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a>) {</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">if</span> (!thread &amp;&amp; priority != <a class="code hl_enumvalue" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a>) {</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <a class="code hl_function" href="_fault_8cpp.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4">::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keywordflow">return</span> {};</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        }</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <a class="code hl_class" href="classdmq_1_1_data_bus.html">DataBus</a>&amp; instance = GetInstance();</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(instance.m_mutex);</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">if</span> (thread) {</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keyword">auto</span> del = <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(std::move(func), *thread);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            del.SetPriority(priority);</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">return</span> instance.m_monitorSignal.Connect(del);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        }</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordflow">return</span> instance.m_monitorSignal.Connect(<a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(std::move(func)));</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="comment">// Register a stringifier for a topic to enable spying/logging.</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#a6a018b5d7f5ef55e0fbc48d9c1d98878">   84</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#a6a018b5d7f5ef55e0fbc48d9c1d98878">RegisterStringifier</a>(<span class="keyword">const</span> std::string&amp; topic, std::function&lt;std::string(<span class="keyword">const</span> T&amp;)&gt; func) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        GetInstance().InternalRegisterStringifier&lt;T&gt;(topic, std::move(func));</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    }</div>
 </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="comment">// Reset the DataBus (mostly for testing).</span></div>
-<div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classdmq_1_1_data_bus.html#a2642ed65d730bc6f1f88161d3df83c1e">  102</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1_data_bus.html#a2642ed65d730bc6f1f88161d3df83c1e">ResetForTesting</a>() {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        GetInstance().InternalReset();</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="comment">// Enable/Disable Last Value Cache (LVC) for a topic.</span></div>
+<div class="foldopen" id="foldopen00089" data-start="{" data-end="}">
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#a545c7bc40c4edd62b0fffed5f71ade79">   89</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#a545c7bc40c4edd62b0fffed5f71ade79">LastValueCache</a>(<span class="keyword">const</span> std::string&amp; topic, <span class="keywordtype">bool</span> enabled) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        GetInstance().InternalLastValueCache(topic, enabled);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
 </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_class" href="classdmq_1_1_data_bus.html">DataBus</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_class" href="classdmq_1_1_data_bus.html">~DataBus</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="classdmq_1_1_data_bus.html">DataBus</a>(<span class="keyword">const</span> <a class="code hl_class" href="classdmq_1_1_data_bus.html">DataBus</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <a class="code hl_class" href="classdmq_1_1_data_bus.html">DataBus</a>&amp; operator=(<span class="keyword">const</span> <a class="code hl_class" href="classdmq_1_1_data_bus.html">DataBus</a>&amp;) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keyword">static</span> <a class="code hl_class" href="classdmq_1_1_data_bus.html">DataBus</a>&amp; GetInstance() {</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keyword">static</span> <a class="code hl_class" href="classdmq_1_1_data_bus.html">DataBus</a> instance;</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> instance;</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    }</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">using </span>SignalPtr = std::shared_ptr&lt;<a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(T)&gt;&gt;;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> F&gt;</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> InternalSubscribe(<span class="keyword">const</span> std::string&amp; topic, F&amp;&amp; func, <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a>* thread, QoS qos) {</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        SignalPtr&lt;T&gt; signal;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="comment">// Performance Note: Forced std::function construction for internal type management.</span></div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        std::function&lt;void(T)&gt; typedFunc = std::forward&lt;F&gt;(func);</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        T* cachedValPtr = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        T cachedVal;</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> conn;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="comment">// Subscribe to all bus traffic (topic and stringified value).</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="comment">// Monitor all traffic on the DataBus.</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="comment">// NOTE: priority is only applied when thread != nullptr; passing a non-default</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="comment">// priority without a thread is a programming error and triggers FaultHandler.</span></div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="}">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#af36b7555f1e1081ff153e0afe466c437">   97</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#af36b7555f1e1081ff153e0afe466c437">Monitor</a>(std::function&lt;<span class="keywordtype">void</span>(<span class="keyword">const</span> <a class="code hl_struct" href="structdmq_1_1databus_1_1_spy_packet.html">SpyPacket</a>&amp;)&gt; func, <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a>* thread = <span class="keyword">nullptr</span>, <a class="code hl_enumeration" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a> priority = <a class="code hl_enumvalue" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a>) {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordflow">if</span> (!thread &amp;&amp; priority != <a class="code hl_enumvalue" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a>) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <a class="code hl_function" href="_fault_8cpp.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4">::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <a class="code hl_class" href="classdmq_1_1databus_1_1_data_bus.html">DataBus</a>&amp; instance = GetInstance();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(instance.m_mutex);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">if</span> (thread) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keyword">auto</span> del = <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(std::move(func), *thread);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            del.SetPriority(priority);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            <span class="keywordflow">return</span> instance.m_monitorSignal.Connect(del);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">return</span> instance.m_monitorSignal.Connect(<a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(std::move(func)));</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
+</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="foldopen" id="foldopen00113" data-start="{" data-end="}">
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#a4e53a7bedc1e09edb66479b3c4ef15b8">  113</a></span>    <span class="keyword">static</span> <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#a4e53a7bedc1e09edb66479b3c4ef15b8">SubscribeUnhandled</a>(std::function&lt;<span class="keywordtype">void</span>(<span class="keyword">const</span> std::string&amp; topic)&gt; func) {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordflow">return</span> GetInstance().m_unhandledSignal.Connect(<a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(std::move(func)));</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    }</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="comment">// Reset the DataBus (mostly for testing).</span></div>
+<div class="foldopen" id="foldopen00118" data-start="{" data-end="}">
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classdmq_1_1databus_1_1_data_bus.html#a41ba3b962f4fd1dc089c8c9c956c6c3d">  118</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classdmq_1_1databus_1_1_data_bus.html#a41ba3b962f4fd1dc089c8c9c956c6c3d">ResetForTesting</a>() {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        GetInstance().InternalReset();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    }</div>
+</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> InternalLastValueCache(<span class="keyword">const</span> std::string&amp; topic, <span class="keywordtype">bool</span> enabled) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        m_topicQos[topic].lastValueCache = enabled;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    DataBus() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    ~DataBus() = <span class="keywordflow">default</span>;</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        {</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            </div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            <span class="comment">// 1. Enable LVC if requested (persists for topic lifetime until ResetForTesting)</span></div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            <span class="keywordflow">if</span> (qos.lastValueCache) {</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                m_topicQos[topic].lastValueCache = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            }</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    DataBus(<span class="keyword">const</span> DataBus&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    DataBus&amp; operator=(<span class="keyword">const</span> DataBus&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">static</span> DataBus&amp; GetInstance() {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keyword">static</span> DataBus instance;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordflow">return</span> instance;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    }</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            <span class="comment">// 2. Get or create signal with type safety check (std::type_index)</span></div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>            signal = GetOrCreateSignal&lt;T&gt;(topic);</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>            <span class="keywordflow">if</span> (!signal) {</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                <span class="keywordflow">return</span> {}; <span class="comment">// Type mismatch or other failure</span></div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            }</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            <span class="comment">// 3. Establish connection while holding the lock. This ensures no publishes</span></div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            <span class="comment">// are missed, as any new publish will be blocked until this lock is released.</span></div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <span class="keywordflow">if</span> (thread) {</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                conn = signal-&gt;Connect(<a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(typedFunc, *thread));</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                conn = signal-&gt;Connect(<a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(typedFunc));</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            }</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            <span class="comment">// 4. Prepare LVC delivery if enabled and available</span></div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>            <span class="keywordflow">if</span> (qos.lastValueCache) {</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                <span class="keyword">auto</span> it = m_lastValues.find(topic);</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                <span class="keywordflow">if</span> (it != m_lastValues.end()) {</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                    cachedVal = *std::static_pointer_cast&lt;T&gt;(it-&gt;second);</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                    cachedValPtr = &amp;cachedVal;</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                }</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            }</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        }</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="comment">// 5. Dispatch LVC outside the lock to prevent deadlocks. </span></div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="comment">// IMPORTANT: Because this happens after releasing the lock, a high-frequency</span></div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="comment">// publisher on another thread could have already sent a new value to the</span></div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="comment">// connected signal. The subscriber might receive the fresh value FIRST,</span></div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="comment">// followed by this stale LVC value. Users of LVC should ensure their </span></div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="comment">// logic handles potential out-of-order state arrival.</span></div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordflow">if</span> (cachedValPtr) {</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            <span class="keywordflow">if</span> (thread) {</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(typedFunc, *thread).AsyncInvoke(*cachedValPtr);</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>                typedFunc(*cachedValPtr);</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            }</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        }</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">return</span> conn;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    }</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordtype">void</span> InternalPublish(<span class="keyword">const</span> std::string&amp; topic, <span class="keyword">const</span> T&amp; data) {</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="comment">// Capture timestamp before lock acquisition for maximum accuracy and </span></div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="comment">// monotonic ordering using dmq::Clock.</span></div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keyword">auto</span> now = <a class="code hl_function" href="structdmq_1_1_bare_metal_clock.html#a092271fdfa7137dd4dbf9a95f1e71d20">dmq::Clock::now</a>();</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        uint64_t timestamp = std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(now.time_since_epoch()).count();</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        SignalPtr&lt;T&gt; signal;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        std::shared_ptr&lt;void&gt; serializerPtr;</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;void(T)&gt;* serializer = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        std::vector&lt;std::shared_ptr&lt;Participant&gt;&gt; participantsSnapshot;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        std::string strVal = <span class="stringliteral">&quot;?&quot;</span>;</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keywordtype">bool</span> hasMonitor = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        {</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            <span class="comment">// 1. Type safety: verify T matches the registered type for this topic.</span></div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            <span class="comment">// Must be first — before any writes — so a mismatch never corrupts LVC.</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="keyword">auto</span> itType = m_typeIndices.find(topic);</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            <span class="keywordflow">if</span> (itType != m_typeIndices.end() &amp;&amp; itType-&gt;second != std::type_index(<span class="keyword">typeid</span>(T))) {</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                <a class="code hl_function" href="_fault_8cpp.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4">::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            }</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            <span class="comment">// 2. Update LVC ONLY if enabled for this topic to save memory.</span></div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            <span class="comment">// NOTE: QoS lastValueCache is currently &quot;sticky&quot; per topic. Once enabled</span></div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            <span class="comment">// by any subscriber, it remains active for that topic until ResetForTesting().</span></div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            <span class="keyword">auto</span> itQos = m_topicQos.find(topic);</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            <span class="keywordflow">if</span> (itQos != m_topicQos.end() &amp;&amp; itQos-&gt;second.lastValueCache) {</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>                m_lastValues[topic] = std::make_shared&lt;T&gt;(data);</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            }</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            <span class="comment">// 3. Prepare monitor data</span></div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keywordflow">if</span> (!m_monitorSignal.Empty()) {</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>                hasMonitor = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>                <span class="keyword">auto</span> itStr = m_stringifiers.find(topic);</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                <span class="keywordflow">if</span> (itStr != m_stringifiers.end()) {</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                    <span class="keyword">auto</span> func = <span class="keyword">static_cast&lt;</span>std::function&lt;std::string(<span class="keyword">const </span>T&amp;)<span class="keyword">&gt;</span>*&gt;(itStr-&gt;second.get());</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                    strVal = (*func)(data);</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keyword">using </span>SignalPtr = std::shared_ptr&lt;<a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(T)&gt;&gt;;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> F&gt;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> InternalSubscribe(<span class="keyword">const</span> std::string&amp; topic, F&amp;&amp; func, <a class="code hl_class" href="classdmq_1_1_i_thread.html">dmq::IThread</a>* thread, QoS qos) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        SignalPtr&lt;T&gt; signal;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="comment">// Performance Note: Forced std::function construction for internal type management.</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        std::function&lt;void(T)&gt; typedFunc = std::forward&lt;F&gt;(func);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="comment">// Wrap with min separation rate limiter if requested. Each subscriber gets its</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="comment">// own independent last-delivery timestamp, so different subscribers on the same</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="comment">// topic can have different (or no) rate limits without affecting each other.</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordflow">if</span> (qos.minSeparation.has_value()) {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            <span class="keyword">auto</span> minSepRep = qos.minSeparation.value().count();</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>            <span class="keyword">auto</span> lastDeliveryRep = std::make_shared&lt;std::atomic&lt;int64_t&gt;&gt;(0);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <span class="keyword">auto</span> inner = std::move(typedFunc);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            typedFunc = [inner = std::move(inner), minSepRep, lastDeliveryRep](T data) {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                <span class="keyword">auto</span> nowRep = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(dmq::Clock::now().time_since_epoch().count());</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                <span class="keyword">auto</span> lastRep = lastDeliveryRep-&gt;load(std::memory_order_relaxed);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                <span class="keywordflow">if</span> (nowRep - lastRep &gt;= minSepRep) {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                    lastDeliveryRep-&gt;store(nowRep, std::memory_order_relaxed);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                    inner(data);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>                }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            };</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        T* cachedValPtr = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        T cachedVal;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <a class="code hl_class" href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a> conn;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        {</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>            std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            <span class="comment">// 1. Enable LVC if requested (persists for topic lifetime until ResetForTesting)</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            <span class="keywordflow">if</span> (qos.lastValueCache) {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                m_topicQos[topic].lastValueCache = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            }</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            <span class="comment">// 2. Get or create signal with type safety check (std::type_index)</span></div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            signal = GetOrCreateSignal&lt;T&gt;(topic);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            <span class="keywordflow">if</span> (!signal) {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                <span class="keywordflow">return</span> {}; <span class="comment">// Type mismatch or other failure</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            }</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="comment">// 3. Establish connection while holding the lock. This ensures no publishes</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            <span class="comment">// are missed, as any new publish will be blocked until this lock is released.</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            <span class="keywordflow">if</span> (thread) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                conn = signal-&gt;Connect(<a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(typedFunc, *thread));</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                conn = signal-&gt;Connect(<a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(typedFunc));</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            <span class="comment">// 4. Prepare LVC delivery if enabled and available</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            <span class="keywordflow">if</span> (qos.lastValueCache) {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                <span class="keyword">auto</span> it = m_lastValues.find(topic);</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                <span class="keywordflow">if</span> (it != m_lastValues.end()) {</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                    <span class="comment">// Check lifespan: skip delivery if the cached value is too old</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>                    <span class="keywordtype">bool</span> expired = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>                    <span class="keywordflow">if</span> (qos.lifespan.has_value()) {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                        <span class="keyword">auto</span> age = dmq::Clock::now() - it-&gt;second.timestamp;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                        expired = (age &gt; qos.lifespan.value());</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                    }</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                    <span class="keywordflow">if</span> (!expired) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                        cachedVal = *std::static_pointer_cast&lt;T&gt;(it-&gt;second.value);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>                        cachedValPtr = &amp;cachedVal;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>                    }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>                }</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        }</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="comment">// 5. Dispatch LVC outside the lock to prevent deadlocks.</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="comment">// IMPORTANT: Because this happens after releasing the lock, a high-frequency</span></div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="comment">// publisher on another thread could have already sent a new value to the</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="comment">// connected signal. The subscriber might receive the fresh value FIRST,</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="comment">// followed by this stale LVC value. Users of LVC should ensure their</span></div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="comment">// logic handles potential out-of-order state arrival.</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keywordflow">if</span> (cachedValPtr) {</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            <span class="keywordflow">if</span> (thread) {</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                <a class="code hl_function" href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a>(typedFunc, *thread).AsyncInvoke(*cachedValPtr);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                typedFunc(*cachedValPtr);</div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            }</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            <span class="comment">// 4. Get signal and remote info. Only create Signal if there is local interest.</span></div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            <span class="keyword">auto</span> itSig = m_signals.find(topic);</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            <span class="keywordflow">if</span> (itSig != m_signals.end()) {</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                signal = std::static_pointer_cast&lt;<a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(T)&gt;&gt;(itSig-&gt;second);</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            }</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            <span class="keyword">auto</span> itSer = m_serializers.find(topic);</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>            <span class="keywordflow">if</span> (itSer != m_serializers.end()) {</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>                serializerPtr = itSer-&gt;second;</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                serializer = <span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;<span class="keywordtype">void</span>(T)<span class="keyword">&gt;</span>*&gt;(serializerPtr.get());</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            }</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            <span class="comment">// 5. Snapshot participants while locked to ensure atomicity between</span></div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            <span class="comment">// local and remote dispatch sets.</span></div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            participantsSnapshot = m_participants;</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        }</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <span class="comment">// 6. Dispatch Monitor outside lock to allow re-entry/prevent deadlocks</span></div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">if</span> (hasMonitor) {</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            SpyPacket packet{ topic, strVal, timestamp };</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            m_monitorSignal(packet);</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        }</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        <span class="comment">// 7. Local distribution</span></div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        <span class="keywordflow">if</span> (signal) {</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>            (*signal)(data);</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        }</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        <span class="comment">// 8. Remote distribution using the snapshot</span></div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>        <span class="keywordflow">if</span> (serializer) {</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; participant : participantsSnapshot) {</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>                participant-&gt;<a class="code hl_function" href="classdmq_1_1_participant.html#a649fdbc69ffe6391e659f338f70270c1">Send</a>&lt;T&gt;(topic, data, *serializer);</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>            }</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        }</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    }</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keywordtype">void</span> InternalAddParticipant(std::shared_ptr&lt;Participant&gt; participant) {</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        m_participants.push_back(participant);</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    }</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <span class="keywordtype">void</span> InternalRegisterSerializer(<span class="keyword">const</span> std::string&amp; topic, <a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;<span class="keywordtype">void</span>(T)&gt;&amp; serializer) {</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span> </div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>        <span class="keyword">auto</span> itType = m_typeIndices.find(topic);</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <span class="keywordflow">if</span> (itType != m_typeIndices.end()) {</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>            <span class="keywordflow">if</span> (itType-&gt;second != std::type_index(<span class="keyword">typeid</span>(T))) {</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                <a class="code hl_function" href="_fault_8cpp.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4">::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>            }</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            m_typeIndices.emplace(topic, std::type_index(<span class="keyword">typeid</span>(T)));</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        }</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        <span class="comment">// Use shared_ptr with no-op deleter because serializer is owned by caller</span></div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        m_serializers[topic] = std::shared_ptr&lt;void&gt;(&amp;serializer, [](<span class="keywordtype">void</span>*) {});</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    }</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        }</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">return</span> conn;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordtype">void</span> InternalPublish(<span class="keyword">const</span> std::string&amp; topic, <span class="keyword">const</span> T&amp; data) {</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <span class="comment">// Capture timestamp before lock acquisition for maximum accuracy and </span></div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="comment">// monotonic ordering using dmq::Clock.</span></div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="keyword">auto</span> now = dmq::Clock::now();</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        uint64_t timestamp = std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(now.time_since_epoch()).count();</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        SignalPtr&lt;T&gt; signal;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        std::shared_ptr&lt;void&gt; serializerPtr;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;void(T)&gt;* serializer = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        std::vector&lt;std::shared_ptr&lt;Participant&gt;&gt; participantsSnapshot;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        std::string strVal = <span class="stringliteral">&quot;?&quot;</span>;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="keywordtype">bool</span> hasMonitor = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            <span class="comment">// 1. Type safety: verify T matches the registered type for this topic.</span></div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>            <span class="comment">// Must be first — before any writes — so a mismatch never corrupts LVC.</span></div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>            <span class="keyword">auto</span> itType = m_typeIndices.find(topic);</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>            <span class="keywordflow">if</span> (itType != m_typeIndices.end() &amp;&amp; itType-&gt;second != std::type_index(<span class="keyword">typeid</span>(T))) {</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                <a class="code hl_function" href="namespacedmq_1_1util.html#a796fbb70ad51b93abcaaae2eab31461f">::dmq::util::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>                <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>            }</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            <span class="comment">// 2. Update LVC ONLY if enabled for this topic to save memory.</span></div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>            <span class="comment">// NOTE: QoS lastValueCache is currently &quot;sticky&quot; per topic. Once enabled</span></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>            <span class="comment">// by any subscriber, it remains active for that topic until ResetForTesting().</span></div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>            <span class="keyword">auto</span> itQos = m_topicQos.find(topic);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            <span class="keywordflow">if</span> (itQos != m_topicQos.end() &amp;&amp; itQos-&gt;second.lastValueCache) {</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>                m_lastValues[topic] = LvcEntry{ std::make_shared&lt;T&gt;(data), now };</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            }</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            <span class="comment">// 3. Prepare monitor data</span></div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            <span class="keywordflow">if</span> (!m_monitorSignal.Empty()) {</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                hasMonitor = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>                <span class="keyword">auto</span> itStr = m_stringifiers.find(topic);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>                <span class="keywordflow">if</span> (itStr != m_stringifiers.end()) {</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                    <span class="keyword">auto</span> func = <span class="keyword">static_cast&lt;</span>std::function&lt;std::string(<span class="keyword">const </span>T&amp;)<span class="keyword">&gt;</span>*&gt;(itStr-&gt;second.get());</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>                    strVal = (*func)(data);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                }</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>            }</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>            <span class="comment">// 4. Get signal and remote info. Only create Signal if there is local interest.</span></div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            <span class="keyword">auto</span> itSig = m_signals.find(topic);</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            <span class="keywordflow">if</span> (itSig != m_signals.end()) {</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                signal = std::static_pointer_cast&lt;<a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(T)&gt;&gt;(itSig-&gt;second);</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            }</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keyword">auto</span> itSer = m_serializers.find(topic);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            <span class="keywordflow">if</span> (itSer != m_serializers.end()) {</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                serializerPtr = itSer-&gt;second;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                serializer = <span class="keyword">static_cast&lt;</span><a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;<span class="keywordtype">void</span>(T)<span class="keyword">&gt;</span>*&gt;(serializerPtr.get());</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            }</div>
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="keywordtype">void</span> InternalRegisterStringifier(<span class="keyword">const</span> std::string&amp; topic, std::function&lt;std::string(<span class="keyword">const</span> T&amp;)&gt; func) {</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        <span class="comment">// Runtime Type Safety: Ensure topic is not registered with multiple types</span></div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>        <span class="keyword">auto</span> itType = m_typeIndices.find(topic);</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        <span class="keywordflow">if</span> (itType != m_typeIndices.end()) {</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            <span class="keywordflow">if</span> (itType-&gt;second != std::type_index(<span class="keyword">typeid</span>(T))) {</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                <a class="code hl_function" href="_fault_8cpp.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4">::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            }</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            m_typeIndices.emplace(topic, std::type_index(<span class="keyword">typeid</span>(T)));</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        }</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="comment">// Use shared_ptr with custom deleter to fix memory leak</span></div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        m_stringifiers[topic] = std::shared_ptr&lt;void&gt;(</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>            <span class="keyword">new</span> std::function&lt;std::string(<span class="keyword">const</span> T&amp;)&gt;(std::move(func)),</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            [](<span class="keywordtype">void</span>* ptr) { <span class="keyword">delete</span> <span class="keyword">static_cast&lt;</span>std::function&lt;std::string(<span class="keyword">const </span>T&amp;)<span class="keyword">&gt;</span>*&gt;(ptr); }</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        );</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    }</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    <span class="keywordtype">void</span> InternalReset() {</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        m_signals.clear();</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        m_participants.clear();</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        m_serializers.clear();</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        m_lastValues.clear();</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        m_topicQos.clear();</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        m_stringifiers.clear(); <span class="comment">// shared_ptr correctly frees allocated functions</span></div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        m_typeIndices.clear();</div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        m_monitorSignal.Clear();</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    }</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span> </div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    SignalPtr&lt;T&gt; GetOrCreateSignal(<span class="keyword">const</span> std::string&amp; topic) {</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>        <span class="comment">// Assume lock is held by caller</span></div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        <span class="keyword">auto</span> itType = m_typeIndices.find(topic);</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        <span class="keywordflow">if</span> (itType != m_typeIndices.end()) {</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>            <span class="keywordflow">if</span> (itType-&gt;second != std::type_index(<span class="keyword">typeid</span>(T))) {</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>                <span class="comment">// Runtime Type Safety: Catch same topic string used with different types</span></div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>                <a class="code hl_function" href="_fault_8cpp.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4">::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>                <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; </div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>            }</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>            m_typeIndices.emplace(topic, std::type_index(<span class="keyword">typeid</span>(T)));</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        }</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span> </div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keyword">auto</span> it = m_signals.find(topic);</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        <span class="keywordflow">if</span> (it != m_signals.end()) {</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>            <span class="keywordflow">return</span> std::static_pointer_cast&lt;<a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(T)&gt;&gt;(it-&gt;second);</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        }</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span> </div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keyword">auto</span> signal = std::make_shared&lt;<a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(T)&gt;&gt;();</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        m_signals[topic] = std::static_pointer_cast&lt;void&gt;(signal);</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="keywordflow">return</span> signal;</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    }</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span> </div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    <a class="code hl_struct" href="structdmq_1_1_null_mutex.html">dmq::RecursiveMutex</a> m_mutex;</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    std::unordered_map&lt;std::string, std::shared_ptr&lt;void&gt;&gt; m_signals;</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    std::unordered_map&lt;std::string, std::type_index&gt; m_typeIndices;</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    std::vector&lt;std::shared_ptr&lt;Participant&gt;&gt; m_participants;</div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    std::unordered_map&lt;std::string, std::shared_ptr&lt;void&gt;&gt; m_serializers;</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>    std::unordered_map&lt;std::string, std::shared_ptr&lt;void&gt;&gt; m_lastValues;</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>    std::unordered_map&lt;std::string, QoS&gt; m_topicQos;</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    std::unordered_map&lt;std::string, std::shared_ptr&lt;void&gt;&gt; m_stringifiers;</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    <a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(<span class="keyword">const</span> SpyPacket&amp;)&gt; m_monitorSignal;</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>};</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            <span class="comment">// 5. Snapshot participants while locked to ensure atomicity between</span></div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>            <span class="comment">// local and remote dispatch sets.</span></div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            participantsSnapshot = m_participants;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        }</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>        <span class="comment">// 6. Dispatch Monitor outside lock to allow re-entry/prevent deadlocks</span></div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        <span class="keywordflow">if</span> (hasMonitor) {</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>            SpyPacket packet{ topic, strVal, timestamp };</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            m_monitorSignal(packet);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        }</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>        <span class="comment">// 7. Local distribution</span></div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keywordtype">bool</span> handled = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        <span class="keywordflow">if</span> (signal) {</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            (*signal)(data);</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>            handled = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        }</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span> </div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        <span class="comment">// 8. Remote distribution using the snapshot</span></div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        <span class="keywordflow">if</span> (serializer) {</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; participant : participantsSnapshot) {</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>                participant-&gt;<a class="code hl_function" href="classdmq_1_1databus_1_1_participant.html#a706b59cc0527c3bafb17950db6212d81">Send</a>&lt;T&gt;(topic, data, *serializer);</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                handled = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>            }</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        }</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span> </div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="comment">// 9. Notify if no one received the message</span></div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="keywordflow">if</span> (!handled) {</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>            m_unhandledSignal(topic);</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        }</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    }</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    <span class="keywordtype">void</span> InternalAddParticipant(std::shared_ptr&lt;Participant&gt; participant) {</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        m_participants.push_back(participant);</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    }</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span> </div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <span class="keywordtype">void</span> InternalRegisterSerializer(<span class="keyword">const</span> std::string&amp; topic, <a class="code hl_class" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt;<span class="keywordtype">void</span>(T)&gt;&amp; serializer) {</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span> </div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        <span class="keyword">auto</span> itType = m_typeIndices.find(topic);</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        <span class="keywordflow">if</span> (itType != m_typeIndices.end()) {</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>            <span class="keywordflow">if</span> (itType-&gt;second != std::type_index(<span class="keyword">typeid</span>(T))) {</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>                <a class="code hl_function" href="namespacedmq_1_1util.html#a796fbb70ad51b93abcaaae2eab31461f">::dmq::util::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>                <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>            }</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>            m_typeIndices.emplace(topic, std::type_index(<span class="keyword">typeid</span>(T)));</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        }</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        <span class="comment">// Use shared_ptr with no-op deleter because serializer is owned by caller</span></div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        m_serializers[topic] = std::shared_ptr&lt;void&gt;(&amp;serializer, [](<span class="keywordtype">void</span>*) {});</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    }</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <span class="keywordtype">void</span> InternalRegisterStringifier(<span class="keyword">const</span> std::string&amp; topic, std::function&lt;std::string(<span class="keyword">const</span> T&amp;)&gt; func) {</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span> </div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <span class="comment">// Runtime Type Safety: Ensure topic is not registered with multiple types</span></div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <span class="keyword">auto</span> itType = m_typeIndices.find(topic);</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>        <span class="keywordflow">if</span> (itType != m_typeIndices.end()) {</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            <span class="keywordflow">if</span> (itType-&gt;second != std::type_index(<span class="keyword">typeid</span>(T))) {</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>                <a class="code hl_function" href="namespacedmq_1_1util.html#a796fbb70ad51b93abcaaae2eab31461f">::dmq::util::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>                <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>            }</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>            m_typeIndices.emplace(topic, std::type_index(<span class="keyword">typeid</span>(T)));</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>        }</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        <span class="comment">// Use shared_ptr with custom deleter to fix memory leak</span></div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>        m_stringifiers[topic] = std::shared_ptr&lt;void&gt;(</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>            <span class="keyword">new</span> std::function&lt;std::string(<span class="keyword">const</span> T&amp;)&gt;(std::move(func)),</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            [](<span class="keywordtype">void</span>* ptr) { <span class="keyword">delete</span> <span class="keyword">static_cast&lt;</span>std::function&lt;std::string(<span class="keyword">const </span>T&amp;)<span class="keyword">&gt;</span>*&gt;(ptr); }</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>        );</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    }</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span> </div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    <span class="keywordtype">void</span> InternalReset() {</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>        std::lock_guard&lt;dmq::RecursiveMutex&gt; lock(m_mutex);</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        m_signals.clear();</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        m_participants.clear();</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        m_serializers.clear();</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        m_lastValues.clear();</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        m_topicQos.clear();</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        m_stringifiers.clear(); <span class="comment">// shared_ptr correctly frees allocated functions</span></div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        m_typeIndices.clear();</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        m_monitorSignal.Clear();</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    }</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span> </div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    SignalPtr&lt;T&gt; GetOrCreateSignal(<span class="keyword">const</span> std::string&amp; topic) {</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        <span class="comment">// Assume lock is held by caller</span></div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        <span class="keyword">auto</span> itType = m_typeIndices.find(topic);</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>        <span class="keywordflow">if</span> (itType != m_typeIndices.end()) {</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>            <span class="keywordflow">if</span> (itType-&gt;second != std::type_index(<span class="keyword">typeid</span>(T))) {</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>                <span class="comment">// Runtime Type Safety: Catch same topic string used with different types</span></div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>                <a class="code hl_function" href="namespacedmq_1_1util.html#a796fbb70ad51b93abcaaae2eab31461f">::dmq::util::FaultHandler</a>(__FILE__, (<span class="keywordtype">unsigned</span> <span class="keywordtype">short</span>)__LINE__);</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>                <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; </div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>            }</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>            m_typeIndices.emplace(topic, std::type_index(<span class="keyword">typeid</span>(T)));</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        }</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span> </div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>        <span class="keyword">auto</span> it = m_signals.find(topic);</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>        <span class="keywordflow">if</span> (it != m_signals.end()) {</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>            <span class="keywordflow">return</span> std::static_pointer_cast&lt;<a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(T)&gt;&gt;(it-&gt;second);</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>        }</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span> </div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>        <span class="keyword">auto</span> signal = std::make_shared&lt;<a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(T)&gt;&gt;();</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>        m_signals[topic] = std::static_pointer_cast&lt;void&gt;(signal);</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>        <span class="keywordflow">return</span> signal;</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>    }</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span> </div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>    <span class="keyword">struct </span>LvcEntry {</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        std::shared_ptr&lt;void&gt; value;</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>        <a class="code hl_typedef" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> timestamp;</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>    };</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span> </div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    <a class="code hl_struct" href="structdmq_1_1_null_mutex.html">dmq::RecursiveMutex</a> m_mutex;</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>    std::unordered_map&lt;std::string, std::shared_ptr&lt;void&gt;&gt; m_signals;</div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>    std::unordered_map&lt;std::string, std::type_index&gt; m_typeIndices;</div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>    std::vector&lt;std::shared_ptr&lt;Participant&gt;&gt; m_participants;</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>    std::unordered_map&lt;std::string, std::shared_ptr&lt;void&gt;&gt; m_serializers;</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    std::unordered_map&lt;std::string, LvcEntry&gt; m_lastValues;</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    std::unordered_map&lt;std::string, QoS&gt; m_topicQos;</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>    std::unordered_map&lt;std::string, std::shared_ptr&lt;void&gt;&gt; m_stringifiers;</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    <a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(<span class="keyword">const</span> SpyPacket&amp;)&gt; m_monitorSignal;</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    <a class="code hl_class" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt;void(<span class="keyword">const</span> std::string&amp; topic)&gt; m_unhandledSignal;</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>};</div>
 </div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span> </div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>} <span class="comment">// namespace dmq</span></div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span> </div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span><span class="preprocessor">#endif </span><span class="comment">// DMQ_DATABUS_H</span></div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span> </div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>} <span class="comment">// namespace dmq::databus</span></div>
+</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span> </div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span> </div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span><span class="preprocessor">#endif </span><span class="comment">// DMQ_DATABUS_H</span></div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span> </div>
 <div class="ttc" id="a_data_bus_qos_8h_html"><div class="ttname"><a href="_data_bus_qos_8h.html">DataBusQos.h</a></div></div>
-<div class="ttc" id="a_delegate_m_q_8h_html"><div class="ttname"><a href="_delegate_m_q_8h.html">DelegateMQ.h</a></div><div class="ttdoc">A single-include header for the complete DelegateMQ library functionality.</div></div>
-<div class="ttc" id="a_fault_8cpp_html_ae8ba6ae99ec4c653d7e81c7c2477c9c4"><div class="ttname"><a href="_fault_8cpp.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4">FaultHandler</a></div><div class="ttdeci">void FaultHandler(const char *file, unsigned short line)</div><div class="ttdef"><b>Definition</b> Fault.cpp:16</div></div>
+<div class="ttc" id="a_delegate_async_8h_html"><div class="ttname"><a href="_delegate_async_8h.html">DelegateAsync.h</a></div><div class="ttdoc">Delegate &quot;`Async`&quot; series of classes used to invoke a function asynchronously.</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html"><div class="ttname"><a href="_delegate_opt_8h.html">DelegateOpt.h</a></div><div class="ttdoc">Delegate library options header file.</div></div>
+<div class="ttc" id="a_delegate_remote_8h_html"><div class="ttname"><a href="_delegate_remote_8h.html">DelegateRemote.h</a></div><div class="ttdoc">Delegate &quot;`Remote`&quot; series of classes used to invoke a function remotely (i.e. different CPU,...</div></div>
+<div class="ttc" id="a_fault_8cpp_html_ae8ba6ae99ec4c653d7e81c7c2477c9c4"><div class="ttname"><a href="_fault_8cpp.html#ae8ba6ae99ec4c653d7e81c7c2477c9c4">FaultHandler</a></div><div class="ttdeci">void FaultHandler(const char *file, unsigned short line)</div><div class="ttdef"><b>Definition</b> Fault.cpp:48</div></div>
 <div class="ttc" id="a_fault_8h_html"><div class="ttname"><a href="_fault_8h.html">Fault.h</a></div></div>
+<div class="ttc" id="a_i_thread_8h_html"><div class="ttname"><a href="_i_thread_8h.html">IThread.h</a></div><div class="ttdoc">Interface for cross-thread delegate dispatching.</div></div>
 <div class="ttc" id="a_network_connect_8h_html"><div class="ttname"><a href="_network_connect_8h.html">NetworkConnect.h</a></div></div>
 <div class="ttc" id="a_participant_8h_html"><div class="ttname"><a href="_participant_8h.html">Participant.h</a></div></div>
+<div class="ttc" id="a_signal_8h_html"><div class="ttname"><a href="_signal_8h.html">Signal.h</a></div><div class="ttdoc">Thread-safe Signal/slot with RAII connection handles; no allocation requirement.</div></div>
 <div class="ttc" id="a_spy_packet_8h_html"><div class="ttname"><a href="_spy_packet_8h.html">SpyPacket.h</a></div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html"><div class="ttname"><a href="classdmq_1_1_data_bus.html">dmq::DataBus</a></div><div class="ttdef"><b>Definition</b> DataBus.h:27</div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html_a1c08358b90bb6f0c0ae0d123f18436f2"><div class="ttname"><a href="classdmq_1_1_data_bus.html#a1c08358b90bb6f0c0ae0d123f18436f2">dmq::DataBus::AddParticipant</a></div><div class="ttdeci">static void AddParticipant(std::shared_ptr&lt; Participant &gt; participant)</div><div class="ttdef"><b>Definition</b> DataBus.h:55</div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html_a2642ed65d730bc6f1f88161d3df83c1e"><div class="ttname"><a href="classdmq_1_1_data_bus.html#a2642ed65d730bc6f1f88161d3df83c1e">dmq::DataBus::ResetForTesting</a></div><div class="ttdeci">static void ResetForTesting()</div><div class="ttdef"><b>Definition</b> DataBus.h:102</div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html_a50a817364768fe3ddaaa09cc4523f196"><div class="ttname"><a href="classdmq_1_1_data_bus.html#a50a817364768fe3ddaaa09cc4523f196">dmq::DataBus::RegisterStringifier</a></div><div class="ttdeci">static void RegisterStringifier(const std::string &amp;topic, std::function&lt; std::string(const T &amp;)&gt; func)</div><div class="ttdef"><b>Definition</b> DataBus.h:79</div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html_a5cfdd95ccd3d67dea8ae6a591deae284"><div class="ttname"><a href="classdmq_1_1_data_bus.html#a5cfdd95ccd3d67dea8ae6a591deae284">dmq::DataBus::Publish</a></div><div class="ttdeci">static void Publish(const std::string &amp;topic, const T &amp;data)</div><div class="ttdef"><b>Definition</b> DataBus.h:50</div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html_a6e0e6a4d05447c0cfcf9f1546bc41d65"><div class="ttname"><a href="classdmq_1_1_data_bus.html#a6e0e6a4d05447c0cfcf9f1546bc41d65">dmq::DataBus::SubscribeFilter</a></div><div class="ttdeci">static dmq::ScopedConnection SubscribeFilter(const std::string &amp;topic, F &amp;&amp;func, P &amp;&amp;predicate, dmq::IThread *thread=nullptr, QoS qos={})</div><div class="ttdef"><b>Definition</b> DataBus.h:39</div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html_a6ede4c036f01c4c2012c582b5af20799"><div class="ttname"><a href="classdmq_1_1_data_bus.html#a6ede4c036f01c4c2012c582b5af20799">dmq::DataBus::AddIncomingTopic</a></div><div class="ttdeci">static void AddIncomingTopic(const std::string &amp;topic, dmq::DelegateRemoteId remoteId, Participant &amp;participant, dmq::ISerializer&lt; void(T)&gt; &amp;serializer)</div><div class="ttdef"><b>Definition</b> DataBus.h:71</div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html_abdeb11a1b961ebf7dcc5d18db2e17b48"><div class="ttname"><a href="classdmq_1_1_data_bus.html#abdeb11a1b961ebf7dcc5d18db2e17b48">dmq::DataBus::RegisterSerializer</a></div><div class="ttdeci">static void RegisterSerializer(const std::string &amp;topic, dmq::ISerializer&lt; void(T)&gt; &amp;serializer)</div><div class="ttdef"><b>Definition</b> DataBus.h:61</div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html_acf8bbe3d3567f671761cb13ccf120f82"><div class="ttname"><a href="classdmq_1_1_data_bus.html#acf8bbe3d3567f671761cb13ccf120f82">dmq::DataBus::Subscribe</a></div><div class="ttdeci">static dmq::ScopedConnection Subscribe(const std::string &amp;topic, F &amp;&amp;func, dmq::IThread *thread=nullptr, QoS qos={})</div><div class="ttdef"><b>Definition</b> DataBus.h:33</div></div>
-<div class="ttc" id="aclassdmq_1_1_data_bus_html_ae6eee3befd7bcb1daa24f34ff5447917"><div class="ttname"><a href="classdmq_1_1_data_bus.html#ae6eee3befd7bcb1daa24f34ff5447917">dmq::DataBus::Monitor</a></div><div class="ttdeci">static dmq::ScopedConnection Monitor(std::function&lt; void(const SpyPacket &amp;)&gt; func, dmq::IThread *thread=nullptr, dmq::Priority priority=dmq::Priority::NORMAL)</div><div class="ttdef"><b>Definition</b> DataBus.h:86</div></div>
 <div class="ttc" id="aclassdmq_1_1_i_serializer_html"><div class="ttname"><a href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a></div><div class="ttdef"><b>Definition</b> ISerializer.h:14</div></div>
 <div class="ttc" id="aclassdmq_1_1_i_thread_html"><div class="ttname"><a href="classdmq_1_1_i_thread.html">dmq::IThread</a></div><div class="ttdoc">A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...</div><div class="ttdef"><b>Definition</b> IThread.h:22</div></div>
-<div class="ttc" id="aclassdmq_1_1_participant_html"><div class="ttname"><a href="classdmq_1_1_participant.html">dmq::Participant</a></div><div class="ttdef"><b>Definition</b> Participant.h:18</div></div>
-<div class="ttc" id="aclassdmq_1_1_participant_html_a649fdbc69ffe6391e659f338f70270c1"><div class="ttname"><a href="classdmq_1_1_participant.html#a649fdbc69ffe6391e659f338f70270c1">dmq::Participant::Send</a></div><div class="ttdeci">void Send(const std::string &amp;topic, const T &amp;data, dmq::ISerializer&lt; void(T)&gt; &amp;serializer)</div><div class="ttdef"><b>Definition</b> Participant.h:63</div></div>
-<div class="ttc" id="aclassdmq_1_1_participant_html_ae25ceb08a7fe5931d18503eaddbda601"><div class="ttname"><a href="classdmq_1_1_participant.html#ae25ceb08a7fe5931d18503eaddbda601">dmq::Participant::RegisterHandler</a></div><div class="ttdeci">void RegisterHandler(dmq::DelegateRemoteId remoteId, dmq::ISerializer&lt; void(T)&gt; &amp;serializer, std::function&lt; void(T)&gt; func)</div><div class="ttdef"><b>Definition</b> Participant.h:75</div></div>
 <div class="ttc" id="aclassdmq_1_1_scoped_connection_html"><div class="ttname"><a href="classdmq_1_1_scoped_connection.html">dmq::ScopedConnection</a></div><div class="ttdoc">RAII handle to a single Signal subscription. Disconnects automatically on destruction....</div><div class="ttdef"><b>Definition</b> Signal.h:104</div></div>
 <div class="ttc" id="aclassdmq_1_1_signal_html"><div class="ttname"><a href="classdmq_1_1_signal.html">dmq::Signal</a></div><div class="ttdef"><b>Definition</b> Signal.h:29</div></div>
-<div class="ttc" id="anamespacedmq_html"><div class="ttname"><a href="namespacedmq.html">dmq</a></div><div class="ttdoc">The delegate library namespace.</div><div class="ttdef"><b>Definition</b> Delegate.h:27</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html">dmq::databus::DataBus</a></div><div class="ttdef"><b>Definition</b> DataBus.h:32</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_a16919ade4c2c00a8d1ffd64b5438d845"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#a16919ade4c2c00a8d1ffd64b5438d845">dmq::databus::DataBus::AddParticipant</a></div><div class="ttdeci">static void AddParticipant(std::shared_ptr&lt; Participant &gt; participant)</div><div class="ttdef"><b>Definition</b> DataBus.h:60</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_a41ba3b962f4fd1dc089c8c9c956c6c3d"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#a41ba3b962f4fd1dc089c8c9c956c6c3d">dmq::databus::DataBus::ResetForTesting</a></div><div class="ttdeci">static void ResetForTesting()</div><div class="ttdef"><b>Definition</b> DataBus.h:118</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_a4e53a7bedc1e09edb66479b3c4ef15b8"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#a4e53a7bedc1e09edb66479b3c4ef15b8">dmq::databus::DataBus::SubscribeUnhandled</a></div><div class="ttdeci">static dmq::ScopedConnection SubscribeUnhandled(std::function&lt; void(const std::string &amp;topic)&gt; func)</div><div class="ttdoc">Fired when a message is published but has no local or remote subscribers.</div><div class="ttdef"><b>Definition</b> DataBus.h:113</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_a545c7bc40c4edd62b0fffed5f71ade79"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#a545c7bc40c4edd62b0fffed5f71ade79">dmq::databus::DataBus::LastValueCache</a></div><div class="ttdeci">static void LastValueCache(const std::string &amp;topic, bool enabled)</div><div class="ttdef"><b>Definition</b> DataBus.h:89</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_a611fedd778549ec3b70d9e6d0ca2f037"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#a611fedd778549ec3b70d9e6d0ca2f037">dmq::databus::DataBus::Subscribe</a></div><div class="ttdeci">static dmq::ScopedConnection Subscribe(const std::string &amp;topic, F &amp;&amp;func, dmq::IThread *thread=nullptr, QoS qos={})</div><div class="ttdef"><b>Definition</b> DataBus.h:38</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_a644874eee295aedcc9e570b9bec5c7ee"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#a644874eee295aedcc9e570b9bec5c7ee">dmq::databus::DataBus::RegisterSerializer</a></div><div class="ttdeci">static void RegisterSerializer(const std::string &amp;topic, dmq::ISerializer&lt; void(T)&gt; &amp;serializer)</div><div class="ttdef"><b>Definition</b> DataBus.h:66</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_a6a018b5d7f5ef55e0fbc48d9c1d98878"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#a6a018b5d7f5ef55e0fbc48d9c1d98878">dmq::databus::DataBus::RegisterStringifier</a></div><div class="ttdeci">static void RegisterStringifier(const std::string &amp;topic, std::function&lt; std::string(const T &amp;)&gt; func)</div><div class="ttdef"><b>Definition</b> DataBus.h:84</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_aac2ffd21ea6db04aa627db65c1cab269"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#aac2ffd21ea6db04aa627db65c1cab269">dmq::databus::DataBus::SubscribeFilter</a></div><div class="ttdeci">static dmq::ScopedConnection SubscribeFilter(const std::string &amp;topic, F &amp;&amp;func, P &amp;&amp;predicate, dmq::IThread *thread=nullptr, QoS qos={})</div><div class="ttdef"><b>Definition</b> DataBus.h:44</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_ae80038cb8a88ffebf555ccf1f166f086"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#ae80038cb8a88ffebf555ccf1f166f086">dmq::databus::DataBus::AddIncomingTopic</a></div><div class="ttdeci">static void AddIncomingTopic(const std::string &amp;topic, dmq::DelegateRemoteId remoteId, Participant &amp;participant, dmq::ISerializer&lt; void(T)&gt; &amp;serializer)</div><div class="ttdef"><b>Definition</b> DataBus.h:76</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_aefae844605e43ff33a8e5ae2b5a84a8d"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#aefae844605e43ff33a8e5ae2b5a84a8d">dmq::databus::DataBus::Publish</a></div><div class="ttdeci">static void Publish(const std::string &amp;topic, const T &amp;data)</div><div class="ttdef"><b>Definition</b> DataBus.h:55</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_data_bus_html_af36b7555f1e1081ff153e0afe466c437"><div class="ttname"><a href="classdmq_1_1databus_1_1_data_bus.html#af36b7555f1e1081ff153e0afe466c437">dmq::databus::DataBus::Monitor</a></div><div class="ttdeci">static dmq::ScopedConnection Monitor(std::function&lt; void(const SpyPacket &amp;)&gt; func, dmq::IThread *thread=nullptr, dmq::Priority priority=dmq::Priority::NORMAL)</div><div class="ttdef"><b>Definition</b> DataBus.h:97</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_participant_html"><div class="ttname"><a href="classdmq_1_1databus_1_1_participant.html">dmq::databus::Participant</a></div><div class="ttdef"><b>Definition</b> Participant.h:23</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_participant_html_a2029a33755db718eafadfeec4d45e10b"><div class="ttname"><a href="classdmq_1_1databus_1_1_participant.html#a2029a33755db718eafadfeec4d45e10b">dmq::databus::Participant::RegisterHandler</a></div><div class="ttdeci">void RegisterHandler(dmq::DelegateRemoteId remoteId, dmq::ISerializer&lt; void(T)&gt; &amp;serializer, std::function&lt; void(T)&gt; func)</div><div class="ttdef"><b>Definition</b> Participant.h:91</div></div>
+<div class="ttc" id="aclassdmq_1_1databus_1_1_participant_html_a706b59cc0527c3bafb17950db6212d81"><div class="ttname"><a href="classdmq_1_1databus_1_1_participant.html#a706b59cc0527c3bafb17950db6212d81">dmq::databus::Participant::Send</a></div><div class="ttdeci">void Send(const std::string &amp;topic, const T &amp;data, dmq::ISerializer&lt; void(T)&gt; &amp;serializer)</div><div class="ttdef"><b>Definition</b> Participant.h:79</div></div>
+<div class="ttc" id="anamespacedmq_1_1databus_html"><div class="ttname"><a href="namespacedmq_1_1databus.html">dmq::databus</a></div><div class="ttdef"><b>Definition</b> DataBus.h:24</div></div>
+<div class="ttc" id="anamespacedmq_1_1util_html_a796fbb70ad51b93abcaaae2eab31461f"><div class="ttname"><a href="namespacedmq_1_1util.html#a796fbb70ad51b93abcaaae2eab31461f">dmq::util::FaultHandler</a></div><div class="ttdeci">void FaultHandler(const char *file, unsigned short line)</div><div class="ttdef"><b>Definition</b> Fault.cpp:18</div></div>
 <div class="ttc" id="anamespacedmq_html_a5c5e55328ae2cd1d800dfb6c83a21bda"><div class="ttname"><a href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a></div><div class="ttdeci">uint16_t DelegateRemoteId</div><div class="ttdef"><b>Definition</b> IDispatcher.h:12</div></div>
 <div class="ttc" id="anamespacedmq_html_a6364022151f2bf1802343322638e8f25"><div class="ttname"><a href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a></div><div class="ttdeci">Priority</div><div class="ttdef"><b>Definition</b> DelegateMsg.h:20</div></div>
 <div class="ttc" id="anamespacedmq_html_a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051"><div class="ttname"><a href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a></div><div class="ttdeci">@ NORMAL</div></div>
 <div class="ttc" id="anamespacedmq_html_a65e308cc5f3e37d2f7f89c72b9744ae2"><div class="ttname"><a href="namespacedmq.html#a65e308cc5f3e37d2f7f89c72b9744ae2">dmq::MakeDelegate</a></div><div class="ttdeci">auto MakeDelegate(RetType(*func)(Args... args))</div><div class="ttdoc">Creates a delegate that binds to a free function.</div><div class="ttdef"><b>Definition</b> Delegate.h:888</div></div>
-<div class="ttc" id="astructdmq_1_1_bare_metal_clock_html_a092271fdfa7137dd4dbf9a95f1e71d20"><div class="ttname"><a href="structdmq_1_1_bare_metal_clock.html#a092271fdfa7137dd4dbf9a95f1e71d20">dmq::BareMetalClock::now</a></div><div class="ttdeci">static time_point now() noexcept</div><div class="ttdef"><b>Definition</b> BareMetalClock.h:26</div></div>
+<div class="ttc" id="anamespacedmq_html_a8ff86233aa2d05f03cada0b63ebf8aef"><div class="ttname"><a href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a></div><div class="ttdeci">typename Clock::time_point TimePoint</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:140</div></div>
 <div class="ttc" id="astructdmq_1_1_null_mutex_html"><div class="ttname"><a href="structdmq_1_1_null_mutex.html">dmq::NullMutex</a></div><div class="ttdef"><b>Definition</b> DelegateOpt.h:184</div></div>
-<div class="ttc" id="astructdmq_1_1_qo_s_html"><div class="ttname"><a href="structdmq_1_1_qo_s.html">dmq::QoS</a></div><div class="ttdef"><b>Definition</b> DataBusQos.h:7</div></div>
-<div class="ttc" id="astructdmq_1_1_spy_packet_html"><div class="ttname"><a href="structdmq_1_1_spy_packet.html">dmq::SpyPacket</a></div><div class="ttdoc">Standardized packet containing bus traffic metadata.</div><div class="ttdef"><b>Definition</b> SpyPacket.h:16</div></div>
+<div class="ttc" id="astructdmq_1_1databus_1_1_qo_s_html"><div class="ttname"><a href="structdmq_1_1databus_1_1_qo_s.html">dmq::databus::QoS</a></div><div class="ttdef"><b>Definition</b> DataBusQos.h:10</div></div>
+<div class="ttc" id="astructdmq_1_1databus_1_1_spy_packet_html"><div class="ttname"><a href="structdmq_1_1databus_1_1_spy_packet.html">dmq::databus::SpyPacket</a></div><div class="ttdoc">Standardized packet containing bus traffic metadata.</div><div class="ttdef"><b>Definition</b> SpyPacket.h:16</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

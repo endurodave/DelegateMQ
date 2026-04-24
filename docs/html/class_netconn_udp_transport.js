@@ -10,6 +10,7 @@ var class_netconn_udp_transport =
     [ "Create", "class_netconn_udp_transport.html#a0af2cf0d2578a9a47440ed3b1a464930", null ],
     [ "Receive", "class_netconn_udp_transport.html#a3ab0bf97d068f52abc179313a46462f6", null ],
     [ "Send", "class_netconn_udp_transport.html#a91f4f20520a87a3b6a11bad619fd07b4", null ],
+    [ "SetRecvTimeout", "class_netconn_udp_transport.html#a38da5cc5b1e442a98eee7cb3ac042340", null ],
     [ "SetRecvTransport", "class_netconn_udp_transport.html#a26d6f2612d6b15ef40538009dea77c44", null ],
     [ "SetSendTransport", "class_netconn_udp_transport.html#aa3da6158bc5a1d05b7748c74c79f2199", null ],
     [ "SetTransportMonitor", "class_netconn_udp_transport.html#ae655e1d13b19062bf79c4a7123e9ac62", null ]

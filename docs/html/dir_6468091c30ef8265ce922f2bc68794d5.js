@@ -11,6 +11,6 @@ var dir_6468091c30ef8265ce922f2bc68794d5 =
     [ "xnew.h", "xnew_8h.html", "xnew_8h" ],
     [ "xqueue.h", "xqueue_8h.html", "xqueue_8h" ],
     [ "xset.h", "xset_8h.html", "xset_8h" ],
-    [ "xsstream.h", "xsstream_8h.html", "xsstream_8h" ],
-    [ "xstring.h", "xstring_8h.html", "xstring_8h" ]
+    [ "xsstream.h", "xsstream_8h.html", null ],
+    [ "xstring.h", "xstring_8h.html", null ]
 ];

@@ -97,18 +97,34 @@ $(function(){initNavTree('_remote_endpoint_8h.html',''); initResizable(true); })
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">RemoteEndpoint.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_m_q_8h_source.html">DelegateMQ.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_remote_8h_source.html">delegate/DelegateRemote.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_i_transport_8h_source.html">port/transport/ITransport.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_dmq_header_8h_source.html">port/transport/DmqHeader.h</a>&quot;</code><br />
+<code>#include &lt;string&gt;</code><br />
 </div>
 <p><a href="_remote_endpoint_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html">RemoteEndpoint&lt; TClass, RetType(Args...)&gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A helper class to handle the sending and receiving of remote delegate messages.  <a href="class_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1util_1_1_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html">dmq::util::RemoteEndpoint&lt; TClass, RetType(Args...)&gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><code><a class="el" href="structdmq_1_1util_1_1_remote_endpoint.html">RemoteEndpoint</a></code> wraps a <code><a class="el" href="classdmq_1_1_delegate_member_remote.html">DelegateMemberRemote</a></code> and its associated transport infrastructure into a single, cohesive unit.  <a href="structdmq_1_1util_1_1_remote_endpoint_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1util_1_1_remote_endpoint_3_01void_00_01_ret_type_07_args_8_8_8_08_4.html">dmq::util::RemoteEndpoint&lt; void, RetType(Args...)&gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Partial specialization of <code><a class="el" href="structdmq_1_1util_1_1_remote_endpoint.html">RemoteEndpoint</a></code> for free functions.  <a href="structdmq_1_1util_1_1_remote_endpoint_3_01void_00_01_ret_type_07_args_8_8_8_08_4.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1util.html">dmq::util</a></td></tr>
+<tr class="memdesc:namespacedmq_1_1util"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII wrapper to initialize and cleanup network stacks. Instantiate this ONCE at the top of main(). <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->

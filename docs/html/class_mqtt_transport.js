@@ -10,5 +10,6 @@ var class_mqtt_transport =
     [ "Create", "class_mqtt_transport.html#a7924c6292f0ea239da8f33fa73e2cc78", null ],
     [ "Receive", "class_mqtt_transport.html#a5d261a52f40407875b290116f36dc20d", null ],
     [ "Send", "class_mqtt_transport.html#acf3523876fdfdb05a520645fcd823408", null ],
+    [ "SetRecvTimeout", "class_mqtt_transport.html#a419849f8ced8df5947d82159f7baf9e0", null ],
     [ "SetTransportMonitor", "class_mqtt_transport.html#aaf7f669ce7541f778b6b42239b3b3fca", null ]
 ];

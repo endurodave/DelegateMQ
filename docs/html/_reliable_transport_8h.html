@@ -97,7 +97,8 @@ $(function(){initNavTree('_reliable_transport_8h.html',''); initResizable(true);
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">ReliableTransport.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -111,17 +112,26 @@ $(function(){initNavTree('_reliable_transport_8h.html',''); initResizable(true);
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_reliable_transport.html">ReliableTransport</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapter to enable automatic retries on any <a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a>.  <a href="class_reliable_transport.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1util_1_1_reliable_transport.html">dmq::util::ReliableTransport</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adapter to enable automatic retries on any ITransport.  <a href="classdmq_1_1util_1_1_reliable_transport.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1util.html">dmq::util</a></td></tr>
+<tr class="memdesc:namespacedmq_1_1util"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII wrapper to initialize and cleanup network stacks. Instantiate this ONCE at the top of main(). <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Reliability adapter for the DelegateMQ transport layer. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2025.</dd></dl>
-<p>This class applies the <b>Decorator Pattern</b> to any existing <code><a class="el" href="class_i_transport.html" title="DelegateMQ transport interface.">ITransport</a></code> implementation, adding automatic retransmission capabilities without modifying the underlying transport logic.</p>
+<p>This class applies the <b>Decorator Pattern</b> to any existing <code>ITransport</code> implementation, adding automatic retransmission capabilities without modifying the underlying transport logic.</p>
 <h3><a class="anchor" id="autotoc_md30"></a>
 The Reliability Stack</h3>
-<p>It functions as the entry point to the reliability system, routing outgoing messages through the <code><a class="el" href="class_retry_monitor.html">RetryMonitor</a></code> to ensure delivery guarantees (ACKs) are met.</p>
+<p>It functions as the entry point to the reliability system, routing outgoing messages through the <code>RetryMonitor</code> to ensure delivery guarantees (ACKs) are met.</p>
 <pre class="fragment">///        Application
 ///             | Send()
 ///             v
@@ -145,13 +155,13 @@ The Reliability Stack</h3>
 ///             v
 ///          Network
 /// </pre><p><b>Key Responsibilities:</b></p><ol type="1">
-<li><b>Send Interception</b>: Redirects <code>Send()</code> calls to <code><a class="el" href="class_retry_monitor.html#acbbb22394ac2972b7b72907c7489d792" title="Sends a message and tracks it for potential retries.">RetryMonitor::SendWithRetry()</a></code>.</li>
+<li><b>Send Interception</b>: Redirects <code>Send()</code> calls to <code>RetryMonitor::SendWithRetry()</code>.</li>
 <li><b>Receive Pass-through</b>: Forwards <code>Receive()</code> calls directly to the physical transport (no interference with incoming data).</li>
 </ol>
 <p>Notes on Packet Ordering and Reliability</p>
-<p>The DelegateMQ reliability layer (<a class="el" href="class_retry_monitor.html">RetryMonitor</a>) ensures <em>eventual delivery</em>, but the order of execution depends heavily on the underlying transport:</p>
+<p>The DelegateMQ reliability layer (RetryMonitor) ensures <em>eventual delivery</em>, but the order of execution depends heavily on the underlying transport:</p>
 <ol type="1">
-<li><b>UDP / Serial (Unordered Transports)</b>: These transports do not buffer or reorder packets. If Packet #2 is lost and re-transmitted by the <a class="el" href="class_retry_monitor.html">RetryMonitor</a>, the Receiver will process them in the order of arrival: #1 -&gt; #3 -&gt; #2 (Retry). <em>Application logic must be robust against out-of-order updates.</em></li>
+<li><b>UDP / Serial (Unordered Transports)</b>: These transports do not buffer or reorder packets. If Packet #2 is lost and re-transmitted by the RetryMonitor, the Receiver will process them in the order of arrival: #1 -&gt; #3 -&gt; #2 (Retry). <em>Application logic must be robust against out-of-order updates.</em></li>
 <li><b>TCP (Ordered Stream)</b>: The TCP protocol stack enforces strict ordering. If Packet #2 is lost (tcp segment loss), the OS holds Packet #3 in the kernel buffer until #2 is retransmitted by the TCP stack itself. The Receiver application will always see: #1 -&gt; #2 -&gt; #3. <em>Note: If the TCP connection is fully severed and re-connected, the DelegateMQ retry logic may kick in, potentially leading to duplicates or ordering issues across the connection boundary.</em> </li>
 </ol>
 </div></div><!-- contents -->
