@@ -18,9 +18,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [2. CMakeLists.txt](#2-cmakeliststxt)
     - [3. Auto-Detection (Default)](#3-auto-detection-default)
   - [Example Projects](#example-projects)
-  - [Example Projects](#example-projects-1)
     - [Examples Setup](#examples-setup)
-    - [Embedded Example Setup](#embedded-example-setup)
     - [Examples Build](#examples-build)
   - [Build Integration](#build-integration)
     - [CMake](#cmake)
@@ -162,16 +160,6 @@ If no variables are set, DelegateMQ uses `Defaults.cmake` to guess the best sett
 - **All Platforms**: `SERIALIZE` serialization, `dmq::databus::DataBus` enabled, `Allocator` disabled.
 
 ## Example Projects
-To build and run the client/server [system architecture](#system-architecture) projects, follow these steps.
-
-1. From `example/sample-projects/system-architecture-no-deps`, execute CMake command within `client` and `server` subdirectories.  
-   `cmake -B build .`
-2. Build client and server applications within each `build` directory.
-3. Start `delegate_server_app` first.
-4. Start `delegate_client_app` second.
-5. Client and server communicate and output debug data to the console.
-
-## Example Projects
 
 Remote delegate example projects are located within the `example/sample-projects` directory and explained in [Sample Projects](#sample-projects). 
 
@@ -207,14 +195,6 @@ DelegateMQWorkspace/
 ├── spdlog/
 └── zeromq/
 ```
-
-### Embedded Example Setup
-
-See `bare-metal-arm\README.md` for a minimal ARM embedded build without OS support (CMake + ARM GCC + QEMU).
-
-See `keil-bare-metal\README.md` for a Keil MDK bare-metal example targeting ARM Cortex-M4 (ARMCLANG, no CMake).
-
-See `atfe-armv7m-bare-metal\README.md` for a bare-metal Armv7-M example using the Arm Toolchain for Embedded (ATfE/Clang + picolibc, runs on QEMU).
 
 ### Examples Build
 
@@ -324,7 +304,7 @@ Remote system  → dmq::DelegateRemote<>     cross-process / cross-processor
 | Many | `dmq::Signal<Sig>` | Preferred — RAII lifetime via `dmq::ScopedConnection` |
 | Many | `dmq::MulticastDelegateSafe<Sig>` | Manual add/remove; no RAII |
 
-See [When to use `MulticastDelegateSafe` instead](#when-to-use-multicastdelegatesafe-instead) for the full decision matrix.
+See [SIGNALS.md](SIGNALS.md) for the full decision matrix between signals and multicast delegates.
 
 **3. Does the target need to outlive the caller?**
 
@@ -1730,13 +1710,13 @@ All other projects require external 3rd party library support. See [Examples Set
 
 ### system-architecture
 
-The System Architecture example demonstrates a complex client-server DelegateMQ application. This example implements a (simulated) sensor and actuator data acquisition across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handing are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
+The System Architecture example demonstrates a complex client-server DelegateMQ application. This example implements a (simulated) sensor and actuator data acquisition across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handling are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
 
 `NetworkMgr` has three types of remote delegate API examples:
 
 1. **Non-Blocking** - message is sent without waiting. 
-2. **Blocking** - message is send and blocks waiting for the remote to acknowledge or timeout.
-3. **Future** - message is send without waiting and a `std::future` is used to capture the return value later.
+2. **Blocking** - message is sent and blocks waiting for the remote to acknowledge or timeout.
+3. **Future** - message is sent without waiting and a `std::future` is used to capture the return value later.
 
 Three System Architecture build projects exist:
 

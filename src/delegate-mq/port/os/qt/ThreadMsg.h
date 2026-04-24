@@ -4,6 +4,8 @@
 #include "delegate/DelegateOpt.h"
 #include <memory>
 
+namespace dmq::os {
+
 // Message IDs
 #define MSG_DISPATCH_DELEGATE   1
 #define MSG_EXIT_THREAD         2
@@ -27,5 +29,7 @@ private:
 
     XALLOCATOR
 };
+
+} // namespace dmq::os
 
 #endif

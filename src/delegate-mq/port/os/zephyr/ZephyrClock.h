@@ -4,7 +4,7 @@
 #include <zephyr/kernel.h>
 #include <chrono>
 
-namespace dmq {
+namespace dmq::os {
     struct ZephyrClock {
         // Zephyr k_uptime_get() returns milliseconds (int64_t)
         using rep = int64_t;
@@ -17,6 +17,6 @@ namespace dmq {
             return time_point(duration(k_uptime_get()));
         }
     };
-}
+} // namespace dmq::os
 
 #endif // ZEPHYR_CLOCK_H

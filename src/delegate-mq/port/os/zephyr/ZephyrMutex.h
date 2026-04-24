@@ -3,7 +3,7 @@
 
 #include <zephyr/kernel.h>
 
-namespace dmq {
+namespace dmq::os {
 
     // =========================================================================
     // ZephyrMutex
@@ -38,6 +38,6 @@ namespace dmq {
     };
 
     using ZephyrRecursiveMutex = ZephyrMutex;
-}
+} // namespace dmq::os
 
 #endif // ZEPHYR_MUTEX_H

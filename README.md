@@ -21,7 +21,7 @@ DelegateMQ is a C++ header-only library for invoking any callable (e.g., functio
 * Remotely (Across processes or processors)
 * Topic-based (Publish/Subscribe across threads or nodes)
 
-It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, topic-based data distribution (`dmq::databus::DataBus`), and inter-thread data transfer. The library is unit-tested and has been ported to numerous embedded and PC platforms (e.g. Windows, Linux, RTOS, bare metal), with a design that facilitates easy porting to others.
+It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, topic-based data distribution, and inter-thread data transfer. The library is unit-tested and has been ported to numerous embedded and PC platforms (e.g. Windows, Linux, RTOS, bare metal), with a design that facilitates easy porting to others.
 
 **Key Use Cases**
 * **Callbacks**: Synchronous and asynchronous execution.
@@ -148,7 +148,7 @@ public:
     }
 
 private:
-    Data m_data;        // Data storage
+    Data m_data;                 // Data storage
     dmq::os::Thread m_thread;    // Internal thread
 };
 ```

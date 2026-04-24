@@ -34,6 +34,8 @@
 // Ensure DelegateMsg is known to Qt MetaType system
 Q_DECLARE_METATYPE(std::shared_ptr<dmq::DelegateMsg>)
 
+namespace dmq::os {
+
 class Worker;
 
 /// @brief Policy applied when the thread message queue is full.
@@ -154,5 +156,7 @@ public slots:
         emit MessageProcessed();
     }
 };
+
+} // namespace dmq::os
 
 #endif // _QT_THREAD_H

@@ -42,6 +42,6 @@ namespace dmq::os {
             return time_point(duration(static_cast<rep>(t)));
         }
     };
-}
+} // namespace dmq::os
 
 #endif // BARE_METAL_CLOCK_H

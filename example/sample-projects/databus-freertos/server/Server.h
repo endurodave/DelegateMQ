@@ -29,7 +29,10 @@
 class Server
 {
 public:
-    Server() : m_pollThread("SrvPoll") {}
+    static Server& GetInstance() {
+        static Server instance;
+        return instance;
+    }
 
     /// Set up transports, DataBus participants, and the polling thread.
     /// Call once from inside a FreeRTOS task (after the scheduler has started).
@@ -115,6 +118,8 @@ public:
     }
 
 private:
+    Server() : m_pollThread("SrvPoll") {}
+
     /// Polling loop — runs on m_pollThread (FreeRTOS task).
     /// ProcessIncoming() blocks inside recvfrom until data arrives or timeout.
     void Poll()

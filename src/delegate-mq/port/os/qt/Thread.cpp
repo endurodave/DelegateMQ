@@ -6,6 +6,8 @@
 #include "Thread.h"
 #include <QDebug>
 
+namespace dmq::os {
+
 // Define ASSERT_TRUE if not already defined
 #ifndef ASSERT_TRUE
 #define ASSERT_TRUE(x) Q_ASSERT(x)
@@ -213,3 +215,5 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
         m_mutex.unlock();
     }
 }
+
+} // namespace dmq::os

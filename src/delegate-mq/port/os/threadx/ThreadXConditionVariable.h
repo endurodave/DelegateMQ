@@ -4,8 +4,7 @@
 #include "tx_api.h"
 #include <chrono>
 
-namespace dmq
-{
+namespace dmq::os {
     /// @brief Production-grade wrapper around ThreadX Semaphore to mimic std::condition_variable
     /// @details 
     /// - Uses a Counting Semaphore (initialized to 0).
@@ -109,6 +108,6 @@ namespace dmq
     private:
         TX_SEMAPHORE m_sem;
     };
-}
+} // namespace dmq::os
 
 #endif // THREADX_CONDITION_VARIABLE_H

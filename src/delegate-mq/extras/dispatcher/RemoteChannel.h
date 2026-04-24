@@ -90,8 +90,8 @@ public:
     /// @param[in] transport  The transport used to send serialized data. Caller owns it.
     /// @param[in] serializer The serializer matching the delegate signature. Caller owns it.
     RemoteChannel(transport::ITransport& transport, dmq::ISerializer<RetType(Args...)>& serializer)
-        : m_serializer(&serializer)
-        , m_stream(std::ios::in | std::ios::out | std::ios::binary)
+        : m_stream(std::ios::in | std::ios::out | std::ios::binary)
+        , m_serializer(&serializer)
     {
         m_dispatcher.SetTransport(&transport);
         m_delegate.SetDispatcher(&m_dispatcher);

@@ -38,15 +38,21 @@
 #include <cstring>
 #include <atomic>
 
+namespace dmq::transport {
+
 // ----------------------------------------------------------------------------
 // Forward Declarations & Global Hook
 // ----------------------------------------------------------------------------
 class Stm32UartTransport;
 
+} // namespace dmq::transport
+
 // Global pointer to the active transport instance.
 // This is defined in main.cpp and used by the C-style HAL Interrupt Callback
 // to route the hardware interrupt back into the C++ class.
-extern Stm32UartTransport* g_uartTransportInstance;
+extern dmq::transport::Stm32UartTransport* g_uartTransportInstance;
+
+namespace dmq::transport {
 
 // ============================================================================
 // UartRingBuffer
@@ -129,7 +135,7 @@ public:
     // ------------------------------------------------------------------------
     // Send() Implementation
     // ------------------------------------------------------------------------
-    virtual int Send(xostringstream& os, const DmqHeader& header) override {
+    virtual int Send(dmq::xostringstream& os, const DmqHeader& header) override {
         if (os.bad() || os.fail()) return -1;
         if (!m_huart || !m_mutex) return -1;
 
@@ -137,7 +143,7 @@ public:
         if (xSemaphoreTakeRecursive(m_mutex, portMAX_DELAY) != pdTRUE) return -1;
 
         // 1. Prepare Packet Structure
-        xstring payload = os.str();
+        dmq::xstring payload = os.str();
         DmqHeader headerCopy = header;
         headerCopy.SetLength((uint16_t)payload.length());
 
@@ -164,8 +170,8 @@ public:
         }
 
         // 4. Calculate and Send CRC (Required for PC communication)
-        uint16_t crc = Crc16CalcBlock(packet, DmqHeader::HEADER_SIZE, 0xFFFF);
-        if (payload.length() > 0) crc = Crc16CalcBlock((uint8_t*)payload.data(), payload.length(), crc);
+        uint16_t crc = dmq::util::Crc16CalcBlock(packet, DmqHeader::HEADER_SIZE, 0xFFFF);
+        if (payload.length() > 0) crc = dmq::util::Crc16CalcBlock((uint8_t*)payload.data(), payload.length(), crc);
 
         if (HAL_UART_Transmit(m_huart, (uint8_t*)&crc, 2, 100) != HAL_OK) {
             xSemaphoreGiveRecursive(m_mutex); return -1;
@@ -182,7 +188,7 @@ public:
     // ------------------------------------------------------------------------
     // Receive() Implementation
     // ------------------------------------------------------------------------
-    virtual int Receive(xstringstream& is, DmqHeader& header) override {
+    virtual int Receive(dmq::xstringstream& is, DmqHeader& header) override {
         if (m_recvTransport != this) return -1;
 
         uint8_t headerBuf[DmqHeader::HEADER_SIZE];
@@ -227,8 +233,8 @@ public:
         if (!ReadByteBlocked(pCrc[0])) return -1;
         if (!ReadByteBlocked(pCrc[1])) return -1;
 
-        uint16_t calcCrc = Crc16CalcBlock(headerBuf, DmqHeader::HEADER_SIZE, 0xFFFF);
-        if (len > 0) calcCrc = Crc16CalcBlock(m_tempRxBuffer, len, calcCrc);
+        uint16_t calcCrc = dmq::util::Crc16CalcBlock(headerBuf, DmqHeader::HEADER_SIZE, 0xFFFF);
+        if (len > 0) calcCrc = dmq::util::Crc16CalcBlock(m_tempRxBuffer, len, calcCrc);
         if (receivedCrc != calcCrc) return -1;
 
         // 5. Handle ACKs
@@ -237,7 +243,7 @@ public:
         }
         else if (m_transportMonitor && m_sendTransport) {
              // Auto-Reply with ACK
-             xostringstream ss;
+             dmq::xostringstream ss;
              DmqHeader ack;
              ack.SetId(dmq::ACK_REMOTE_ID);
              ack.SetSeqNum(header.GetSeqNum());
@@ -297,5 +303,7 @@ private:
     ITransport* m_recvTransport;
     ITransportMonitor* m_transportMonitor = nullptr;
 };
+
+} // namespace dmq::transport
 
 #endif // STM32_UART_TRANSPORT_H

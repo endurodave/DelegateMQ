@@ -6,8 +6,7 @@
 #include "task.h" 
 #include <chrono>
 
-namespace dmq
-{
+namespace dmq::os {
     /// @brief Production-grade wrapper around FreeRTOS Semaphore to mimic std::condition_variable
     /// @details 
     /// - Uses a Binary Semaphore (1 token).
@@ -132,6 +131,6 @@ namespace dmq
     private:
         SemaphoreHandle_t m_sem = NULL;
     };
-}
+} // namespace dmq::os
 
 #endif // FREERTOS_CONDITION_VARIABLE_H

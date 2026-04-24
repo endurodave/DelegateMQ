@@ -7,6 +7,9 @@
 #include <string>
 #include <iostream> 
 
+using namespace dmq;
+using namespace dmq::os;
+
 // AlarmMgr handles client and server alarms. 
 class AlarmMgr
 {

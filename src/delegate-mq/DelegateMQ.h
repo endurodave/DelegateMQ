@@ -88,7 +88,8 @@
     defined(DMQ_THREAD_THREADX) || \
     defined(DMQ_THREAD_ZEPHYR) || \
     defined(DMQ_THREAD_CMSIS_RTOS2) || \
-    defined(DMQ_THREAD_QT)
+    defined(DMQ_THREAD_QT) || \
+    defined(DMQ_THREAD_NONE)
     #include "delegate/MulticastDelegateSafe.h"
     #include "delegate/UnicastDelegateSafe.h"
 #endif

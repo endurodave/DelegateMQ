@@ -80,10 +80,10 @@ private:
     void ForwardActuator(ActuatorMsg& msg)              { OnActuator(msg); }
 
     // Per-signature serializers (one per message type)
-    dmq::serialization::serializer::Serializer<void(AlarmMsg&, AlarmNote&)> m_alarmSer;
-    dmq::serialization::serializer::Serializer<void(CommandMsg&)>           m_commandSer;
-    dmq::serialization::serializer::Serializer<void(DataMsg&)>              m_dataSer;
-    dmq::serialization::serializer::Serializer<void(ActuatorMsg&)>          m_actuatorSer;
+    dmq::serialization::msgpack::Serializer<void(AlarmMsg&, AlarmNote&)> m_alarmSer;
+    dmq::serialization::msgpack::Serializer<void(CommandMsg&)>           m_commandSer;
+    dmq::serialization::msgpack::Serializer<void(DataMsg&)>              m_dataSer;
+    dmq::serialization::msgpack::Serializer<void(ActuatorMsg&)>          m_actuatorSer;
 
     // Channels aggregate the dispatcher, stream, serializer, and delegate binding
     // for each signature. Initialized in Create() once the send transport is available.

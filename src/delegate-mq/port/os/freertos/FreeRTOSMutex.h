@@ -4,7 +4,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
-namespace dmq {
+namespace dmq::os {
 
     // =========================================================================
     // FreeRTOSMutex (Non-Recursive)
@@ -98,6 +98,6 @@ namespace dmq {
         SemaphoreHandle_t m_handle = nullptr;
     };
 
-}
+} // namespace dmq::os
 
 #endif // FREERTOS_MUTEX_H

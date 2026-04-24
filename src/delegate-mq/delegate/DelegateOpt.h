@@ -120,18 +120,18 @@ namespace dmq
 
 #elif defined(DMQ_THREAD_THREADX)
     // Use the custom ThreadX wrapper
-    using Clock = dmq::ThreadXClock;
+    using Clock = dmq::os::ThreadXClock;
 
 #elif defined(DMQ_THREAD_ZEPHYR)
     // Use the custom Zephyr wrapper
-    using Clock = dmq::ZephyrClock;
+    using Clock = dmq::os::ZephyrClock;
 
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
     using Clock = dmq::os::CmsisRtos2Clock;
 
 #else
     // Assuming implemented the 'g_ticks' variable
-    using Clock = dmq::BareMetalClock;
+    using Clock = dmq::os::BareMetalClock;
 #endif
 
     // --- GENERIC TYPES ---
@@ -151,31 +151,31 @@ namespace dmq
 
 #elif defined(DMQ_THREAD_FREERTOS)
     // Use the custom FreeRTOS wrapper
-    using Mutex = dmq::FreeRTOSMutex;
-    using RecursiveMutex = dmq::FreeRTOSRecursiveMutex;
-    using ConditionVariable = dmq::FreeRTOSConditionVariable;
+    using Mutex = dmq::os::FreeRTOSMutex;
+    using RecursiveMutex = dmq::os::FreeRTOSRecursiveMutex;
+    using ConditionVariable = dmq::os::FreeRTOSConditionVariable;
     template<typename T> using LockGuard = PortableLockGuard<T>;
     template<typename T> using UniqueLock = std::unique_lock<T>;
     #define DMQ_HAS_CV
 
 #elif defined(DMQ_THREAD_THREADX)
     // Use the custom ThreadX wrapper
-    using Mutex = dmq::ThreadXMutex;
-    using RecursiveMutex = dmq::ThreadXRecursiveMutex;
-    using ConditionVariable = dmq::ThreadXConditionVariable;
+    using Mutex = dmq::os::ThreadXMutex;
+    using RecursiveMutex = dmq::os::ThreadXRecursiveMutex;
+    using ConditionVariable = dmq::os::ThreadXConditionVariable;
     template<typename T> using LockGuard = PortableLockGuard<T>;
     template<typename T> using UniqueLock = std::unique_lock<T>;
     #define DMQ_HAS_CV
 
 #elif defined(DMQ_THREAD_ZEPHYR)
     // Use the custom Zephyr wrapper
-    using Mutex = dmq::ZephyrMutex;
-    using RecursiveMutex = dmq::ZephyrRecursiveMutex;
+    using Mutex = dmq::os::ZephyrMutex;
+    using RecursiveMutex = dmq::os::ZephyrRecursiveMutex;
     template<typename T> using LockGuard = PortableLockGuard<T>;
 
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
-    using Mutex = dmq::CmsisRtos2Mutex;
-    using RecursiveMutex = dmq::CmsisRtos2RecursiveMutex;
+    using Mutex = dmq::os::CmsisRtos2Mutex;
+    using RecursiveMutex = dmq::os::CmsisRtos2RecursiveMutex;
     template<typename T> using LockGuard = PortableLockGuard<T>;
 
 #else

@@ -111,21 +111,33 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 
     ASSERT_TRUE(m_thread != nullptr);
 
-    m_lastAliveTime.store(Timer::GetNow());
+    {
+        std::lock_guard<dmq::RecursiveMutex> lock(m_watchdogMtx);
+        m_lastAliveTime = Timer::GetNow();
+    }
 
     if (watchdogTimeout.has_value())
     {
-        m_watchdogTimeout = watchdogTimeout.value();
+        {
+            std::lock_guard<dmq::RecursiveMutex> lock(m_watchdogMtx);
+            m_watchdogTimeout = watchdogTimeout.value();
+        }
 
         m_threadTimer = std::unique_ptr<Timer>(new Timer());
         m_threadTimerConn = m_threadTimer->OnExpired.Connect(
             MakeDelegate(this, &Thread::ThreadCheck, *this));
-        m_threadTimer->Start(m_watchdogTimeout.load() / 4);
+        
+        dmq::Duration timeout;
+        {
+            std::lock_guard<dmq::RecursiveMutex> lock(m_watchdogMtx);
+            timeout = m_watchdogTimeout;
+        }
+        m_threadTimer->Start(timeout / 4);
 
         m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
         m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(
             MakeDelegate(this, &Thread::WatchdogCheck));
-        m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
+        m_watchdogTimer->Start(timeout / 2);
     }
 
     return true;
@@ -267,9 +279,17 @@ void Thread::Process(void* instance)
 void Thread::WatchdogCheck()
 {
     auto now = Timer::GetNow();
-    auto lastAlive = m_lastAliveTime.load();
+    dmq::TimePoint lastAlive;
+    dmq::Duration watchdogTimeout;
+
+    {
+        std::lock_guard<dmq::RecursiveMutex> lock(m_watchdogMtx);
+        lastAlive = m_lastAliveTime;
+        watchdogTimeout = m_watchdogTimeout;
+    }
+
     auto delta = now - lastAlive;
-    if (delta > m_watchdogTimeout.load())
+    if (delta > watchdogTimeout)
     {
         printf("[Thread] Watchdog detected unresponsive thread: %s\n", THREAD_NAME.c_str());
         // @TODO trigger recovery or fault handler
@@ -281,7 +301,8 @@ void Thread::WatchdogCheck()
 //----------------------------------------------------------------------------
 void Thread::ThreadCheck()
 {
-    m_lastAliveTime.store(Timer::GetNow());
+    std::lock_guard<dmq::RecursiveMutex> lock(m_watchdogMtx);
+    m_lastAliveTime = Timer::GetNow();
 }
 
 void Thread::Run()
@@ -289,7 +310,10 @@ void Thread::Run()
     ThreadMsg* msg = nullptr;
     while (!m_exit.load())
     {
-        m_lastAliveTime.store(Timer::GetNow());
+        {
+            std::lock_guard<dmq::RecursiveMutex> lock(m_watchdogMtx);
+            m_lastAliveTime = Timer::GetNow();
+        }
 
         if (xQueueReceive(m_queue, &msg, portMAX_DELAY) == pdPASS)
         {

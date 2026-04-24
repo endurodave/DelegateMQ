@@ -31,10 +31,10 @@ extern void StartNetworkTests();
 
 // Global Handles
 UART_HandleTypeDef huart6;
-NetworkEngine* g_netEngine = nullptr;
+dmq::util::NetworkEngine* g_netEngine = nullptr;
 
 // --- DEFINE GLOBAL TRANSPORT INSTANCE ---
-Stm32UartTransport* g_uartTransportInstance = nullptr;
+dmq::transport::Stm32UartTransport* g_uartTransportInstance = nullptr;
 
 // --- DEFINE HAL CALLBACK ---
 extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
@@ -55,7 +55,7 @@ static void Error_Handler(void);
     #define mainTIMER_FREQUENCY_MS pdMS_TO_TICKS(10UL)
     static void TimerCallback(TimerHandle_t xTimerHandle)
     {
-        Timer::ProcessTimers();
+        dmq::util::Timer::ProcessTimers();
     }
 #endif
 

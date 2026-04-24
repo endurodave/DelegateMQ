@@ -10,32 +10,35 @@ using namespace dmq::util;
 using namespace std;
 
 NetworkMgr::NetworkMgr()
-    : m_alarmMsgDel(ids::ALARM_MSG_ID, &m_dispatcher),
-    m_commandMsgDel(ids::COMMAND_MSG_ID, &m_dispatcher),
-    m_dataMsgDel(ids::DATA_MSG_ID, &m_dispatcher),
-    m_actuatorMsgDel(ids::ACTUATOR_MSG_ID, &m_dispatcher)
 {
 }
 
 int NetworkMgr::Create()
 {
-    // Bind signals
-    m_alarmMsgDel.Bind(this, &NetworkMgr::ForwardAlarm, ids::ALARM_MSG_ID);
-    m_dataMsgDel.Bind(this, &NetworkMgr::ForwardData, ids::DATA_MSG_ID);
-    m_commandMsgDel.Bind(this, &NetworkMgr::ForwardCommand, ids::COMMAND_MSG_ID);
-    m_actuatorMsgDel.Bind(this, &NetworkMgr::ForwardActuator, ids::ACTUATOR_MSG_ID);
+    // Initialize one RemoteChannel per message signature.
+    // Each channel owns its Dispatcher, stream, and serializer.
+    m_alarmChannel.emplace(GetSendTransport(), m_alarmSer);
+    m_commandChannel.emplace(GetSendTransport(), m_commandSer);
+    m_dataChannel.emplace(GetSendTransport(), m_dataSer);
+    m_actuatorChannel.emplace(GetSendTransport(), m_actuatorSer);
 
-    // Register for error callbacks (RAII — auto-disconnect when NetworkMgr is destroyed)
-    m_alarmErrConn    = m_alarmMsgDel.OnError.Connect(MakeDelegate(this, &NetworkMgr::OnError));
-    m_dataErrConn     = m_dataMsgDel.OnError.Connect(MakeDelegate(this, &NetworkMgr::OnError));
-    m_commandErrConn  = m_commandMsgDel.OnError.Connect(MakeDelegate(this, &NetworkMgr::OnError));
-    m_actuatorErrConn = m_actuatorMsgDel.OnError.Connect(MakeDelegate(this, &NetworkMgr::OnError));
+    // Bind the receive-side handler and wire the send-side infrastructure in one call.
+    m_alarmChannel->Bind(this, &NetworkMgr::ForwardAlarm, ids::ALARM_MSG_ID);
+    m_dataChannel->Bind(this, &NetworkMgr::ForwardData, ids::DATA_MSG_ID);
+    m_commandChannel->Bind(this, &NetworkMgr::ForwardCommand, ids::COMMAND_MSG_ID);
+    m_actuatorChannel->Bind(this, &NetworkMgr::ForwardActuator, ids::ACTUATOR_MSG_ID);
+
+    // Register error handlers
+    m_alarmChannel->SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+    m_dataChannel->SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+    m_commandChannel->SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
+    m_actuatorChannel->SetErrorHandler(MakeDelegate(this, &NetworkMgr::OnError));
 
     // Register endpoints with the Base Engine (So Incoming() can find them)
-    RegisterEndpoint(ids::ALARM_MSG_ID, &m_alarmMsgDel);
-    RegisterEndpoint(ids::DATA_MSG_ID, &m_dataMsgDel);
-    RegisterEndpoint(ids::COMMAND_MSG_ID, &m_commandMsgDel);
-    RegisterEndpoint(ids::ACTUATOR_MSG_ID, &m_actuatorMsgDel);
+    RegisterEndpoint(ids::ALARM_MSG_ID,    m_alarmChannel->GetEndpoint());
+    RegisterEndpoint(ids::DATA_MSG_ID,     m_dataChannel->GetEndpoint());
+    RegisterEndpoint(ids::COMMAND_MSG_ID,  m_commandChannel->GetEndpoint());
+    RegisterEndpoint(ids::ACTUATOR_MSG_ID, m_actuatorChannel->GetEndpoint());
 
     // Initialize Base Engine
 #ifdef SERVER_APP
@@ -63,11 +66,11 @@ void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note) {
         dmq::MakeDelegate(this, &NetworkMgr::SendAlarmMsg, this->m_thread)(msg, note);
         return;
     }
-    m_alarmMsgDel(msg, note);
+    (*m_alarmChannel)(msg, note);
 }
 
 bool NetworkMgr::SendAlarmMsgWait(AlarmMsg& msg, AlarmNote& note) {
-    return this->RemoteInvokeWait(m_alarmMsgDel, msg, note);
+    return this->RemoteInvokeWait(*m_alarmChannel, msg, note);
 }
 
 void NetworkMgr::SendCommandMsg(CommandMsg& command) {
@@ -75,11 +78,11 @@ void NetworkMgr::SendCommandMsg(CommandMsg& command) {
         dmq::MakeDelegate(this, &NetworkMgr::SendCommandMsg, this->m_thread)(command);
         return;
     }
-    m_commandMsgDel(command);
+    (*m_commandChannel)(command);
 }
 
 bool NetworkMgr::SendCommandMsgWait(CommandMsg& command) {
-    return this->RemoteInvokeWait(m_commandMsgDel, command);
+    return this->RemoteInvokeWait(*m_commandChannel, command);
 }
 
 void NetworkMgr::SendDataMsg(DataMsg& data) {
@@ -87,11 +90,11 @@ void NetworkMgr::SendDataMsg(DataMsg& data) {
         dmq::MakeDelegate(this, &NetworkMgr::SendDataMsg, this->m_thread)(data);
         return;
     }
-    m_dataMsgDel(data);
+    (*m_dataChannel)(data);
 }
 
 bool NetworkMgr::SendDataMsgWait(DataMsg& data) {
-    return this->RemoteInvokeWait(m_dataMsgDel, data);
+    return this->RemoteInvokeWait(*m_dataChannel, data);
 }
 
 void NetworkMgr::SendActuatorMsg(ActuatorMsg& msg) {
@@ -99,10 +102,9 @@ void NetworkMgr::SendActuatorMsg(ActuatorMsg& msg) {
         dmq::MakeDelegate(this, &NetworkMgr::SendActuatorMsg, this->m_thread)(msg);
         return;
     }
-    m_actuatorMsgDel(msg);
+    (*m_actuatorChannel)(msg);
 }
 
 bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg) {
-    return this->RemoteInvokeWait(m_actuatorMsgDel, msg);
+    return this->RemoteInvokeWait(*m_actuatorChannel, msg);
 }
-

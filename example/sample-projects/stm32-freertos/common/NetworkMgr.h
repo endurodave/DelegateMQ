@@ -79,22 +79,17 @@ private:
     void ForwardData(DataMsg& msg)                       { OnData(msg); }
     void ForwardActuator(ActuatorMsg& msg)               { OnActuator(msg); }
 
-    // TYPE ALIAS: Unicast, Unsafe, Member Delegate bound to 'NetworkMgr'
-    // This allows exact binding to 'this' in Create()
-    template <typename... Args>
-    using EndpointType = dmq::util::RemoteEndpoint<NetworkMgr, void(Args...)>;
+    // Per-signature serializers (one per message type)
+    dmq::serialization::serializer::Serializer<void(AlarmMsg&, AlarmNote&)> m_alarmSer;
+    dmq::serialization::serializer::Serializer<void(CommandMsg&)>           m_commandSer;
+    dmq::serialization::serializer::Serializer<void(DataMsg&)>              m_dataSer;
+    dmq::serialization::serializer::Serializer<void(ActuatorMsg&)>          m_actuatorSer;
 
-    // Specific endpoints
-    EndpointType<AlarmMsg&, AlarmNote&> m_alarmMsgDel;
-    EndpointType<CommandMsg&>           m_commandMsgDel;
-    EndpointType<DataMsg&>              m_dataMsgDel;
-    EndpointType<ActuatorMsg&>          m_actuatorMsgDel;
-
-    // RAII error-signal connections (auto-disconnect on NetworkMgr destruction)
-    dmq::ScopedConnection m_alarmErrConn;
-    dmq::ScopedConnection m_commandErrConn;
-    dmq::ScopedConnection m_dataErrConn;
-    dmq::ScopedConnection m_actuatorErrConn;
+    // Channels aggregate the dispatcher, stream, serializer, and delegate binding
+    std::optional<dmq::RemoteChannel<void(AlarmMsg&, AlarmNote&)>> m_alarmChannel;
+    std::optional<dmq::RemoteChannel<void(CommandMsg&)>>           m_commandChannel;
+    std::optional<dmq::RemoteChannel<void(DataMsg&)>>              m_dataChannel;
+    std::optional<dmq::RemoteChannel<void(ActuatorMsg&)>>          m_actuatorChannel;
 };
 
 #endif

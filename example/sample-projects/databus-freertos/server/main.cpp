@@ -106,8 +106,6 @@ extern "C" void vApplicationGetTimerTaskMemory(
 // Server task
 // ---------------------------------------------------------------------------
 
-static Server g_server;
-
 static void vServerTask(void* /*pvParams*/)
 {
     // Disable stdout buffering so printf output appears immediately
@@ -118,7 +116,7 @@ static void vServerTask(void* /*pvParams*/)
     dmq::util::NetworkContext winsock;
 #endif
 
-    if (!g_server.Start())
+    if (!Server::GetInstance().Start())
     {
         printf("[Server] Startup failed — task exiting.\n");
         vTaskDelete(NULL);
@@ -126,9 +124,9 @@ static void vServerTask(void* /*pvParams*/)
     }
 
     // Run blocks in a vTaskDelay loop until Stop() is called
-    g_server.Run();
+    Server::GetInstance().Run();
 
-    g_server.Stop();
+    Server::GetInstance().Stop();
     vTaskDelete(NULL);
 }
 

@@ -5,7 +5,7 @@
 #include <chrono>
 #include <cstdint>
 
-namespace dmq {
+namespace dmq::os {
     struct ThreadXClock {
         // 1. Define duration traits 
         using rep = int64_t;
@@ -44,6 +44,6 @@ namespace dmq {
             return time_point(duration(static_cast<rep>(ticks)));
         }
     };
-}
+} // namespace dmq::os
 
 #endif // THREADX_CLOCK_H

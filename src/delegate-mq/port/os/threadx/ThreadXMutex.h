@@ -3,7 +3,7 @@
 
 #include "tx_api.h"
 
-namespace dmq {
+namespace dmq::os {
 
     // =========================================================================
     // ThreadXMutex 
@@ -43,6 +43,6 @@ namespace dmq {
 
     // ThreadX Mutexes are recursive by default, so this alias is valid.
     using ThreadXRecursiveMutex = ThreadXMutex;
-}
+} // namespace dmq::os
 
 #endif // THREADX_MUTEX_H

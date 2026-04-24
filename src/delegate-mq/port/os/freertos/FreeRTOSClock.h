@@ -50,6 +50,6 @@ namespace dmq::os {
             return time_point(duration(static_cast<rep>(ticks)));
         }
     };
-}
+} // namespace dmq::os
 
 #endif // FREERTOS_CLOCK_H

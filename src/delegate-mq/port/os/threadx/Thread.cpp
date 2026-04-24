@@ -14,7 +14,10 @@
 #define ASSERT_TRUE(x) if(!(x)) { while(1); } // Replace with your fault handler
 #endif
 
+namespace dmq::os {
+
 using namespace dmq;
+using namespace dmq::util;
 
 //----------------------------------------------------------------------------
 // Thread Constructor
@@ -368,3 +371,5 @@ void Thread::Run()
     // Signal ExitThread() that the loop has exited
     tx_semaphore_put(&m_exitSem);
 }
+
+} // namespace dmq::os

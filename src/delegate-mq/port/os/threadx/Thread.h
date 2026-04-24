@@ -41,6 +41,8 @@
 #include <atomic>
 #include <optional>
 
+namespace dmq::os {
+
 class ThreadMsg;
 
 /// @brief Policy applied when the thread message queue is full.
@@ -150,5 +152,7 @@ private:
     dmq::ScopedConnection m_threadTimerConn;
     std::atomic<dmq::Duration> m_watchdogTimeout;
 };
+
+} // namespace dmq::os
 
 #endif // _THREAD_THREADX_H
