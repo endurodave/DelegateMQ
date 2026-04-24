@@ -44,6 +44,8 @@
     #define NETX_NTOHS(x) netx_swap16(x)
 #endif
 
+namespace dmq::transport {
+
 class NetXUdpTransport : public ITransport
 {
 public:
@@ -343,5 +345,7 @@ private:
     ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
 };
+
+}
 
 #endif // NETX_UDP_TRANSPORT_H

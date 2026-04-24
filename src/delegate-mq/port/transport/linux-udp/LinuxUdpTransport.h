@@ -311,6 +311,8 @@ private:
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
 
+using UdpTransport = LinuxUdpTransport;
+
 } // namespace dmq::transport
 
 #endif // LINUX_UDP_TRANSPORT_H

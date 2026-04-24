@@ -16,6 +16,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+namespace dmq::transport {
+
 /// @brief Linux Multicast UDP transport implementation for DelegateMQ.
 class MulticastTransport : public ITransport
 {
@@ -133,5 +135,7 @@ private:
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
+
+} // namespace dmq::transport
 
 #endif

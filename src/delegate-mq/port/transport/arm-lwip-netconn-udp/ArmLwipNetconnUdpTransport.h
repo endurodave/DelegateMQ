@@ -32,6 +32,8 @@
 #include <sstream>
 #include <cstring>
 
+namespace dmq::transport {
+
 class NetconnUdpTransport : public ITransport
 {
 public:
@@ -257,5 +259,7 @@ private:
     ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
 };
+
+}
 
 #endif // ARM_LWIP_NETCONN_UDP_TRANSPORT_H

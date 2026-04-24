@@ -300,6 +300,8 @@ private:
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
 
+using UdpTransport = Win32UdpTransport;
+
 } // namespace dmq::transport
 
 

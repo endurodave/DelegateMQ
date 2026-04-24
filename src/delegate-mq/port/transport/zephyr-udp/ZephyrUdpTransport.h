@@ -37,6 +37,8 @@
 #include <cstdlib>
 #include <cerrno>
 
+namespace dmq::transport {
+
 class ZephyrUdpTransport : public ITransport
 {
 public:
@@ -306,5 +308,7 @@ private:
     static const int BUFFER_SIZE = 1500; // Ethernet MTU size
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
+
+}
 
 #endif // ZEPHYR_UDP_TRANSPORT_H

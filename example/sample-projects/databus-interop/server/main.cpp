@@ -45,15 +45,15 @@ int main(int argc, char* argv[])
 
     // 1. Initialize transports
     // PUB on 8000: server sends DataMsg to clients
-    dmq::transport::Win32UdpTransport transportData;
-    if (transportData.Create(dmq::transport::Win32UdpTransport::Type::PUB, "127.0.0.1", 8000) != 0) {
+    dmq::transport::UdpTransport transportData;
+    if (transportData.Create(dmq::transport::UdpTransport::Type::PUB, "127.0.0.1", 8000) != 0) {
         std::cerr << "Failed to create Data transport (port 8000)" << std::endl;
         return -1;
     }
 
     // SUB on 8001: server receives CommandMsg from clients
-    dmq::transport::Win32UdpTransport transportCmd;
-    if (transportCmd.Create(dmq::transport::Win32UdpTransport::Type::SUB, "127.0.0.1", 8001) != 0) {
+    dmq::transport::UdpTransport transportCmd;
+    if (transportCmd.Create(dmq::transport::UdpTransport::Type::SUB, "127.0.0.1", 8001) != 0) {
         std::cerr << "Failed to create Command transport (port 8001)" << std::endl;
         return -1;
     }

@@ -38,6 +38,8 @@
     #error "ArmLwipUdpTransport requires LWIP_SO_RCVTIMEO=1 in lwipopts.h"
 #endif
 
+namespace dmq::transport {
+
 class UdpTransport : public ITransport
 {
 public:
@@ -305,5 +307,7 @@ private:
     static const int BUFFER_SIZE = 1500;
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
+
+}
 
 #endif // ARM_LWIP_UDP_TRANSPORT_H

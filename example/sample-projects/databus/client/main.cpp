@@ -31,8 +31,8 @@ static void SignalHandler(int) { g_running = false; }
 
 // Holds all network and DataBus infrastructure for the client.
 struct ClientState {
-    dmq::transport::Win32UdpTransport transportData;
-    dmq::transport::Win32UdpTransport transportCmd;
+    dmq::transport::UdpTransport transportData;
+    dmq::transport::UdpTransport transportCmd;
     dmq::util::TransportMonitor monitor{ std::chrono::seconds(1) };
     std::unique_ptr<dmq::util::RetryMonitor> retry;
     std::unique_ptr<dmq::util::ReliableTransport> reliableTransport;
@@ -46,11 +46,11 @@ struct ClientState {
 
 // Create UDP transports: SUB for incoming data, PUB for outgoing commands.
 static bool SetupTransports(ClientState& s) {
-    if (s.transportData.Create(dmq::transport::Win32UdpTransport::Type::SUB, "127.0.0.1", 8000) != 0) {
+    if (s.transportData.Create(dmq::transport::UdpTransport::Type::SUB, "127.0.0.1", 8000) != 0) {
         std::cerr << "Failed to create Data transport" << std::endl;
         return false;
     }
-    if (s.transportCmd.Create(dmq::transport::Win32UdpTransport::Type::PUB, "127.0.0.1", 8001) != 0) {
+    if (s.transportCmd.Create(dmq::transport::UdpTransport::Type::PUB, "127.0.0.1", 8001) != 0) {
         std::cerr << "Failed to create Command transport" << std::endl;
         return false;
     }

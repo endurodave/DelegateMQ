@@ -37,6 +37,8 @@
 #include "port/transport/DmqHeader.h"
 #include "port/transport/ITransportMonitor.h"
 
+namespace dmq::transport {
+
 class TcpTransport : public ITransport
 {
 public:
@@ -264,5 +266,7 @@ private:
     ITransport* m_sendTransport, * m_recvTransport;
     ITransportMonitor* m_transportMonitor = nullptr;
 };
+
+} // namespace dmq::transport
 
 #endif // LINUX_TCP_TRANSPORT_H

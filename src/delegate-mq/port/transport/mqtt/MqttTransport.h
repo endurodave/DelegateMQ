@@ -30,6 +30,8 @@
 #include <mutex>
 #include <condition_variable>
 
+namespace dmq::transport {
+
 /// @brief MQTT transport example.
 class MqttTransport : public ITransport
 {
@@ -299,5 +301,7 @@ private:
     std::condition_variable m_queueCv;
     bool m_stop = false;
 };
+
+}
 
 #endif // MQTT_TRANSPORT_H
