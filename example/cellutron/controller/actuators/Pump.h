@@ -28,7 +28,7 @@ public:
         else m_speed = speed;
 
         printf("[Pump %d] -> %d%%\n", m_id, m_speed);
-        dmq::DataBus::Publish<ActuatorStatusMsg>(
+        dmq::databus::DataBus::Publish<ActuatorStatusMsg>(
             topics::STATUS_ACTUATOR,
             { ActuatorType::PUMP, m_id, static_cast<int16_t>(m_speed) });
         OnSpeedChanged(m_id, m_speed);

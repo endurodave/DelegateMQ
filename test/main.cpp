@@ -49,6 +49,12 @@
 #include "DataBus.h"
 #include "main.h"
 
+using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::serialization::serializer;
+using namespace dmq::transport;
+
 extern void RunDelegateUnitTests();
 #if defined(DMQ_DATABUS)
 extern void RunDataBusTests();
@@ -155,17 +161,17 @@ size_t MsgOut(const std::string& msg)
 //------------------------------------------------------------------------------
 void RunSimpleExamples()
 {
-    class MockTransport : public ITransport
+    class MockTransport : public dmq::transport::ITransport
     {
     public:
-        int Send(xostringstream& os, const DmqHeader& header) override {
+        int Send(dmq::xostringstream& os, const dmq::transport::DmqHeader& header) override {
             // @TODO: Send serialized data to the remote endpoint.
             // See example\sample-projects\system-architecture-no-deps
             // for a complete working remote delegate client/server example.
             cout << "Transport Send DelegateRemoteId=" << header.GetId() << endl;
             return 0;
         }
-        int Receive(xstringstream& is, DmqHeader& header) override { return 0; }
+        int Receive(dmq::xstringstream& is, dmq::transport::DmqHeader& header) override { return 0; }
     };
 
     // 1. Synchronous Invocation
@@ -188,7 +194,7 @@ void RunSimpleExamples()
 
     // 5. Remote Invocation — RemoteChannel owns transport wiring (dispatcher, stream, serializer)
     MockTransport transport;
-    Serializer<void(std::string)> serializer;
+    dmq::serialization::serializer::Serializer<void(std::string)> serializer;
     dmq::RemoteChannel<void(std::string)> channel(transport, serializer);
     channel.Bind(std::function<void(std::string)>(&MsgOut), dmq::DelegateRemoteId(1));
     channel("Invoke MsgOut remote!");
@@ -203,23 +209,23 @@ void RunSimpleExamples()
 //------------------------------------------------------------------------------
 
 // Loopback transport: on Send(), deserializes and invokes the registered receiver
-class LoopbackTransport : public ITransport
+class LoopbackTransport : public dmq::transport::ITransport
 {
 public:
-    void SetReceiver(IRemoteInvoker* recv) { m_receiver = recv; }
+    void SetReceiver(dmq::IRemoteInvoker* recv) { m_receiver = recv; }
 
-    int Send(xostringstream& os, const DmqHeader& header) override {
+    int Send(dmq::xostringstream& os, const dmq::transport::DmqHeader& header) override {
         cout << "LoopbackTransport Send DelegateRemoteId=" << header.GetId() << endl;
         if (m_receiver) {
-            xstringstream is(os.str());
+            dmq::xstringstream is(os.str());
             m_receiver->Invoke(is);
         }
         return 0;
     }
-    int Receive(xstringstream& is, DmqHeader& header) override { return 0; }
+    int Receive(dmq::xstringstream& is, dmq::transport::DmqHeader& header) override { return 0; }
 
 private:
-    IRemoteInvoker* m_receiver = nullptr;
+    dmq::IRemoteInvoker* m_receiver = nullptr;
 };
 
 constexpr dmq::DelegateRemoteId MSG_OUT_ID = 10;
@@ -228,13 +234,13 @@ constexpr dmq::DelegateRemoteId MSG_OUT_ID = 10;
 class MsgReceiver
 {
 public:
-    MsgReceiver(ITransport& transport, ISerializer<void(std::string)>& ser)
+    MsgReceiver(dmq::transport::ITransport& transport, dmq::ISerializer<void(std::string)>& ser)
         : m_channel(transport, ser)
     {
         m_channel.Bind(std::function<void(std::string)>(&MsgOut), MSG_OUT_ID);
     }
 
-    IRemoteInvoker* GetEndpoint() { return m_channel.GetEndpoint(); }
+    dmq::IRemoteInvoker* GetEndpoint() { return m_channel.GetEndpoint(); }
 
 private:
     dmq::RemoteChannel<void(std::string)> m_channel;
@@ -244,7 +250,7 @@ private:
 class MsgSender
 {
 public:
-    MsgSender(ITransport& transport, ISerializer<void(std::string)>& ser)
+    MsgSender(dmq::transport::ITransport& transport, dmq::ISerializer<void(std::string)>& ser)
         : m_channel(transport, ser)
     {
         m_channel.Bind(std::function<void(std::string)>([](std::string) {}), MSG_OUT_ID);
@@ -258,7 +264,7 @@ private:
 
 void RunRemoteChannelExamples()
 {
-    Serializer<void(std::string)> serializer;
+    dmq::serialization::serializer::Serializer<void(std::string)> serializer;
     LoopbackTransport transport;
 
     MsgReceiver receiver(transport, serializer);

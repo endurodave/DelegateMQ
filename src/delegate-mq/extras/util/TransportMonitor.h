@@ -2,12 +2,15 @@
 #define _TRANSPORT_MONITOR_HH
 
 #include "delegate/DelegateOpt.h"
+#include "delegate/Signal.h"
 #include "../../port/transport/ITransportMonitor.h"
 #include <map>
 #include <cstdint>
 #include <chrono>
 #include <vector>
 #include <iostream>
+
+namespace dmq::util {
 
 /// @brief A thread-safe monitor for tracking outgoing remote messages and detecting timeouts.
 /// 
@@ -27,7 +30,7 @@
 /// This class relies on a cooperative polling model. The `Process()` method must be called 
 /// periodically (typically by a background timer or the network thread loop) to scan for 
 /// and handle expired messages.
-class TransportMonitor : public ITransportMonitor
+class TransportMonitor : public dmq::transport::ITransportMonitor
 {
 public:
     enum class Status
@@ -128,5 +131,8 @@ private:
     const dmq::Duration TRANSPORT_TIMEOUT;
     dmq::RecursiveMutex m_lock;
 };
+
+} // namespace dmq::util
+
 
 #endif

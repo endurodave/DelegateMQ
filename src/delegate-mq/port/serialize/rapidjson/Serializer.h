@@ -14,6 +14,8 @@
 #include <iostream>
 #include <vector>
 
+namespace dmq::serialization::rapidjson {
+
 template <class R>
 struct Serializer; // Not defined
 
@@ -25,8 +27,8 @@ public:
     // Write arguments to a stream
     virtual std::ostream& Write(std::ostream& os, const Args&... args) override {
         os.seekp(0, std::ios::beg);
-        rapidjson::StringBuffer sb;
-        rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+        ::rapidjson::StringBuffer sb;
+        ::rapidjson::PrettyWriter<::rapidjson::StringBuffer> writer(sb);
 #if defined(__cpp_exceptions)
         try {
 #endif
@@ -67,7 +69,7 @@ public:
         buf[length] = 0;   // null terminate incoming data
 
         // Parse JSON
-        rapidjson::Document doc;
+        ::rapidjson::Document doc;
         doc.Parse(buf.data());
 
         // Check for parsing errors
@@ -93,5 +95,8 @@ public:
         return is;
     }
 };
+
+} // namespace dmq::serialization::rapidjson
+
 
 #endif

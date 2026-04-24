@@ -53,7 +53,7 @@ private:
 
     struct Monitor {
         std::string name;
-        std::unique_ptr<dmq::DeadlineSubscription<HeartbeatMsg>> subscription;
+        std::unique_ptr<dmq::databus::DeadlineSubscription<HeartbeatMsg>> subscription;
     };
     std::vector<Monitor> m_monitors;
 

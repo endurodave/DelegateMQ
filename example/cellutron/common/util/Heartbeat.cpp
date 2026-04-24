@@ -3,6 +3,8 @@
 #include <cstdio>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 
 namespace cellutron {
 namespace util {
@@ -26,7 +28,7 @@ void Heartbeat::Start()
 
 void Heartbeat::MonitorNode(const char* remoteTopic, FaultCode faultCode, const std::string& nodeName)
 {
-    auto sub = std::make_unique<dmq::DeadlineSubscription<HeartbeatMsg>>(
+    auto sub = std::make_unique<dmq::databus::DeadlineSubscription<HeartbeatMsg>>(
         remoteTopic,
         HEARTBEAT_TIMEOUT,
         [](const HeartbeatMsg&) { /* No-op on success */ },

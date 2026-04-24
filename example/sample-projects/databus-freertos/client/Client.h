@@ -33,40 +33,40 @@ public:
     {
         // Inbound transport (SUB): client receives from server on port 9000.
         // Carries SensorMsg and AlarmMsg — distinguished by DelegateRemoteId.
-        if (m_subTransport.Create(UdpTransport::Type::SUB, "127.0.0.1", 9000) != 0) {
+        if (m_subTransport.Create(dmq::transport::Win32UdpTransport::Type::SUB, "127.0.0.1", 9000) != 0) {
             std::cerr << "[Client] ERROR: Failed to create inbound transport\n";
             return false;
         }
 
         // Outbound transport (PUB): client publishes to server on port 9001.
-        if (m_pubTransport.Create(UdpTransport::Type::PUB, "127.0.0.1", 9001) != 0) {
+        if (m_pubTransport.Create(dmq::transport::Win32UdpTransport::Type::PUB, "127.0.0.1", 9001) != 0) {
             std::cerr << "[Client] ERROR: Failed to create outbound transport\n";
             return false;
         }
 
         // Register outbound publish side
-        m_pubParticipant = std::make_shared<dmq::Participant>(m_pubTransport);
+        m_pubParticipant = std::make_shared<dmq::databus::Participant>(m_pubTransport);
         m_pubParticipant->AddRemoteTopic(topics::CmdRate, topics::CmdRateId);
-        dmq::DataBus::AddParticipant(m_pubParticipant);
-        dmq::DataBus::RegisterSerializer<CmdMsg>(topics::CmdRate, m_cmdSer);
+        dmq::databus::DataBus::AddParticipant(m_pubParticipant);
+        dmq::databus::DataBus::RegisterSerializer<CmdMsg>(topics::CmdRate, m_cmdSer);
 
         // Register sensor and alarm receive side — both share the same transport
         // (port 9000). The DmqHeader ID field distinguishes them on the wire.
-        m_subParticipant = std::make_shared<dmq::Participant>(m_subTransport);
-        dmq::DataBus::AddIncomingTopic<SensorMsg>(
+        m_subParticipant = std::make_shared<dmq::databus::Participant>(m_subTransport);
+        dmq::databus::DataBus::AddIncomingTopic<SensorMsg>(
             topics::SensorTemp,  topics::SensorTempId,  *m_subParticipant, m_sensorSer);
-        dmq::DataBus::AddIncomingTopic<AlarmMsg>(
+        dmq::databus::DataBus::AddIncomingTopic<AlarmMsg>(
             topics::AlarmStatus, topics::AlarmStatusId, *m_subParticipant, m_alarmSer);
 
         // Subscribe to sensor readings on the local bus
-        m_sensorConn = dmq::DataBus::Subscribe<SensorMsg>(topics::SensorTemp,
+        m_sensorConn = dmq::databus::DataBus::Subscribe<SensorMsg>(topics::SensorTemp,
             [](const SensorMsg& msg) {
                 std::cout << "[Client] sensor/temp: id=" << msg.sensorId
                           << "  temp=" << msg.temp << " C\n";
             });
 
         // Subscribe to alarm state changes on the local bus
-        m_alarmConn = dmq::DataBus::Subscribe<AlarmMsg>(topics::AlarmStatus,
+        m_alarmConn = dmq::databus::DataBus::Subscribe<AlarmMsg>(topics::AlarmStatus,
             [](const AlarmMsg& msg) {
                 std::cout << "[Client] alarm/status: id=" << msg.alarmId
                           << "  " << (msg.active ? "ACTIVE" : "inactive") << "\n";
@@ -97,7 +97,7 @@ public:
         CmdMsg cmd;
         cmd.intervalMs = intervalMs;
         std::cout << "[Client] Sending cmd/rate: intervalMs=" << intervalMs << "\n";
-        dmq::DataBus::Publish<CmdMsg>(topics::CmdRate, cmd);
+        dmq::databus::DataBus::Publish<CmdMsg>(topics::CmdRate, cmd);
     }
 
 private:
@@ -108,11 +108,11 @@ private:
             m_subParticipant->ProcessIncoming();
     }
 
-    UdpTransport m_subTransport;
-    UdpTransport m_pubTransport;
+    dmq::transport::Win32UdpTransport m_subTransport;
+    dmq::transport::Win32UdpTransport m_pubTransport;
 
-    std::shared_ptr<dmq::Participant> m_subParticipant;
-    std::shared_ptr<dmq::Participant> m_pubParticipant;
+    std::shared_ptr<dmq::databus::Participant> m_subParticipant;
+    std::shared_ptr<dmq::databus::Participant> m_pubParticipant;
 
     SensorSerializer m_sensorSer;
     CmdSerializer    m_cmdSer;
@@ -121,7 +121,7 @@ private:
     dmq::ScopedConnection m_sensorConn;
     dmq::ScopedConnection m_alarmConn;
 
-    Thread m_pollThread;
+    dmq::os::Thread m_pollThread;
 
     std::atomic<bool> m_running{false};
 };

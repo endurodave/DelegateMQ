@@ -40,14 +40,14 @@ struct GlobalState {
 
 // Holds all network and DataBus infrastructure for the client.
 struct ClientState {
-    MulticastTransport transport;
-    std::shared_ptr<dmq::Participant> group;
-    Serializer<void(ShapeMsg)> serializer;
+    dmq::transport::MulticastTransport transport;
+    std::shared_ptr<dmq::databus::Participant> group;
+    dmq::serialization::serializer::Serializer<void(ShapeMsg)> serializer;
 };
 
 // Create the multicast SUB transport.
 static bool SetupTransport(ClientState& s, const std::string& localIP) {
-    if (s.transport.Create(MulticastTransport::Type::SUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
+    if (s.transport.Create(dmq::transport::MulticastTransport::Type::SUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
         std::cerr << "Failed to create Multicast transport" << std::endl;
         return false;
     }
@@ -57,18 +57,20 @@ static bool SetupTransport(ClientState& s, const std::string& localIP) {
 // Register incoming multicast topics so they flow through the local DataBus.
 // Subscribers and DeadlineSubscriptions are set up in main() after this call.
 static void SetupDataBus(ClientState& s) {
-    s.group = std::make_shared<dmq::Participant>(s.transport);
-    dmq::DataBus::AddIncomingTopic<ShapeMsg>(SystemTopic::Square,   SystemTopic::SquareId,   *s.group, s.serializer);
-    dmq::DataBus::AddIncomingTopic<ShapeMsg>(SystemTopic::Circle,   SystemTopic::CircleId,   *s.group, s.serializer);
-    dmq::DataBus::AddIncomingTopic<ShapeMsg>(SystemTopic::Triangle, SystemTopic::TriangleId, *s.group, s.serializer);
+    s.group = std::make_shared<dmq::databus::Participant>(s.transport);
+    dmq::databus::DataBus::AddIncomingTopic<ShapeMsg>(SystemTopic::Square,   SystemTopic::SquareId,   *s.group, s.serializer);
+    dmq::databus::DataBus::AddIncomingTopic<ShapeMsg>(SystemTopic::Circle,   SystemTopic::CircleId,   *s.group, s.serializer);
+    dmq::databus::DataBus::AddIncomingTopic<ShapeMsg>(SystemTopic::Triangle, SystemTopic::TriangleId, *s.group, s.serializer);
 }
 
 int main(int argc, char* argv[]) {
     int duration = 0;
     if (argc > 1) duration = atoi(argv[1]);
 
-    NetworkContext winsock;
-    std::string localIP = NetworkContext::GetLocalAddress();
+#ifdef _WIN32
+    dmq::util::NetworkContext winsock;
+#endif
+    std::string localIP = dmq::util::NetworkContext::GetLocalAddress();
 
 #ifdef DMQ_DATABUS_TOOLS
     NodeBridge::StartMulticast("ShapesClient", "239.1.1.1", 9998, localIP);
@@ -93,11 +95,11 @@ int main(int argc, char* argv[]) {
             g_state.screen->PostEvent(Event::Custom);
     };
 
-    auto connSquare   = dmq::DataBus::Subscribe<ShapeMsg>(SystemTopic::Square,
+    auto connSquare   = dmq::databus::DataBus::Subscribe<ShapeMsg>(SystemTopic::Square,
         [onShape](const ShapeMsg& m) { onShape(SystemTopic::Square,   m); });
-    auto connCircle   = dmq::DataBus::Subscribe<ShapeMsg>(SystemTopic::Circle,
+    auto connCircle   = dmq::databus::DataBus::Subscribe<ShapeMsg>(SystemTopic::Circle,
         [onShape](const ShapeMsg& m) { onShape(SystemTopic::Circle,   m); });
-    auto connTriangle = dmq::DataBus::Subscribe<ShapeMsg>(SystemTopic::Triangle,
+    auto connTriangle = dmq::databus::DataBus::Subscribe<ShapeMsg>(SystemTopic::Triangle,
         [onShape](const ShapeMsg& m) { onShape(SystemTopic::Triangle, m); });
 
     // Deadline monitoring: if Square stops arriving for more than 1 second,
@@ -109,7 +111,7 @@ int main(int argc, char* argv[]) {
             g_state.screen->PostEvent(Event::Custom);
     };
 
-    dmq::DeadlineSubscription<ShapeMsg> deadlineSquare{
+    dmq::databus::DeadlineSubscription<ShapeMsg> deadlineSquare{
         SystemTopic::Square,
         std::chrono::milliseconds(1000),
         [](const ShapeMsg&) {},  // data handled by connSquare above
@@ -121,7 +123,7 @@ int main(int argc, char* argv[]) {
     std::thread netThread([&]() {
         while (running) {
             s.group->ProcessIncoming();
-            Timer::ProcessTimers();  // drives DeadlineSubscription timer
+            dmq::util::Timer::ProcessTimers();  // drives DeadlineSubscription timer
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     });

@@ -15,15 +15,15 @@
 int DataBusTypeMismatchTestMain() {
 #if 0
     std::cout << "Starting DataBusTypeMismatchTest (EXPECTED TO ABORT)..." << std::endl;
-    dmq::DataBus::ResetForTesting();
+    dmq::databus::DataBus::ResetForTesting();
 
     // 1. Publish as int
-    dmq::DataBus::Publish<int>("type/topic", 1);
+    dmq::databus::DataBus::Publish<int>("type/topic", 1);
 
     // 2. Attempt to subscribe as float on the SAME topic string.
     // This triggers the internal std::type_index check in GetOrCreateSignal.
     std::cout << "Attempting mismatched Subscribe<float> on topic 'type/topic' (initially int)..." << std::endl;
-    auto conn = dmq::DataBus::Subscribe<float>("type/topic", [](float val) {
+    auto conn = dmq::databus::DataBus::Subscribe<float>("type/topic", [](float val) {
         (void)val;
     });
 

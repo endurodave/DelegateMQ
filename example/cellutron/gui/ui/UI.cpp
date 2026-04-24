@@ -20,6 +20,8 @@
 #include <iostream>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 using namespace ftxui;
 
 namespace cellutron {
@@ -85,7 +87,7 @@ void UI::Start() {
     }, &m_thread);
 
     // 3. Controller Presence Watchdog: Monitor periodic heartbeat for offline detection
-    m_controllerWatchdog = std::make_unique<dmq::DeadlineSubscription<HeartbeatMsg>>(
+    m_controllerWatchdog = std::make_unique<dmq::databus::DeadlineSubscription<HeartbeatMsg>>(
         topics::CONTROLLER_HEARTBEAT,
         HEARTBEAT_TIMEOUT,
         [this](const HeartbeatMsg&) {

@@ -10,6 +10,8 @@
 // If commented out, the smaller loop-based calculation is used.
 #define USE_CRC_TABLE
 
+namespace dmq::util {
+
 #ifdef USE_CRC_TABLE
 
 /**
@@ -82,5 +84,8 @@ inline unsigned short Crc16CalcBlock(const unsigned char* crc_msg, int len, unsi
 }
 
 #endif // USE_CRC_TABLE
+
+} // namespace dmq::util
+
 
 #endif // CRC16_H

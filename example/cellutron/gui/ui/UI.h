@@ -50,7 +50,7 @@ private:
     // Use standardized thread name for Active Object subsystem
     Thread m_thread{"UIThread", 50, FullPolicy::DROP};
 
-    std::unique_ptr<dmq::DeadlineSubscription<HeartbeatMsg>> m_controllerWatchdog;
+    std::unique_ptr<dmq::databus::DeadlineSubscription<HeartbeatMsg>> m_controllerWatchdog;
 };
 
 } // namespace gui

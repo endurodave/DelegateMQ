@@ -11,7 +11,10 @@
 #define ASSERT_TRUE(x) configASSERT(x)
 #endif
 
+namespace dmq::os {
+
 using namespace dmq;
+using namespace dmq::util;
 
 //----------------------------------------------------------------------------
 // Thread Constructor
@@ -316,3 +319,6 @@ void Thread::Run()
         xSemaphoreGive(m_exitSem);
     }
 }
+
+} // namespace dmq::os
+

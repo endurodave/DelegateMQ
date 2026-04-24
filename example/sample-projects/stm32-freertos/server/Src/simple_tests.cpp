@@ -9,6 +9,8 @@
 #include <stdio.h>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 
 // --- Test Handlers ---
 static void FreeFunction(int val) {

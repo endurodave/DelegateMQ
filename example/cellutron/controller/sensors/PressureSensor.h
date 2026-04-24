@@ -17,11 +17,11 @@ class PressureSensor
 public:
     void Poll()
     {
-        dmq::DataBus::Publish<SensorStatusMsg>(
+        dmq::databus::DataBus::Publish<SensorStatusMsg>(
             cellutron::topics::PRESSURE_INLET,
             { SensorType::PRESSURE, m_inletKPa });
 
-        dmq::DataBus::Publish<SensorStatusMsg>(
+        dmq::databus::DataBus::Publish<SensorStatusMsg>(
             cellutron::topics::PRESSURE_OUTLET,
             { SensorType::PRESSURE, m_outletKPa });
     }

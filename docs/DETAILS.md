@@ -159,7 +159,7 @@ include("path/to/delegate-mq/DelegateMQ.cmake")
 If no variables are set, DelegateMQ uses `Defaults.cmake` to guess the best settings:
 - **Windows/Linux**: `STDLIB` threading, `UDP` transport.
 - **RTOS (FreeRTOS/ThreadX/Zephyr)**: Native threading, `NONE` transport.
-- **All Platforms**: `SERIALIZE` serialization, `DataBus` enabled, `Allocator` disabled.
+- **All Platforms**: `SERIALIZE` serialization, `dmq::databus::DataBus` enabled, `Allocator` disabled.
 
 ## Example Projects
 To build and run the client/server [system architecture](#system-architecture) projects, follow these steps.
@@ -248,7 +248,7 @@ include("${CMAKE_SOURCE_DIR}/path/to/delegate-mq/DelegateMQ.cmake")
 
 Update `External.cmake` external library paths if necessary.
 
-Add `DMQ_PORT_SOURCES` to your sources if using the predefined supporting DelegateMQ classes (e.g. `Thread`, `Serialize`, ...).
+Add `DMQ_PORT_SOURCES` to your sources if using the predefined supporting DelegateMQ classes (e.g. `dmq::Thread`, `dmq::Serializer`, ...).
 
 ```
 # Collect DelegateMQ port/extras source files
@@ -283,7 +283,7 @@ using namespace dmq;
 // Your DelegateMQ code...
 ```
 
-**Note:** If using utility features (like `Thread` or `Timer`), ensure you compile and link the corresponding `.cpp` files found in the `delegate-mq/port` and `delegate-mq/extras` directories.
+**Note:** If using utility features (like `dmq::Thread` or `dmq::util::Timer`), ensure you compile and link the corresponding `.cpp` files found in the `delegate-mq/port` and `delegate-mq/extras` directories.
 
 # Quick Start
 
@@ -291,11 +291,11 @@ DelegateMQ has **three invocation modes**. The right one depends entirely on whe
 
 | Mode | When to use | How to create |
 | --- | --- | --- |
-| **Synchronous** | Target is on the same thread as the caller | `MakeDelegate(&obj, &Class::Func)` |
-| **Asynchronous** | Target must run on a specific worker thread | `MakeDelegate(&obj, &Class::Func, thread)` |
-| **Remote** | Target is on a different process or processor | `RemoteChannel<Sig>` + `Bind()` |
+| **Synchronous** | Target is on the same thread as the caller | `dmq::MakeDelegate(&obj, &Class::Func)` |
+| **Asynchronous** | Target must run on a specific worker thread | `dmq::MakeDelegate(&obj, &Class::Func, thread)` |
+| **Remote** | Target is on a different process or processor | `dmq::RemoteChannel<Sig>` + `Bind()` |
 
-The key insight: **adding a `thread` argument to `MakeDelegate()` is the only difference between synchronous and asynchronous**. Everything else — the call syntax, argument types, return values — is identical.
+The key insight: **adding a `thread` argument to `dmq::MakeDelegate()` is the only difference between synchronous and asynchronous**. Everything else — the call syntax, argument types, return values — is identical.
 
 See [Sample Projects](#sample-projects) for complete working examples.
 
@@ -308,21 +308,21 @@ Three questions drive every DelegateMQ design decision.
 **1. Where does the target function run?**
 
 ```
-Same thread    → Delegate<>           sync, direct call
-Worker thread  → DelegateAsync<>      fire-and-forget
-               → DelegateAsyncWait<>  blocking, returns value
-Remote system  → DelegateRemote<>     cross-process / cross-processor
+Same thread    → dmq::Delegate<>           sync, direct call
+Worker thread  → dmq::DelegateAsync<>      fire-and-forget
+               → dmq::DelegateAsyncWait<>  blocking, returns value
+Remote system  → dmq::DelegateRemote<>     cross-process / cross-processor
 ```
 
-`MakeDelegate()` creates all of the above — only the arguments change. There is no separate API to learn for each mode.
+`dmq::MakeDelegate()` creates all of the above — only the arguments change. There is no separate API to learn for each mode.
 
 **2. How many targets receive the call?**
 
 | Targets | Type | Notes |
 | --- | --- | --- |
-| One | `Delegate<>` / `UnicastDelegate<>` | Direct call or single-slot event |
-| Many | `Signal<Sig>` | Preferred — RAII lifetime via `ScopedConnection` |
-| Many | `MulticastDelegateSafe<Sig>` | Manual add/remove; no RAII |
+| One | `dmq::Delegate<>` / `dmq::UnicastDelegate<>` | Direct call or single-slot event |
+| Many | `dmq::Signal<Sig>` | Preferred — RAII lifetime via `dmq::ScopedConnection` |
+| Many | `dmq::MulticastDelegateSafe<Sig>` | Manual add/remove; no RAII |
 
 See [When to use `MulticastDelegateSafe` instead](#when-to-use-multicastdelegatesafe-instead) for the full decision matrix.
 
@@ -349,12 +349,12 @@ public:
 };
 
 // Bind to a free function and invoke
-auto logDelegate = MakeDelegate(&Log);
+auto logDelegate = dmq::MakeDelegate(&Log);
 logDelegate("System started");
 
 // Bind to a member function and invoke
 Sensor sensor;
-auto readDelegate = MakeDelegate(&sensor, &Sensor::Read);
+auto readDelegate = dmq::MakeDelegate(&sensor, &Sensor::Read);
 float value = readDelegate();
 ```
 
@@ -363,11 +363,11 @@ float value = readDelegate();
 Add a `thread` argument. The function is queued onto that thread and the caller returns immediately. No return value is available.
 
 ```cpp
-Thread workerThread("Worker");
+dmq::Thread workerThread("Worker");
 workerThread.CreateThread();
 
 // Invoke Log() on workerThread — caller does not wait
-auto asyncLog = MakeDelegate(&Log, workerThread);
+auto asyncLog = dmq::MakeDelegate(&Log, workerThread);
 asyncLog("Processing started");  // returns immediately
 ```
 
@@ -377,11 +377,11 @@ Add a thread and a timeout. The caller blocks until the target function complete
 
 ```cpp
 // Block until Read() completes on workerThread, then get the return value
-auto syncRead = MakeDelegate(&sensor, &Sensor::Read, workerThread, WAIT_INFINITE);
+auto syncRead = dmq::MakeDelegate(&sensor, &Sensor::Read, workerThread, dmq::WAIT_INFINITE);
 float value = syncRead();  // blocks until workerThread executes Read()
 
 // With a timeout — use AsyncInvoke to get an optional return value
-auto timedRead = MakeDelegate(&sensor, &Sensor::Read, workerThread, std::chrono::milliseconds(100));
+auto timedRead = dmq::MakeDelegate(&sensor, &Sensor::Read, workerThread, std::chrono::milliseconds(100));
 auto result = timedRead.AsyncInvoke();
 if (result.has_value())
     float v = result.value();  // completed within 100ms
@@ -389,16 +389,16 @@ if (result.has_value())
 
 ### Lambdas
 
-Lambdas work the same way. Pass any lambda directly to `MakeDelegate()` — no `std::function` wrapper or `+` conversion needed.
+Lambdas work the same way. Pass any lambda directly to `dmq::MakeDelegate()` — no `std::function` wrapper or `+` conversion needed.
 
 ```cpp
 // Stateless lambda — synchronous
-auto echo = MakeDelegate([](const std::string& s) { std::cout << s; });
+auto echo = dmq::MakeDelegate([](const std::string& s) { std::cout << s; });
 echo("hello");
 
 // Capturing lambda — asynchronous, fire-and-forget
 int threshold = 10;
-auto check = MakeDelegate(
+auto check = dmq::MakeDelegate(
     [threshold](int v) {
         if (v > threshold) std::cout << "Over threshold\n";
     },
@@ -413,9 +413,9 @@ check(15);
 
 > Full documentation: **[SIGNALS.md](SIGNALS.md)**
 
-`Signal<Sig>` is the recommended way to implement publish/subscribe within a process. It returns a `ScopedConnection` from `Connect()` that automatically disconnects when it goes out of scope. Each subscriber independently chooses its execution context — synchronous or on a specific worker thread — without any changes to the publisher.
+`dmq::Signal<Sig>` is the recommended way to implement publish/subscribe within a process. It returns a `dmq::ScopedConnection` from `Connect()` that automatically disconnects when it goes out of scope. Each subscriber independently chooses its execution context — synchronous or on a specific worker thread — without any changes to the publisher.
 
-See [SIGNALS.md](SIGNALS.md) for complete examples, lambda slots, and a comparison with `MulticastDelegateSafe`.
+See [SIGNALS.md](SIGNALS.md) for complete examples, lambda slots, and a comparison with `dmq::MulticastDelegateSafe`.
 
 ---
 
@@ -424,23 +424,23 @@ See [SIGNALS.md](SIGNALS.md) for complete examples, lambda slots, and a comparis
 Remote delegates send a function call across a process or network boundary. The receiver doesn't need to know a call is coming over a transport — it just implements a normal member function.
 
 **Three concepts to understand:**
-- **`RemoteChannel<Sig>`** — one instance per message signature; owns the transport wiring.
+- **`dmq::RemoteChannel<Sig>`** — one instance per message signature; owns the transport wiring.
 - **`Bind(obj, func, id)`** — connects a member function to a remote ID on the channel.
-- **`RegisterEndpoint(id, channel.GetEndpoint())`** — tells the receive side which function to call when a message with that ID arrives.
+- **`dmq::RegisterEndpoint(id, channel.GetEndpoint())`** — tells the receive side which function to call when a message with that ID arrives.
 
 ```cpp
 // --- Shared message ID (known to both sender and receiver) ---
-constexpr DelegateRemoteId TEMPERATURE_ID = 1;
+constexpr dmq::DelegateRemoteId TEMPERATURE_ID = 1;
 
 // --- Receiver side ---
 class DataLogger
 {
 public:
-    DataLogger(ITransport& transport, ISerializer<void(float)>& ser)
+    DataLogger(dmq::transport::ITransport& transport, dmq::ISerializer<void(float)>& ser)
     {
         m_channel.emplace(transport, ser);
         m_channel->Bind(this, &DataLogger::OnTemperature, TEMPERATURE_ID);
-        RegisterEndpoint(TEMPERATURE_ID, m_channel->GetEndpoint());
+        dmq::RegisterEndpoint(TEMPERATURE_ID, m_channel->GetEndpoint());
     }
 
 private:
@@ -449,14 +449,14 @@ private:
         std::cout << "Received temperature: " << value << "\n";
     }
 
-    std::optional<RemoteChannel<void(float)>> m_channel;
+    std::optional<dmq::RemoteChannel<void(float)>> m_channel;
 };
 
 // --- Sender side ---
 class Thermometer
 {
 public:
-    Thermometer(ITransport& transport, ISerializer<void(float)>& ser)
+    Thermometer(dmq::transport::ITransport& transport, dmq::ISerializer<void(float)>& ser)
     {
         m_channel.emplace(transport, ser);
         // Bind() wires up the remote ID, dispatcher, serializer, and stream.
@@ -465,19 +465,19 @@ public:
         m_channel->Bind(this, &Thermometer::Unused, TEMPERATURE_ID);
     }
 
-    // Fire-and-forget send (operator() on the optional<RemoteChannel>)
+    // Fire-and-forget send (operator() on the optional<dmq::RemoteChannel>)
     void Send(float value) { (*m_channel)(value); }
 
     // Blocking send — waits for ACK or timeout
-    bool SendWait(float value) { return RemoteInvokeWait(*m_channel, value); }
+    bool SendWait(float value) { return dmq::RemoteInvokeWait(*m_channel, value); }
 
 private:
     void Unused(float) {}  // required by Bind(); never invoked on the sender side
-    std::optional<RemoteChannel<void(float)>> m_channel;
+    std::optional<dmq::RemoteChannel<void(float)>> m_channel;
 };
 ```
 
-The sender calls `(*m_channel)(value)` or `RemoteInvokeWait(*m_channel, value)`. The transport serializes the argument, sends it, and on the receiver side `OnTemperature()` is called — just like a normal function. See [Sample Projects](#sample-projects) for complete working examples with real transports.
+The sender calls `(*m_channel)(value)` or `dmq::RemoteInvokeWait(*m_channel, value)`. The transport serializes the argument, sends it, and on the receiver side `OnTemperature()` is called — just like a normal function. See [Sample Projects](#sample-projects) for complete working examples with real transports.
 
 ---
 
@@ -485,7 +485,7 @@ The sender calls `(*m_channel)(value)` or `RemoteInvokeWait(*m_channel, value)`.
 
 > Full documentation: **[DATABUS.md](DATABUS.md)**
 
-`DataBus` is a high-level middleware built on top of DelegateMQ's core delegates. It provides a topic-based data distribution system (DDS Lite) that works transparently across threads and remote nodes.
+`dmq::databus::DataBus` is a high-level middleware built on top of DelegateMQ's core delegates. It provides a topic-based data distribution system (DDS Lite) that works transparently across threads and remote nodes.
 
 See [DATABUS.md](DATABUS.md) for the full API reference, threading model, QoS options (Last Value Cache, Lifespan, Min Separation), remote distribution patterns, and multi-node topology examples.
 
@@ -504,8 +504,8 @@ public:
     void Save(const Data& data)
     {
         // If called from the wrong thread, re-invoke on m_thread (non-blocking)
-        if (Thread::GetCurrentThreadId() != m_thread.GetThreadId()) {
-            MakeDelegate(this, &DataStore::Save, m_thread)(data);
+        if (dmq::Thread::GetCurrentThreadId() != m_thread.GetThreadId()) {
+            dmq::MakeDelegate(this, &DataStore::Save, m_thread)(data);
             return;
         }
         // Now guaranteed to run on m_thread
@@ -514,7 +514,7 @@ public:
 
 private:
     Data m_data;
-    Thread m_thread;
+    dmq::Thread m_thread;
 };
 ```
 
@@ -541,7 +541,7 @@ Target callable invocation and argument handling based on the delegate type.
 
 > Full documentation: **[PORTING.md](PORTING.md)**
 
-Numerous predefined platforms are already supported — Windows, Linux, FreeRTOS, ARM bare-metal, ThreadX, Zephyr, CMSIS-RTOS2, and Qt. See [PORTING.md](PORTING.md) for the full porting checklist, embedded systems notes, and interface implementation guides (`IThread`, `ISerializer`, `IDispatcher`).
+Numerous predefined platforms are already supported — Windows, Linux, FreeRTOS, ARM bare-metal, ThreadX, Zephyr, CMSIS-RTOS2, and Qt. See [PORTING.md](PORTING.md) for the full porting checklist, embedded systems notes, and interface implementation guides (`dmq::IThread`, `dmq::ISerializer`, `dmq::IDispatcher`).
 
 # Background
 
@@ -563,41 +563,41 @@ A delegate binds to a single callable function. The delegate classes are:
 
 ```cpp
 // Delegates
-DelegateBase
-    Delegate<>
-        DelegateFree<>
-            DelegateFreeAsync<>
-            DelegateFreeAsyncWait<>
-            DelegateFreeRemote<>
-        DelegateMember<>
-            DelegateMemberAsync<>
-            DelegateMemberAsyncWait<>
-            DelegateMemberRemote<>
-        DelegateMemberSp<>
-            DelegateMemberAsyncSp<>
-            DelegateMemberAsyncWaitSp<>
-        DelegateFunction<>
-            DelegateFunctionAsync<>
-            DelegateFunctionAsyncWait<>
-            DelegateFunctionRemote<>
+dmq::DelegateBase
+    dmq::Delegate<>
+        dmq::DelegateFree<>
+            dmq::DelegateFreeAsync<>
+            dmq::DelegateFreeAsyncWait<>
+            dmq::DelegateFreeRemote<>
+        dmq::DelegateMember<>
+            dmq::DelegateMemberAsync<>
+            dmq::DelegateMemberAsyncWait<>
+            dmq::DelegateMemberRemote<>
+        dmq::DelegateMemberSp<>
+            dmq::DelegateMemberAsyncSp<>
+            dmq::DelegateMemberAsyncWaitSp<>
+        dmq::DelegateFunction<>
+            dmq::DelegateFunctionAsync<>
+            dmq::DelegateFunctionAsyncWait<>
+            dmq::DelegateFunctionRemote<>
 
 // Interfaces
-IDispatcher
-ISerializer
-IThread
-IThreadInvoker
-IRemoteInvoker
+dmq::IDispatcher
+dmq::ISerializer
+dmq::IThread
+dmq::IThreadInvoker
+dmq::IRemoteInvoker
 ``` 
 
-`DelegateFree<>` binds to a free or static member function. `DelegateMember<>` binds to a class instance member function. `DelegateFunction<>` binds to a `std::function` target. All versions offer synchronous function invocation.
+`dmq::DelegateFree<>` binds to a free or static member function. `dmq::DelegateMember<>` binds to a class instance member function. `dmq::DelegateFunction<>` binds to a `std::function` target. All versions offer synchronous function invocation.
 
-`DelegateFreeAsync<>`, `DelegateMemberAsync<>` and `DelegateFunctionAsync<>` operate in the same way as their synchronous counterparts; except these versions offer non-blocking asynchronous function execution on a specified thread of control. `IThread` and `IThreadInvoker` interfaces to send messages integrates with any OS.
+`dmq::DelegateFreeAsync<>`, `dmq::DelegateMemberAsync<>` and `dmq::DelegateFunctionAsync<>` operate in the same way as their synchronous counterparts; except these versions offer non-blocking asynchronous function execution on a specified thread of control. `dmq::IThread` and `dmq::IThreadInvoker` interfaces to send messages integrates with any OS.
 
-`DelegateFreeAsyncWait<>`, `DelegateMemberAsyncWait<>` and `DelegateFunctionAsyncWait<>` provides blocking asynchronous function execution on a target thread with a caller supplied maximum wait timeout. The destination thread will not invoke the target function if the timeout expires.
+`dmq::DelegateFreeAsyncWait<>`, `dmq::DelegateMemberAsyncWait<>` and `dmq::DelegateFunctionAsyncWait<>` provides blocking asynchronous function execution on a target thread with a caller supplied maximum wait timeout. The destination thread will not invoke the target function if the timeout expires.
 
-`DelegateFreeRemote<>`, `DelegateMemberRemote<>` and `DelegateFunctionRemote<>` provides non-blocking remote function execution. `ISerialize` and `IRemoteInvoker` interfaces support integration with any system. 
+`dmq::DelegateFreeRemote<>`, `dmq::DelegateMemberRemote<>` and `dmq::DelegateFunctionRemote<>` provides non-blocking remote function execution. `dmq::ISerializer` and `dmq::IRemoteInvoker` interfaces support integration with any system. 
 
-The template-overloaded `MakeDelegate()` helper function eases delegate creation.
+The template-overloaded `dmq::MakeDelegate()` helper function eases delegate creation.
 
 ## Delegate Containers
 
@@ -605,24 +605,24 @@ A delegate container stores one or more delegates. A delegate container is calla
 
 ```cpp
 // Delegate Containers
-UnicastDelegate<>
-    UnicastDelegateSafe<>
-MulticastDelegate<>
-    MulticastDelegateSafe<>
-Signal<>          // thread-safe multicast with RAII ScopedConnection
+dmq::UnicastDelegate<>
+    dmq::UnicastDelegateSafe<>
+dmq::MulticastDelegate<>
+    dmq::MulticastDelegateSafe<>
+dmq::Signal<>          // thread-safe multicast with RAII ScopedConnection
 ```
 
-`UnicastDelegate<>` is a delegate container accepting a single delegate.
+`dmq::UnicastDelegate<>` is a delegate container accepting a single delegate.
 
-`MulticastDelegate<>` is a delegate container accepting multiple delegates.
+`dmq::MulticastDelegate<>` is a delegate container accepting multiple delegates.
 
-`MulticastDelegateSafe<>` is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.
+`dmq::MulticastDelegateSafe<>` is a thread-safe container accepting multiple delegates. Always use the thread-safe version if multiple threads access the container instance.
 
-`Signal<>` is a thread-safe multicast container with RAII connection management. `Connect()` returns a `ScopedConnection` handle that automatically unsubscribes the delegate when it goes out of scope, preventing callbacks to destroyed objects. `Signal<>` may be used as a plain stack variable or class member — no `shared_ptr` required.
+`dmq::Signal<>` is a thread-safe multicast container with RAII connection management. `Connect()` returns a `dmq::ScopedConnection` handle that automatically unsubscribes the delegate when it goes out of scope, preventing callbacks to destroyed objects. `dmq::Signal<>` may be used as a plain stack variable or class member — no `shared_ptr` required.
 
 ## Synchronous Delegates
 
-Delegates can be created with the overloaded `MakeDelegate()` template function. For example, a simple free function.
+Delegates can be created with the overloaded `dmq::MakeDelegate()` template function. For example, a simple free function.
 
 ```cpp
 void FreeFuncInt(int value) {
@@ -634,44 +634,44 @@ Bind a free function to a delegate and invoke.
 
 ```cpp
 // Create a delegate bound to a free function then invoke
-auto delegateFree = MakeDelegate(&FreeFuncInt);
+auto delegateFree = dmq::MakeDelegate(&FreeFuncInt);
 delegateFree(123);
 ```
 
-Bind a member function with two arguments to `MakeDelegate()`: the class instance and member function pointer. 
+Bind a member function with two arguments to `dmq::MakeDelegate()`: the class instance and member function pointer. 
 
 ```cpp
 // Create a delegate bound to a member function then invoke    
-auto delegateMember = MakeDelegate(&testClass, &TestClass::MemberFunc);    
+auto delegateMember = dmq::MakeDelegate(&testClass, &TestClass::MemberFunc);    
 delegateMember(&testStruct);
 ```
 
 Bind a lambda directly — no `std::function` wrapper needed.
 
 ```cpp
-auto rangeLambda = MakeDelegate([](int v) { return v > 2 && v <= 6; });
+auto rangeLambda = dmq::MakeDelegate([](int v) { return v > 2 && v <= 6; });
 bool inRange = rangeLambda(6);
 ```
 
 A delegate container holds one or more delegates. 
 
 ```cpp
-MulticastDelegate<void(int)> delegateA;
-MulticastDelegate<void(int, int)> delegateD;
-MulticastDelegate<void(float, int, char)> delegateE;
-MulticastDelegate<void(const MyClass&, MyStruct*, Data**)> delegateF;
+dmq::MulticastDelegate<void(int)> delegateA;
+dmq::MulticastDelegate<void(int, int)> delegateD;
+dmq::MulticastDelegate<void(float, int, char)> delegateE;
+dmq::MulticastDelegate<void(const MyClass&, MyStruct*, Data**)> delegateF;
 ```
 
 Creating a delegate instance and adding it to the multicast delegate container.
 
 ```cpp
-delegateA += MakeDelegate(&FreeFuncInt);
+delegateA += dmq::MakeDelegate(&FreeFuncInt);
 ```
 
 An instance member function can also be added to any delegate container.
 
 ```cpp
-delegateA += MakeDelegate(&testClass, &TestClass::MemberFunc);
+delegateA += dmq::MakeDelegate(&testClass, &TestClass::MemberFunc);
 ```
 
 Invoke callbacks for all registered delegates. If multiple delegates are stored, each one is called sequentially.
@@ -684,7 +684,7 @@ delegateA(123);
 Removing a delegate instance from the delegate container.
 
 ```cpp
-delegateA -= MakeDelegate(&FreeFuncInt);
+delegateA -= dmq::MakeDelegate(&FreeFuncInt);
 ```
 
 Alternatively, `Clear()` is used to remove all delegates within the container.
@@ -696,8 +696,8 @@ delegateA.Clear();
 A delegate is added to the unicast container `operator=`.
 
 ```cpp
-UnicastDelegate<int(int)> delegateF;
-delegateF = MakeDelegate(&FreeFuncIntRetInt);
+dmq::UnicastDelegate<int(int)> delegateF;
+delegateF = dmq::MakeDelegate(&FreeFuncIntRetInt);
 ```
 
 Removal is with `Clear()` or assign `nullptr`.
@@ -712,15 +712,15 @@ An asynchronous delegate invokes a callable on a user-specified thread of contro
 
 ### Non-Blocking
 
-Create an asynchronous delegate by adding an extra thread argument to `MakeDelegate()`.
+Create an asynchronous delegate by adding an extra thread argument to `dmq::MakeDelegate()`.
 
 ```cpp
-Thread workerThread1("WorkerThread1");
+dmq::Thread workerThread1("WorkerThread1");
 workerThread.CreateThread();
 
 // Create delegate and invoke FreeFuncInt() on workerThread
 // Does not wait for function call to complete
-auto delegateFree = MakeDelegate(&FreeFuncInt, workerThread);
+auto delegateFree = dmq::MakeDelegate(&FreeFuncInt, workerThread);
 delegateFree(123);
 ```
 
@@ -729,8 +729,8 @@ If the target function has a return value, it is not valid after invoke. The cal
 An asynchronous delegate instance can also be inserted into a delegate container. 
 
 ```cpp
-MulticastDelegateSafe<void(TestStruct*)> delegateC;
-delegateC += MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread1);
+dmq::MulticastDelegateSafe<void(TestStruct*)> delegateC;
+delegateC += dmq::MakeDelegate(&testClass, &TestClass::MemberFunc, workerThread1);
 delegateC(&testStruct);
 ```
 
@@ -739,22 +739,22 @@ Another example of an asynchronous delegate being invoked on `workerThread1` wit
 ```cpp
 // Create delegate with std::string and int arguments then asynchronously    
 // invoke on a member function
-MulticastDelegateSafe<void(const std::string&, int)> delegateH;
-delegateH += MakeDelegate(&testClass, &TestClass::MemberFuncStdString, workerThread1);
+dmq::MulticastDelegateSafe<void(const std::string&, int)> delegateH;
+delegateH += dmq::MakeDelegate(&testClass, &TestClass::MemberFuncStdString, workerThread1);
 delegateH("Hello world", 2020);
 ```
 
 ### Blocking
 
-Create an asynchronous blocking delegate by adding an thread and timeout arguments to `MakeDelegate()`.
+Create an asynchronous blocking delegate by adding an thread and timeout arguments to `dmq::MakeDelegate()`.
 
 ```cpp
-Thread workerThread1("WorkerThread1");
+dmq::Thread workerThread1("WorkerThread1");
 workerThread.CreateThread();
 
 // Create delegate and invoke FreeFuncInt() on workerThread 
 // Waits for the function call to complete
-auto delegateFree = MakeDelegate(&FreeFuncInt, workerThread, WAIT_INFINITE);
+auto delegateFree = dmq::MakeDelegate(&FreeFuncInt, workerThread, dmq::WAIT_INFINITE);
 delegateFree(123);
 ```
 
@@ -762,16 +762,16 @@ A blocking delegate waits until the target thread executes the bound delegate fu
 
 Stack arguments passed by pointer/reference do not be thread-safe. The reason is that the calling thread blocks waiting for the destination thread to complete. The delegate implementation guarantees only one thread is able to access stack allocated argument data.
 
-A blocking delegate must specify a timeout in milliseconds or `WAIT_INFINITE`. Unlike a non-blocking asynchronous delegate, which is guaranteed to be invoked, if the timeout expires on a blocking delegate, the function is not invoked. Use `IsSuccess()` to determine if the delegate succeeded or not.
+A blocking delegate must specify a timeout in milliseconds or `dmq::WAIT_INFINITE`. Unlike a non-blocking asynchronous delegate, which is guaranteed to be invoked, if the timeout expires on a blocking delegate, the function is not invoked. Use `IsSuccess()` to determine if the delegate succeeded or not.
 
 ```cpp
 // Asynchronously invoke lambda on workerThread1 and wait for the return value
-auto lambdaDelegate1 = MakeDelegate(
+auto lambdaDelegate1 = dmq::MakeDelegate(
     [](int i) -> int {
         cout << "Called LambdaFunc1 " << i << std::endl;
         return ++i;
     },
-    workerThread1, WAIT_INFINITE
+    workerThread1, dmq::WAIT_INFINITE
 );
 int lambdaRetVal2 = lambdaDelegate1(123);
 ```
@@ -785,19 +785,19 @@ auto CountLambda = [](int v) -> int
 {
     return v > 2 && v <= 6;
 };
-auto countLambdaDelegate = MakeDelegate(CountLambda, workerThread1, WAIT_INFINITE);
+auto countLambdaDelegate = dmq::MakeDelegate(CountLambda, workerThread1, dmq::WAIT_INFINITE);
 
 const auto valAsyncResult = std::count_if(v.begin(), v.end(),
     countLambdaDelegate);
 cout << "Asynchronous lambda result: " << valAsyncResult << endl;
 ```
 
-The delegate library supports binding with a object pointer and a `std::shared_ptr` smart pointer. Use a `std::shared_ptr` in place of the raw object pointer in the call to `MakeDelegate()`.
+The delegate library supports binding with a object pointer and a `std::shared_ptr` smart pointer. Use a `std::shared_ptr` in place of the raw object pointer in the call to `dmq::MakeDelegate()`.
 
 ```cpp
 // Create a shared_ptr, create a delegate, then synchronously invoke delegate function
 std::shared_ptr<TestClass> spObject(new TestClass());
-auto delegateMemberSp = MakeDelegate(spObject, &TestClass::MemberFuncStdString);
+auto delegateMemberSp = dmq::MakeDelegate(spObject, &TestClass::MemberFuncStdString);
 delegateMemberSp("Hello world using shared_ptr", 2020);
 ```
 
@@ -818,14 +818,14 @@ enum class Priority
 Use `SetPriority()` to adjust the delegate priority level.
 
 ```cpp
-auto alarmDel = MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
+auto alarmDel = dmq::MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
 alarmDel.SetPriority(dmq::Priority::HIGH);  // Alarm messages high priority
 NetworkMgr::AlarmMsgCb += alarmDel;
 ```
 
 ## Remote Delegates
 
-A remote delegate asynchronously invokes a remote target function. The sender must implement the `ISerializer` and `IDispatcher` interfaces:
+A remote delegate asynchronously invokes a remote target function. The sender must implement the `dmq::ISerializer` and `dmq::IDispatcher` interfaces:
 
 ```cpp
 template <class R>
@@ -868,11 +868,11 @@ The sender sends the remote delegate. All function argument data is serialized a
 
 ```cpp
 // Dispatcher and serializer instances
-Dispatcher dispatcher;
-Serializer<void(int)> serializer;
+dmq::util::Dispatcher dispatcher;
+dmq::Serializer<void(int)> serializer;
 
 // Send delegate and registers dispatcher and serializer
-DelegateFreeRemote<void(int)> delegateRemote(REMOTE_ID);
+dmq::DelegateFreeRemote<void(int)> delegateRemote(REMOTE_ID);
 delegateRemote.SetDispatcher(&dispatcher);
 delegateRemote.SetSerializer(&serializer);
 
@@ -887,10 +887,10 @@ The receiver receives the serialized function argument data bytes and invokes th
 void FreeFuncInt(int i) { std::cout << i; }
 
 // Serializer used to deserialize incoming data
-Serializer<void(int)> serializer;
+dmq::Serializer<void(int)> serializer;
 
 // Receiver delegate and registers serializer
-DelegateFreeRemote<void(int)> delegateRemote(FreeFuncInt, REMOTE_ID);
+dmq::DelegateFreeRemote<void(int)> delegateRemote(FreeFuncInt, REMOTE_ID);
 delegateRemote.SetSerializer(&serializer);
 
 // TODO: Receiver code obtains the serializers incoming argument data
@@ -904,7 +904,7 @@ delegateRemote.Invoke(recv_stream);
 
 The DelegateMQ library uses dynamic memory to send asynchronous delegate messages to the target thread. By default, out-of-memory failures throw a `std::bad_alloc` exception. Optionally, if `DMQ_ASSERTS` is defined, exceptions are not thrown, and an assert is triggered instead. See `DelegateOpt.h` for more details.
 
-Remote delegate error handling is captured by registering a callback with  `SetErrorHandler()`. A transport monitor (`ITransportMonitor`) is optional and provides message timeout callbacks using message sequence numbers and acknowledgments.
+Remote delegate error handling is captured by registering a callback with  `SetErrorHandler()`. A transport monitor (`dmq::transport::ITransportMonitor`) is optional and provides message timeout callbacks using message sequence numbers and acknowledgments.
 
 ## Debug Logging 
 
@@ -923,19 +923,19 @@ LOG_INFO("Dispatcher::Dispatch id={} seqNum={} err={}", header.GetId(), header.G
 Log output can be directed to multiple sinks, such as files, consoles, or custom handlers.
 
 ```text
-[2025-05-29 12:47:13.066] [msvc_logger] [info] Thread::CreateThread UdpTransport
-[2025-05-29 12:47:13.066] [msvc_logger] [info] Thread::Process NetworkMgr
-[2025-05-29 12:47:13.066] [msvc_logger] [info] Thread::CreateThread NetworkMgr
-[2025-05-29 12:47:13.067] [msvc_logger] [info] Thread::DispatchDelegate
+[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::Thread::CreateThread dmq::transport::Win32UdpTransport
+[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::Thread::Process NetworkMgr
+[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::Thread::CreateThread NetworkMgr
+[2025-05-29 12:47:13.067] [msvc_logger] [info] dmq::Thread::DispatchDelegate
    thread=NetworkMgr
    target=class dmq::DelegateMemberAsyncWait<class NetworkMgr,int __cdecl(void)>
-[2025-05-29 12:47:13.067] [msvc_logger] [info] Thread::DispatchDelegate
-   thread=UdpTransport
-   target=class dmq::DelegateMemberAsyncWait<class UdpTransport,int __cdecl(enum UdpTransport::Type,char const * __ptr64,unsigned short)>
+[2025-05-29 12:47:13.067] [msvc_logger] [info] dmq::Thread::DispatchDelegate
+   thread=dmq::transport::Win32UdpTransport
+   target=class dmq::DelegateMemberAsyncWait<class dmq::transport::Win32UdpTransport,int __cdecl(enum dmq::transport::Win32UdpTransport::Type,char const * __ptr64,unsigned short)>
 'delegate_client_app.exe' (Win32): Loaded 'C:\Windows\System32\mswsock.dll'. Symbol loading disabled by Include/Exclude setting.
-[2025-05-29 12:47:13.069] [msvc_logger] [info] Thread::DispatchDelegate
-   thread=UdpTransport
-   target=class dmq::DelegateMemberAsyncWait<class UdpTransport,int __cdecl(enum UdpTransport::Type,char const * __ptr64,unsigned short)>
+[2025-05-29 12:47:13.069] [msvc_logger] [info] dmq::Thread::DispatchDelegate
+   thread=dmq::transport::Win32UdpTransport
+   target=class dmq::DelegateMemberAsyncWait<class dmq::transport::Win32UdpTransport,int __cdecl(enum dmq::transport::Win32UdpTransport::Type,char const * __ptr64,unsigned short)>
 ```
 ## Object Lifetime and Async Delegates
 
@@ -946,7 +946,7 @@ Invoking an asynchronous delegate on a raw pointer (`T*`) is dangerous. If the t
 ```cpp
 // DANGER: If workerThread is slow, the object dies before the callback runs.
 TestClass* rawObj = new TestClass();
-auto unsafeDel = MakeDelegate(rawObj, &TestClass::Func, workerThread);
+auto unsafeDel = dmq::MakeDelegate(rawObj, &TestClass::Func, workerThread);
 unsafeDel("Crash waiting to happen!"); 
 delete rawObj; // Object destroyed immediately
 ```
@@ -963,7 +963,7 @@ b. If the object is Dead: The callback is safely ignored (No-Op).
 ```cpp
 // SAFE: The delegate holds a weak reference.
 auto safeObj = std::make_shared<TestClass>();
-auto safeDel = MakeDelegate(safeObj, &TestClass::Func, workerThread);
+auto safeDel = dmq::MakeDelegate(safeObj, &TestClass::Func, workerThread);
 
 safeDel("This works!");
 
@@ -996,7 +996,7 @@ public:
     {
         // Register for callbacks using shared_from_this()
         SysData::GetInstance().SystemModeChangedDelegate += 
-            MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
+            dmq::MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
     }
 
     // 2. Unregistration
@@ -1005,7 +1005,7 @@ public:
     {
         // Unsubscribe safely while "this" is still valid
         SysData::GetInstance().SystemModeChangedDelegate -= 
-            MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
+            dmq::MakeDelegate(shared_from_this(), &SysDataClient::CallbackFunction, workerThread1);
     }
 
     // 3. Destructor
@@ -1077,7 +1077,7 @@ private:
         std::cout << msg << std::endl; 
     }
 
-    Thread m_thread;
+    dmq::Thread m_thread;
 
     // Store the delegate to allow safe unregistration in the destructor.
     // 'Sp' suffix indicates this delegate is specialized for smart pointers.
@@ -1093,7 +1093,7 @@ This table outlines when it is safe to use raw pointers (`this`) during delegate
 | --- | --- | --- | --- |
 | Synchronous | Function is called immediately on the current thread.| YES | The caller waits for the callback to complete. It is impossible for the object to be destroyed while the callback is running. Must unregister in destructor. |
 | Async (Non-Blocking) | "Fire and Forget." Message posted to target thread queue. Caller continues immediately. | NO | Unsafe. Even if you unregister in the destructor, a message may already be pending in the queue. If the object dies before the queue is processed, the target thread will access freed memory. Use `shared_from_this()`. |
-| Async Blocking (`WAIT_INFINITE`) | Caller thread blocks until the target thread executes the function. | YES | Because the caller is blocked, the object (owned by the caller) cannot go out of scope or be destroyed until the callback finishes. |
+| Async Blocking (`dmq::WAIT_INFINITE`) | Caller thread blocks until the target thread executes the function. | YES | Because the caller is blocked, the object (owned by the caller) cannot go out of scope or be destroyed until the callback finishes. |
 | Async Blocking (Timeout) | Caller thread blocks until success OR timeout expires. | NO | Unsafe. If the timeout expires, the caller proceeds and may destroy the object. However, the message is still in the queue. When the target thread eventually processes it, it will crash. Use `shared_from_this()`. |
 | Async (Singleton / Global) | Object lifetime exceeds the thread lifetime (e.g., Singleton, Static, or Global). | YES | Safe. Since the object is guaranteed to exist for the entire duration of the application (or until after the worker thread is destroyed), the pointer will never be invalid. |
 
@@ -1105,9 +1105,9 @@ The `DelegateMQ` library external dependencies are based upon on the intended us
 
 | Class | Interface | Usage | Notes
 | --- | --- | --- | --- |
-| `Delegate` | n/a | Synchronous Delegates | No interfaces; use as-is without external dependencies.
-| `DelegateAsync`<br>`DelegateAsyncWait` | `IThread` | Asynchronous Delegates | `IThread` used to send a delegate and argument data through an OS message queue.
-| `DelegateRemote` | `ISerializer`<br>`IDispatcher`<br>`IDispatchMonitor` | Remote Delegates | `ISerializer` used to serialize callable argument data.<br>`IDispatcher` used to send serialized argument data to a remote endpoint.<br>`IDispatchMonitor` used to monitor message timeouts (optional). 
+| `dmq::Delegate` | n/a | Synchronous Delegates | No interfaces; use as-is without external dependencies.
+| `dmq::DelegateAsync`<br>`dmq::DelegateAsyncWait` | `dmq::IThread` | Asynchronous Delegates | `dmq::IThread` used to send a delegate and argument data through an OS message queue.
+| `dmq::DelegateRemote` | `dmq::ISerializer`<br>`dmq::IDispatcher`<br>`dmq::IDispatchMonitor` | Remote Delegates | `dmq::ISerializer` used to serialize callable argument data.<br>`dmq::IDispatcher` used to send serialized argument data to a remote endpoint.<br>`dmq::IDispatchMonitor` used to monitor message timeouts (optional). 
 
 ## Fixed-Block Memory Allocator
 
@@ -1121,11 +1121,11 @@ The  [Valgrind Memory Tests](#valgrind-memory-tests) shows global heap vs. fixed
 
 ## Function Argument Copy
 
-The behavior of the DelegateMQ library when invoking asynchronous non-blocking delegates (e.g. `DelegateAsyncFree<>`) is to copy arguments into heap memory for safe transport to the destination thread. All arguments (if any) are duplicated. If your data is not plain old data (POD) and cannot be bitwise copied, ensure you implement an appropriate copy constructor to handle the copying.
+The behavior of the DelegateMQ library when invoking asynchronous non-blocking delegates (e.g. `dmq::DelegateAsyncFree<>`) is to copy arguments into heap memory for safe transport to the destination thread. All arguments (if any) are duplicated. If your data is not plain old data (POD) and cannot be bitwise copied, ensure you implement an appropriate copy constructor to handle the copying.
 
 Since argument data is duplicated, an outgoing pointer argument passed to a function invoked using an asynchronous non-blocking delegate is not updated. A copy of the pointed to data is sent to the destination target thread, and the source thread continues without waiting for the target to be invoked.
 
-Synchronous and asynchronous blocking delegates, on the other hand, do not copy the target function's arguments when invoked. Outgoing pointer arguments passed through an asynchronous blocking delegate (e.g., `DelegateAsyncFreeWait<>`) behave exactly as if the native target function were called directly.
+Synchronous and asynchronous blocking delegates, on the other hand, do not copy the target function's arguments when invoked. Outgoing pointer arguments passed through an asynchronous blocking delegate (e.g., `dmq::DelegateAsyncFreeWait<>`) behave exactly as if the native target function were called directly.
 
 ## Caution Using `std::bind`
 
@@ -1133,26 +1133,26 @@ Synchronous and asynchronous blocking delegates, on the other hand, do not copy 
 
 ```cpp
 // Example shows std::function target limitations. Not a normal usage case.
-// Use MakeDelegate() to create delegates works correctly with delegate 
+// Use dmq::MakeDelegate() to create delegates works correctly with delegate 
 // containers.
 Test t1, t2;
 std::function<void(int)> f1 = std::bind(&Test::Func, &t1, std::placeholders::_1);
 std::function<void(int)> f2 = std::bind(&Test::Func2, &t2, std::placeholders::_1);
-MulticastDelegateSafe<void(int)> safe;
-safe += MakeDelegate(f1);
-safe += MakeDelegate(f2);
-safe -= MakeDelegate(f2);   // Should remove f2, not f1!
+dmq::MulticastDelegateSafe<void(int)> safe;
+safe += dmq::MakeDelegate(f1);
+safe += dmq::MakeDelegate(f2);
+safe -= dmq::MakeDelegate(f2);   // Should remove f2, not f1!
 ```
 
-To avoid this issue, use `MakeDelegate()`. In this case, `MakeDelegate()` binds to `Test::Func` using `DelegateMember<>`, not `DelegateFunction<>`, which prevents the error above.
+To avoid this issue, use `dmq::MakeDelegate()`. In this case, `dmq::MakeDelegate()` binds to `Test::Func` using `dmq::DelegateMember<>`, not `dmq::DelegateFunction<>`, which prevents the error above.
 
 ```cpp
 // Corrected example
 Test t1, t2;
-MulticastDelegateSafe<void(int)> safe;
-safe += MakeDelegate(&t1, &Test::Func);
-safe += MakeDelegate(&t2, &Test::Func2);
-safe -= MakeDelegate(&t2, &Test::Func2);   // Works correctly!
+dmq::MulticastDelegateSafe<void(int)> safe;
+safe += dmq::MakeDelegate(&t1, &Test::Func);
+safe += dmq::MakeDelegate(&t2, &Test::Func2);
+safe -= dmq::MakeDelegate(&t2, &Test::Func2);   // Works correctly!
 ```
 
 ## Alternatives Considered
@@ -1163,7 +1163,7 @@ For a broader comparison of DelegateMQ against signal/slot libraries (Qt, Boost.
 
 `std::function` was not chosen as the delegate storage type because it compares function *signatures*, not callable *instances*. Two `std::bind` wrappers for different objects with the same signature are indistinguishable at runtime, making correct add/remove from a multicast container impossible.
 
-DelegateMQ delegates compare by both callable type and target identity, so `MulticastDelegateSafe::operator-=` always removes the intended subscriber. See [Caution Using `std::bind`](#caution-using-stdbind) for a concrete example.
+DelegateMQ delegates compare by both callable type and target identity, so `dmq::MulticastDelegateSafe::operator-=` always removes the intended subscriber. See [Caution Using `std::bind`](#caution-using-stdbind) for a concrete example.
 
 ### `std::async` and `std::future`
 
@@ -1173,7 +1173,7 @@ In short, the DelegateMQ library offers features that are not natively available
 
 ### `DelegateMQ` vs. `std::async` Feature Comparisons
 
-| Feature | `Delegate` | `DelegateAsync` | `DelegateAsyncWait` | `std::async` |
+| Feature | `dmq::Delegate` | `dmq::DelegateAsync` | `dmq::DelegateAsyncWait` | `std::async` |
 | ---- | ----| ---- | ---- | ---- |
 | Callable | Yes | Yes | Yes | Yes |
 | Synchronous Call | Yes | No | No | No |
@@ -1189,10 +1189,10 @@ In short, the DelegateMQ library offers features that are not natively available
 | Callable Ambiguity | No | No | No | Yes<sup>3</sup> |
 | Thread-Safe Container <sup>4</sup> | Yes | Yes | Yes | No |
 
-<sup>1</sup> `DelegateAsync<>` function call operator copies all function data arguments using a copy constructor for safe transport to the target thread.   
+<sup>1</sup> `dmq::DelegateAsync<>` function call operator copies all function data arguments using a copy constructor for safe transport to the target thread.   
 <sup>2</sup> `std::async` could fail if dangling reference or pointer function argument is accessed. Delegates copy argument data when needed to prevent this failure mode.  
 <sup>3</sup> `std::function` cannot resolve difference between functions with matching signature `std::function` instances (e.g `void Class:One(int)` and `void Class::Two(int)` are equal).  
-<sup>4</sup> `MulticastDelegateSafe<>` a thread-safe container used to hold and invoke a collection of delegates.
+<sup>4</sup> `dmq::MulticastDelegateSafe<>` a thread-safe container used to hold and invoke a collection of delegates.
 
 # Library
 
@@ -1200,30 +1200,30 @@ A single include `DelegateMQ.h` provides access to all delegate library features
 
 ```cpp
 // Delegates
-DelegateBase
-    Delegate<>
-        DelegateFree<>
-            DelegateFreeAsync<>
-            DelegateFreeAsyncWait<>
-            DelegateFreeRemote<>
-        DelegateMember<>
-            DelegateMemberAsync<>
-            DelegateMemberAsyncWait<>
-            DelegateMemberRemote<>
-        DelegateMemberSp<>
-            DelegateMemberAsyncSp<>
-            DelegateMemberAsyncWaitSp<>
-        DelegateFunction<>
-            DelegateFunctionAsync<>
-            DelegateFunctionAsyncWait<>
-            DelegateFunctionRemote<>
+dmq::DelegateBase
+    dmq::Delegate<>
+        dmq::DelegateFree<>
+            dmq::DelegateFreeAsync<>
+            dmq::DelegateFreeAsyncWait<>
+            dmq::DelegateFreeRemote<>
+        dmq::DelegateMember<>
+            dmq::DelegateMemberAsync<>
+            dmq::DelegateMemberAsyncWait<>
+            dmq::DelegateMemberRemote<>
+        dmq::DelegateMemberSp<>
+            dmq::DelegateMemberAsyncSp<>
+            dmq::DelegateMemberAsyncWaitSp<>
+        dmq::DelegateFunction<>
+            dmq::DelegateFunctionAsync<>
+            dmq::DelegateFunctionAsyncWait<>
+            dmq::DelegateFunctionRemote<>
 
 // Delegate Containers
-UnicastDelegate<>
-    UnicastDelegateSafe<>
-MulticastDelegate<>
-    MulticastDelegateSafe<>
-Signal<>          // thread-safe multicast with RAII ScopedConnection
+dmq::UnicastDelegate<>
+    dmq::UnicastDelegateSafe<>
+dmq::MulticastDelegate<>
+    dmq::MulticastDelegateSafe<>
+dmq::Signal<>          // thread-safe multicast with RAII ScopedConnection
 ```
 
 Some degree of code duplication exists within the delegate inheritance hierarchy. This arises because the `Free`, `Member`, and `Function` classes support different target function types, making code sharing via inheritance difficult. Alternative solutions to share code either compromised type safety, caused non-intuitive user syntax, or significantly increased implementation complexity and code readability. Extensive unit tests ensure a reliable implementation.
@@ -1232,12 +1232,12 @@ The Python script `src_dup.py` helps mitigate some of the maintenance overhead. 
 
 ## Heap Template Parameter Pack
 
-Non-blocking asynchronous invocations means that all argument data must be copied into the heap for transport to the destination thread. Arguments come in different styles: by value, by reference, pointer and pointer to pointer. For non-blocking delegates, the data is copied to the heap to ensure the data is valid on the destination thread. The key to being able to save each parameter into `DelegateMsgHeapArgs<>` is the `make_tuple_heap()` function. This template metaprogramming function creates a `tuple` of arguments where each tuple element is created on the heap.
+Non-blocking asynchronous invocations means that all argument data must be copied into the heap for transport to the destination thread. Arguments come in different styles: by value, by reference, pointer and pointer to pointer. For non-blocking delegates, the data is copied to the heap to ensure the data is valid on the destination thread. The key to being able to save each parameter into `dmq::DelegateMsgHeapArgs<>` is the `make_tuple_heap()` function. This template metaprogramming function creates a `tuple` of arguments where each tuple element is created on the heap.
 
 ```cpp
 /// @brief Terminate the template metaprogramming argument loop
 template<typename... Ts>
-auto make_tuple_heap(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, std::tuple<Ts...> tup)
+auto make_tuple_heap(dmq::xlist<std::shared_ptr<dmq::heap_arg_deleter_base>>& heapArgs, std::tuple<Ts...> tup)
 {
     return tup;
 }
@@ -1248,57 +1248,57 @@ auto make_tuple_heap(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, st
 /// argument heap memory block that will be automatically deleted after the bound
 /// function is invoked on the target thread. 
 template<typename Arg1, typename... Args, typename... Ts>
-auto make_tuple_heap(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, std::tuple<Ts...> tup, Arg1 arg1, Args... args)
+auto make_tuple_heap(dmq::xlist<std::shared_ptr<dmq::heap_arg_deleter_base>>& heapArgs, std::tuple<Ts...> tup, Arg1 arg1, Args... args)
 {
     static_assert(!(
-        (is_shared_ptr<Arg1>::value && (std::is_lvalue_reference_v<Arg1> || std::is_pointer_v<Arg1>))),
+        (dmq::is_shared_ptr<Arg1>::value && (std::is_lvalue_reference_v<Arg1> || std::is_pointer_v<Arg1>))),
         "std::shared_ptr reference argument not allowed");
     static_assert(!std::is_same<Arg1, void*>::value, "void* argument not allowed");
 
-    auto new_tup = tuple_append(heapArgs, tup, arg1);
-    return make_tuple_heap(heapArgs, new_tup, args...);
+    auto new_tup = dmq::tuple_append(heapArgs, tup, arg1);
+    return dmq::make_tuple_heap(heapArgs, new_tup, args...);
 }
 ```
 
-Template metaprogramming uses the C++ template system to perform compile-time computations within the code. Notice the recursive compiler call of `make_tuple_heap()` as the `Arg1` template parameter gets consumed by the function until no arguments remain and the recursion is terminated. The snippet above shows the concatenation of heap allocated tuple function arguments. This allows for the arguments to be copied into dynamic memory for transport to the target thread through a message queue.</p>
+Template metaprogramming uses the C++ template system to perform compile-time computations within the code. Notice the recursive compiler call of `dmq::make_tuple_heap()` as the `Arg1` template parameter gets consumed by the function until no arguments remain and the recursion is terminated. The snippet above shows the concatenation of heap allocated tuple function arguments. This allows for the arguments to be copied into dynamic memory for transport to the target thread through a message queue.</p>
 
-This bit of code inside `make_tuple_heap.h` was tricky to create in that each argument must have memory allocated, data copied, appended to the tuple, then subsequently deallocated all based on its type. To further complicate things, this all has to be done generically with N number of disparate template argument parameters. This was the key to getting a template parameter pack of arguments through a message queue. `DelegateMsgHeapArgs` then stores the tuple parameters for easy usage by the target thread. The target thread uses `std::apply()` to invoke the bound function with the heap allocated tuple argument(s).
+This bit of code inside `make_tuple_heap.h` was tricky to create in that each argument must have memory allocated, data copied, appended to the tuple, then subsequently deallocated all based on its type. To further complicate things, this all has to be done generically with N number of disparate template argument parameters. This was the key to getting a template parameter pack of arguments through a message queue. `dmq::DelegateMsgHeapArgs` then stores the tuple parameters for easy usage by the target thread. The target thread uses `std::apply()` to invoke the bound function with the heap allocated tuple argument(s).
 
-The pointer argument `tuple_append()` implementation is shown below. It creates dynamic memory for the argument, argument data copied, adds to a deleter list for subsequent later cleanup after the target function is invoked, and finally returns the appended tuple.
+The pointer argument `dmq::tuple_append()` implementation is shown below. It creates dynamic memory for the argument, argument data copied, adds to a deleter list for subsequent later cleanup after the target function is invoked, and finally returns the appended tuple.
 
 ```cpp
 /// @brief Append a pointer argument to the tuple
 template <typename Arg, typename... TupleElem>
-auto tuple_append(xlist<std::shared_ptr<heap_arg_deleter_base>>& heapArgs, const std::tuple<TupleElem...> &tup, Arg* arg)
+auto tuple_append(dmq::xlist<std::shared_ptr<dmq::heap_arg_deleter_base>>& heapArgs, const std::tuple<TupleElem...> &tup, Arg* arg)
 {
     Arg* heap_arg = nullptr;
     if (arg != nullptr) {
         heap_arg = new(std::nothrow) Arg(*arg);  // Only create a new Arg if arg is not nullptr
         if (!heap_arg) {
-            BAD_ALLOC();
+            dmq::BAD_ALLOC();
         }
     }
-    std::shared_ptr<heap_arg_deleter_base> deleter(new(std::nothrow) heap_arg_deleter<Arg*>(heap_arg));
+    std::shared_ptr<dmq::heap_arg_deleter_base> deleter(new(std::nothrow) dmq::heap_arg_deleter<Arg*>(heap_arg));
     if (!deleter) {
-        BAD_ALLOC();
+        dmq::BAD_ALLOC();
     }
     try {
         heapArgs.push_back(deleter);
         return std::tuple_cat(tup, std::make_tuple(heap_arg));
     }
     catch (...) {
-        BAD_ALLOC();
+        dmq::BAD_ALLOC();
         throw;
     }
 }
 ```
 
-The pointer argument deleter is implemented below. When the target function invocation is complete, the `heap_arg_deleter` destructor will `delete` the heap argument memory. The heap argument cannot be a changed to a smart pointer because it would change the argument type used in the target function signature. Therefore, the `heap_arg_deleter` is used as a smart pointer wrapper around the (potentially) non-smart heap argument.
+The pointer argument deleter is implemented below. When the target function invocation is complete, the `dmq::heap_arg_deleter` destructor will `delete` the heap argument memory. The heap argument cannot be a changed to a smart pointer because it would change the argument type used in the target function signature. Therefore, the `dmq::heap_arg_deleter` is used as a smart pointer wrapper around the (potentially) non-smart heap argument.
 
 ```cpp
 /// @brief Frees heap memory for pointer heap argument
 template<typename T>
-class heap_arg_deleter<T*> : public heap_arg_deleter_base
+class heap_arg_deleter<T*> : public dmq::heap_arg_deleter_base
 {
 public:
     heap_arg_deleter(T* arg) : m_arg(arg) { }
@@ -1326,7 +1326,7 @@ void TestFunc(TestStruct* data);
 Occasionally, you may not want the delegate library to copy your arguments. Instead, you just want the destination thread to have a pointer to the original copy. A `std::shared_ptr` function argument does not copy the object pointed to when using an asynchronous delegate target function. 
 
 ```cpp
-auto del = MakeDelegate([](std::shared_ptr<TestStruct> s) {}, workerThread1);
+auto del = dmq::MakeDelegate([](std::shared_ptr<TestStruct> s) {}, workerThread1);
 std::shared_ptr<TestStruct> sp = std::make_shared<TestStruct>();
 
 // Invoke lambda and TestStruct instance is not copied
@@ -1344,7 +1344,7 @@ void ArrayFunc(char a[]) {}
 Requires a delegate argument `char*` because the `char a[]` was "adjusted" to `char *a`.
 
 ```cpp
-auto delegateArrayFunc = MakeDelegate(&ArrayFunc, workerThread1);
+auto delegateArrayFunc = dmq::MakeDelegate(&ArrayFunc, workerThread1);
 delegateArrayFunc(cArray);
 ```
 
@@ -1354,11 +1354,11 @@ There is no way to asynchronously pass a C-style array by value. Avoid C-style a
 
 > Full documentation: **[PORTING.md](PORTING.md#interfaces)**
 
-The `IThread`, `ISerializer`, and `IDispatcher` interface classes allow customizing the library's runtime behavior for new platforms or transports. See [PORTING.md](PORTING.md#interfaces) for full interface definitions and implementation examples.
+The `dmq::IThread`, `dmq::ISerializer`, and `dmq::IDispatcher` interface classes allow customizing the library's runtime behavior for new platforms or transports. See [PORTING.md](PORTING.md#interfaces) for full interface definitions and implementation examples.
 
 # Python Interoperability
 
-While DelegateMQ is a C++ library, Python applications can easily communicate with C++ remote delegates using ZeroMQ transport and MessagePack serialization. This allows complex data structures to be exchanged between languages, opening up flexible new system topology possibilities.
+While DelegateMQ is a C++ library, Python applications can easily communicate with C++ remote delegates using dmq::transport::ZeroMqTransport transport and MessagePack serialization. This allows complex data structures to be exchanged between languages, opening up flexible new system topology possibilities.
 
 See the `README.md` in [system-architecture-python](../example/sample-projects/system-architecture-python/) for more.
 
@@ -1393,8 +1393,8 @@ Here are a few real-world examples that demonstrate common delegate usage patter
 class SysData
 {
 public:
-    /// Clients register with MulticastDelegateSafe1 to get callbacks when system mode changes
-    MulticastDelegateSafe<void(const SystemModeChanged&)> SystemModeChangedDelegate;
+    /// Clients register with dmq::MulticastDelegateSafe1 to get callbacks when system mode changes
+    dmq::MulticastDelegateSafe<void(const SystemModeChanged&)> SystemModeChangedDelegate;
 
     /// Get singleton instance of this class
     static SysData& GetInstance();
@@ -1411,7 +1411,7 @@ private:
     SystemMode::Type m_systemMode;
 
     /// Lock to make the class thread-safe
-    LOCK m_lock;
+    dmq::RecursiveMutex m_lock;
 };
 ```
 
@@ -1420,7 +1420,7 @@ The subscriber interface for receiving callbacks is `SystemModeChangedDelegate`.
 ```cpp
 void SysData::SetSystemMode(SystemMode::Type systemMode)
 {
-    LockGuard lockGuard(&m_lock);
+    std::lock_guard<dmq::RecursiveMutex> lockGuard(m_lock);
 
     // Create the callback data
     SystemModeChanged callbackData;
@@ -1446,9 +1446,9 @@ SysDataClient() :
 {
     // Register for async delegate callbacks
     SysData::GetInstance().SystemModeChangedDelegate += 
-             MakeDelegate(this, &SysDataClient::CallbackFunction, workerThread1);
+             dmq::MakeDelegate(this, &SysDataClient::CallbackFunction, workerThread1);
     SysDataNoLock::GetInstance().SystemModeChangedDelegate += 
-                   MakeDelegate(this, &SysDataClient::CallbackFunction, workerThread1);
+                   dmq::MakeDelegate(this, &SysDataClient::CallbackFunction, workerThread1);
 }
 ```
 
@@ -1477,14 +1477,14 @@ An async-API look like a normal function call to a caller. However, an async del
 
 ### No Locks
 
-`SysDataNoLock` is an alternate implementation that uses a private `MulticastDelegateSafe<>` for setting the system mode asynchronously and without locks.
+`SysDataNoLock` is an alternate implementation that uses a private `dmq::MulticastDelegateSafe<>` for setting the system mode asynchronously and without locks.
 
 ```cpp
 class SysDataNoLock
 {
 public:
-    /// Clients register with MulticastDelegateSafe to get callbacks when system mode changes
-    MulticastDelegateSafe<void(const SystemModeChanged&)> SystemModeChangedDelegate;
+    /// Clients register with dmq::MulticastDelegateSafe to get callbacks when system mode changes
+    dmq::MulticastDelegateSafe<void(const SystemModeChanged&)> SystemModeChangedDelegate;
 
     /// Get singleton instance of this class
     static SysDataNoLock& GetInstance();
@@ -1510,7 +1510,7 @@ private:
     ~SysDataNoLock();
 
     /// Private callback to get the SetSystemMode call onto a common thread
-    MulticastDelegateSafe<void(SystemMode::Type)> SetSystemModeDelegate; 
+    dmq::MulticastDelegateSafe<void(SystemMode::Type)> SetSystemModeDelegate; 
 
     /// Sets the system mode and notify registered clients via SystemModeChangedDelegate.
     /// @param[in] systemMode - the new system mode. 
@@ -1527,7 +1527,7 @@ The constructor registers `SetSystemModePrivate()` with the private `SetSystemMo
 SysDataNoLock::SysDataNoLock() :
     m_systemMode(SystemMode::STARTING)
 {
-    SetSystemModeDelegate += MakeDelegate
+    SetSystemModeDelegate += dmq::MakeDelegate
                  (this, &SysDataNoLock::SetSystemModePrivate, workerThread2);
     workerThread2.CreateThread();
 }
@@ -1574,7 +1574,7 @@ void SysDataNoLock::SetSystemModeAsyncAPI(SystemMode::Type systemMode)
     {
         // Create an asynchronous delegate and re-invoke the function call on workerThread2
         auto delegate = 
-             MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncAPI, workerThread2);
+             dmq::MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncAPI, workerThread2);
         delegate(systemMode);
         return;
     }
@@ -1603,7 +1603,7 @@ SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type syste
     if (!workerThread2.IsCurrentThread())
     {
         // Create an asynchronous delegate and re-invoke the function call on workerThread2
-        auto delegate = MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncWaitAPI, workerThread2, WAIT_INFINITE);
+        auto delegate = dmq::MakeDelegate(this, &SysDataNoLock::SetSystemModeAsyncWaitAPI, workerThread2, dmq::WAIT_INFINITE);
         return delegate(systemMode);
     }
 
@@ -1624,7 +1624,7 @@ SystemMode::Type SysDataNoLock::SetSystemModeAsyncWaitAPI(SystemMode::Type syste
 
 ## Timer Example
 
-Creating a timer callback service is trivial. `Timer` exposes a `Signal<void(void)>` member that clients connect to.
+Creating a timer callback service is trivial. `dmq::util::Timer` exposes a `dmq::Signal<void(void)>` member that clients connect to.
 
 ```cpp
 /// @brief A timer class provides periodic timer callbacks on the client's
@@ -1633,7 +1633,7 @@ class Timer
 {
 public:
     /// Clients connect to OnExpired to receive timer callbacks.
-    /// Signal<> is thread-safe and requires no shared_ptr management.
+    /// dmq::Signal<> is thread-safe and requires no shared_ptr management.
     dmq::Signal<void(void)> OnExpired;
 
     /// Starts a timer for callbacks on the specified timeout interval.
@@ -1648,16 +1648,16 @@ public:
 ```
 
 ### Safe Timer (RAII)
-The library provides a thread-safe `Timer` that uses `Signal` and `ScopedConnection` to prevent callbacks on destroyed objects.
+The library provides a thread-safe `dmq::util::Timer` that uses `dmq::Signal` and `dmq::ScopedConnection` to prevent callbacks on destroyed objects.
 
 ```cpp
-// 1. Store a ScopedConnection
+// 1. Store a dmq::ScopedConnection
 dmq::ScopedConnection m_conn;
 
 void Init() {
     // 2. Connect using the RAII pattern
     // If 'this' is destroyed, m_conn destructor automatically disconnects the timer.
-    m_conn = m_timer.OnExpired.Connect(MakeDelegate(this, &MyClass::OnTimer, m_thread));
+    m_conn = m_timer.OnExpired.Connect(dmq::MakeDelegate(this, &MyClass::OnTimer, m_thread));
     m_timer.Start(std::chrono::milliseconds(250));
 }
 ```
@@ -1669,7 +1669,7 @@ See example `SafeTimer.cpp` to prevent a latent callback on a dead object and [O
 An example combining `std::async`/`std::future` and an asynchronous delegate to target a specific worker thread during communication transmission.
 
 ```cpp
-Thread commThread("CommunicationThread");
+dmq::Thread commThread("CommunicationThread");
 
 // Assume SendMsg() is not thread-safe and may only be called on commThread context.
 // A random std::async thread from the pool is unacceptable and causes cross-threading.
@@ -1687,7 +1687,7 @@ size_t SendMsg(const std::string& data)
 size_t SendMsgAsync(const std::string& msg)
 {
     // Create an async blocking delegate targeted at SendMsg()
-    auto sendMsgDelegate = MakeDelegate(&SendMsg, commThread, WAIT_INFINITE);
+    auto sendMsgDelegate = dmq::MakeDelegate(&SendMsg, commThread, dmq::WAIT_INFINITE);
 
     // Start the asynchronous task using std::async. SendMsg() will be called on 
     // commThread context.
@@ -1746,7 +1746,7 @@ Three System Architecture build projects exist:
 * [databus-multicast](../example/sample-projects/databus-multicast/) - builds on Windows or Linux. Demonstrates one-to-many distribution using the Data Bus and Multicast transport. No external libraries required.
 * [databus-shapes](../example/sample-projects/databus-shapes/) - builds on Windows or Linux. Graphical TUI demonstration of DataBus features including Multicast and location transparency.
 * [system-architecture-python](../example/sample-projects/system-architecture-python/) - Python client communicates with C++ server using MessagePack and ZeroMQ external libraries.
-* [databus-interop](../example/sample-projects/databus-interop/) - Python and C# clients communicate with a C++ DataBus server over UDP using MessagePack. No ZeroMQ required. Uses the generic interop libraries in `interop/`.
+* [databus-interop](../example/sample-projects/databus-interop/) - Python and C# clients communicate with a dmq::databus::DataBus server over UDP using MessagePack. No ZeroMQ required. Uses the generic interop libraries in `interop/`.
 
 Follow the steps below to execute the first two projects. See `README.txt` within [system-architecture-python](../example/sample-projects/system-architecture-python/) for the Python example.
 
@@ -1767,21 +1767,21 @@ Follow the steps below to execute the first two projects. See `README.txt` withi
 | `AlarmMgr` | Client<br>Server | Handles system alarms. Server sends alarms to client for processing. |
 | `Sensor` | Client<br>Server | Reads sensor data |
 | `Actuator` | Client<br>Server | Controls actuator |
-| `RemoteChannel` | Client<br>Server | Aggregates a `Dispatcher`, serialization stream, and `Serializer` for a single message signature; used to configure `DelegateMemberRemote` endpoints. |
+| `dmq::RemoteChannel` | Client<br>Server | Aggregates a `dmq::util::Dispatcher`, serialization stream, and `dmq::Serializer` for a single message signature; used to configure `dmq::DelegateMemberRemote` endpoints. |
 
 Interface implementation details. 
 
 | Interface | Implementation | Details |
 | --- | --- | --- |
-| `IThread` | `Thread` | Implemented using `std::thread` | 
-| `ISerializer` | `Serializer` | Implemented using MessagePack library | 
-| `IDispatcher` | `Dispatcher` | Universal delegate dispatcher |
-| `ITransport` | `ZeroMqTransport` | ZeroMQ message transport |
-| `ITransportMonitor` | `TransportMonitor` | Monitor message timeouts |
+| `dmq::IThread` | `dmq::Thread` | Implemented using `std::thread` | 
+| `dmq::ISerializer` | `dmq::Serializer` | Implemented using MessagePack library | 
+| `dmq::IDispatcher` | `dmq::util::Dispatcher` | Universal delegate dispatcher |
+| `dmq::transport::ITransport` | `dmq::transport::ZeroMqTransport` | ZeroMQ message transport |
+| `dmq::transport::ITransportMonitor` | `dmq::util::TransportMonitor` | Monitor message timeouts |
 
 ### Interop Libraries
 
-The `interop/` directory at the repository root contains reusable client libraries that let non-C++ applications communicate with any DelegateMQ DataBus application over UDP. They implement the `DmqHeader` wire protocol and MessagePack serialization — no DelegateMQ C++ code is needed on the client side.
+The `interop/` directory at the repository root contains reusable client libraries that let non-C++ applications communicate with any DelegateMQ dmq::databus::DataBus application over UDP. They implement the `dmq::transport::DmqHeader` wire protocol and MessagePack serialization — no DelegateMQ C++ code is needed on the client side.
 
 | Library | Location | Requirements |
 | --- | --- | --- |
@@ -1793,7 +1793,7 @@ Both libraries expose the same conceptual API:
 - **`DmqDataBus`** — UDP socket manager. Call `start()`/`stop()`, register callbacks per remote ID with `register_callback()` / `RegisterCallback()`, and send messages with `send()` / `Send()`.
 - **`Serializer` / `pack` + `unpack`** — Encode and decode MessagePack arrays whose element order matches the C++ `MSGPACK_DEFINE` field order.
 
-The `databus-interop` sample project (`example/sample-projects/databus-interop/`) is a complete working demonstration: a C++ DataBus server publishes sensor/actuator data (`DataMsg`) on port 8000 and receives a polling-rate command (`CommandMsg`) on port 8001. The Python and C# clients each subscribe to the data and send the command using their respective `DmqDataBus` libraries.
+The `databus-interop` sample project (`example/sample-projects/databus-interop/`) is a complete working demonstration: a C++ dmq::databus::DataBus server publishes sensor/actuator data (`DataMsg`) on port 8000 and receives a polling-rate command (`CommandMsg`) on port 8001. The Python and C# clients each subscribe to the data and send the command using their respective `DmqDataBus` libraries.
 
 See [`interop/README.md`](../interop/README.md) for the full wire protocol specification, and [`example/sample-projects/databus-interop/README.md`](../example/sample-projects/databus-interop/README.md) for build and run instructions.
 
@@ -1803,7 +1803,7 @@ See [`interop/README.md`](../interop/README.md) for the full wire protocol speci
 
 Demonstrate DelegateMQ delegate types (sync, async, asyncwait, multicast, signal) on specific platforms or compilers. No remote transport involved.
 
-| Project Name | Description | Threading (`IThread`) | Platform / Toolchain |
+| Project Name | Description | Threading (`dmq::IThread`) | Platform / Toolchain |
 | :--- | :--- | :--- | :--- |
 | **clang-native** | All-features demo: sync, async, asyncwait, multicast, signal. Windows or Linux. | `std::thread` | Any C++17 compiler (Clang, GCC, MSVC) |
 | **atfe-armv7m-bare-metal** | ATfE (Clang/picolibc) bare-metal example for Armv7-M, runs on QEMU. | None | ATfE Clang, picolibc |
@@ -1815,29 +1815,29 @@ Demonstrate DelegateMQ delegate types (sync, async, asyncwait, multicast, signal
 
 Invoke a target function running in a separate process or processor. Each project focuses on a transport-serialization pair.
 
-| Project Name | Description | Threading (`IThread`) | Serialization (`ISerializer`) | Transport (`IDispatcher`) |
+| Project Name | Description | Threading (`dmq::IThread`) | Serialization (`dmq::ISerializer`) | Transport (`dmq::IDispatcher`) |
 | :--- | :--- | :--- | :--- | :--- |
 | **bare-metal-remote** | Simple remote delegate example with no external libraries. | `std::thread` | `operator<<` / `operator>>` | `std::stringstream` |
 | **freertos-bare-metal** | FreeRTOS Windows port example (32-bit build). | FreeRTOS | `operator<<` / `operator>>` | `std::stringstream` |
-| **linux-tcp-serializer** | Simple TCP remote delegate app on Linux. | `std::thread` | `serialize` class | Linux TCP Socket |
-| **linux-udp-serializer** | Simple UDP remote delegate app on Linux. | `std::thread` | `serialize` class | Linux UDP Socket |
+| **linux-tcp-serializer** | Simple TCP remote delegate app on Linux. | `std::thread` | `dmq::Serializer` class | Linux TCP Socket |
+| **linux-udp-serializer** | Simple UDP remote delegate app on Linux. | `std::thread` | `dmq::Serializer` class | Linux UDP Socket |
 | **mqtt-rapidjson** | Remote delegate using MQTT and RapidJSON (Client/Server). | `std::thread` | RapidJSON | MQTT |
 | **nng-bitsery** | Remote delegate using NNG and Bitsery. | `std::thread` | Bitsery | NNG |
-| **serialport-serializer** | Remote delegate using libserialport. | `std::thread` | `serialize` class | `libserialport` |
+| **serialport-serializer** | Remote delegate using libserialport. | `std::thread` | `dmq::Serializer` class | `libserialport` |
 | **system-architecture** | System architecture example with dependencies. | `std::thread` | Various | Various |
 | **system-architecture-no-deps** | System architecture example (UDP) with no deps. | `std::thread` | `operator<<` / `operator>>` | UDP Socket |
-| **databus** | System architecture example using the Data Bus. | `std::thread` | `serialize` class | UDP Socket |
-| **databus-multicast** | One-to-many distribution using the Data Bus. | `std::thread` | `serialize` class | UDP Multicast |
+| **databus** | System architecture example using the Data Bus. | `std::thread` | `dmq::Serializer` class | UDP Socket |
+| **databus-multicast** | One-to-many distribution using the Data Bus. | `std::thread` | `dmq::Serializer` class | UDP Multicast |
 | **system-architecture-python** | Python binding example (ZeroMQ). | `std::thread` | N/A | Python / ZeroMQ |
-| **databus-interop** | Python and C# clients interop with a C++ DataBus server over UDP. | `std::thread` | MessagePack | UDP Socket |
-| **win32-pipe-serializer** | Windows Named Pipe example. | `std::thread` | `serialize` class | Windows Pipe |
-| **win32-tcp-serializer** | Windows TCP Socket example. | `std::thread` | `serialize` class | Windows TCP Socket |
-| **win32-udp-serializer** | Windows UDP Socket example. | `std::thread` | `serialize` class | Windows UDP Socket |
+| **databus-interop** | Python and C# clients interop with a C++ dmq::databus::DataBus server over UDP. | `std::thread` | MessagePack | UDP Socket |
+| **win32-pipe-serializer** | Windows Named Pipe example. | `std::thread` | `dmq::Serializer` class | Windows Pipe |
+| **win32-tcp-serializer** | Windows TCP Socket example. | `std::thread` | `dmq::Serializer` class | Windows TCP Socket |
+| **win32-udp-serializer** | Windows UDP Socket example. | `std::thread` | `dmq::Serializer` class | Windows UDP Socket |
 | **zeromq-bitsery** | ZeroMQ transport with Bitsery serialization. | `std::thread` | Bitsery | ZeroMQ |
 | **zeromq-cereal** | ZeroMQ transport with Cereal serialization. | `std::thread` | Cereal | ZeroMQ |
 | **zeromq-msgpack-cpp** | ZeroMQ transport with MessagePack. | `std::thread` | MessagePack | ZeroMQ |
 | **zeromq-rapidjson** | ZeroMQ transport with RapidJSON. | `std::thread` | RapidJSON | ZeroMQ |
-| **zeromq-serializer** | ZeroMQ transport with custom `serialize` class. | `std::thread` | `serialize` class | ZeroMQ |
+| **zeromq-serializer** | ZeroMQ transport with custom `dmq::Serializer` class. | `std::thread` | `dmq::Serializer` class | ZeroMQ |
 # Tests
 
 The current master branch build passes all unit tests and Valgrind memory tests.
@@ -1862,7 +1862,7 @@ Build and execute runs all the unit tests contained within the `tests\unit-tests
 | **Frees** | 114,487,425 | 57,130,927 | **~50% Reduction** |
 | **Total Bytes** | 5,858,329,010 (~5.8 GB) | 1,303,924,718 (~1.3 GB) | **~78% Reduction** |
 
-Note on "Still Reachable": The 64 bytes in 2 blocks reported in both runs are benign. The stack trace confirms these are **Static Singletons** (`Timer::GetTimers` and `Timer::GetLock`). Since these exist for the lifetime of the program and are reclaimed by the OS at exit, they are not leaks.
+Note on "Still Reachable": The 64 bytes in 2 blocks reported in both runs are benign. The stack trace confirms these are **Static Singletons** (`dmq::util::Timer::GetTimers` and `dmq::util::Timer::GetLock`). Since these exist for the lifetime of the program and are reclaimed by the OS at exit, they are not leaks.
 
 ### Heap Memory Test Results
 
@@ -1875,17 +1875,17 @@ The DelegateMQ library Valgrind test results using the heap.
 ==140605== 
 ==140605== 24 bytes in 1 blocks are still reachable in loss record 1 of 2
 ==140605==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==140605==    by 0x59D59B: Timer::GetTimers() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x59CC27: Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x590298: Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x59D59B: dmq::util::Timer::GetTimers() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x59CC27: dmq::util::Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x590298: dmq::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605==    by 0x4FAC44: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605== 
 ==140605== 40 bytes in 1 blocks are still reachable in loss record 2 of 2
 ==140605==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==140605==    by 0x59D69D: Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x59C7E3: Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x593F5B: std::__detail::_MakeUniq<Timer>::__single_object std::make_unique<Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x59014C: Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x59D69D: dmq::util::Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x59C7E3: dmq::util::Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x593F5B: std::__detail::_MakeUniq<dmq::util::Timer>::__single_object std::make_unique<dmq::util::Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x59014C: dmq::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605==    by 0x4FAC44: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605== 
 ==140605== LEAK SUMMARY:
@@ -1911,17 +1911,17 @@ Test results with the fixed-block allocator. See [stl_allocator](https://github.
 ==144812== 
 ==144812== 24 bytes in 1 blocks are still reachable in loss record 1 of 2
 ==144812==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==144812==    by 0x5B2535: Timer::GetTimers[abi:cxx11]() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5B1B77: Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5A3FD4: Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5B2535: dmq::util::Timer::GetTimers[abi:cxx11]() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5B1B77: dmq::util::Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5A3FD4: dmq::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812==    by 0x50DEC4: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812== 
 ==144812== 40 bytes in 1 blocks are still reachable in loss record 2 of 2
 ==144812==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==144812==    by 0x5B267A: Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5B1733: Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5A7D61: std::__detail::_MakeUniq<Timer>::__single_object std::make_unique<Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5A3E88: Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5B267A: dmq::util::Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5B1733: dmq::util::Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5A7D61: std::__detail::_MakeUniq<dmq::util::Timer>::__single_object std::make_unique<dmq::util::Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5A3E88: dmq::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812==    by 0x50DEC4: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812== 
 ==144812== LEAK SUMMARY:
@@ -1954,4 +1954,3 @@ Repositories utilizing the DelegateMQ library within different multithreaded app
 * <a href="https://github.com/endurodave/AsyncStateMachine">Asynchronous State Machine Design in C++</a> - an asynchronous C++ state machine implemented using an asynchronous delegate library.
 * <a href="https://github.com/DelegateMQ/IntegrationTestFramework">Integration Test Framework using Google Test and Delegates</a> - a multi-threaded C++ software integration test framework using Google Test and Delegate libraries.
 * <a href="https://github.com/DelegateMQ/Async-SQLite">Asynchronous SQLite API using C++ Delegates</a> - an asynchronous SQLite wrapper implemented using an asynchronous delegate library.
-

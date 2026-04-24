@@ -23,6 +23,9 @@
 #include <chrono>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
 using namespace std;
 
 namespace Example
@@ -122,7 +125,7 @@ namespace Example
         Timer m_sendTimer;
         dmq::ScopedConnection m_sendTimerConn;
 
-        Serializer<void(Data)> m_serializer;
+        dmq::serialization::serializer::Serializer<void(Data)> m_serializer;
         dmq::RemoteChannel<void(Data)> m_channel;
     };
 
@@ -173,7 +176,7 @@ namespace Example
         dmq::ScopedConnection m_recvTimerConn;
 
         MockTransport& m_transport;
-        Serializer<void(Data)> m_serializer;
+        dmq::serialization::serializer::Serializer<void(Data)> m_serializer;
         dmq::RemoteChannel<void(Data)> m_channel;
     };
 

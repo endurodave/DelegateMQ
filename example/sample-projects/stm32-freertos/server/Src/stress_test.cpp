@@ -47,6 +47,8 @@
 #include <string> // Required for std::to_string
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 
 // ============================================================================
 // CONFIGURATION

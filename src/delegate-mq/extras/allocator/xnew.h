@@ -18,24 +18,26 @@
 
 #include "xallocator.h"
 
-/// @brief Allocate and construct T in the fixed-block pool.
-/// @return Pointer to the constructed object, or nullptr if xmalloc fails.
-template<typename T, typename... Args>
-inline T* xnew(Args&&... args)
-{
-    void* mem = xmalloc(sizeof(T));
-    if (!mem) return nullptr;
-    return ::new(mem) T(std::forward<Args>(args)...);
-}
-
-/// @brief Destroy T and return its memory to the fixed-block pool.
-template<typename T>
-inline void xdelete(T* p)
-{
-    if (p)
+namespace dmq {
+    /// @brief Allocate and construct T in the fixed-block pool.
+    /// @return Pointer to the constructed object, or nullptr if xmalloc fails.
+    template<typename T, typename... Args>
+    inline T* xnew(Args&&... args)
     {
-        p->~T();
-        xfree(const_cast<void*>(static_cast<const void*>(p)));
+        void* mem = xmalloc(sizeof(T));
+        if (!mem) return nullptr;
+        return ::new(mem) T(std::forward<Args>(args)...);
+    }
+
+    /// @brief Destroy T and return its memory to the fixed-block pool.
+    template<typename T>
+    inline void xdelete(T* p)
+    {
+        if (p)
+        {
+            p->~T();
+            xfree(const_cast<void*>(static_cast<const void*>(p)));
+        }
     }
 }
 

@@ -4,6 +4,8 @@
 #include <iostream>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 
 namespace cellutron {
 namespace util {
@@ -55,7 +57,7 @@ void Alarms::Initialize() {
         &m_thread);
 
     // 3. Setup Watchdog for safety heartbeat
-    m_safetyWatchdog = std::make_unique<dmq::DeadlineSubscription<HeartbeatMsg>>(
+    m_safetyWatchdog = std::make_unique<dmq::databus::DeadlineSubscription<HeartbeatMsg>>(
         topics::SAFETY_HEARTBEAT,
         HEARTBEAT_TIMEOUT,
         [](const HeartbeatMsg&) {},
@@ -68,7 +70,7 @@ void Alarms::Initialize() {
     );
 
     // 3. Setup Watchdog for controller heartbeat
-    m_controllerWatchdog = std::make_unique<dmq::DeadlineSubscription<HeartbeatMsg>>(
+    m_controllerWatchdog = std::make_unique<dmq::databus::DeadlineSubscription<HeartbeatMsg>>(
         topics::CONTROLLER_HEARTBEAT,
         HEARTBEAT_TIMEOUT,
         [](const HeartbeatMsg&) {},

@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     std::cout << "Starting DataBus FreeRTOS CLIENT...\n";
 
 #ifdef _WIN32
-    NetworkContext winsock;
+    dmq::util::NetworkContext winsock;
 #endif
 
     Client client;

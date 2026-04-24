@@ -31,26 +31,26 @@ static void SignalHandler(int) { g_running = false; }
 
 // Holds all network and DataBus infrastructure for the client.
 struct ClientState {
-    UdpTransport transportData;
-    UdpTransport transportCmd;
-    TransportMonitor monitor{ std::chrono::seconds(1) };
-    std::unique_ptr<RetryMonitor> retry;
-    std::unique_ptr<ReliableTransport> reliableTransport;
-    std::shared_ptr<dmq::Participant> dataParticipant;
-    std::shared_ptr<dmq::Participant> commandParticipant;
-    Serializer<void(DataMsg)> dataSerializer;
-    Serializer<void(CommandMsg)> commandSerializer;
+    dmq::transport::Win32UdpTransport transportData;
+    dmq::transport::Win32UdpTransport transportCmd;
+    dmq::util::TransportMonitor monitor{ std::chrono::seconds(1) };
+    std::unique_ptr<dmq::util::RetryMonitor> retry;
+    std::unique_ptr<dmq::util::ReliableTransport> reliableTransport;
+    std::shared_ptr<dmq::databus::Participant> dataParticipant;
+    std::shared_ptr<dmq::databus::Participant> commandParticipant;
+    dmq::serialization::serializer::Serializer<void(DataMsg)> dataSerializer;
+    dmq::serialization::serializer::Serializer<void(CommandMsg)> commandSerializer;
     dmq::ScopedConnection dataConn;
     dmq::ScopedConnection statusConn;
 };
 
 // Create UDP transports: SUB for incoming data, PUB for outgoing commands.
 static bool SetupTransports(ClientState& s) {
-    if (s.transportData.Create(UdpTransport::Type::SUB, "127.0.0.1", 8000) != 0) {
+    if (s.transportData.Create(dmq::transport::Win32UdpTransport::Type::SUB, "127.0.0.1", 8000) != 0) {
         std::cerr << "Failed to create Data transport" << std::endl;
         return false;
     }
-    if (s.transportCmd.Create(UdpTransport::Type::PUB, "127.0.0.1", 8001) != 0) {
+    if (s.transportCmd.Create(dmq::transport::Win32UdpTransport::Type::PUB, "127.0.0.1", 8001) != 0) {
         std::cerr << "Failed to create Command transport" << std::endl;
         return false;
     }
@@ -59,8 +59,8 @@ static bool SetupTransports(ClientState& s) {
 
 // Wrap the command transport with a reliability layer and cross-wire ACKs.
 static void SetupReliability(ClientState& s) {
-    s.retry = std::make_unique<RetryMonitor>(s.transportCmd, s.monitor, 0);
-    s.reliableTransport = std::make_unique<ReliableTransport>(s.transportCmd, *s.retry);
+    s.retry = std::make_unique<dmq::util::RetryMonitor>(s.transportCmd, s.monitor, 0);
+    s.reliableTransport = std::make_unique<dmq::util::ReliableTransport>(s.transportCmd, *s.retry);
 
     s.transportCmd.SetTransportMonitor(&s.monitor);
     s.transportData.SetTransportMonitor(&s.monitor);
@@ -70,24 +70,24 @@ static void SetupReliability(ClientState& s) {
 // Register participants and serializers with the DataBus.
 static void SetupDataBus(ClientState& s) {
     // Outgoing CommandMsg via reliable transport
-    s.commandParticipant = std::make_shared<dmq::Participant>(*s.reliableTransport);
+    s.commandParticipant = std::make_shared<dmq::databus::Participant>(*s.reliableTransport);
     s.commandParticipant->AddRemoteTopic(SystemTopic::CommandMsg, SystemTopic::CommandMsgId);
-    dmq::DataBus::AddParticipant(s.commandParticipant);
-    dmq::DataBus::RegisterSerializer<CommandMsg>(SystemTopic::CommandMsg, s.commandSerializer);
+    dmq::databus::DataBus::AddParticipant(s.commandParticipant);
+    dmq::databus::DataBus::RegisterSerializer<CommandMsg>(SystemTopic::CommandMsg, s.commandSerializer);
 
     // Incoming DataMsg republished to local bus
-    s.dataParticipant = std::make_shared<dmq::Participant>(s.transportData);
-    dmq::DataBus::AddIncomingTopic<DataMsg>(SystemTopic::DataMsg, SystemTopic::DataMsgId, *s.dataParticipant, s.dataSerializer);
+    s.dataParticipant = std::make_shared<dmq::databus::Participant>(s.transportData);
+    dmq::databus::DataBus::AddIncomingTopic<DataMsg>(SystemTopic::DataMsg, SystemTopic::DataMsgId, *s.dataParticipant, s.dataSerializer);
 }
 
 // Connect local DataBus subscribers and reliability status callbacks.
 static void RegisterSubscriptions(ClientState& s) {
-    s.dataConn = dmq::DataBus::Subscribe<DataMsg>(SystemTopic::DataMsg, [](DataMsg msg) {
+    s.dataConn = dmq::databus::DataBus::Subscribe<DataMsg>(SystemTopic::DataMsg, [](DataMsg msg) {
         std::cout << "Client received DataMsg: " << msg.actuators.size() << " actuators, " << msg.sensors.size() << " sensors" << std::endl;
     });
 
-    s.statusConn = s.monitor.OnSendStatus.Connect(dmq::MakeDelegate([](dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
-        if (status == TransportMonitor::Status::TIMEOUT) {
+    s.statusConn = s.monitor.OnSendStatus.Connect(dmq::MakeDelegate([](dmq::DelegateRemoteId id, uint16_t seq, dmq::util::TransportMonitor::Status status) {
+        if (status == dmq::util::TransportMonitor::Status::TIMEOUT) {
             std::cerr << "!!! ALERT: Server not responding to command (RemoteID: " << id << " Seq: " << seq << ")" << std::endl;
         } else {
             std::cout << "Command ACK received (Seq: " << seq << ")" << std::endl;
@@ -105,17 +105,17 @@ int main(int argc, char* argv[]) {
     std::cout << "Starting System Architecture CLIENT (Subscriber)..." << std::endl;
 
 #ifdef _WIN32
-    NetworkContext winsock;
+    dmq::util::NetworkContext winsock;
 #endif
 
 #ifdef DMQ_DATABUS_TOOLS
     SpyBridge::Start("127.0.0.1", 9999);
-    dmq::DataBus::RegisterStringifier<DataMsg>(SystemTopic::DataMsg, [](const DataMsg& msg) {
+    dmq::databus::DataBus::RegisterStringifier<DataMsg>(SystemTopic::DataMsg, [](const DataMsg& msg) {
         std::ostringstream ss;
         ss << "Actuators: " << msg.actuators.size() << ", Sensors: " << msg.sensors.size();
         return ss.str();
     });
-    dmq::DataBus::RegisterStringifier<CommandMsg>(SystemTopic::CommandMsg, [](const CommandMsg& msg) {
+    dmq::databus::DataBus::RegisterStringifier<CommandMsg>(SystemTopic::CommandMsg, [](const CommandMsg& msg) {
         return "Command: PollingRate=" + std::to_string(msg.pollingRateMs) + "ms";
     });
 #endif
@@ -156,7 +156,7 @@ int main(int argc, char* argv[]) {
             CommandMsg cmd;
             cmd.pollingRateMs = (rateToggle % 2 == 0) ? 500 : 1000;
             std::cout << "Client sending command: set rate to " << cmd.pollingRateMs << "ms" << std::endl;
-            dmq::DataBus::Publish<CommandMsg>(SystemTopic::CommandMsg, cmd);
+            dmq::databus::DataBus::Publish<CommandMsg>(SystemTopic::CommandMsg, cmd);
 
             rateToggle++;
             lastCommandTime = now;

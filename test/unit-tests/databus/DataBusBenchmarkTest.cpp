@@ -10,18 +10,18 @@ int DataBusBenchmarkTestMain() {
     std::cout << "Starting DataBusBenchmarkTest..." << std::endl;
 
     const int iterations = 100000;
-    dmq::DataBus::ResetForTesting();
+    dmq::databus::DataBus::ResetForTesting();
 
     // 1. Local Throughput (1 subscriber)
     int count = 0;
-    auto conn = dmq::DataBus::Subscribe<int>("bench", [&](int val) {
+    auto conn = dmq::databus::DataBus::Subscribe<int>("bench", [&](int val) {
         (void)val;
         count++;
     });
 
     auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < iterations; ++i) {
-        dmq::DataBus::Publish<int>("bench", i);
+        dmq::databus::DataBus::Publish<int>("bench", i);
     }
     auto end = std::chrono::high_resolution_clock::now();
     
@@ -33,7 +33,7 @@ int DataBusBenchmarkTestMain() {
     count = 0;
     std::vector<dmq::ScopedConnection> conns;
     for (int i = 0; i < 10; ++i) {
-        conns.push_back(dmq::DataBus::Subscribe<int>("bench10", [&](int val) {
+        conns.push_back(dmq::databus::DataBus::Subscribe<int>("bench10", [&](int val) {
             (void)val;
             count++;
         }));
@@ -41,7 +41,7 @@ int DataBusBenchmarkTestMain() {
 
     start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < iterations; ++i) {
-        dmq::DataBus::Publish<int>("bench10", i);
+        dmq::databus::DataBus::Publish<int>("bench10", i);
     }
     end = std::chrono::high_resolution_clock::now();
     

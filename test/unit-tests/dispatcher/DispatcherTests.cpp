@@ -6,6 +6,8 @@
 
 using namespace std;
 using namespace dmq;
+using namespace dmq::transport;
+using namespace dmq::serialization::serializer;
 
 namespace {
     class MockTransport : public ITransport {
@@ -54,7 +56,7 @@ void DispatcherTests()
     // Test RemoteChannel class
     {
         MockTransport transport;
-        Serializer<void(int)> serializer;
+        dmq::serialization::serializer::Serializer<void(int)> serializer;
         RemoteChannel<void(int)> channel(transport, serializer);
 
         ASSERT_TRUE(channel.GetDispatcher() != nullptr);
@@ -83,7 +85,7 @@ void DispatcherTests()
     // Test MakeDelegate overloads with RemoteChannel
     {
         MockTransport transport;
-        Serializer<void(int)> serializer;
+        dmq::serialization::serializer::Serializer<void(int)> serializer;
         RemoteChannel<void(int)> channel(transport, serializer);
 
         auto d = MakeDelegate(&FreeFunc, DelegateRemoteId(300), channel);

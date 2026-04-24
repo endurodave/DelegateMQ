@@ -9,6 +9,10 @@
 #include "../common/data.h"
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
+using namespace dmq::serialization::rapidjson;
 using namespace std;
 
 typedef std::function<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> ErrorCallback;

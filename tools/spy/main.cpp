@@ -78,7 +78,7 @@ void ReceiverThread(uint16_t port, std::string multicastGroup, std::string local
             // INCREMENT IMMEDIATELY to confirm network connectivity
             g_packetCount++;
 
-            dmq::SpyPacket packet;
+            dmq::databus::SpyPacket packet;
             std::string data(reinterpret_cast<char*>(buffer.data()), received);
             std::istringstream iss(data, std::ios::binary);
             
@@ -131,10 +131,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    NetworkContext winsock;
+    dmq::util::NetworkContext winsock;
     // Auto-detect physical IP if not provided and multicast is used
     if (localInterface.empty() && !multicastGroup.empty()) {
-        localInterface = NetworkContext::GetLocalAddress();
+        localInterface = dmq::util::NetworkContext::GetLocalAddress();
     }
 
     if (!logFile.empty()) {

@@ -37,34 +37,34 @@ public:
     {
         // Outbound transport (PUB): server publishes to client on port 9000.
         // Carries SensorMsg and AlarmMsg — distinguished by DelegateRemoteId.
-        if (m_pubTransport.Create(UdpTransport::Type::PUB, "127.0.0.1", 9000) != 0) {
+        if (m_pubTransport.Create(dmq::transport::Win32UdpTransport::Type::PUB, "127.0.0.1", 9000) != 0) {
             printf("[Server] ERROR: Failed to create outbound transport\n");
             return false;
         }
 
         // Inbound transport (SUB): server receives from client on port 9001.
-        if (m_subTransport.Create(UdpTransport::Type::SUB, "127.0.0.1", 9001) != 0) {
+        if (m_subTransport.Create(dmq::transport::Win32UdpTransport::Type::SUB, "127.0.0.1", 9001) != 0) {
             printf("[Server] ERROR: Failed to create inbound transport\n");
             return false;
         }
 
         // Register sensor and alarm publish side — both share the same transport
         // (port 9000). The DmqHeader ID field distinguishes them on the wire.
-        m_pubParticipant = std::make_shared<dmq::Participant>(m_pubTransport);
+        m_pubParticipant = std::make_shared<dmq::databus::Participant>(m_pubTransport);
         m_pubParticipant->AddRemoteTopic(topics::SensorTemp,  topics::SensorTempId);
         m_pubParticipant->AddRemoteTopic(topics::AlarmStatus, topics::AlarmStatusId);
-        dmq::DataBus::AddParticipant(m_pubParticipant);
-        dmq::DataBus::RegisterSerializer<SensorMsg>(topics::SensorTemp,  m_sensorSer);
-        dmq::DataBus::RegisterSerializer<AlarmMsg> (topics::AlarmStatus, m_alarmSer);
+        dmq::databus::DataBus::AddParticipant(m_pubParticipant);
+        dmq::databus::DataBus::RegisterSerializer<SensorMsg>(topics::SensorTemp,  m_sensorSer);
+        dmq::databus::DataBus::RegisterSerializer<AlarmMsg> (topics::AlarmStatus, m_alarmSer);
 
         // Register inbound receive side — re-publishes to local bus on arrival
-        m_subParticipant = std::make_shared<dmq::Participant>(m_subTransport);
-        dmq::DataBus::AddIncomingTopic<CmdMsg>(
+        m_subParticipant = std::make_shared<dmq::databus::Participant>(m_subTransport);
+        dmq::databus::DataBus::AddIncomingTopic<CmdMsg>(
             topics::CmdRate, topics::CmdRateId, *m_subParticipant, m_cmdSer);
 
         // Subscribe to commands on the local bus (no thread — fires synchronously
         // in the polling thread that called ProcessIncoming)
-        m_cmdConn = dmq::DataBus::Subscribe<CmdMsg>(topics::CmdRate,
+        m_cmdConn = dmq::databus::DataBus::Subscribe<CmdMsg>(topics::CmdRate,
             [this](const CmdMsg& cmd) { OnCmd(cmd); });
 
         m_running = true;
@@ -139,7 +139,7 @@ private:
         m_iteration++;
         printf("[Server] Publishing sensor/temp: %.1f C (interval=%dms)\n",
             msg.temp, m_intervalMs.load());
-        dmq::DataBus::Publish<SensorMsg>(topics::SensorTemp, msg);
+        dmq::databus::DataBus::Publish<SensorMsg>(topics::SensorTemp, msg);
     }
 
     /// Publish an alarm state change to the DataBus.
@@ -151,14 +151,14 @@ private:
         msg.active  = m_alarmActive;
         printf("[Server] Publishing alarm/status: id=%d  %s\n",
             msg.alarmId, msg.active ? "ACTIVE" : "inactive");
-        dmq::DataBus::Publish<AlarmMsg>(topics::AlarmStatus, msg);
+        dmq::databus::DataBus::Publish<AlarmMsg>(topics::AlarmStatus, msg);
     }
 
-    UdpTransport m_pubTransport;
-    UdpTransport m_subTransport;
+    dmq::transport::Win32UdpTransport m_pubTransport;
+    dmq::transport::Win32UdpTransport m_subTransport;
 
-    std::shared_ptr<dmq::Participant> m_pubParticipant;
-    std::shared_ptr<dmq::Participant> m_subParticipant;
+    std::shared_ptr<dmq::databus::Participant> m_pubParticipant;
+    std::shared_ptr<dmq::databus::Participant> m_subParticipant;
 
     SensorSerializer m_sensorSer;
     CmdSerializer    m_cmdSer;
@@ -166,7 +166,7 @@ private:
 
     dmq::ScopedConnection m_cmdConn;
 
-    Thread m_pollThread;
+    dmq::os::Thread m_pollThread;
 
     std::atomic<int>  m_intervalMs{1000};
     std::atomic<bool> m_running{false};

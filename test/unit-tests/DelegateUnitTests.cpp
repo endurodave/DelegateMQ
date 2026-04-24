@@ -6,6 +6,7 @@
 #endif
 
 using namespace dmq;
+using namespace dmq::os;
 
 Thread testThread("DelegateUnitTestsThread");
 

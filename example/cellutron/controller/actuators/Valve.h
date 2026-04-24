@@ -31,7 +31,7 @@ public:
     {
         m_isOpen = open;
         printf("[Valve %d] -> %s\n", m_id, open ? "OPEN" : "CLOSED");
-        dmq::DataBus::Publish<ActuatorStatusMsg>(
+        dmq::databus::DataBus::Publish<ActuatorStatusMsg>(
             topics::STATUS_ACTUATOR,
             { ActuatorType::VALVE, m_id, open ? uint8_t(1) : uint8_t(0) });
         OnStateChanged(m_id, open);

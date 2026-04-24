@@ -36,11 +36,11 @@ public:
         std::future<bool> futureRetVal = NetworkMgr::Instance().SendActuatorMsgFuture(msg);
 
         // Start local data collection
-        m_pollTimerConn = m_pollTimer.OnExpired.Connect(MakeDelegate(this, &ClientApp::PollData, m_thread));
+        m_pollTimerConn = m_pollTimer.OnExpired.Connect(dmq::MakeDelegate(this, &ClientApp::PollData, m_thread));
         m_pollTimer.Start(std::chrono::milliseconds(500));
 
         // Start actuator updates
-        m_actuatorTimerConn = m_actuatorTimer.OnExpired.Connect(MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
+        m_actuatorTimerConn = m_actuatorTimer.OnExpired.Connect(dmq::MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
         m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
 
         // Wait for the future to complete
@@ -54,7 +54,7 @@ public:
     {
         CommandMsg command;
         command.action = CommandMsg::Action::STOP;
-        NetworkMgr::Instance().SendCommandMsg(command);
+        NetworkMgr::Instance().SendCommandMsg(command); // Fire and forget is fine here
 
         m_pollTimer.Stop();
         m_pollTimerConn.Disconnect();
@@ -73,8 +73,8 @@ private:
     {
         m_thread.CreateThread();
 
-        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError.Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
-        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus.Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
+        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError.Connect(dmq::MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
+        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus.Connect(dmq::MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
     }
 
     ~ClientApp()
@@ -93,9 +93,6 @@ private:
 
         // Set data collected locally
         DataMgr::Instance().SetDataMsg(dataMsg);
-
-        // [OPTIONAL] If you want to send this data to the server:
-        // NetworkMgr::Instance().SendDataMsg(dataMsg);
     }
 
     void ActuatorUpdate()
@@ -112,10 +109,10 @@ private:
         msg.actuatorPosition = position;
 
         msg.actuatorId = 1;
-        NetworkMgr::Instance().SendActuatorMsg(msg);
+        NetworkMgr::Instance().SendActuatorMsgWait(msg);
 
         msg.actuatorId = 2;
-        NetworkMgr::Instance().SendActuatorMsg(msg);
+        NetworkMgr::Instance().SendActuatorMsgWait(msg);
 
         // Explicitly start timer for next time
         m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
@@ -123,22 +120,20 @@ private:
 
     void ErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux)
     {
-        // Only log critical errors, ignore basic timeouts if expected
         if (error != dmq::DelegateError::SUCCESS)
             std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
+    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, dmq::util::TransportMonitor::Status status)
     {
-        // Log timeouts so you know Retries are happening, but don't treat as fatal
-        if (status != TransportMonitor::Status::SUCCESS)
-            std::cout << "Msg Timeout (Retrying): ID " << id << " Seq " << seqNum << std::endl;
+        if (status != dmq::util::TransportMonitor::Status::SUCCESS)
+            std::cout << "ClientApp Timeout: " << id << " " << seqNum << std::endl;
     }
 
-    Thread m_thread;
+    dmq::os::Thread m_thread;
 
-    Timer m_pollTimer;
-    Timer m_actuatorTimer;
+    dmq::util::Timer m_pollTimer;
+    dmq::util::Timer m_actuatorTimer;
 
     dmq::ScopedConnection m_pollTimerConn;
     dmq::ScopedConnection m_actuatorTimerConn;

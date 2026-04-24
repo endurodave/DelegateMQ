@@ -2,9 +2,9 @@
 #error "port/os/win32/Thread.cpp is Windows-only and must not be compiled on non-Windows targets. Remove this file from your build configuration."
 #endif
 
-#include "DelegateMQ.h"
-#include "Thread.h"
-#include "extras/util/Fault.h"
+namespace dmq::os {
+
+using namespace dmq::util;
 
 #define MSG_DISPATCH_DELEGATE    1
 #define MSG_EXIT_THREAD          2
@@ -324,3 +324,6 @@ void Thread::ThreadCheck()
 {
     m_lastAliveTime.store(Timer::GetNow());
 }
+
+} // namespace dmq::os
+

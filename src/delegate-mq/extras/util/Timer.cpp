@@ -3,8 +3,9 @@
 #include <chrono>
 #include <algorithm>
 
+namespace dmq::util {
+
 using namespace std;
-using namespace dmq;
 
 bool Timer::m_timerStopped = false;
 
@@ -21,7 +22,7 @@ static bool TimerDisabled(Timer* value)
 //------------------------------------------------------------------------------
 Timer::Timer()
 {
-    const std::lock_guard<RecursiveMutex> lock(GetLock());
+    const std::lock_guard<dmq::RecursiveMutex> lock(GetLock());
     m_enabled = false;
 }
 
@@ -33,7 +34,7 @@ Timer::~Timer()
 #if !defined(__cpp_exceptions) || defined(DMQ_ASSERTS)
     // Exception handling disabled. 
     // We assume standard mutex operations won't throw in this embedded context.
-    const std::lock_guard<RecursiveMutex> lock(GetLock());
+    const std::lock_guard<dmq::RecursiveMutex> lock(GetLock());
     auto& timers = GetTimers();
 
     if (timers.size() != 0) {
@@ -45,7 +46,7 @@ Timer::~Timer()
     }
 #else
     try {
-        const std::lock_guard<RecursiveMutex> lock(GetLock());
+        const std::lock_guard<dmq::RecursiveMutex> lock(GetLock());
         auto& timers = GetTimers();
 
         if (timers.size() != 0) {
@@ -77,7 +78,7 @@ void Timer::Start(dmq::Duration timeout, bool once)
 #endif
     }
 
-    const std::lock_guard<RecursiveMutex> lock(GetLock());
+    const std::lock_guard<dmq::RecursiveMutex> lock(GetLock());
 
     m_timeout = timeout;
     m_once = once;
@@ -103,7 +104,7 @@ void Timer::Start(dmq::Duration timeout, bool once)
 //------------------------------------------------------------------------------
 void Timer::Stop()
 {
-    const std::lock_guard<RecursiveMutex> lock(GetLock());
+    const std::lock_guard<dmq::RecursiveMutex> lock(GetLock());
 
     m_enabled = false;
 
@@ -161,7 +162,7 @@ void Timer::CheckExpired()
 //------------------------------------------------------------------------------
 void Timer::ProcessTimers()
 {
-    const std::lock_guard<RecursiveMutex> lock(GetLock());
+    const std::lock_guard<dmq::RecursiveMutex> lock(GetLock());
 
     // Remove disabled timer from the list if stopped
     if (m_timerStopped)
@@ -196,3 +197,5 @@ dmq::TimePoint Timer::GetNow()
     // to your custom resolution (millis) inside the time_point wrapper.
     return std::chrono::time_point_cast<dmq::Duration>(dmq::Clock::now());
 }
+
+} // namespace dmq::util

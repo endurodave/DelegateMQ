@@ -1,7 +1,7 @@
-#ifndef SERIALIZER_H
-#define SERIALIZER_H
+#ifndef SERIALIZER_BITSERY_H
+#define SERIALIZER_BITSERY_H
 
-/// @file
+/// @file Serializer.h
 /// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 ///
@@ -9,6 +9,8 @@
 /// to a remote. Bitsery provides fast, compact binary serialization.
 
 #include "delegate/ISerializer.h"
+
+#if defined(DMQ_SERIALIZE_BITSERY)
 
 // Core Bitsery
 #include <bitsery/bitsery.h>
@@ -23,6 +25,8 @@
 #include <iostream>
 #include <type_traits>
 
+namespace dmq::serialization::bitsery {
+
 template <class R>
 struct Serializer; // Not defined
 
@@ -31,8 +35,8 @@ class Serializer<RetType(Args...)> : public dmq::ISerializer<RetType(Args...)>
 {
 public:
     // Bitsery Adapters for std::ostream / std::istream
-    using OutputAdapter = bitsery::OutputStreamAdapter;
-    using InputAdapter = bitsery::InputStreamAdapter;
+    using OutputAdapter = ::bitsery::OutputStreamAdapter;
+    using InputAdapter = ::bitsery::InputStreamAdapter;
 
     // Write: Changed 'Args... args' to 'const Args&... args' for efficiency
     virtual std::ostream& Write(std::ostream& os, const Args&... args) override {
@@ -42,12 +46,12 @@ public:
 
             // Clear stringstreams explicitly to avoid appending new data to old data.
             // DelegateMQ often reuses the stream object.
-            if (auto* ss = dynamic_cast<xostringstream*>(&os)) {
+            if (auto* ss = dynamic_cast<dmq::xostringstream*>(&os)) {
                 ss->str("");
             }
 
             // Construct the adapter properly passing the stream
-            bitsery::Serializer<OutputAdapter> writer{ OutputAdapter{os} };
+            ::bitsery::Serializer<OutputAdapter> writer{ OutputAdapter{os} };
 
             // Serialize each argument using C++17 fold expression
             (writer.object(args), ...);
@@ -65,13 +69,13 @@ public:
     virtual std::istream& Read(std::istream& is, Args&... args) override {
         try {
             // Construct the adapter properly passing the stream
-            bitsery::Deserializer<InputAdapter> reader{ InputAdapter{is} };
+            ::bitsery::Deserializer<InputAdapter> reader{ InputAdapter{is} };
 
             // Deserialize each argument using fold expression
             (reader.object(args), ...);
 
             // Optional: Check for deserialization errors
-            if (reader.adapter().error() != bitsery::ReaderError::NoError) {
+            if (reader.adapter().error() != ::bitsery::ReaderError::NoError) {
                 throw std::runtime_error("Bitsery reported a read error");
             }
         }
@@ -83,4 +87,8 @@ public:
     }
 };
 
-#endif // SERIALIZER_H
+} // namespace dmq::serialization::bitsery
+
+#endif // DMQ_SERIALIZE_BITSERY
+
+#endif // SERIALIZER_BITSERY_H

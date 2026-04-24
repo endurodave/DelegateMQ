@@ -17,11 +17,11 @@ class AirSensor
 public:
     void Poll()
     {
-        dmq::DataBus::Publish<SensorStatusMsg>(
+        dmq::databus::DataBus::Publish<SensorStatusMsg>(
             cellutron::topics::AIR_INLET,
             { SensorType::AIR_IN_LINE, m_inletAir ? int16_t(1) : int16_t(0) });
 
-        dmq::DataBus::Publish<SensorStatusMsg>(
+        dmq::databus::DataBus::Publish<SensorStatusMsg>(
             cellutron::topics::AIR_OUTLET,
             { SensorType::AIR_IN_LINE, m_outletAir ? int16_t(1) : int16_t(0) });
     }

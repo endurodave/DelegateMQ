@@ -40,6 +40,9 @@
 #include <functional>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
 
 // --- Configuration ---
 const int NUM_CLIENTS = 4;
@@ -90,7 +93,7 @@ template<typename... Args>
 class TestSerializer;
 
 template<typename Ret, typename... Args>
-class TestSerializer<Ret(Args...)> : public ISerializer<Ret(Args...)> {
+class TestSerializer<Ret(Args...)> : public dmq::ISerializer<Ret(Args...)> {
 public:
     virtual std::ostream& Write(std::ostream& os, const Args&... args) override {
         (void)std::initializer_list<int>{ (os << args, 0)... };
@@ -102,13 +105,13 @@ public:
     }
 };
 
-class TestDispatcher : public IDispatcher {
+class TestDispatcher : public dmq::IDispatcher {
 public:
     using SendFunc = std::function<void(std::stringstream&)>;
 
     TestDispatcher(SendFunc func) : m_func(func) {}
 
-    virtual int Dispatch(std::ostream& os, DelegateRemoteId id) override {
+    virtual int Dispatch(std::ostream& os, dmq::DelegateRemoteId id) override {
         auto* ss = dynamic_cast<std::stringstream*>(&os);
         if (ss && m_func) {
             m_func(*ss);
@@ -194,7 +197,7 @@ private:
     std::thread m_thread;
     std::stringstream m_stream{ std::ios::in | std::ios::out | std::ios::binary };
     TestSerializer<void(Payload)> m_serializer;
-    DelegateMemberRemote<ServerNode, void(Payload)> m_remoteDelegate;
+    dmq::DelegateMemberRemote<ServerNode, void(Payload)> m_remoteDelegate;
 };
 
 // --- 5. Client Node (Sender) ---
@@ -211,7 +214,7 @@ public:
         m_remote.SetStream(&m_stream);
         m_remote.SetSerializer(&m_serializer);
         m_remote.SetDispatcher(&m_dispatcher);
-        m_remote.SetErrorHandler(MakeDelegate(this, &ClientNode::OnError));
+        m_remote.SetErrorHandler(dmq::MakeDelegate(this, &ClientNode::OnError));
     }
 
     void Start() {
@@ -231,7 +234,7 @@ public:
 
     void Join() { if (m_thread.joinable()) m_thread.join(); }
 
-    void OnError(DelegateRemoteId id, DelegateError err, DelegateErrorAux aux) {
+    void OnError(dmq::DelegateRemoteId id, dmq::DelegateError err, dmq::DelegateErrorAux aux) {
     }
 
 private:
@@ -246,7 +249,7 @@ private:
     std::stringstream m_stream{ std::ios::in | std::ios::out | std::ios::binary };
     TestSerializer<void(Payload)> m_serializer;
     TestDispatcher m_dispatcher;
-    DelegateFreeRemote<void(Payload)> m_remote;
+    dmq::DelegateFreeRemote<void(Payload)> m_remote;
 };
 
 // --- Main Test Function ---

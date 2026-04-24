@@ -12,6 +12,8 @@
 #include "msg_serialize.h"
 #include <iostream>
 
+namespace dmq::serialization::serializer {
+
 template <class R>
 struct Serializer; // Not defined
 
@@ -23,9 +25,9 @@ public:
     // Write arguments to a stream
     virtual std::ostream& Write(std::ostream& os, const Args&... args) override {
         os.seekp(0, std::ios::beg);
-        if (auto* ss = dynamic_cast<xostringstream*>(&os))
+        if (auto* ss = dynamic_cast<dmq::xostringstream*>(&os))
             ss->str("");
-        serialize ser;
+        ::serialize ser;
 #if defined(__cpp_exceptions)
         try {
             (ser.write(os, args), ...);  // C++17 fold expression to serialize each argument
@@ -45,7 +47,7 @@ public:
     virtual std::istream& Read(std::istream& is, Args&... args) override {
 #if defined(__cpp_exceptions)
         try {
-            serialize ser;
+            ::serialize ser;
             (ser.read(is, args), ...);  // C++17 fold expression to unserialize each argument
         }
         catch (const std::exception& e) {
@@ -54,11 +56,14 @@ public:
         }
 #else
         // STM32 / No Exceptions
-        serialize ser;
+        ::serialize ser;
         (ser.read(is, args), ...);
 #endif
         return is;
     }
 };
+
+} // namespace dmq::serialization::serializer
+
 
 #endif

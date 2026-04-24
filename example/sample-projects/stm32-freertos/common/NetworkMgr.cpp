@@ -5,6 +5,8 @@
 #endif
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 using namespace std;
 
 NetworkMgr::NetworkMgr()
@@ -52,47 +54,55 @@ void NetworkMgr::OnError(DelegateRemoteId id, DelegateError error, DelegateError
     OnNetworkError(id, error, aux);
 }
 
-void NetworkMgr::OnStatus(DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) {
+void NetworkMgr::OnStatus(dmq::DelegateRemoteId id, uint16_t seq, dmq::util::TransportMonitor::Status status) {
     OnSendStatus(id, seq, status);
 }
 
 void NetworkMgr::SendAlarmMsg(AlarmMsg& msg, AlarmNote& note) {
-    if (!m_thread.IsCurrentThread())
-        return MakeDelegate(this, &NetworkMgr::SendAlarmMsg, m_thread)(msg, note);
+    if (!this->m_thread.IsCurrentThread()) {
+        dmq::MakeDelegate(this, &NetworkMgr::SendAlarmMsg, this->m_thread)(msg, note);
+        return;
+    }
     m_alarmMsgDel(msg, note);
 }
 
 bool NetworkMgr::SendAlarmMsgWait(AlarmMsg& msg, AlarmNote& note) {
-    return RemoteInvokeWait(m_alarmMsgDel, msg, note);
+    return this->RemoteInvokeWait(m_alarmMsgDel, msg, note);
 }
 
 void NetworkMgr::SendCommandMsg(CommandMsg& command) {
-    if (!m_thread.IsCurrentThread())
-        return MakeDelegate(this, &NetworkMgr::SendCommandMsg, m_thread)(command);
+    if (!this->m_thread.IsCurrentThread()) {
+        dmq::MakeDelegate(this, &NetworkMgr::SendCommandMsg, this->m_thread)(command);
+        return;
+    }
     m_commandMsgDel(command);
 }
 
 bool NetworkMgr::SendCommandMsgWait(CommandMsg& command) {
-    return RemoteInvokeWait(m_commandMsgDel, command);
+    return this->RemoteInvokeWait(m_commandMsgDel, command);
 }
 
 void NetworkMgr::SendDataMsg(DataMsg& data) {
-    if (!m_thread.IsCurrentThread())
-        return MakeDelegate(this, &NetworkMgr::SendDataMsg, m_thread)(data);
+    if (!this->m_thread.IsCurrentThread()) {
+        dmq::MakeDelegate(this, &NetworkMgr::SendDataMsg, this->m_thread)(data);
+        return;
+    }
     m_dataMsgDel(data);
 }
 
 bool NetworkMgr::SendDataMsgWait(DataMsg& data) {
-    return RemoteInvokeWait(m_dataMsgDel, data);
+    return this->RemoteInvokeWait(m_dataMsgDel, data);
 }
 
 void NetworkMgr::SendActuatorMsg(ActuatorMsg& msg) {
-    if (!m_thread.IsCurrentThread())
-        return MakeDelegate(this, &NetworkMgr::SendActuatorMsg, m_thread)(msg);
+    if (!this->m_thread.IsCurrentThread()) {
+        dmq::MakeDelegate(this, &NetworkMgr::SendActuatorMsg, this->m_thread)(msg);
+        return;
+    }
     m_actuatorMsgDel(msg);
 }
 
 bool NetworkMgr::SendActuatorMsgWait(ActuatorMsg& msg) {
-    return RemoteInvokeWait(m_actuatorMsgDel, msg);
+    return this->RemoteInvokeWait(m_actuatorMsgDel, msg);
 }
 

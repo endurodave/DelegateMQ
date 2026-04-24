@@ -1,7 +1,11 @@
 #ifndef DMQ_DATABUS_H
 #define DMQ_DATABUS_H
 
-#include "DelegateMQ.h"
+#include "delegate/Signal.h"
+#include "delegate/DelegateRemote.h"
+#include "delegate/DelegateAsync.h"
+#include "delegate/IThread.h"
+#include "delegate/DelegateOpt.h"
 #include "Participant.h"
 #include "DataBusQos.h"
 #include "SpyPacket.h"
@@ -17,7 +21,7 @@
 #include <typeindex>
 #include <atomic>
 
-namespace dmq {
+namespace dmq::databus {
 
 // The DataBus is a central registry for topic-based communication.
 // It allows components to publish and subscribe to data topics identified by strings.
@@ -241,7 +245,7 @@ private:
             // Must be first — before any writes — so a mismatch never corrupts LVC.
             auto itType = m_typeIndices.find(topic);
             if (itType != m_typeIndices.end() && itType->second != std::type_index(typeid(T))) {
-                ::FaultHandler(__FILE__, (unsigned short)__LINE__);
+                ::dmq::util::FaultHandler(__FILE__, (unsigned short)__LINE__);
                 return;
             }
 
@@ -319,7 +323,7 @@ private:
         auto itType = m_typeIndices.find(topic);
         if (itType != m_typeIndices.end()) {
             if (itType->second != std::type_index(typeid(T))) {
-                ::FaultHandler(__FILE__, (unsigned short)__LINE__);
+                ::dmq::util::FaultHandler(__FILE__, (unsigned short)__LINE__);
                 return;
             }
         } else {
@@ -338,7 +342,7 @@ private:
         auto itType = m_typeIndices.find(topic);
         if (itType != m_typeIndices.end()) {
             if (itType->second != std::type_index(typeid(T))) {
-                ::FaultHandler(__FILE__, (unsigned short)__LINE__);
+                ::dmq::util::FaultHandler(__FILE__, (unsigned short)__LINE__);
                 return;
             }
         } else {
@@ -371,7 +375,7 @@ private:
         if (itType != m_typeIndices.end()) {
             if (itType->second != std::type_index(typeid(T))) {
                 // Runtime Type Safety: Catch same topic string used with different types
-                ::FaultHandler(__FILE__, (unsigned short)__LINE__);
+                ::dmq::util::FaultHandler(__FILE__, (unsigned short)__LINE__);
                 return nullptr; 
             }
         } else {
@@ -405,7 +409,8 @@ private:
     dmq::Signal<void(const std::string& topic)> m_unhandledSignal;
 };
 
-} // namespace dmq
+} // namespace dmq::databus
+
 
 #endif // DMQ_DATABUS_H
 

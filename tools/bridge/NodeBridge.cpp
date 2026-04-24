@@ -36,7 +36,7 @@ void NodeBridge::Start(const std::string& nodeId, const std::string& address, ui
     instance.port         = port;
     instance.type         = TransportType::UNICAST;
     instance.hostname     = GetHostname();
-    instance.ipAddress    = NetworkContext::GetLocalAddress();
+    instance.ipAddress    = dmq::util::NetworkContext::GetLocalAddress();
     instance.startTime    = std::chrono::steady_clock::now();
     instance.totalMsgCount = 0;
     instance.topics.clear();
@@ -46,7 +46,7 @@ void NodeBridge::Start(const std::string& nodeId, const std::string& address, ui
               << " as node \"" << nodeId << "\"" << std::endl;
 
     // Subscribe to DataBus::Monitor to auto-discover topics and count messages.
-    instance.monitorConn = dmq::DataBus::Monitor([](const dmq::SpyPacket& packet) {
+    instance.monitorConn = dmq::databus::DataBus::Monitor([](const dmq::databus::SpyPacket& packet) {
         auto& inst = GetInstance();
         inst.totalMsgCount++;
         std::lock_guard<std::mutex> lock(inst.mutex);
@@ -68,7 +68,7 @@ void NodeBridge::StartMulticast(const std::string& nodeId, const std::string& gr
     instance.type          = TransportType::MULTICAST;
     instance.hostname      = GetHostname();
     instance.ipAddress     = (localInterface.empty() || localInterface == "0.0.0.0")
-                                 ? NetworkContext::GetLocalAddress() : localInterface;
+                                 ? dmq::util::NetworkContext::GetLocalAddress() : localInterface;
     instance.startTime     = std::chrono::steady_clock::now();
     instance.totalMsgCount = 0;
     instance.topics.clear();
@@ -79,7 +79,7 @@ void NodeBridge::StartMulticast(const std::string& nodeId, const std::string& gr
               << (localInterface.empty() ? "DEFAULT" : localInterface) << std::endl;
 
     // Subscribe to DataBus::Monitor to auto-discover topics and count messages.
-    instance.monitorConn = dmq::DataBus::Monitor([](const dmq::SpyPacket& packet) {
+    instance.monitorConn = dmq::databus::DataBus::Monitor([](const dmq::databus::SpyPacket& packet) {
         auto& inst = GetInstance();
         inst.totalMsgCount++;
         std::lock_guard<std::mutex> lock(inst.mutex);

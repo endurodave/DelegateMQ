@@ -2,9 +2,10 @@
 /// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
-/// ClientApp and ServerApp communicate using Win32 UDP socket transport, msg_serialize
-/// serialization, and DelegateMQ dispatching. Application runs on Windows. No external
-/// 3rd party libraries are required.
+/// @brief Windows UDP and msg_serialize with remote delegates examples. 
+/// 
+/// ClientApp and ServerApp communicate using UDP transport, msg_serialize 
+/// serialization, and DelegateMQ dispatching.
 /// 
 /// The ServerApp collects data locally and remotely from sensors and 
 /// actuators. Start both applications to run sample. 
@@ -13,11 +14,7 @@
 #include "AlarmMgr.h"
 #include "DataMgr.h"
 #include "ClientApp.h"
-#include "extras/util/NetworkConnect.h"
 #include <thread>
-
-#ifdef _WIN32
-#endif
 
 #ifdef DMQ_LOG
 #ifdef _WIN32
@@ -27,7 +24,7 @@
 #endif
 #endif
 
-static Thread receiveThread("ReceiveThread");
+static dmq::os::Thread receiveThread("ReceiveThread");
 
 std::atomic<bool> processTimerExit = false;
 static void ProcessTimers()
@@ -35,7 +32,7 @@ static void ProcessTimers()
     while (!processTimerExit.load())
     {
         // Process all delegate-based timers
-        Timer::ProcessTimers();
+        dmq::util::Timer::ProcessTimers();
         std::this_thread::sleep_for(std::chrono::microseconds(50));
     }
 }
@@ -53,7 +50,6 @@ void DataMsgRecv(DataMsg& data)
     std::cout << "Sensors: " << data.sensors.size() << std::endl;
     for (const auto& sensor : data.sensors) {
         std::cout << "Sensor ID: " << sensor.id
-            << ", Supply Voltage: " << sensor.supplyV
             << ", Reading Voltage: " << sensor.readingV << std::endl;
     }
 }
@@ -80,12 +76,11 @@ int main(int argc, char* argv[])
 #endif
 #endif
 
-#ifdef _WIN32
-    // Starts Winsock now; automatically cleans up when main exits.
-    NetworkContext wsContext;
-#endif
-
     std::cout << "Client start!" << std::endl;
+
+#ifdef _WIN32
+    dmq::util::NetworkContext winsock;
+#endif
 
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);
@@ -105,7 +100,7 @@ int main(int argc, char* argv[])
     dmq::ScopedConnection dataConn;
 
     // 2. Connect and store the result
-    dataConn = DataMgr::DataMsgCb.Connect(MakeDelegate(&DataMsgRecv, receiveThread));
+    dataConn = DataMgr::DataMsgCb.Connect(dmq::MakeDelegate(&DataMsgRecv, receiveThread));
 
     // Start all data collection
     bool success = ClientApp::Instance().Start();
@@ -126,5 +121,3 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
-

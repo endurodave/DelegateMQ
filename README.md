@@ -21,7 +21,7 @@ DelegateMQ is a C++ header-only library for invoking any callable (e.g., functio
 * Remotely (Across processes or processors)
 * Topic-based (Publish/Subscribe across threads or nodes)
 
-It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, topic-based data distribution (DataBus), and inter-thread data transfer. The library is unit-tested and has been ported to numerous embedded and PC platforms (e.g. Windows, Linux, RTOS, bare metal), with a design that facilitates easy porting to others.
+It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, topic-based data distribution (`dmq::databus::DataBus`), and inter-thread data transfer. The library is unit-tested and has been ported to numerous embedded and PC platforms (e.g. Windows, Linux, RTOS, bare metal), with a design that facilitates easy porting to others.
 
 **Key Use Cases**
 * **Callbacks**: Synchronous and asynchronous execution.
@@ -55,12 +55,12 @@ Originally published on CodeProject at <a href="https://www.codeproject.com/Arti
 
 ## Key Concepts
 
-- `MakeDelegate` – Creates a delegate bound to any callable. Adding a `Thread` argument makes it asynchronous; adding a `RemoteChannel` makes it remote. The call syntax is the same in all three cases.
-- `Thread` – A cross-platform thread class. Passed to `MakeDelegate` to dispatch a call to a specific worker thread.
-- `RemoteChannel<Sig>` – Owns the transport wiring for one message signature. Call `Bind()` once to configure, then invoke with `operator()` to send remotely.
-- `Signal<Sig>` – Thread-safe multicast signal. `Connect()` returns a `ScopedConnection` that auto-disconnects on scope exit. Declare as a plain class member — no `shared_ptr` required.
-- `MulticastDelegateSafe` – Thread-safe delegate container for broadcast invocation without RAII connection management.
-- `DataBus` – High-level topic-based middleware for data distribution. Enables location-transparent "publish/subscribe" across threads or remote nodes.
+- `dmq::MakeDelegate` – Creates a delegate bound to any callable. Adding a `dmq::Thread` argument makes it asynchronous; adding a `dmq::RemoteChannel` makes it remote. The call syntax is the same in all three cases.
+- `dmq::Thread` – A cross-platform thread class. Passed to `dmq::MakeDelegate` to dispatch a call to a specific worker thread.
+- `dmq::RemoteChannel<Sig>` – Owns the transport wiring for one message signature. Call `Bind()` once to configure, then invoke with `operator()` to send remotely.
+- `dmq::Signal<Sig>` – Thread-safe multicast signal. `Connect()` returns a `dmq::ScopedConnection` that auto-disconnects on scope exit. Declare as a plain class member — no `shared_ptr` required.
+- `dmq::MulticastDelegateSafe` – Thread-safe delegate container for broadcast invocation without RAII connection management.
+- `dmq::databus::DataBus` – High-level topic-based middleware for data distribution. Enables location-transparent "publish/subscribe" across threads or remote nodes.
 
 ## Synchronous Delegates
 
@@ -86,7 +86,7 @@ int main()
 
 ## Asynchronous Delegates
 
-Asynchronous delegates simplify multithreaded programming by allowing you to invoke functions across thread boundaries safely and effortlessly. This enables the Active Object pattern, where method execution is decoupled from method invocation. The library automatically marshals all arguments—whether passed by value, pointer, or reference—ensuring thread safety without manual locking or complex queue management. The library is designed for easy porting to any platform by simply implementing a lightweight threading interface (`IThread`).
+Asynchronous delegates simplify multithreaded programming by allowing you to invoke functions across thread boundaries safely and effortlessly. This enables the Active Object pattern, where method execution is decoupled from method invocation. The library automatically marshals all arguments—whether passed by value, pointer, or reference—ensuring thread safety without manual locking or complex queue management. The library is designed for easy porting to any platform by simply implementing a lightweight threading interface (`dmq::IThread`).
 
 **Key Features:**
 
@@ -98,7 +98,7 @@ Asynchronous delegates simplify multithreaded programming by allowing you to inv
   * **Asynchronous:** Use standard `std::future` to retrieve results later.
 
 ```cpp
-Thread thread("WorkerThread");
+dmq::Thread thread("WorkerThread");
 thread.CreateThread();
 
 // 1. Asynchronous Invocation (Non-blocking / Fire-and-forget)
@@ -149,13 +149,13 @@ public:
 
 private:
     Data m_data;        // Data storage
-    Thread m_thread;    // Internal thread
+    dmq::Thread m_thread;    // Internal thread
 };
 ```
 
 ## Signal / Slot
 
-`Signal<Sig>` is a thread-safe multicast signal. Emit it like a function call; each connected slot receives the call independently, on whichever thread it chose at connect time. `Connect()` returns a `ScopedConnection` that auto-disconnects when it goes out of scope — no manual unsubscribe needed.
+`dmq::Signal<Sig>` is a thread-safe multicast signal. Emit it like a function call; each connected slot receives the call independently, on whichever thread it chose at connect time. `Connect()` returns a `dmq::ScopedConnection` that auto-disconnects when it goes out of scope — no manual unsubscribe needed.
 
 Declare the signal as a plain class member — no `shared_ptr` or heap allocation required:
 
@@ -169,7 +169,7 @@ public:
 };
 ```
 
-Connect a slot and store the `ScopedConnection` for automatic lifetime management:
+Connect a slot and store the `dmq::ScopedConnection` for automatic lifetime management:
 
 ```cpp
 class UI
@@ -189,7 +189,7 @@ public:
 private:
     void HandlePress(int buttonId) { std::cout << "Button " << buttonId << "\n"; }
 
-    Thread m_thread;
+    dmq::Thread m_thread;
     dmq::ScopedConnection m_conn;
 };
 
@@ -201,11 +201,11 @@ Button btn;
 btn.Press(2);       // safe: no subscribers, nothing happens
 ```
 
-**`Signal` vs `MulticastDelegateSafe`** — use `Signal` by default; reach for `MulticastDelegateSafe` only when subscription lifetime is fully explicit:
+**`dmq::Signal` vs `dmq::MulticastDelegateSafe`** — use `dmq::Signal` by default; reach for `dmq::MulticastDelegateSafe` only when subscription lifetime is fully explicit:
 
-| | `Signal<Sig>` | `MulticastDelegateSafe<Sig>` |
+| | `dmq::Signal<Sig>` | `dmq::MulticastDelegateSafe<Sig>` |
 |---|---|---|
-| Subscription | `Connect()` → `ScopedConnection` | `operator+=` → no return value |
+| Subscription | `Connect()` → `dmq::ScopedConnection` | `operator+=` → no return value |
 | Unsubscription | Automatic on scope exit | Manual `operator-=` |
 | Lifetime safety | Safe — disconnects even if Signal outlives subscriber | Caller responsible; missed `-=` leaves dangling subscriber |
 | Mixed sync/async slots | Yes | Yes |
@@ -216,13 +216,13 @@ See [Publish / Subscribe with Signal](docs/SIGNALS.md) for lambda slots, mixed s
 
 Remote delegates extend the library to enable Remote Procedure Calls (RPC) across process or network boundaries. This allows you to invoke a function on a remote machine as easily as calling a local function. The system automatically handles argument marshaling, serialization, and thread dispatching.
 
-`RemoteChannel<Sig>` is the single setup object per message signature. Construct it with a transport and serializer, call `Bind()` once to wire the target function and remote ID, then invoke with `operator()`. The receiver registers its channel endpoint so incoming messages are automatically dispatched to the bound function.
+`dmq::RemoteChannel<Sig>` is the single setup object per message signature. Construct it with a transport and serializer, call `Bind()` once to wire the target function and remote ID, then invoke with `operator()`. The receiver registers its channel endpoint so incoming messages are automatically dispatched to the bound function.
 
 **Key Features:**
 
 * **No IDL Required:** Works with standard C++ types and structs.
 * **Invocation Modes:** Supports Blocking (synchronous wait), Non-blocking (fire-and-forget), and Futures (asynchronous return values).
-* **Transport Agnostic:** The application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers. Implement `ITransport` for any medium (TCP, UDP, serial, shared memory, etc.).
+* **Transport Agnostic:** The application layer is decoupled from the physical transport. You can easily integrate custom transports or serializers. Implement `dmq::transport::ITransport` for any medium (TCP, UDP, serial, shared memory, etc.).
 
 ```cpp
 #include "DelegateMQ.h"
@@ -234,11 +234,11 @@ constexpr dmq::DelegateRemoteId MSG_ID = 1;
 class MsgReceiver
 {
 public:
-    MsgReceiver(ITransport& transport, ISerializer<void(std::string)>& ser)
+    MsgReceiver(dmq::transport::ITransport& transport, dmq::ISerializer<void(std::string)>& ser)
         : m_channel(transport, ser)
     {
         m_channel.Bind(this, &MsgReceiver::OnMsg, MSG_ID);
-        RegisterEndpoint(MSG_ID, m_channel.GetEndpoint());  // app-defined routing table
+        dmq::RegisterEndpoint(MSG_ID, m_channel.GetEndpoint());  // app-defined routing table
     }
 
 private:
@@ -250,7 +250,7 @@ private:
 class MsgSender
 {
 public:
-    MsgSender(ITransport& transport, ISerializer<void(std::string)>& ser)
+    MsgSender(dmq::transport::ITransport& transport, dmq::ISerializer<void(std::string)>& ser)
         : m_channel(transport, ser)
     {
         // Bind to a raw lambda (no std::function wrapper needed)
@@ -284,33 +284,33 @@ See [Delegate Invocation Semantics](docs/DETAILS.md#delegate-invocation-semantic
 
 # DataBus (DDS Lite)
 
-`DataBus` is a high-level middleware built on DelegateMQ's core delegates. It provides a topic-based distribution system (similar to a lightweight DDS or MQTT) that works seamlessly across local threads and remote network nodes. Unlike full DDS style systems, DataBus is lightweight enough for small embedded systems and handles thread-safe data delivery to the specified thread of control.
+`dmq::databus::DataBus` is a high-level middleware built on DelegateMQ's core delegates. It provides a topic-based distribution system (similar to a lightweight DDS or MQTT) that works seamlessly across local threads and remote network nodes. Unlike full DDS style systems, DataBus is lightweight enough for small embedded systems and handles thread-safe data delivery to the specified thread of control.
 
 **Features:**
 - **Topic-Based**: Components communicate via string-named topics (e.g., "sensor/data").
 - **Location Transparency**: Subscribers don't know if the data came from a local thread or a remote processor.
 - **Unicast & Multicast**: Supports point-to-point reliable delivery (Unicast) or one-to-many "Best Effort" distribution (Multicast).
 - **Quality of Service (QoS)**: Supports Last Value Cache (LVC) to ensure new subscribers receive the most recent data immediately.
-- **Monitoring**: Built-in "spy" support via `DataBus::Monitor()` to receive a callback for every message published on the bus.
+- **Monitoring**: Built-in "spy" support via `dmq::databus::DataBus::Monitor()` to receive a callback for every message published on the bus.
 - **Type Safety**: Runtime type checking ensures topic data types match between publishers and subscribers.
-- **Zero Library Threads**: `DataBus` creates no internal threads. The application owns a single polling thread that calls `Participant::ProcessIncoming()` — every thread is visible and under application control.
+- **Zero Library Threads**: `dmq::databus::DataBus` creates no internal threads. The application owns a single polling thread that calls `dmq::databus::Participant::ProcessIncoming()` — every thread is visible and under application control.
 - **[Mixed-Platform](docs/DATABUS.md#example-multi-node-topology)**: Runs unchanged across Linux, FreeRTOS, and bare-metal nodes. Complex topologies (Linux ↔ Ethernet ↔ FreeRTOS ↔ UART ↔ bare metal) are supported.
 
 ```cpp
 #include "DelegateMQ.h"
 
 // 1. Subscribe to a topic (dispatched to a worker thread)
-auto conn = dmq::DataBus::Subscribe<float>("sensor/temp", [](float value) {
+auto conn = dmq::databus::DataBus::Subscribe<float>("sensor/temp", [](float value) {
     std::cout << "Received temp: " << value << std::endl;
 }, &workerThread);
 
 // 2. Publish data to the topic
-dmq::DataBus::Publish<float>("sensor/temp", 25.5f);
+dmq::databus::DataBus::Publish<float>("sensor/temp", 25.5f);
 
 // 3. Optional: Enable Last Value Cache (LVC)
-dmq::QoS qos;
+dmq::databus::QoS qos;
 qos.lastValueCache = true;
-auto conn2 = dmq::DataBus::Subscribe<int>("status", [](int s) {
+auto conn2 = dmq::databus::DataBus::Subscribe<int>("status", [](int s) {
     // New subscribers get the last published value immediately
 }, nullptr, qos);
 ```
@@ -365,11 +365,11 @@ Key advantages of using DelegateMQ in your application.
 
 | Advantage | Description |
 | --- | --- |
-| One invocation model | Sync, async, and remote delegates share the same `MakeDelegate` syntax — promoting a call to async or remote is a one-line change. |
-| Runs everywhere C++ runs | Small pure-virtual interfaces (`IThread`, `ITransport`) mean the same application code compiles on Windows, Linux, FreeRTOS, and bare metal. |
+| One invocation model | Sync, async, and remote delegates share the same `dmq::MakeDelegate` syntax — promoting a call to async or remote is a one-line change. |
+| Runs everywhere C++ runs | Small pure-virtual interfaces (`dmq::IThread`, `dmq::transport::ITransport`) mean the same application code compiles on Windows, Linux, FreeRTOS, and bare metal. |
 | No imposed dependencies | Header-only core requires only C++17; serialization, transport, and threading are injected externally with no mandatory third-party packages. |
-| Application owns every thread | No internal threads are created — every `Thread` is constructed by the application, keeping scheduling, watchdogs, and stack sizes explicit and auditable. |
-| Gradual adoption | Use synchronous delegates first, add a `Thread` to go async, add a `RemoteChannel` to go cross-process — each step is independent and reversible. |
+| Application owns every thread | No internal threads are created — every `dmq::Thread` is constructed by the application, keeping scheduling, watchdogs, and stack sizes explicit and auditable. |
+| Gradual adoption | Use synchronous delegates first, add a `dmq::Thread` to go async, add a `dmq::RemoteChannel` to go cross-process — each step is independent and reversible. |
 | Targeted thread dispatch | Callbacks, signal slots, and DataBus subscribers each specify the thread they run on — the library handles the dispatch, so handlers always execute in the correct thread context without manual queuing. |
 | Off-target development | The stdlib port lets embedded application logic run and be tested on a Windows or Linux host without target hardware; moving to the device swaps the thread port (e.g. FreeRTOS) and transport — application code is unchanged. |
 | DataBus location transparency | Subscribers receive data identically whether the publisher is in the same thread, a different process, or a remote processor — no code change when moving between local and remote. |
@@ -385,22 +385,22 @@ DelegateMQ at a glance.
 | Library | Allows customizing data sharing between threads, processes, or processors |
 | Object Lifetime | Thread-safe management via smart pointers (`std::weak_ptr`) prevents async invocation on destroyed objects (no dangling pointers). |
 | Complexity | Lightweight and extensible through external library interfaces and full source code |
-| Threads | No internal threads. External configurable thread interface portable to any OS (`IThread`). |
+| Threads | No internal threads. External configurable thread interface portable to any OS (`dmq::IThread`). |
 | Watchdog | Configurable timeout to detect and handle unresponsive threads. |
-| Signal and Slots | Standard Signal-Slot pattern (`Signal<Sig>`). `Connect()` returns a `ScopedConnection` for RAII auto-disconnect. Thread-safe by default; no `shared_ptr` required. |
+| Signal and Slots | Standard Signal-Slot pattern (`dmq::Signal<Sig>`). `Connect()` returns a `dmq::ScopedConnection` for RAII auto-disconnect. Thread-safe by default; no `shared_ptr` required. |
 | Multicast | Broadcast invoke anonymous callable targets onto multiple threads |
 | DataBus | Topic-based middleware distribution system (DDS Lite) across threads or remote nodes |
 | Interop | Python and C# client libraries (`interop/`) communicate with any C++ DataBus application over UDP using MessagePack — no C++ required on the client side |
 | Message Priority | Asynchronous delegates support prioritization to ensure timely execution of critical messages |
-| Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`ISerializer`) |
-| Transport | External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (`ITransport`)  |
-| Transport Reliability | Provided by the built-in reliability layer (`ReliableTransport`) or communication library (e.g. ZeroMQ, nng, TCP/IP stack). | |
+| Serialization | External configurable serialization data formats, such as MessagePack, RapidJSON, or custom encoding (`dmq::ISerializer`) |
+| Transport | External configurable transport, such as ZeroMQ, TCP, UDP, serial, data pipe or any custom transport (`dmq::transport::ITransport`)  |
+| Transport Reliability | Provided by the built-in reliability layer (`dmq::util::ReliableTransport`) or communication library (e.g. ZeroMQ, nng, TCP/IP stack). | |
 | Message Buffering | Remote delegate message buffering provided by a communication library (e.g. ZeroMQ) or custom solution within transport |
 | Dynamic Memory | Heap or DelegateMQ fixed-block allocator |
 | Debug Logging | Debug logging using spdlog C++ logging library |
 | Error Handling | Configurable for return error code, assert or exception |
 | Embedded Friendly | Yes. Any OS such as Windows, Linux and FreeRTOS. An OS is not required (i.e. "super loop"). |
-| Operation System | Any. Custom `IThread` implementation may be required. |
+| Operation System | Any. Custom `dmq::IThread` implementation may be required. |
 | Language | C++17 or higher |
 
 # Motivation

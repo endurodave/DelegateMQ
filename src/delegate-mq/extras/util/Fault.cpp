@@ -10,6 +10,8 @@
 #include <windows.h>
 #endif
 
+namespace dmq::util {
+
 //----------------------------------------------------------------------------
 // FaultHandler
 //----------------------------------------------------------------------------
@@ -39,4 +41,11 @@ void FaultHandler(const char* file, unsigned short line)
 #else
     while(1);   // halt for debugger / watchdog on embedded targets
 #endif
+}
+
+} // namespace dmq::util
+
+extern "C" void FaultHandler(const char* file, unsigned short line)
+{
+    dmq::util::FaultHandler(file, line);
 }

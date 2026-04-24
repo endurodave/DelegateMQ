@@ -1,8 +1,11 @@
 #ifndef _TIMER_H
 #define _TIMER_H
 
+#include "../../delegate/DelegateOpt.h"
 #include "../../delegate/Signal.h"
 #include <list>
+
+namespace dmq::util {
 
 /// @brief A thread-safe timer class that provides periodic or one-shot callbacks.
 /// 
@@ -91,5 +94,7 @@ private:
     bool m_once = false;
     static bool m_timerStopped;
 };
+
+} // namespace dmq::util
 
 #endif

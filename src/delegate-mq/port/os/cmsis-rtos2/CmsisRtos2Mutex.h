@@ -4,7 +4,7 @@
 #include "cmsis_os2.h"
 #include <cassert>
 
-namespace dmq {
+namespace dmq::os {
 
     // =========================================================================
     // CmsisRtos2Mutex (Non-Recursive)
@@ -83,6 +83,6 @@ namespace dmq {
     private:
         osMutexId_t m_id = NULL;
     };
-}
+} // namespace dmq::os
 
 #endif // CMSIS_RTOS2_MUTEX_H

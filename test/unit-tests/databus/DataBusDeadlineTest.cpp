@@ -6,6 +6,10 @@
 
 #if defined(DMQ_DATABUS)
 
+using namespace dmq::util;
+using namespace dmq::databus;
+using namespace dmq::os;
+
 // Drive Timer::ProcessTimers() from a background thread for the duration of a test.
 // Returns a stop function; call it to shut the driver down before leaving the scope.
 static std::function<void()> StartTimerDriver()
@@ -27,13 +31,13 @@ int DataBusDeadlineTestMain()
 
     // 1. Normal delivery: continuous publishes keep the timer reset; onMissed never fires
     {
-        dmq::DataBus::ResetForTesting();
+        dmq::databus::DataBus::ResetForTesting();
         auto stopDriver = StartTimerDriver();
 
         std::atomic<int> deliveryCount{0};
         std::atomic<int> missedCount{0};
 
-        dmq::DeadlineSubscription<int> sub{
+        DeadlineSubscription<int> sub{
             "deadline/topic",
             std::chrono::milliseconds(100),
             [&](const int&) { deliveryCount++; },
@@ -42,7 +46,7 @@ int DataBusDeadlineTestMain()
 
         // Publish well within the deadline window
         for (int i = 0; i < 5; i++) {
-            dmq::DataBus::Publish<int>("deadline/topic", i);
+            dmq::databus::DataBus::Publish<int>("deadline/topic", i);
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
 
@@ -54,12 +58,12 @@ int DataBusDeadlineTestMain()
 
     // 2. Deadline miss: publishes stop; onMissed fires after the window elapses
     {
-        dmq::DataBus::ResetForTesting();
+        dmq::databus::DataBus::ResetForTesting();
         auto stopDriver = StartTimerDriver();
 
         std::atomic<int> missedCount{0};
 
-        dmq::DeadlineSubscription<int> sub{
+        DeadlineSubscription<int> sub{
             "deadline/topic",
             std::chrono::milliseconds(50),
             [](const int&) {},
@@ -67,7 +71,7 @@ int DataBusDeadlineTestMain()
         };
 
         // One delivery resets the timer, then go silent
-        dmq::DataBus::Publish<int>("deadline/topic", 1);
+        dmq::databus::DataBus::Publish<int>("deadline/topic", 1);
         std::this_thread::sleep_for(std::chrono::milliseconds(120));
 
         ASSERT_TRUE(missedCount >= 1);
@@ -77,12 +81,12 @@ int DataBusDeadlineTestMain()
 
     // 3. Initial arm: onMissed fires even if Publish is never called
     {
-        dmq::DataBus::ResetForTesting();
+        dmq::databus::DataBus::ResetForTesting();
         auto stopDriver = StartTimerDriver();
 
         std::atomic<int> missedCount{0};
 
-        dmq::DeadlineSubscription<int> sub{
+        DeadlineSubscription<int> sub{
             "deadline/topic",
             std::chrono::milliseconds(50),
             [](const int&) {},
@@ -99,12 +103,12 @@ int DataBusDeadlineTestMain()
 
     // 4. Recovery: after a miss, resuming publishes resets the timer and stops further misses
     {
-        dmq::DataBus::ResetForTesting();
+        dmq::databus::DataBus::ResetForTesting();
         auto stopDriver = StartTimerDriver();
 
         std::atomic<int> missedCount{0};
 
-        dmq::DeadlineSubscription<int> sub{
+        DeadlineSubscription<int> sub{
             "deadline/topic",
             std::chrono::milliseconds(50),
             [](const int&) {},
@@ -118,7 +122,7 @@ int DataBusDeadlineTestMain()
 
         // Resume publishing — resets the timer each time
         for (int i = 0; i < 4; i++) {
-            dmq::DataBus::Publish<int>("deadline/topic", i);
+            dmq::databus::DataBus::Publish<int>("deadline/topic", i);
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
 
@@ -130,13 +134,13 @@ int DataBusDeadlineTestMain()
 
     // 5. Cleanup: onMissed does not fire after DeadlineSubscription is destroyed
     {
-        dmq::DataBus::ResetForTesting();
+        dmq::databus::DataBus::ResetForTesting();
         auto stopDriver = StartTimerDriver();
 
         std::atomic<int> missedCount{0};
 
         {
-            dmq::DeadlineSubscription<int> sub{
+            DeadlineSubscription<int> sub{
                 "deadline/topic",
                 std::chrono::milliseconds(50),
                 [](const int&) {},
@@ -154,7 +158,7 @@ int DataBusDeadlineTestMain()
 
     // 6. Async thread dispatch: both data and onMissed callbacks arrive on the worker thread
     {
-        dmq::DataBus::ResetForTesting();
+        dmq::databus::DataBus::ResetForTesting();
         auto stopDriver = StartTimerDriver();
 
         Thread workerThread("DeadlineWorker");
@@ -164,7 +168,7 @@ int DataBusDeadlineTestMain()
         std::atomic<bool> dataOnWorker{false};
         std::atomic<bool> missedOnWorker{false};
 
-        dmq::DeadlineSubscription<int> sub{
+        DeadlineSubscription<int> sub{
             "deadline/topic",
             std::chrono::milliseconds(50),
             [&](const int&) {
@@ -176,7 +180,7 @@ int DataBusDeadlineTestMain()
             &workerThread
         };
 
-        dmq::DataBus::Publish<int>("deadline/topic", 42);
+        dmq::databus::DataBus::Publish<int>("deadline/topic", 42);
 
         // Wait for both callbacks to arrive on the worker thread
         int retries = 0;

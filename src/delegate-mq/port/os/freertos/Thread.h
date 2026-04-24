@@ -44,6 +44,8 @@
 #include <atomic>
 #include <optional>
 
+namespace dmq::os {
+
 class ThreadMsg;
 
 /// @brief Policy applied when the FreeRTOS task queue is full.
@@ -151,11 +153,14 @@ private:
 
     // Watchdog related members
     std::atomic<dmq::TimePoint> m_lastAliveTime;
-    std::unique_ptr<Timer> m_watchdogTimer;
+    std::unique_ptr<dmq::util::Timer> m_watchdogTimer;
     dmq::ScopedConnection m_watchdogTimerConn;
-    std::unique_ptr<Timer> m_threadTimer;
+    std::unique_ptr<dmq::util::Timer> m_threadTimer;
     dmq::ScopedConnection m_threadTimerConn;
     std::atomic<dmq::Duration> m_watchdogTimeout;
 };
+
+} // namespace dmq::os
+
 
 #endif

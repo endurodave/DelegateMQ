@@ -37,6 +37,8 @@
 extern UART_HandleTypeDef huart6;
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 
 // ============================================================================
 // SERVER APP

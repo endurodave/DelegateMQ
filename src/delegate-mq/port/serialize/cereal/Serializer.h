@@ -15,6 +15,8 @@
 #include <iostream>
 #include <sstream>
 
+namespace dmq::serialization::cereal {
+
 template <class R>
 struct Serializer; // Not defined
 
@@ -29,7 +31,7 @@ public:
             os.seekp(0);
             if (auto* ss = dynamic_cast<xostringstream*>(&os))
                 ss->str("");
-            cereal::BinaryOutputArchive archive(os);
+            ::cereal::BinaryOutputArchive archive(os);
             (archive(args), ...); // C++17 fold expression to serialize each argument
         }
         catch (const std::exception& e) {
@@ -42,7 +44,7 @@ public:
     // Read arguments from a stream
     virtual std::istream& Read(std::istream& is, Args&... args) override {
         try {
-            cereal::BinaryInputArchive archive(is);
+            ::cereal::BinaryInputArchive archive(is);
             (archive(args), ...); // C++17 fold expression to deserialize
         }
         catch (const std::exception& e) {
@@ -52,5 +54,8 @@ public:
         return is;
     }
 };
+
+} // namespace dmq::serialization::cereal
+
 
 #endif

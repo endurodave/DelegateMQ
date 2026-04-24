@@ -10,8 +10,10 @@
 #include <Windows.h>
 #endif
 
+namespace dmq::os {
+
 using namespace std;
-using namespace dmq;
+using namespace dmq::util;
 
 #define MSG_DISPATCH_DELEGATE	1
 #define MSG_EXIT_THREAD			2
@@ -359,3 +361,6 @@ void Thread::Process()
         }
     }
 }
+
+} // namespace dmq::os
+

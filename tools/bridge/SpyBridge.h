@@ -41,7 +41,7 @@ private:
     struct Instance {
         std::thread thread;
         std::atomic<bool> running{false};
-        std::queue<dmq::SpyPacket> queue;
+        std::queue<dmq::databus::SpyPacket> queue;
         std::mutex mutex;
         std::condition_variable cv;
         dmq::ScopedConnection monitorConn;

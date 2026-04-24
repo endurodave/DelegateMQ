@@ -4,9 +4,9 @@ This directory contains the transport layer implementations for **DelegateMQ**, 
 
 ## Core Interfaces
 
-* **`ITransport.h`**: The abstract base class that all transport implementations must inherit from. Defines the `Send()` and `Receive()` contract.
-* **`DmqHeader.h`**: Defines the protocol header structure (Marker, ID, Sequence Number, Length) used for framing messages.
-* **`ITransportMonitor.h`**: Interface for reliability monitoring (ACKs, timeouts, and retries).
+* **`dmq::transport::ITransport`**: The abstract base class that all transport implementations must inherit from. Defines the `Send()` and `Receive()` contract.
+* **`dmq::transport::DmqHeader`**: Defines the protocol header structure (Marker, ID, Sequence Number, Length) used for framing messages.
+* **`dmq::transport::ITransportMonitor`**: Interface for reliability monitoring (ACKs, timeouts, and retries).
 
 ## Implementations
 
@@ -28,14 +28,15 @@ The subdirectories contain ready-to-use transport implementations for specific p
 
 ## Usage
 
-To use a specific transport, simply include the corresponding header in your application and inject it into your `Dispatcher` or `DelegateRemote`.
+To use a specific transport, simply include the corresponding header in your application and inject it into your `dmq::util::Dispatcher` or `dmq::DelegateRemote`.
 
 ```cpp
 // Example: Using UDP on Windows
 #include "port/transport/win32-udp/Win32UdpTransport.h"
 
-UdpTransport transport;
-transport.Create(UdpTransport::Type::PUB, "127.0.0.1", 5000);
+dmq::transport::Win32UdpTransport transport;
+transport.Create(dmq::transport::Win32UdpTransport::Type::PUB, "127.0.0.1", 5000);
 
 // Link transport to the dispatcher
 dispatcher.SetTransport(&transport);
+```

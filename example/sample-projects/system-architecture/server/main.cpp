@@ -31,7 +31,7 @@ static void ProcessTimers()
     while (!processTimerExit.load())
     {
         // Process all delegate-based timers
-        Timer::ProcessTimers();
+        dmq::util::Timer::ProcessTimers();
         std::this_thread::sleep_for(std::chrono::microseconds(50));
     }
 }

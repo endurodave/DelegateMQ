@@ -11,6 +11,10 @@
 #include "data.h"
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
+using namespace dmq::serialization::serializer;
 using namespace std;
 
 /// @brief Receiver receives data from the Sender.
@@ -33,7 +37,7 @@ public:
 
         // Use Type::SERVER (Listens/Accepts connection)
         // Note: This call blocks until a client (Sender) connects!
-        m_transport.Create(TcpTransport::Type::SERVER, "127.0.0.1", 8080);
+        m_transport.Create(Win32TcpTransport::Type::SERVER, "127.0.0.1", 8080);
 
         // Create the receiver thread
         m_thread.CreateThread();
@@ -99,7 +103,7 @@ private:
     dmq::ScopedConnection m_recvTimerConn;
 
     xostringstream m_argStream;
-    TcpTransport m_transport;
+    Win32TcpTransport m_transport;
     Serializer<void(Data&, DataAux&)> m_serializer;
     TransportMonitor m_transportMonitor; // Tracks sequence numbers
 

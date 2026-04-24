@@ -11,6 +11,10 @@
 #include "data.h"
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
+using namespace dmq::serialization::serializer;
 using namespace std;
 
 /// @brief Sender is an active object with a thread. The thread sends data to the 
@@ -41,7 +45,7 @@ public:
 
         // Use Type::CLIENT (Connects to Receiver)
         // Ensure the Receiver is running first so the connection succeeds.
-        m_transport.Create(TcpTransport::Type::CLIENT, "127.0.0.1", 8080);
+        m_transport.Create(Win32TcpTransport::Type::CLIENT, "127.0.0.1", 8080);
 
         // Create the sender thread
         m_thread.CreateThread();
@@ -123,7 +127,7 @@ private:
     xostringstream m_argStream;
     Dispatcher m_dispatcher;
 
-    TcpTransport m_transport;           // 1. Initialized first
+    Win32TcpTransport m_transport;           // 1. Initialized first
     TransportMonitor m_transportMonitor;// 2. Initialized second (Used by RetryMonitor)
     RetryMonitor m_retryMonitor;        // 3. Initialized third (Depends on above)
     ReliableTransport m_reliableTransport;

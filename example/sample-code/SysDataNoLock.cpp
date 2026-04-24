@@ -1,5 +1,9 @@
 #include "SysDataNoLock.h"
 
+using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+
 Thread workerThread2("WorkerThread2");
 
 //----------------------------------------------------------------------------

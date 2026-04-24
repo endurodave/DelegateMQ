@@ -40,28 +40,28 @@ int main(int argc, char* argv[])
     std::cout << "Starting DataBus Interop SERVER..." << std::endl;
 
 #ifdef _WIN32
-    NetworkContext winsock;
+    dmq::util::NetworkContext winsock;
 #endif
 
     // 1. Initialize transports
     // PUB on 8000: server sends DataMsg to clients
-    UdpTransport transportData;
-    if (transportData.Create(UdpTransport::Type::PUB, "127.0.0.1", 8000) != 0) {
+    dmq::transport::Win32UdpTransport transportData;
+    if (transportData.Create(dmq::transport::Win32UdpTransport::Type::PUB, "127.0.0.1", 8000) != 0) {
         std::cerr << "Failed to create Data transport (port 8000)" << std::endl;
         return -1;
     }
 
     // SUB on 8001: server receives CommandMsg from clients
-    UdpTransport transportCmd;
-    if (transportCmd.Create(UdpTransport::Type::SUB, "127.0.0.1", 8001) != 0) {
+    dmq::transport::Win32UdpTransport transportCmd;
+    if (transportCmd.Create(dmq::transport::Win32UdpTransport::Type::SUB, "127.0.0.1", 8001) != 0) {
         std::cerr << "Failed to create Command transport (port 8001)" << std::endl;
         return -1;
     }
 
     // 2. Reliability layer — tracks ACKs for outgoing DataMsg
-    TransportMonitor monitor(std::chrono::seconds(1));
-    RetryMonitor retry(transportData, monitor, 0);
-    ReliableTransport reliableTransport(transportData, retry);
+    dmq::util::TransportMonitor monitor(std::chrono::seconds(1));
+    dmq::util::RetryMonitor retry(transportData, monitor, 0);
+    dmq::util::ReliableTransport reliableTransport(transportData, retry);
 
     // Cross-wire: SUB socket sends ACKs back via PUB socket
     transportData.SetTransportMonitor(&monitor);
@@ -69,21 +69,21 @@ int main(int argc, char* argv[])
     transportCmd.SetSendTransport(&transportData);
 
     // 3. DataBus participant for outgoing DataMsg (via reliable transport)
-    auto dataParticipant = std::make_shared<dmq::Participant>(reliableTransport);
+    auto dataParticipant = std::make_shared<dmq::databus::Participant>(reliableTransport);
     dataParticipant->AddRemoteTopic(SystemTopic::DataMsg, SystemTopic::DataMsgId);
-    dmq::DataBus::AddParticipant(dataParticipant);
+    dmq::databus::DataBus::AddParticipant(dataParticipant);
 
     // 4. DataBus participant for incoming CommandMsg
-    auto commandParticipant = std::make_shared<dmq::Participant>(transportCmd);
-    Serializer<void(CommandMsg)> commandSerializer;
-    dmq::DataBus::AddIncomingTopic<CommandMsg>(SystemTopic::CommandMsg, SystemTopic::CommandMsgId, *commandParticipant, commandSerializer);
+    auto commandParticipant = std::make_shared<dmq::databus::Participant>(transportCmd);
+    dmq::serialization::serializer::Serializer<void(CommandMsg)> commandSerializer;
+    dmq::databus::DataBus::AddIncomingTopic<CommandMsg>(SystemTopic::CommandMsg, SystemTopic::CommandMsgId, *commandParticipant, commandSerializer);
 
     // 5. Register DataMsg serializer
-    Serializer<void(DataMsg)> dataSerializer;
-    dmq::DataBus::RegisterSerializer<DataMsg>(SystemTopic::DataMsg, dataSerializer);
+    dmq::serialization::serializer::Serializer<void(DataMsg)> dataSerializer;
+    dmq::databus::DataBus::RegisterSerializer<DataMsg>(SystemTopic::DataMsg, dataSerializer);
 
     // 6. Subscribe to CommandMsg on local DataBus
-    auto cmdConn = dmq::DataBus::Subscribe<CommandMsg>(
+    auto cmdConn = dmq::databus::DataBus::Subscribe<CommandMsg>(
         SystemTopic::CommandMsg, [](const CommandMsg& msg) {
             std::cout << "Received CommandMsg: pollingRateMs=" << msg.pollingRateMs << std::endl;
             g_pollingRateMs = msg.pollingRateMs;
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 
         std::cout << "Publishing DataMsg (rate=" << g_pollingRateMs
                   << "ms) iteration=" << iteration << std::endl;
-        dmq::DataBus::Publish<DataMsg>(SystemTopic::DataMsg, msg);
+        dmq::databus::DataBus::Publish<DataMsg>(SystemTopic::DataMsg, msg);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(g_pollingRateMs));
         iteration++;

@@ -41,6 +41,8 @@
 #include <Windows.h>
 #endif
 
+namespace dmq::os {
+
 // Comparator for priority queue
 struct ThreadMsgComparator {
     bool operator()(const std::shared_ptr<ThreadMsg>& a, const std::shared_ptr<ThreadMsg>& b) const {
@@ -120,8 +122,8 @@ private:
     void Process();
 
     /// Check watchdog is expired. This function is called by the thread
-    /// that calls Timer::ProcessTimers(). This function is thread-safe.
-    /// In a real-time OS, Timer::ProcessTimers() typically is called by the highest
+    /// that calls dmq::util::Timer::ProcessTimers(). This function is thread-safe.
+    /// In a real-time OS, dmq::util::Timer::ProcessTimers() typically is called by the highest
     /// priority task in the system.
     void WatchdogCheck();
 
@@ -161,11 +163,14 @@ private:
 
     // Watchdog related members
     std::atomic<dmq::TimePoint> m_lastAliveTime;
-    std::unique_ptr<Timer> m_watchdogTimer;
+    std::unique_ptr<dmq::util::Timer> m_watchdogTimer;
     dmq::ScopedConnection m_watchdogTimerConn;
-    std::unique_ptr<Timer> m_threadTimer;
+    std::unique_ptr<dmq::util::Timer> m_threadTimer;
     dmq::ScopedConnection m_threadTimerConn;
     std::atomic<dmq::Duration> m_watchdogTimeout;
 };
+
+} // namespace dmq::os
+
 
 #endif

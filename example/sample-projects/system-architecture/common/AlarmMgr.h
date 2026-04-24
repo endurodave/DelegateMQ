@@ -24,8 +24,10 @@ public:
         NetworkMgr::Instance().SendAlarmMsg(msg, note);
 #else
         // Reinvoke function call on the AlarmMgr thread of control
-        if (!m_thread.IsCurrentThread())
-            return MakeDelegate(this, &AlarmMgr::SetAlarm, m_thread)(msg, note);
+        if (!m_thread.IsCurrentThread()) {
+            dmq::MakeDelegate(this, &AlarmMgr::SetAlarm, m_thread)(msg, note);
+            return;
+        }
 
         // Client handles alarm locally
         AlarmHandler(msg, note);
@@ -39,10 +41,10 @@ private:
         m_thread.CreateThread();
 
         // Use Connect() and store handle
-        m_errorConn = NetworkMgr::Instance().OnNetworkError.Connect(MakeDelegate(this, &AlarmMgr::ErrorHandler, m_thread));
+        m_errorConn = NetworkMgr::Instance().OnNetworkError.Connect(dmq::MakeDelegate(this, &AlarmMgr::ErrorHandler, m_thread));
 
         // Create delegate, set priority, then connect
-        auto alarmDel = MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
+        auto alarmDel = dmq::MakeDelegate(this, &AlarmMgr::RecvAlarmMsg, m_thread);
         alarmDel.SetPriority(dmq::Priority::HIGH);  // Alarm messages high priority
 
         // Use Connect() and store handle
@@ -79,7 +81,7 @@ private:
             std::cout << "AlarmMgr Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    Thread m_thread;
+    dmq::os::Thread m_thread;
 
     // RAII Connections
     dmq::ScopedConnection m_errorConn;

@@ -39,8 +39,10 @@
 #include <fcntl.h>
 #include <errno.h>
 
+namespace dmq::transport {
+
 // Linux UDP transport example
-class UdpTransport : public ITransport
+class LinuxUdpTransport : public ITransport
 {
 public:
     enum class Type
@@ -49,11 +51,11 @@ public:
         SUB
     };
 
-    UdpTransport() : m_sendTransport(this), m_recvTransport(this)
+    LinuxUdpTransport() : m_sendTransport(this), m_recvTransport(this)
     {
     }
 
-    ~UdpTransport()
+    ~LinuxUdpTransport()
     {
         Close();
     }
@@ -308,5 +310,7 @@ private:
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
+
+} // namespace dmq::transport
 
 #endif // LINUX_UDP_TRANSPORT_H

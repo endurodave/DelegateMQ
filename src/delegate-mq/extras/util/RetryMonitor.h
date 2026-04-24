@@ -1,11 +1,18 @@
 #ifndef _RETRY_MONITOR_H
 #define _RETRY_MONITOR_H
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
+#include "delegate/DelegateRemote.h"
+#include "port/transport/ITransport.h"
+#include "port/transport/DmqHeader.h"
 #include "TransportMonitor.h"
 #include <map>
+#include <mutex>
+#include <cstdint>
 #include <vector>
 #include <string>
+
+namespace dmq::util {
 
 /// @file RetryMonitor.h
 /// @brief Automatic retransmission manager for DelegateMQ remote calls.
@@ -40,7 +47,7 @@ public:
     /// @brief Storage for a message that might need retransmission.
     struct RetryEntry {
         std::string packetData;     ///< The raw serialized arguments
-        DmqHeader header;           ///< Original metadata (ID, SeqNum, etc.)
+        dmq::transport::DmqHeader header;           ///< Original metadata (ID, SeqNum, etc.)
         int attemptsRemaining;      ///< Counter for retry budget
     };
 
@@ -48,7 +55,7 @@ public:
     /// @param transport The underlying transport to use for re-sending.
     /// @param monitor The monitor that detects the timeouts.
     /// @param maxRetries Number of retries before giving up (default 3).
-    RetryMonitor(ITransport& transport, TransportMonitor& monitor, int maxRetries = 3)
+    RetryMonitor(dmq::transport::ITransport& transport, TransportMonitor& monitor, int maxRetries = 3)
         : m_transport(transport), m_monitor(monitor), m_maxRetries(maxRetries) 
     {
         // Connection handled via RAII dmq::Connection member
@@ -64,7 +71,7 @@ public:
 
     /// @brief Sends a message and tracks it for potential retries.
     /// @return 0 on success, -1 on immediate transport failure.
-    int SendWithRetry(xostringstream& os, const DmqHeader& header)
+    int SendWithRetry(dmq::xostringstream& os, const dmq::transport::DmqHeader& header)
     {
         // Critical Section: Store the packet for retry before sending.
         // If Send() fails we remove the entry immediately so it doesn't leak.
@@ -102,7 +109,7 @@ private:
         // Variables to hold data for the retry OUTSIDE the lock
         bool shouldRetry = false;
         std::string retryPayload;
-        DmqHeader retryHeader;
+        dmq::transport::DmqHeader retryHeader;
 
         {
             // 1. Critical Section: Read/Modify Map ONLY
@@ -142,7 +149,7 @@ private:
         if (shouldRetry)
         {
             // Re-prepare the stream from our local copy
-            xostringstream os(std::ios::in | std::ios::out | std::ios::binary);
+            dmq::xostringstream os(std::ios::in | std::ios::out | std::ios::binary);
             os.write(retryPayload.data(), retryPayload.size());
 
             // Re-send. The transport will re-add this to the TransportMonitor.
@@ -151,12 +158,15 @@ private:
         }
     }
 
-    ITransport& m_transport;
+    dmq::transport::ITransport& m_transport;
     TransportMonitor& m_monitor;
     const int m_maxRetries;
     std::map<uint16_t, RetryEntry> m_retryStore;
     dmq::RecursiveMutex m_lock;
     dmq::ScopedConnection m_connection;
 };
+
+} // namespace dmq::util
+
 
 #endif // _RETRY_MONITOR_H

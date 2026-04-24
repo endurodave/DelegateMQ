@@ -14,6 +14,8 @@
 #include <atomic>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 
 // ============================================================================
 // CONFIGURATION

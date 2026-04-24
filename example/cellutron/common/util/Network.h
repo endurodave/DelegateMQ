@@ -39,7 +39,7 @@ public:
     /// Register a serializer for an outgoing topic.
     template <typename T>
     void RegisterOutgoingTopic(const std::string& topic, dmq::DelegateRemoteId remoteId, dmq::ISerializer<void(T)>& serializer, Reliability reliability = Reliability::UNRELIABLE) {
-        dmq::DataBus::RegisterSerializer<T>(topic, serializer);
+        dmq::databus::DataBus::RegisterSerializer<T>(topic, serializer);
         m_outgoingTopics.push_back({topic, remoteId, reliability});
         
         // Add to all existing remote nodes
@@ -56,7 +56,7 @@ public:
     template <typename T>
     void RegisterIncomingTopic(const std::string& topic, dmq::DelegateRemoteId remoteId, dmq::ISerializer<void(T)>& serializer) {
         if (m_subParticipant) {
-            dmq::DataBus::AddIncomingTopic<T>(topic, remoteId, *m_subParticipant, serializer);
+            dmq::databus::DataBus::AddIncomingTopic<T>(topic, remoteId, *m_subParticipant, serializer);
         }
     }
 
@@ -68,7 +68,7 @@ private:
 
     bool m_running = false;
     UdpTransport m_subTransport;
-    std::shared_ptr<dmq::Participant> m_subParticipant;
+    std::shared_ptr<dmq::databus::Participant> m_subParticipant;
     
     // Standardized thread name for Active Object subsystem. 
     Thread m_thread{"NetworkThread", 100, FullPolicy::FAULT};
@@ -79,8 +79,8 @@ private:
         std::unique_ptr<RetryMonitor> retryMonitor;
         std::unique_ptr<ReliableTransport> reliableTransport;
         
-        std::shared_ptr<dmq::Participant> reliableParticipant;
-        std::shared_ptr<dmq::Participant> unreliableParticipant;
+        std::shared_ptr<dmq::databus::Participant> reliableParticipant;
+        std::shared_ptr<dmq::databus::Participant> unreliableParticipant;
     };
 
     struct OutgoingTopic {

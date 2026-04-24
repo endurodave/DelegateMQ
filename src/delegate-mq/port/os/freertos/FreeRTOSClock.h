@@ -5,7 +5,7 @@
 #include "task.h"
 #include <chrono>
 
-namespace dmq {
+namespace dmq::os {
     struct FreeRTOSClock {
         // 1. Define duration traits.
         // NOTE: This assumes configTICK_RATE_HZ is 1000 (1ms ticks).

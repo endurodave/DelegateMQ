@@ -5,7 +5,7 @@
 #include <cstdint>
 #include "port/serialize/serialize/msg_serialize.h"
 
-namespace dmq {
+namespace dmq::databus {
 
 /// @brief Standardized packet containing bus traffic metadata.
 /// @details This struct is passed to DataBus::Monitor subscribers and is 
@@ -13,7 +13,7 @@ namespace dmq {
 /// 
 /// The timestamp_us field uses dmq::Clock::now(), which typically provides 
 /// monotonic time since boot.
-struct SpyPacket : public serialize::I {
+struct SpyPacket : public ::serialize::I {
     SpyPacket() = default;
     SpyPacket(const std::string& t, const std::string& v, uint64_t ts) 
         : topic(t), value(v), timestamp_us(ts) {}
@@ -22,19 +22,20 @@ struct SpyPacket : public serialize::I {
     std::string value;      ///< Stringified representation of the data (or "?" if no stringifier registered).
     uint64_t timestamp_us;  ///< Microseconds (usually since boot) when the message was published.
 
-    std::ostream& write(serialize& ms, std::ostream& os) override {
+    std::ostream& write(::serialize& ms, std::ostream& os) override {
         ms.write(os, topic);
         ms.write(os, value);
         return ms.write(os, timestamp_us);
     }
 
-    std::istream& read(serialize& ms, std::istream& is) override {
+    std::istream& read(::serialize& ms, std::istream& is) override {
         ms.read(is, topic);
         ms.read(is, value);
         return ms.read(is, timestamp_us);
     }
 };
 
-} // namespace dmq
+} // namespace dmq::databus
+
 
 #endif // DMQ_SPY_PACKET_H

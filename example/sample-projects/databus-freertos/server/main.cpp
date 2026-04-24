@@ -115,7 +115,7 @@ static void vServerTask(void* /*pvParams*/)
 
 #ifdef _WIN32
     // Initialise Winsock within the FreeRTOS task context
-    NetworkContext winsock;
+    dmq::util::NetworkContext winsock;
 #endif
 
     if (!g_server.Start())
@@ -146,7 +146,7 @@ int main(void)
         pdMS_TO_TICKS(10),
         pdTRUE,   // auto-reload
         NULL,
-        [](TimerHandle_t) { Timer::ProcessTimers(); });
+        [](TimerHandle_t) { dmq::util::Timer::ProcessTimers(); });
     xTimerStart(sysTimer, 0);
 
     // Server task — stack sized generously for Winsock + C++ runtime

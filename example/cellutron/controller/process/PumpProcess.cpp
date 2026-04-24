@@ -3,6 +3,8 @@
 #include <cstdio>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 
 namespace cellutron {
 namespace process {

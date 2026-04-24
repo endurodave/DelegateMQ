@@ -20,6 +20,9 @@
 
 using namespace std;
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
 using namespace std::chrono;
 
 /// The main file examples namespace

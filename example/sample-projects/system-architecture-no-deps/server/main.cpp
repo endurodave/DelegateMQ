@@ -2,9 +2,10 @@
 /// @see https://github.com/DelegateMQ/DelegateMQ
 /// David Lafreniere, 2025.
 /// 
-/// ClientApp and ServerApp communicate using Win32 UDP socket transport, msg_serialize
-/// serialization, and DelegateMQ dispatching. Application runs on Windows. No external
-/// 3rd party libraries are required.
+/// @brief Windows UDP and msg_serialize with remote delegates examples. 
+/// 
+/// ClientApp and ServerApp communicate using UDP transport, msg_serialize 
+/// serialization, and DelegateMQ dispatching.
 /// 
 /// The ServerApp collects data locally and remotely from sensors and 
 /// actuators. Start both applications to run sample. 
@@ -12,11 +13,7 @@
 #include "NetworkMgr.h"
 #include "AlarmMgr.h"
 #include "ServerApp.h"
-#include "extras/util/NetworkConnect.h"
 #include <thread>
-
-#ifdef _WIN32
-#endif
 
 #ifdef DMQ_LOG
 #ifdef _WIN32
@@ -32,7 +29,7 @@ static void ProcessTimers()
     while (!processTimerExit.load())
     {
         // Process all delegate-based timers
-        Timer::ProcessTimers();
+        dmq::util::Timer::ProcessTimers();
         std::this_thread::sleep_for(std::chrono::microseconds(50));
     }
 }
@@ -59,12 +56,11 @@ int main(int argc, char* argv[])
 #endif
 #endif
 
-#ifdef _WIN32
-    // Starts Winsock now; automatically cleans up when main exits.
-    NetworkContext wsContext;
-#endif
-
     std::cout << "Server start!" << std::endl;
+
+#ifdef _WIN32
+    dmq::util::NetworkContext wsContext;
+#endif
 
     // Start the thread that will run ProcessTimers
     std::thread timerThread(ProcessTimers);
@@ -88,5 +84,3 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
-

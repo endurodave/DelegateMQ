@@ -4,7 +4,7 @@
 #include "cmsis_os2.h"
 #include <chrono>
 
-namespace dmq {
+namespace dmq::os {
     struct CmsisRtos2Clock {
         // Assume 1 tick = 1 millisecond. 
         // If your RTOS tick is different, change std::milli to your ratio.
@@ -50,6 +50,6 @@ namespace dmq {
             return time_point(duration(static_cast<rep>(ticks)));
         }
     };
-}
+} // namespace dmq::os
 
 #endif // CMSIS_RTOS2_CLOCK_H

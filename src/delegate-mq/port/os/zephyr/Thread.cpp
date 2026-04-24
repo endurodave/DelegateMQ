@@ -13,7 +13,9 @@
 #define ASSERT_TRUE(x) __ASSERT(x, "DelegateMQ Assertion Failed")
 #endif
 
-using namespace dmq;
+namespace dmq::os {
+
+using namespace dmq::util;
 
 //----------------------------------------------------------------------------
 // Thread Constructor
@@ -92,12 +94,12 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
 
             m_threadTimer = std::unique_ptr<Timer>(new Timer());
             m_threadTimerConn = m_threadTimer->OnExpired.Connect(
-                MakeDelegate(this, &Thread::ThreadCheck, *this));
+                dmq::MakeDelegate(this, &Thread::ThreadCheck, *this));
             m_threadTimer->Start(m_watchdogTimeout.load() / 4);
 
             m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
             m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(
-                MakeDelegate(this, &Thread::WatchdogCheck));
+                dmq::MakeDelegate(this, &Thread::WatchdogCheck));
             m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
         }
     }
@@ -304,3 +306,5 @@ void Thread::Run()
     // Signal that we are about to exit
     k_sem_give(&m_exitSem);
 }
+
+} // namespace dmq::os

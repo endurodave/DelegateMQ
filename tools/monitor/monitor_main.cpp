@@ -130,8 +130,12 @@ static void ReceiverThread(uint16_t port, std::string multicastGroup, std::strin
             if (iss.good() && !packet.nodeId.empty()) {
                 std::string key = MakeNodeKey(packet);
                 std::lock_guard<std::mutex> lock(g_nodesMutex);
-                g_nodes[key] = { std::move(packet), std::chrono::steady_clock::now() };
-            } else {
+                NodeRecord rec;
+                rec.packet = std::move(packet);
+                rec.lastSeen = std::chrono::steady_clock::now();
+                g_nodes[key] = std::move(rec);
+            }
+ else {
                 g_errorCount++;
                 g_statusMessage = "Deserialize error (bytes=" + std::to_string(received) + ")";
             }
@@ -169,9 +173,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    NetworkContext winsock;
+    dmq::util::NetworkContext winsock;
     if (localInterface.empty() && !multicastGroup.empty()) {
-        localInterface = NetworkContext::GetLocalAddress();
+        localInterface = dmq::util::NetworkContext::GetLocalAddress();
     }
 
     auto screen = ScreenInteractive::Fullscreen();

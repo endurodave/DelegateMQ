@@ -1,6 +1,8 @@
 #ifndef _THREAD_MSG_H
 #define _THREAD_MSG_H
 
+namespace dmq::os {
+
 /// @brief A class to hold a platform-specific thread messsage that will be passed 
 /// through the OS message queue. 
 class ThreadMsg
@@ -34,5 +36,7 @@ private:
 	// Use fixed-block memory allocator if DMQ_ALLOCATOR set
 	XALLOCATOR
 };
+
+} // namespace dmq::os
 
 #endif

@@ -11,6 +11,8 @@
 #include <memory>         // Required for std::make_shared
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 using namespace std;
 
 // Global millisecond counter

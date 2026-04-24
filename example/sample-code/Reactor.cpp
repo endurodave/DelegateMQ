@@ -13,6 +13,8 @@
 #include <condition_variable>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 using namespace std;
 
 namespace Example

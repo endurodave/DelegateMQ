@@ -41,7 +41,7 @@ private:
 
         // Register to receive remote data updates
         // Use Connect() and store handle in m_networkDataConn
-        m_networkDataConn = NetworkMgr::Instance().OnData.Connect(MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread));
+        m_networkDataConn = NetworkMgr::Instance().OnData.Connect(dmq::MakeDelegate(this, &DataMgr::RemoteDataMsgUpdate, m_thread));
     }
 
     ~DataMgr()
@@ -89,8 +89,8 @@ private:
         DataMsgCb(msg);
     }
 
-    Thread m_thread;
-    Timer m_timer;
+    dmq::os::Thread m_thread;
+    dmq::util::Timer m_timer;
     std::mutex m_mutex;
 
     // RAII Connection

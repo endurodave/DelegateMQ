@@ -51,13 +51,12 @@
 /// };
 /// @endcode
 
-#include "DelegateMQ.h"
-#include "extras/databus/DataBus.h"
+#include "DataBus.h"
 #include "extras/util/Timer.h"
 #include <functional>
 #include <string>
 
-namespace dmq {
+namespace dmq::databus {
 
 template <typename T>
 class DeadlineSubscription {
@@ -82,10 +81,10 @@ public:
         // Connect onMissed to the timer expiry signal, dispatching to thread if provided
         if (thread) {
             m_timerConn = m_timer.OnExpired.Connect(
-                MakeDelegate(std::move(onMissed), *thread));
+                dmq::MakeDelegate(std::move(onMissed), *thread));
         } else {
             m_timerConn = m_timer.OnExpired.Connect(
-                MakeDelegate(std::move(onMissed)));
+                dmq::MakeDelegate(std::move(onMissed)));
         }
 
         // Arm the timer immediately. It fires if no delivery arrives within deadline.
@@ -112,11 +111,12 @@ private:
     // then m_timerConn disconnects (onMissed removed from timer signal),
     // then m_timer destructs (removed from global timer list).
     dmq::Duration m_deadline;
-    Timer m_timer;
+    dmq::util::Timer m_timer;
     dmq::ScopedConnection m_timerConn;
     dmq::ScopedConnection m_conn;
 };
 
-} // namespace dmq
+} // namespace dmq::databus
+
 
 #endif // DMQ_DEADLINE_SUBSCRIPTION_H

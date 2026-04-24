@@ -8,6 +8,8 @@
 #define MSG_DISPATCH_DELEGATE   1
 #define MSG_EXIT_THREAD         2
 
+namespace dmq::os {
+
 class ThreadMsg
 {
 public:
@@ -27,5 +29,7 @@ private:
 
     XALLOCATOR
 };
+
+} // namespace dmq::os
 
 #endif

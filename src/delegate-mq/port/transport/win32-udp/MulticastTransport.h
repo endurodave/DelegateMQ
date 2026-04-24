@@ -16,6 +16,8 @@
 #include <cstdio>
 #include <iostream>
 
+namespace dmq::transport {
+
 class MulticastTransport : public ITransport
 {
 public:
@@ -80,13 +82,13 @@ public:
         }
     }
 
-    virtual int Send(xostringstream& os, const DmqHeader& header) override {
+    virtual int Send(dmq::xostringstream& os, const DmqHeader& header) override {
         if (m_type != Type::PUB) return -1;
         auto payload = os.str();
         DmqHeader headerCopy = header;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
-        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
         uint16_t marker = htons(headerCopy.GetMarker());
         uint16_t id = htons(headerCopy.GetId());
         uint16_t seq = htons(headerCopy.GetSeqNum());
@@ -108,7 +110,7 @@ public:
         return -1;
     }
 
-    virtual int Receive(xstringstream& is, DmqHeader& header) override {
+    virtual int Receive(dmq::xstringstream& is, DmqHeader& header) override {
         if (m_type != Type::SUB) return -1;
         int addrLen = sizeof(m_addr);
         int size = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, (sockaddr*)&m_addr, &addrLen);
@@ -116,7 +118,7 @@ public:
         if (size == SOCKET_ERROR) return -1;
         if (size <= (int)DmqHeader::HEADER_SIZE) return -1;
 
-        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
         headerStream.seekg(0);
 
@@ -137,5 +139,7 @@ private:
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
+
+} // namespace dmq::transport
 
 #endif

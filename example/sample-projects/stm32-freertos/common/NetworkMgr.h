@@ -39,7 +39,7 @@
 ///     2. *Synchronous Wait (Blocking):* Blocks the calling thread until an acknowledgment (ACK) is received or a timeout occurs.
 /// * **Error & Status Reporting:** Provides registration points (`OnNetworkError`, `OnSendStatus`) for clients to subscribe
 ///   to transmission results and error notifications.
-class NetworkMgr : public NetworkEngine
+class NetworkMgr : public dmq::util::NetworkEngine
 {
 public:
     // Public Signals — thread-safe direct members. Clients Connect() using RAII.
@@ -48,7 +48,7 @@ public:
     dmq::Signal<void(DataMsg&)>                                                          OnData;
     dmq::Signal<void(ActuatorMsg&)>                                                      OnActuator;
     dmq::Signal<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> OnNetworkError;
-    dmq::Signal<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>        OnSendStatus;
+    dmq::Signal<void(dmq::DelegateRemoteId, uint16_t, dmq::util::TransportMonitor::Status)>   OnSendStatus;
 
     static NetworkMgr& Instance() { static NetworkMgr instance; return instance; }
 
@@ -67,7 +67,7 @@ public:
 protected:
     // Override base class hooks to fire our Signals
     void OnError(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux) override;
-    void OnStatus(dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) override;
+    void OnStatus(dmq::DelegateRemoteId id, uint16_t seq, dmq::util::TransportMonitor::Status status) override;
 
 private:
     NetworkMgr();
@@ -82,7 +82,7 @@ private:
     // TYPE ALIAS: Unicast, Unsafe, Member Delegate bound to 'NetworkMgr'
     // This allows exact binding to 'this' in Create()
     template <typename... Args>
-    using EndpointType = RemoteEndpoint<NetworkMgr, void(Args...)>;
+    using EndpointType = dmq::util::RemoteEndpoint<NetworkMgr, void(Args...)>;
 
     // Specific endpoints
     EndpointType<AlarmMsg&, AlarmNote&> m_alarmMsgDel;

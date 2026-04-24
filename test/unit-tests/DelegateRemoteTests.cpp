@@ -6,6 +6,7 @@
 #include <thread>
 
 using namespace dmq;
+using namespace dmq::os;
 using namespace std;
 using namespace UnitTestData;
 

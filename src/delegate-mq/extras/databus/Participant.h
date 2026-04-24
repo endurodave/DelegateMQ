@@ -1,14 +1,19 @@
 #ifndef DMQ_PARTICIPANT_H
 #define DMQ_PARTICIPANT_H
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateRemote.h"
+#include "delegate/DelegateOpt.h"
+#include "port/transport/ITransport.h"
+#include "port/transport/DmqHeader.h"
+#include "extras/dispatcher/RemoteChannel.h"
+#include "extras/util/Fault.h"
 #include <string>
 #include <memory>
 #include <unordered_map>
 #include <mutex>
 #include <typeindex>
 
-namespace dmq {
+namespace dmq::databus {
 
 // A Participant represents a remote node in the DataBus network.
 // It manages the transport and the remote channels for different signatures.
@@ -17,7 +22,7 @@ namespace dmq {
 // will outlive the Participant instance.
 class Participant {
 public:
-    Participant(ITransport& transport) : m_transport(&transport) {}
+    Participant(dmq::transport::ITransport& transport) : m_transport(&transport) {}
 
     // Add a remote topic mapping.
     // When local DataBus publishes to 'topic', it will be sent to this participant using 'remoteId'.
@@ -29,14 +34,14 @@ public:
     // Process incoming data from the transport.
     // @return The result code from ITransport::Receive.
     int ProcessIncoming() {
-        xstringstream is(std::ios::in | std::ios::out | std::ios::binary);
-        DmqHeader header;
+        dmq::xstringstream is(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::transport::DmqHeader header;
         dmq::IRemoteInvoker* invoker = nullptr;
 
         int result = m_transport->Receive(is, header);
         if (result == 0) {
             // Validate header marker
-            if (header.GetMarker() != DmqHeader::MARKER) {
+            if (header.GetMarker() != dmq::transport::DmqHeader::MARKER) {
                 return -1; // Protocol error
             }
 
@@ -95,7 +100,7 @@ public:
     }
 
     // Register a local handler for a remote topic using a raw lambda or functor.
-    template <typename T, typename F, typename = std::enable_if_t<trait::is_callable<F>::value>>
+    template <typename T, typename F, typename = std::enable_if_t<dmq::trait::is_callable<F>::value>>
     void RegisterHandler(dmq::DelegateRemoteId remoteId, dmq::ISerializer<void(T)>& serializer, F&& func) {
         std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
         auto channel = std::make_shared<dmq::RemoteChannel<void(T)>>(*m_transport, serializer);
@@ -131,7 +136,7 @@ private:
             // Type safety: catch remoteId reused with a different T
             auto itType = m_channelTypes.find(remoteId);
             if (itType != m_channelTypes.end() && itType->second != std::type_index(typeid(T))) {
-                ::FaultHandler(__FILE__, (unsigned short)__LINE__);
+                ::dmq::util::FaultHandler(__FILE__, (unsigned short)__LINE__);
                 return nullptr;
             }
             return std::static_pointer_cast<dmq::RemoteChannel<void(T)>>(it->second.channel);
@@ -147,7 +152,7 @@ private:
         return channel;
     }
 
-    ITransport* m_transport;
+    dmq::transport::ITransport* m_transport;
     dmq::RecursiveMutex m_mutex;
     std::unordered_map<std::string, dmq::DelegateRemoteId> m_topicToRemoteId;
     std::unordered_map<dmq::DelegateRemoteId, ChannelInvoker> m_channels;
@@ -171,6 +176,7 @@ private:
     std::unordered_map<dmq::DelegateRemoteId, SeqHistory> m_history;
 };
 
-} // namespace dmq
+} // namespace dmq::databus
+
 
 #endif // DMQ_PARTICIPANT_H

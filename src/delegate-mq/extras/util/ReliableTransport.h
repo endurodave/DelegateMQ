@@ -68,28 +68,33 @@
 #include "../../port/transport/ITransport.h"
 #include "RetryMonitor.h"
 
+namespace dmq::util {
+
 /// @brief Adapter to enable automatic retries on any ITransport.
 /// @details Routes Send() calls through the RetryMonitor before passing them
 /// to the physical transport.
-class ReliableTransport : public ITransport
+class ReliableTransport : public dmq::transport::ITransport
 {
 public:
-    ReliableTransport(ITransport& transport, RetryMonitor& retry) 
+    ReliableTransport(dmq::transport::ITransport& transport, RetryMonitor& retry) 
         : m_transport(transport), m_retry(retry) {}
 
     /// @brief Sends data via the RetryMonitor to ensure reliability.
-    virtual int Send(xostringstream& os, const DmqHeader& header) override {
+    virtual int Send(dmq::xostringstream& os, const dmq::transport::DmqHeader& header) override {
         return m_retry.SendWithRetry(os, header);
     }
 
     /// @brief Pass-through for receiving data.
-    virtual int Receive(xstringstream& is, DmqHeader& header) override {
+    virtual int Receive(dmq::xstringstream& is, dmq::transport::DmqHeader& header) override {
         return m_transport.Receive(is, header);
     }
 
 private:
-    ITransport& m_transport;
+    dmq::transport::ITransport& m_transport;
     RetryMonitor& m_retry;
 };
+
+} // namespace dmq::util
+
 
 #endif

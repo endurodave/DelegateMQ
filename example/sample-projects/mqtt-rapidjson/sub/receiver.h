@@ -11,6 +11,10 @@
 #include "../common/data.h"
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
+using namespace dmq::serialization::rapidjson;
 using namespace std;
 
 /// @brief Receiver receives data from the Sender.

@@ -9,6 +9,10 @@
 #include "data.h"
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
+using namespace dmq::serialization::cereal;
 using namespace std;
 
 /// @brief Sender is an active object with a thread. The thread sends data to the 

@@ -4,6 +4,11 @@
 
 #if defined(DMQ_DATABUS)
 
+using namespace dmq;
+using namespace dmq::transport;
+using namespace dmq::databus;
+using namespace dmq::serialization::serializer;
+
 // Simple loopback transport for testing
 class DataBusLoopbackTransport : public ITransport {
 public:
@@ -34,13 +39,13 @@ private:
 
 int DataBusRemoteTestMain() {
     std::cout << "Starting DataBusRemoteTest..." << std::endl;
-    dmq::DataBus::ResetForTesting();
+    DataBus::ResetForTesting();
 
     DataBusLoopbackTransport transport;
-    Serializer<void(int)> serializer;
+    dmq::serialization::serializer::Serializer<void(int)> serializer;
 
     // Node B setup (Subscriber)
-    auto nodeB = std::make_shared<dmq::Participant>(transport);
+    auto nodeB = std::make_shared<Participant>(transport);
     
     // In a real system, nodeB's DataBus would be separate. 
     // Here we simulate it by having Node B's participant call back into a local variable.
@@ -50,14 +55,14 @@ int DataBusRemoteTestMain() {
     });
 
     // Node A setup (Publisher)
-    auto nodeA_participant = std::make_shared<dmq::Participant>(transport);
+    auto nodeA_participant = std::make_shared<Participant>(transport);
     nodeA_participant->AddRemoteTopic("remote/topic", 100);
     
-    dmq::DataBus::AddParticipant(nodeA_participant);
-    dmq::DataBus::RegisterSerializer<int>("remote/topic", serializer);
+    DataBus::AddParticipant(nodeA_participant);
+    DataBus::RegisterSerializer<int>("remote/topic", serializer);
 
     // Node A publishes
-    dmq::DataBus::Publish<int>("remote/topic", 42);
+    DataBus::Publish<int>("remote/topic", 42);
 
     // Simulate Node B processing incoming data
     nodeB->ProcessIncoming();

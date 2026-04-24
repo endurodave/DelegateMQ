@@ -26,14 +26,14 @@ static void SignalHandler(int) { g_running = false; }
 
 // Holds all network and DataBus infrastructure for the server.
 struct ServerState {
-    MulticastTransport transport;
-    std::shared_ptr<dmq::Participant> group;
-    Serializer<void(ShapeMsg)> serializer;
+    dmq::transport::MulticastTransport transport;
+    std::shared_ptr<dmq::databus::Participant> group;
+    dmq::serialization::serializer::Serializer<void(ShapeMsg)> serializer;
 };
 
 // Create the multicast PUB transport.
 static bool SetupTransport(ServerState& s, const std::string& localIP) {
-    if (s.transport.Create(MulticastTransport::Type::PUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
+    if (s.transport.Create(dmq::transport::MulticastTransport::Type::PUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
         std::cerr << "Failed to create Multicast transport" << std::endl;
         return false;
     }
@@ -42,14 +42,14 @@ static bool SetupTransport(ServerState& s, const std::string& localIP) {
 
 // Register participant and serializers for all shape topics.
 static void SetupDataBus(ServerState& s) {
-    s.group = std::make_shared<dmq::Participant>(s.transport);
+    s.group = std::make_shared<dmq::databus::Participant>(s.transport);
     s.group->AddRemoteTopic(SystemTopic::Square,   SystemTopic::SquareId);
     s.group->AddRemoteTopic(SystemTopic::Circle,   SystemTopic::CircleId);
     s.group->AddRemoteTopic(SystemTopic::Triangle, SystemTopic::TriangleId);
-    dmq::DataBus::AddParticipant(s.group);
-    dmq::DataBus::RegisterSerializer<ShapeMsg>(SystemTopic::Square,   s.serializer);
-    dmq::DataBus::RegisterSerializer<ShapeMsg>(SystemTopic::Circle,   s.serializer);
-    dmq::DataBus::RegisterSerializer<ShapeMsg>(SystemTopic::Triangle, s.serializer);
+    dmq::databus::DataBus::AddParticipant(s.group);
+    dmq::databus::DataBus::RegisterSerializer<ShapeMsg>(SystemTopic::Square,   s.serializer);
+    dmq::databus::DataBus::RegisterSerializer<ShapeMsg>(SystemTopic::Circle,   s.serializer);
+    dmq::databus::DataBus::RegisterSerializer<ShapeMsg>(SystemTopic::Triangle, s.serializer);
 }
 
 int main(int argc, char* argv[]) {
@@ -61,17 +61,19 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Starting DataBus Shapes Demo SERVER (Publisher)..." << std::endl;
 
-    NetworkContext winsock;
-    std::string localIP = NetworkContext::GetLocalAddress();
+#ifdef _WIN32
+    dmq::util::NetworkContext winsock;
+#endif
+    std::string localIP = dmq::util::NetworkContext::GetLocalAddress();
     std::cout << "Local Interface: " << localIP << std::endl;
 
 #ifdef DMQ_DATABUS_TOOLS
     SpyBridge::StartMulticast("239.1.1.1", 9999, localIP);
     NodeBridge::StartMulticast("ShapesServer", "239.1.1.1", 9998, localIP);
-    dmq::DataBus::RegisterStringifier<ShapeMsg>(SystemTopic::Square, [](const ShapeMsg& m) {
+    dmq::databus::DataBus::RegisterStringifier<ShapeMsg>(SystemTopic::Square, [](const ShapeMsg& m) {
         return "Square X=" + std::to_string(m.x) + " Y=" + std::to_string(m.y);
     });
-    dmq::DataBus::RegisterStringifier<ShapeMsg>(SystemTopic::Circle, [](const ShapeMsg& m) {
+    dmq::databus::DataBus::RegisterStringifier<ShapeMsg>(SystemTopic::Circle, [](const ShapeMsg& m) {
         return "Circle X=" + std::to_string(m.x) + " Y=" + std::to_string(m.y);
     });
 #endif
@@ -96,13 +98,13 @@ int main(int argc, char* argv[]) {
         square.x = 20 + (int)(20 * std::cos(angle));
         square.y = 20 + (int)(10 * std::sin(angle));
         square.color = 0; // Blue
-        dmq::DataBus::Publish<ShapeMsg>(SystemTopic::Square, square);
+        dmq::databus::DataBus::Publish<ShapeMsg>(SystemTopic::Square, square);
 
         ShapeMsg circle;
         circle.x = 50 + (int)(30 * std::sin(angle * 0.5f));
         circle.y = 25 + (int)(15 * std::cos(angle * 0.5f));
         circle.color = 1; // Red
-        dmq::DataBus::Publish<ShapeMsg>(SystemTopic::Circle, circle);
+        dmq::databus::DataBus::Publish<ShapeMsg>(SystemTopic::Circle, circle);
 
         angle += 0.1f;
         std::this_thread::sleep_for(std::chrono::milliseconds(33));

@@ -22,7 +22,7 @@ public:
         if (command.action == CommandMsg::Action::START)
         {
             // Connect and store handle
-            m_pollTimerConn = m_pollTimer.OnExpired.Connect(MakeDelegate(this, &ServerApp::PollData, m_thread));
+            m_pollTimerConn = m_pollTimer.OnExpired.Connect(dmq::MakeDelegate(this, &ServerApp::PollData, m_thread));
             m_pollTimer.Start(std::chrono::milliseconds(command.pollTime));
         }
         else if (command.action == CommandMsg::Action::STOP)
@@ -61,10 +61,10 @@ private:
 
         // Register for incoming client commands
         // Use Connect() and store handles
-        m_onCommandConn = NetworkMgr::Instance().OnCommand.Connect(MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread));
-        m_onActuatorConn = NetworkMgr::Instance().OnActuator.Connect(MakeDelegate(this, &ServerApp::ActuatorMsgRecv, m_thread));
-        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError.Connect(MakeDelegate(this, &ServerApp::ErrorHandler, m_thread));
-        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus.Connect(MakeDelegate(this, &ServerApp::SendStatusHandler, m_thread));
+        m_onCommandConn = NetworkMgr::Instance().OnCommand.Connect(dmq::MakeDelegate(this, &ServerApp::CommandMsgRecv, m_thread));
+        m_onActuatorConn = NetworkMgr::Instance().OnActuator.Connect(dmq::MakeDelegate(this, &ServerApp::ActuatorMsgRecv, m_thread));
+        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError.Connect(dmq::MakeDelegate(this, &ServerApp::ErrorHandler, m_thread));
+        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus.Connect(dmq::MakeDelegate(this, &ServerApp::SendStatusHandler, m_thread));
     }
 
     ~ServerApp()
@@ -105,15 +105,15 @@ private:
             std::cout << "ServerApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
+    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, dmq::util::TransportMonitor::Status status)
     {
-        if (status != TransportMonitor::Status::SUCCESS)
+        if (status != dmq::util::TransportMonitor::Status::SUCCESS)
             std::cout << "ServerApp Timeout: " << id << " " << seqNum << std::endl;
     }
 
-    Thread m_thread;
+    dmq::os::Thread m_thread;
 
-    Timer m_pollTimer;
+    dmq::util::Timer m_pollTimer;
 
     // RAII Connections
     dmq::ScopedConnection m_pollTimerConn;

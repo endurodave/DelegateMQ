@@ -46,8 +46,8 @@ private:
     dmq::ScopedConnection m_runStatusConn;
     std::unique_ptr<Timer> m_alarmGraceTimer;
     dmq::ScopedConnection m_alarmGraceConn;
-    std::unique_ptr<dmq::DeadlineSubscription<HeartbeatMsg>> m_safetyWatchdog;
-    std::unique_ptr<dmq::DeadlineSubscription<HeartbeatMsg>> m_controllerWatchdog;
+    std::unique_ptr<dmq::databus::DeadlineSubscription<HeartbeatMsg>> m_safetyWatchdog;
+    std::unique_ptr<dmq::databus::DeadlineSubscription<HeartbeatMsg>> m_controllerWatchdog;
 
     std::string m_currentMessage = "No Alarm";
     bool m_alarmActive = false;

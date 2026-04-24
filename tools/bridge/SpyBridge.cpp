@@ -27,7 +27,7 @@ void SpyBridge::Start(const std::string& address, uint16_t port) {
 
     instance.thread = std::thread(Worker);
 
-    instance.monitorConn = dmq::DataBus::Monitor([](const dmq::SpyPacket& packet) {
+    instance.monitorConn = dmq::databus::DataBus::Monitor([](const dmq::databus::SpyPacket& packet) {
         auto& inst = GetInstance();
         std::lock_guard<std::mutex> lock(inst.mutex);
         inst.queue.push(packet);
@@ -50,7 +50,7 @@ void SpyBridge::StartMulticast(const std::string& groupAddr, uint16_t port, cons
 
     instance.thread = std::thread(Worker);
 
-    instance.monitorConn = dmq::DataBus::Monitor([](const dmq::SpyPacket& packet) {
+    instance.monitorConn = dmq::databus::DataBus::Monitor([](const dmq::databus::SpyPacket& packet) {
         auto& inst = GetInstance();
         std::lock_guard<std::mutex> lock(inst.mutex);
         inst.queue.push(packet);
@@ -108,7 +108,7 @@ void SpyBridge::Worker() {
     serialize ms;
 
     while (instance.running || !instance.queue.empty()) {
-        dmq::SpyPacket packet;
+        dmq::databus::SpyPacket packet;
         {
             std::unique_lock<std::mutex> lock(instance.mutex);
             instance.cv.wait_for(lock, std::chrono::milliseconds(100), [&] {

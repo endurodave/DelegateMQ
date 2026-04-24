@@ -36,11 +36,11 @@ public:
         std::future<bool> futureRetVal = NetworkMgr::Instance().SendActuatorMsgFuture(msg);
 
         // Start local data collection
-        m_pollTimerConn = m_pollTimer.OnExpired.Connect(MakeDelegate(this, &ClientApp::PollData, m_thread));
+        m_pollTimerConn = m_pollTimer.OnExpired.Connect(dmq::MakeDelegate(this, &ClientApp::PollData, m_thread));
         m_pollTimer.Start(std::chrono::milliseconds(500));
 
         // Start actuator updates
-        m_actuatorTimerConn = m_actuatorTimer.OnExpired.Connect(MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
+        m_actuatorTimerConn = m_actuatorTimer.OnExpired.Connect(dmq::MakeDelegate(this, &ClientApp::ActuatorUpdate, m_thread));
         m_actuatorTimer.Start(std::chrono::milliseconds(1000), true);
 
         // Wait for the future to complete
@@ -73,8 +73,8 @@ private:
     {
         m_thread.CreateThread();
 
-        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError.Connect(MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
-        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus.Connect(MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
+        m_onNetworkErrorConn = NetworkMgr::Instance().OnNetworkError.Connect(dmq::MakeDelegate(this, &ClientApp::ErrorHandler, m_thread));
+        m_onSendStatusConn = NetworkMgr::Instance().OnSendStatus.Connect(dmq::MakeDelegate(this, &ClientApp::SendStatusHandler, m_thread));
     }
 
     ~ClientApp()
@@ -124,16 +124,16 @@ private:
             std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
+    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, dmq::util::TransportMonitor::Status status)
     {
-        if (status != TransportMonitor::Status::SUCCESS)
+        if (status != dmq::util::TransportMonitor::Status::SUCCESS)
             std::cout << "ClientApp Timeout: " << id << " " << seqNum << std::endl;
     }
 
-    Thread m_thread;
+    dmq::os::Thread m_thread;
 
-    Timer m_pollTimer;
-    Timer m_actuatorTimer;
+    dmq::util::Timer m_pollTimer;
+    dmq::util::Timer m_actuatorTimer;
 
     dmq::ScopedConnection m_pollTimerConn;
     dmq::ScopedConnection m_actuatorTimerConn;

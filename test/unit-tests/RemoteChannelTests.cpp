@@ -5,6 +5,7 @@
 #include <sstream>
 
 using namespace dmq;
+using namespace dmq::transport;
 using namespace std;
 using namespace UnitTestData;
 

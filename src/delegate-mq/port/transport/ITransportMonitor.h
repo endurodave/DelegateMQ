@@ -4,6 +4,8 @@
 //#include "DmqHeader.h"
 //#include <sstream>
 
+namespace dmq::transport {
+
 /// @TODO Implement the ITransportMonitor interface if necessary.
 /// @brief DelegateMQ transport monitor interface. 
 class ITransportMonitor
@@ -18,5 +20,8 @@ public:
     /// param[in] seqNum - the message sequence number
     virtual void Remove(uint16_t seqNum) = 0;
 };
+
+} // namespace dmq::transport
+
 
 #endif

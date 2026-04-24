@@ -1,10 +1,10 @@
 #ifndef DMQ_DATABUSQOS_H
 #define DMQ_DATABUSQOS_H
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateOpt.h"
 #include <optional>
 
-namespace dmq {
+namespace dmq::databus {
 
 // Quality of Service settings for a topic subscription.
 struct QoS {
@@ -22,6 +22,7 @@ struct QoS {
     std::optional<dmq::Duration> minSeparation;
 };
 
-} // namespace dmq
+} // namespace dmq::databus
+
 
 #endif // DMQ_DATABUSQOS_H

@@ -1,8 +1,8 @@
 # DelegateMQ Interop
 
-Cross-language client implementations for communicating with C++ DelegateMQ DataBus
-applications over UDP. These clients implement the DmqHeader wire protocol and
-MessagePack serialization — the same protocol spoken by the C++ DataBus library.
+Cross-language client implementations for communicating with C++ DelegateMQ `dmq::databus::DataBus`
+applications over UDP. These clients implement the `dmq::transport::DmqHeader` wire protocol and
+MessagePack serialization — the same protocol spoken by the C++ `dmq::databus::DataBus` library.
 
 ## Supported Languages
 
@@ -16,12 +16,12 @@ MessagePack serialization — the same protocol spoken by the C++ DataBus librar
 All implementations speak the same 8-byte header protocol defined in
 `src/delegate-mq/port/transport/DmqHeader.h`.
 
-### DmqHeader (8 bytes, Network Byte Order / Big Endian)
+### dmq::transport::DmqHeader (8 bytes, Network Byte Order / Big Endian)
 
 | Offset | Size | Field   | Description             |
 |--------|------|---------|-------------------------|
 | 0      | 2    | Marker  | Always `0xAA55`         |
-| 2      | 2    | ID      | DelegateRemoteId        |
+| 2      | 2    | ID      | `dmq::DelegateRemoteId` |
 | 4      | 2    | SeqNum  | Sequence number         |
 | 6      | 2    | Length  | Payload length in bytes |
 
@@ -32,7 +32,7 @@ The header is immediately followed by `Length` bytes of MessagePack-serialized p
 After receiving any non-ACK message, the receiver sends an ACK back to the sender:
 
 - Header only (8 bytes, no payload)
-- `ID = 0` (`ACK_REMOTE_ID` — reserved by DelegateMQ)
+- `ID = 0` (`dmq::ACK_REMOTE_ID` — reserved by DelegateMQ)
 - `SeqNum` echoes the received sequence number
 - `Length = 0`
 
@@ -68,7 +68,7 @@ set(DMQ_TRANSPORT "DMQ_TRANSPORT_LINUX_UDP")   # Linux
 
 ## Port Convention
 
-DataBus samples use two separate UDP ports — one for each direction of flow:
+`dmq::databus::DataBus` samples use two separate UDP ports — one for each direction of flow:
 
 | Port | Direction        | Description                         |
 |------|------------------|-------------------------------------|
@@ -76,11 +76,11 @@ DataBus samples use two separate UDP ports — one for each direction of flow:
 | 8001 | Client → C++     | Client sends CommandMsg + ACKs here |
 
 The client **binds** to port 8000 (receives) and **sends** to port 8001.
-These must match the `UdpTransport::Create()` port arguments on the C++ side.
+These must match the `dmq::transport::Win32UdpTransport::Create()` port arguments on the C++ side.
 
 ## Remote IDs
 
-Remote IDs (`DelegateRemoteId`) are application-defined and must match between
+Remote IDs (`dmq::DelegateRemoteId`) are application-defined and must match between
 the C++ server and the language client. They are typically declared in the C++
 project's `SystemIds.h`:
 

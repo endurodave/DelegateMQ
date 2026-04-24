@@ -13,6 +13,8 @@
 #include <memory>
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 using namespace std;
 
 // Global millisecond counter — increment in SysTick_Handler if timeouts are needed

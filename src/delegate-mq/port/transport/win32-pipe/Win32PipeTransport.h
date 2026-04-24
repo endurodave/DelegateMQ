@@ -22,6 +22,8 @@
 #include <cstdio>
 #include <iostream>
 
+namespace dmq::transport {
+
 /// @brief Win32 data pipe transport example. 
 class Win32PipeTransport : public ITransport
 {
@@ -100,7 +102,7 @@ public:
         m_recvTimeout = timeout;
     }
 
-    virtual int Send(xostringstream& os, const DmqHeader& header) override
+    virtual int Send(dmq::xostringstream& os, const DmqHeader& header) override
     {
         if (os.bad() || os.fail())
             return -1;
@@ -118,7 +120,7 @@ public:
         }
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
-        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
         // Use Network Byte Order (htons) for consistency
         uint16_t marker = htons(headerCopy.GetMarker());
@@ -145,7 +147,7 @@ public:
         return 0;
     }
 
-    virtual int Receive(xstringstream& is, DmqHeader& header) override
+    virtual int Receive(dmq::xstringstream& is, DmqHeader& header) override
     {
         if (m_hPipe == INVALID_HANDLE_VALUE) return -1;
 
@@ -171,7 +173,7 @@ public:
             return -1;
         }
 
-        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
         headerStream.seekg(0);
 
@@ -211,5 +213,7 @@ private:
     HANDLE m_hPipe = INVALID_HANDLE_VALUE;
     std::chrono::milliseconds m_recvTimeout = std::chrono::milliseconds(2000);
 };
+
+} // namespace dmq::transport
 
 #endif

@@ -1,6 +1,6 @@
 # DelegateMQ Tools
 
-Diagnostic tools and Terminal User Interface (TUI) dashboards for the DelegateMQ DataBus. Two complementary consoles plus the bridge components needed to integrate them into your application.
+Diagnostic tools and Terminal User Interface (TUI) dashboards for the DelegateMQ `dmq::databus::DataBus`. Two complementary consoles plus the bridge components needed to integrate them into your application.
 
 ## Tools Overview
 
@@ -13,13 +13,13 @@ Diagnostic tools and Terminal User Interface (TUI) dashboards for the DelegateMQ
 
 ## dmq-spy — DataBus Spy Console
 
-**DelegateMQ Spy** is a modern, standalone diagnostic TUI for the DelegateMQ DataBus. It captures, filters, and displays every message published to the bus in real-time across threads and network boundaries.
+**DelegateMQ Spy** is a modern, standalone diagnostic TUI for the DelegateMQ `dmq::databus::DataBus`. It captures, filters, and displays every message published to the bus in real-time across threads and network boundaries.
 
 <img src="dmq-spy-screenshot.png" alt="DelegateMQ Spy Screenshot" style="max-width: 800px; width: 100%;">
 
 ### Key Features
 
-*   **Real-Time Live Feed**: Instant visualization of every message published to the `dmq::DataBus` (Newest at Top).
+*   **Real-Time Live Feed**: Instant visualization of every message published to the `dmq::databus::DataBus` (Newest at Top).
 *   **Regex-Based Filtering**: Dynamically filter topics using regular expressions to isolate specific system events.
 *   **Unicast & Multicast Support**: Monitor point-to-point traffic or join a multicast group for one-to-many monitoring.
 *   **Auto-IP Detection**: Automatically identifies the correct physical network interface for multicast joining on Windows.
@@ -44,7 +44,7 @@ Add `tools/bridge/SpyBridge.cpp` and `tools/bridge/SpyBridge.h` to your build sy
 For every topic you want to see in the console, register a stringifier function:
 
 ```cpp
-dmq::DataBus::RegisterStringifier<MyData>("sensor/temp", [](const MyData& d) {
+dmq::databus::DataBus::RegisterStringifier<MyData>("sensor/temp", [](const MyData& d) {
     return std::to_string(d.value) + " C";
 });
 ```
@@ -106,7 +106,7 @@ int main() {
 ### How it Works
 
 1.  **The Node Monitor Console** (`monitor/monitor_main.cpp`): The standalone `dmq-monitor` application that displays the topology table.
-2.  **The Node Bridge** (`bridge/NodeBridge.cpp/.h`): A component you add to each application node. It subscribes to `DataBus::Monitor` to auto-discover topics and message counts, then broadcasts a `NodeInfoPacket` heartbeat over UDP every second.
+2.  **The Node Bridge** (`bridge/NodeBridge.cpp/.h`): A component you add to each application node. It subscribes to `dmq::databus::DataBus::Monitor` to auto-discover topics and message counts, then broadcasts a `dmq::NodeInfoPacket` heartbeat over UDP every second.
 
 ### Integrating NodeBridge into Your App
 
@@ -131,7 +131,7 @@ int main() {
 }
 ```
 
-Topic and message count tracking is automatic — NodeBridge subscribes to `DataBus::Monitor` internally and requires no per-topic registration.
+Topic and message count tracking is automatic — NodeBridge subscribes to `dmq::databus::DataBus::Monitor` internally and requires no per-topic registration.
 
 ### Usage
 

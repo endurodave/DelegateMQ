@@ -20,9 +20,9 @@ int main() {
     NodeBridge::Start("TargetApp", "127.0.0.1", 9998);
 
     // 3. Register stringifiers for topics we want to monitor
-    dmq::DataBus::RegisterStringifier<int>("sensor/temp", [](int v) { return std::to_string(v) + " C"; });
-    dmq::DataBus::RegisterStringifier<float>("sensor/humidity", [](float v) { return std::to_string(v) + " %"; });
-    dmq::DataBus::RegisterStringifier<std::string>("system/status", [](const std::string& v) { return v; });
+    dmq::databus::DataBus::RegisterStringifier<int>("sensor/temp", [](int v) { return std::to_string(v) + " C"; });
+    dmq::databus::DataBus::RegisterStringifier<float>("sensor/humidity", [](float v) { return std::to_string(v) + " %"; });
+    dmq::databus::DataBus::RegisterStringifier<std::string>("system/status", [](const std::string& v) { return v; });
 
     std::default_random_engine generator;
     std::uniform_int_distribution<int> temp_dist(20, 30);
@@ -31,9 +31,9 @@ int main() {
     std::cout << "Publishing data to 127.0.0.1:9999 (Press Ctrl+C to stop)..." << std::endl;
 
     while (true) {
-        dmq::DataBus::Publish("sensor/temp", temp_dist(generator));
-        dmq::DataBus::Publish("sensor/humidity", hum_dist(generator));
-        dmq::DataBus::Publish("system/status", std::string("Running OK"));
+        dmq::databus::DataBus::Publish("sensor/temp", temp_dist(generator));
+        dmq::databus::DataBus::Publish("sensor/humidity", hum_dist(generator));
+        dmq::databus::DataBus::Publish("system/status", std::string("Running OK"));
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }

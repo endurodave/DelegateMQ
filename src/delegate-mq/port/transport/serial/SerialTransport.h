@@ -38,6 +38,8 @@
 #include <cstring>
 #include <mutex>
 
+namespace dmq::transport {
+
 class SerialTransport : public ITransport
 {
 public:
@@ -83,17 +85,17 @@ public:
     // Helper: Swap Little Endian <-> Big Endian
     static uint16_t swap16(uint16_t v) { return (v << 8) | (v >> 8); }
 
-    virtual int Send(xostringstream& os, const DmqHeader& header) override
+    virtual int Send(dmq::xostringstream& os, const DmqHeader& header) override
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         if (!m_port) return -1;
 
         DmqHeader headerCopy = header;
-        xstring payload = os.str();
+        dmq::xstring payload = os.str();
         if (payload.length() > UINT16_MAX) return -1;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
-        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
         // SERIALIZE HEADER (Big Endian)
         uint16_t val;
@@ -114,11 +116,11 @@ public:
         ss.write(payload.data(), payload.size());
 
         // CRC
-        xstring packetWithoutCrc = ss.str();
-        uint16_t crc = Crc16CalcBlock((unsigned char*)packetWithoutCrc.c_str(), (int)packetWithoutCrc.length(), 0xFFFF);
+        dmq::xstring packetWithoutCrc = ss.str();
+        uint16_t crc = dmq::util::Crc16CalcBlock((unsigned char*)packetWithoutCrc.c_str(), (int)packetWithoutCrc.length(), 0xFFFF);
         ss.write(reinterpret_cast<const char*>(&crc), sizeof(crc));
 
-        xstring packetData = ss.str();
+        dmq::xstring packetData = ss.str();
 
         int result = sp_blocking_write(m_port, packetData.c_str(), packetData.length(), 1000);
         if (result != (int)packetData.length()) return -1;
@@ -130,7 +132,7 @@ public:
         return 0;
     }
 
-    virtual int Receive(xstringstream& is, DmqHeader& header) override
+    virtual int Receive(dmq::xstringstream& is, DmqHeader& header) override
     {
         if (!m_port) return -1;
         if (m_recvTransport != this) return -1;
@@ -183,8 +185,8 @@ public:
         // INCREASED TIMEOUT: 500ms
         if (!ReadExact(reinterpret_cast<char*>(&receivedCrc), sizeof(receivedCrc), 500)) return -1;
 
-        uint16_t calcCrc = Crc16CalcBlock((unsigned char*)headerBuf, DmqHeader::HEADER_SIZE, 0xFFFF);
-        if (len > 0) calcCrc = Crc16CalcBlock((unsigned char*)m_buffer, len, calcCrc);
+        uint16_t calcCrc = dmq::util::Crc16CalcBlock((unsigned char*)headerBuf, DmqHeader::HEADER_SIZE, 0xFFFF);
+        if (len > 0) calcCrc = dmq::util::Crc16CalcBlock((unsigned char*)m_buffer, len, calcCrc);
 
         if (receivedCrc != calcCrc) {
             std::cerr << "CRC Mismatch" << std::endl;
@@ -196,7 +198,7 @@ public:
             if (m_transportMonitor) m_transportMonitor->Remove(header.GetSeqNum());
         }
         else if (m_sendTransport) {
-            xostringstream ss_ack;
+            dmq::xostringstream ss_ack;
             DmqHeader ack;
             ack.SetId(dmq::ACK_REMOTE_ID);
             ack.SetSeqNum(header.GetSeqNum());
@@ -239,5 +241,7 @@ private:
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE] = { 0 };
 };
+
+} // namespace dmq::transport
 
 #endif

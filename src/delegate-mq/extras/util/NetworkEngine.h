@@ -9,6 +9,8 @@
 // Only define NetworkEngine if a compatible transport is selected
 #if defined(DMQ_TRANSPORT_ZEROMQ) || defined(DMQ_TRANSPORT_WIN32_UDP) || defined(DMQ_TRANSPORT_LINUX_UDP) || defined(DMQ_TRANSPORT_STM32_UART) || defined(DMQ_TRANSPORT_SERIAL_PORT)
 
+#include "delegate/DelegateAsync.h"
+#include "delegate/DelegateAsyncWait.h"
 #include "extras/util/RemoteEndpoint.h"
 #include "extras/util/TransportMonitor.h"
 #include "extras/dispatcher/RemoteChannel.h"
@@ -18,6 +20,20 @@
 #include <future>
 #include <iostream>
 #include <functional> 
+
+#if defined(DMQ_THREAD_STDLIB)
+    #include "port/os/stdlib/Thread.h"
+#elif defined(DMQ_THREAD_WIN32)
+    #include "port/os/win32/Thread.h"
+#elif defined(DMQ_THREAD_FREERTOS)
+    #include "port/os/freertos/Thread.h"
+#elif defined(DMQ_THREAD_THREADX)
+    #include "port/os/threadx/Thread.h"
+#elif defined(DMQ_THREAD_ZEPHYR)
+    #include "port/os/zephyr/Thread.h"
+#elif defined(DMQ_THREAD_CMSIS_RTOS2)
+    #include "port/os/cmsis-rtos2/Thread.h"
+#endif
 
 // SWITCH: Include the correct transport header based on CMake definitions
 #if defined(DMQ_TRANSPORT_ZEROMQ)
@@ -41,6 +57,8 @@
 #else
 #error "Select a NetworkEngine transport"
 #endif
+
+namespace dmq::util {
 
 /// @brief Base class for handling network transport, threading, and synchronization.
 /// 
@@ -262,7 +280,7 @@ protected:
     /// @brief Returns the send-side transport for use by RemoteChannel instances.
     /// @details Derived classes can pass this to RemoteChannel constructors so each
     /// channel owns its own Dispatcher while sharing the same physical transport.
-    ITransport& GetSendTransport() {
+    dmq::transport::ITransport& GetSendTransport() {
 #if defined(DMQ_TRANSPORT_ZEROMQ)
         return m_sendTransport;
 #else
@@ -270,7 +288,7 @@ protected:
 #endif
     }
 
-    Thread m_thread;
+    dmq::os::Thread m_thread;
     Dispatcher m_dispatcher;
     TransportMonitor m_transportMonitor;
 
@@ -279,12 +297,12 @@ protected:
 
 private:
     void RecvThread();
-    void Incoming(DmqHeader& header, std::shared_ptr<xstringstream> arg_data);
+    void Incoming(dmq::transport::DmqHeader& header, std::shared_ptr<dmq::xstringstream> arg_data);
     void Timeout();
     void InternalErrorHandler(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux);
     void InternalStatusHandler(dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status);
 
-    Thread m_recvThread;
+    dmq::os::Thread m_recvThread;
     std::atomic<bool> m_recvThreadExit{ false };
     bool m_recvThreadCreated = false;
     Timer m_timeoutTimer;
@@ -292,22 +310,22 @@ private:
 
     // SWITCH: Transport Members
 #if defined(DMQ_TRANSPORT_ZEROMQ)
-    ZeroMqTransport m_sendTransport;
-    ZeroMqTransport m_recvTransport;
+    dmq::transport::ZeroMqTransport m_sendTransport;
+    dmq::transport::ZeroMqTransport m_recvTransport;
 
     // ZeroMQ already has reliable communication
 
 #elif defined(DMQ_TRANSPORT_WIN32_UDP)
-    UdpTransport m_sendTransport;
-    UdpTransport m_recvTransport;
+    dmq::transport::Win32UdpTransport m_sendTransport;
+    dmq::transport::Win32UdpTransport m_recvTransport;
 
     // Reliability Layers
     RetryMonitor m_retryMonitor;
     ReliableTransport m_reliableTransport;
 
 #elif defined(DMQ_TRANSPORT_LINUX_UDP)
-    UdpTransport m_sendTransport;
-    UdpTransport m_recvTransport;
+    dmq::transport::LinuxUdpTransport m_sendTransport;
+    dmq::transport::LinuxUdpTransport m_recvTransport;
 
     // Reliability Layers
     RetryMonitor m_retryMonitor;
@@ -315,11 +333,11 @@ private:
 
 #elif defined(DMQ_TRANSPORT_STM32_UART)
     // Single Shared Transport Instance (Owns the buffers/state)
-    Stm32UartTransport m_transport;
+    dmq::transport::Stm32UartTransport m_transport;
 
     // References (Aliases used by generic code)
-    Stm32UartTransport& m_sendTransport;
-    Stm32UartTransport& m_recvTransport;
+    dmq::transport::Stm32UartTransport& m_sendTransport;
+    dmq::transport::Stm32UartTransport& m_recvTransport;
 
     // Reliability Layers
     RetryMonitor m_retryMonitor;
@@ -327,11 +345,11 @@ private:
 
 #elif defined(DMQ_TRANSPORT_SERIAL_PORT)
     // Single Shared Transport Instance
-    SerialTransport m_transport;
+    dmq::transport::SerialTransport m_transport;
 
     // References required by generic code
-    SerialTransport& m_sendTransport;
-    SerialTransport& m_recvTransport;
+    dmq::transport::SerialTransport& m_sendTransport;
+    dmq::transport::SerialTransport& m_recvTransport;
 
     // Reliability Layers
     RetryMonitor m_retryMonitor;
@@ -344,6 +362,9 @@ private:
     static const std::chrono::milliseconds SEND_TIMEOUT;
     static const std::chrono::milliseconds RECV_TIMEOUT;
 };
+
+} // namespace dmq::util
+
 
 #endif // Defined Transport Check
 #endif // NETWORK_ENGINE_H

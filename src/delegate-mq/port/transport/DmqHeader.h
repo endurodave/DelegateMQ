@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <atomic>
 
+namespace dmq::transport {
+
 /// @brief Header for remote delegate messages. 
 /// @details This class is a Plain Old Data (POD) container. 
 /// It stores values in Host Byte Order. The Transport layer is responsible 
@@ -54,5 +56,8 @@ private:
     uint16_t m_seqNum = 0;               // Sequence number
     uint16_t m_length = 0;               // Payload length
 };
+
+} // namespace dmq::transport
+
 
 #endif

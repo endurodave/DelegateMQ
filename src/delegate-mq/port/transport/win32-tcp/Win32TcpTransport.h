@@ -38,7 +38,9 @@
 #include <iostream>
 #include <vector>
 
-class TcpTransport : public ITransport
+namespace dmq::transport {
+
+class Win32TcpTransport : public ITransport
 {
 public:
     enum class Type
@@ -47,11 +49,11 @@ public:
         CLIENT
     };
 
-    TcpTransport() : m_sendTransport(this), m_recvTransport(this)
+    Win32TcpTransport() : m_sendTransport(this), m_recvTransport(this)
     {
     }
 
-    ~TcpTransport()
+    ~Win32TcpTransport()
     {
         Close();
     }
@@ -127,7 +129,7 @@ public:
         }
     }
 
-    virtual int Send(xostringstream& os, const DmqHeader& header) override
+    virtual int Send(dmq::xostringstream& os, const DmqHeader& header) override
     {
         if (m_clientSocket == INVALID_SOCKET) return -1;
 
@@ -136,7 +138,7 @@ public:
         if (payload.length() > UINT16_MAX) return -1;
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
-        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
         // Convert to Network Byte Order (Big Endian)
         uint16_t marker = htons(headerCopy.GetMarker());
@@ -170,7 +172,7 @@ public:
         return 0;
     }
 
-    virtual int Receive(xstringstream& is, DmqHeader& header) override
+    virtual int Receive(dmq::xstringstream& is, DmqHeader& header) override
     {
         // Lazy Accept Logic (Server)
         if (m_type == Type::SERVER && m_clientSocket == INVALID_SOCKET)
@@ -207,7 +209,7 @@ public:
         char headerBuf[DmqHeader::HEADER_SIZE];
         if (!ReadExact(headerBuf, DmqHeader::HEADER_SIZE)) return -1;
 
-        xstringstream hs(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xstringstream hs(std::ios::in | std::ios::out | std::ios::binary);
         hs.write(headerBuf, DmqHeader::HEADER_SIZE);
         hs.seekg(0);
 
@@ -235,7 +237,7 @@ public:
             if (m_transportMonitor) m_transportMonitor->Remove(header.GetSeqNum());
         }
         else if (m_transportMonitor && m_sendTransport) {
-            xostringstream ss_ack;
+            dmq::xostringstream ss_ack;
             DmqHeader ack;
             ack.SetId(dmq::ACK_REMOTE_ID);
             ack.SetSeqNum(header.GetSeqNum());
@@ -280,5 +282,7 @@ private:
     ITransport* m_recvTransport = nullptr;
     ITransportMonitor* m_transportMonitor = nullptr;
 };
+
+} // namespace dmq::transport
 
 #endif

@@ -14,7 +14,7 @@
 ///
 /// **Key Features:**
 /// * **Automatic Context Switching:** Automatically detects if the caller is already 
-///   executing on the target thread. 
+///   execute on the target thread. 
 ///   - If **Yes**: It executes the function synchronously (immediately) to avoid overhead.
 ///   - If **No**: It creates a temporary asynchronous delegate, marshals the arguments, 
 ///     and executes the function on the target thread.
@@ -23,12 +23,18 @@
 /// * **Return Value Handling:** Safely retrieves the return value from the target 
 ///   function across thread boundaries.
 
-#include "DelegateMQ.h"
+#include "delegate/DelegateRemote.h"
+#include "delegate/DelegateAsync.h"
+#include "delegate/IThread.h"
+#include "delegate/DelegateOpt.h"
+#include "extras/dispatcher/RemoteChannel.h"
 #include <functional>
 #include <type_traits>
 #include <utility>
 #include <any>
 #include <memory> 
+
+namespace dmq::util {
 
 /// Helper function to simplify asynchronous invoke of a free function/lambda.
 /// @param[in] func - the function/lambda to invoke
@@ -36,7 +42,7 @@
 /// @param[in] timeout - the time to wait for invoke to complete
 /// @param[in] args - the function argument(s) passed to func
 template <class Func, class... Args>
-auto AsyncInvoke(Func func, Thread& thread, const dmq::Duration& timeout, Args&&... args)
+auto AsyncInvoke(Func func, dmq::IThread& thread, const dmq::Duration& timeout, Args&&... args)
 {
     // Deduce return type
     using RetType = decltype(func(std::forward<Args>(args)...));
@@ -79,7 +85,7 @@ auto AsyncInvoke(Func func, Thread& thread, const dmq::Duration& timeout, Args&&
 /// @param[in] timeout - the time to wait for invoke to complete
 /// @param[in] args - the function argument(s) passed to func
 template <class TClass, class Func, class... Args>
-auto AsyncInvoke(TClass* tclass, Func func, Thread& thread, const dmq::Duration& timeout, Args&&... args)
+auto AsyncInvoke(TClass* tclass, Func func, dmq::IThread& thread, const dmq::Duration& timeout, Args&&... args)
 {
     // Deduce return type using std::invoke (robust for member pointers)
     using RetType = decltype(std::invoke(func, tclass, std::forward<Args>(args)...));
@@ -114,7 +120,7 @@ auto AsyncInvoke(TClass* tclass, Func func, Thread& thread, const dmq::Duration&
 /// @param[in] timeout - the time to wait for invoke to complete
 /// @param[in] args - the function argument(s) passed to func
 template <class TClass, class Func, class... Args>
-auto AsyncInvoke(std::shared_ptr<TClass> tclass, Func func, Thread& thread, const dmq::Duration& timeout, Args&&... args)
+auto AsyncInvoke(std::shared_ptr<TClass> tclass, Func func, dmq::IThread& thread, const dmq::Duration& timeout, Args&&... args)
 {
     // Deduce return type using std::invoke (robust for member pointers)
     using RetType = decltype(std::invoke(func, tclass, std::forward<Args>(args)...));
@@ -141,5 +147,7 @@ auto AsyncInvoke(std::shared_ptr<TClass> tclass, Func func, Thread& thread, cons
         return std::invoke(func, tclass, std::forward<Args>(args)...);
     }
 }
+
+} // namespace dmq::util
 
 #endif

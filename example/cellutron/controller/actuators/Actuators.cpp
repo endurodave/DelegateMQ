@@ -7,6 +7,8 @@
 #include "task.h"
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
 
 namespace cellutron {
 namespace actuators {

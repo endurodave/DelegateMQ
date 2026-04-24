@@ -13,7 +13,7 @@
 #define ASSERT_TRUE(x) if(!(x)) { while(1); }
 #endif
 
-using namespace dmq;
+namespace dmq::os {
 
 //----------------------------------------------------------------------------
 // Thread Constructor
@@ -63,24 +63,24 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
         attr.name = THREAD_NAME.c_str();
         attr.stack_size = STACK_SIZE;
         attr.priority = m_priority;
-        
+
         m_thread = osThreadNew(Thread::Process, this, &attr);
         ASSERT_TRUE(m_thread != NULL);
 
-        m_lastAliveTime.store(Timer::GetNow());
+        m_lastAliveTime.store(dmq::util::Timer::GetNow());
 
         if (watchdogTimeout.has_value())
         {
             m_watchdogTimeout = watchdogTimeout.value();
 
-            m_threadTimer = std::unique_ptr<Timer>(new Timer());
+            m_threadTimer = std::unique_ptr<dmq::util::Timer>(new dmq::util::Timer());
             m_threadTimerConn = m_threadTimer->OnExpired.Connect(
-                MakeDelegate(this, &Thread::ThreadCheck, *this));
+                dmq::MakeDelegate(this, &Thread::ThreadCheck, *this));
             m_threadTimer->Start(m_watchdogTimeout.load() / 4);
 
-            m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
+            m_watchdogTimer = std::unique_ptr<dmq::util::Timer>(new dmq::util::Timer());
             m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(
-                MakeDelegate(this, &Thread::WatchdogCheck));
+                dmq::MakeDelegate(this, &Thread::WatchdogCheck));
             m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
         }
     }
@@ -212,7 +212,7 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     uint32_t timeout = (FULL_POLICY == FullPolicy::BLOCK) ? osWaitForever : 0;
 
     // Option #2: Implement High priority using msg_prio.
-    uint8_t msg_prio = (msg->GetPriority() == Priority::HIGH) ? 1 : 0;
+    uint8_t msg_prio = (msg->GetPriority() == dmq::Priority::HIGH) ? 1 : 0;
 
     osStatus_t ret = osMessageQueuePut(m_msgq, &threadMsg, msg_prio, timeout);
     if (ret != osOK)
@@ -237,7 +237,7 @@ void Thread::Process(void* argument)
     {
         thread->Run();
     }
-    
+
     // Thread terminates automatically when function returns.
     osThreadExit();
 }
@@ -250,7 +250,7 @@ void Thread::Process(void* argument)
 //----------------------------------------------------------------------------
 void Thread::WatchdogCheck()
 {
-    auto now = Timer::GetNow();
+    auto now = dmq::util::Timer::GetNow();
     auto lastAlive = m_lastAliveTime.load();
     auto delta = now - lastAlive;
     if (delta > m_watchdogTimeout.load())
@@ -264,7 +264,7 @@ void Thread::WatchdogCheck()
 //----------------------------------------------------------------------------
 void Thread::ThreadCheck()
 {
-    m_lastAliveTime.store(Timer::GetNow());
+    m_lastAliveTime.store(dmq::util::Timer::GetNow());
 }
 
 void Thread::Run()
@@ -273,7 +273,7 @@ void Thread::Run()
 
     while (!m_exit.load())
     {
-        m_lastAliveTime.store(Timer::GetNow());
+        m_lastAliveTime.store(dmq::util::Timer::GetNow());
 
         // Block forever waiting for a message
         // msg is a pointer to ThreadMsg*. The queue holds the pointer.
@@ -292,7 +292,7 @@ void Thread::Run()
                     }
                 }
             }
-            
+
             delete msg;
 
             if (msgId == MSG_EXIT_THREAD) {
@@ -306,3 +306,5 @@ void Thread::Run()
         osSemaphoreRelease(m_exitSem);
     }
 }
+
+} // namespace dmq::os

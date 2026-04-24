@@ -25,14 +25,14 @@ static void SignalHandler(int) { g_running = false; }
 
 // Holds all network and DataBus infrastructure for the server.
 struct ServerState {
-    MulticastTransport transport;
-    std::shared_ptr<dmq::Participant> group;
-    Serializer<void(DataMsg)> serializer;
+    dmq::transport::MulticastTransport transport;
+    std::shared_ptr<dmq::databus::Participant> group;
+    dmq::serialization::serializer::Serializer<void(DataMsg)> serializer;
 };
 
 // Create the multicast PUB transport.
 static bool SetupTransport(ServerState& s, const std::string& localIP) {
-    if (s.transport.Create(MulticastTransport::Type::PUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
+    if (s.transport.Create(dmq::transport::MulticastTransport::Type::PUB, "239.1.1.1", 8000, localIP.c_str()) != 0) {
         std::cerr << "Failed to create Multicast transport" << std::endl;
         return false;
     }
@@ -41,10 +41,10 @@ static bool SetupTransport(ServerState& s, const std::string& localIP) {
 
 // Register participant and serializer with the DataBus.
 static void SetupDataBus(ServerState& s) {
-    s.group = std::make_shared<dmq::Participant>(s.transport);
+    s.group = std::make_shared<dmq::databus::Participant>(s.transport);
     s.group->AddRemoteTopic(SystemTopic::DataMsg, SystemTopic::DataMsgId);
-    dmq::DataBus::AddParticipant(s.group);
-    dmq::DataBus::RegisterSerializer<DataMsg>(SystemTopic::DataMsg, s.serializer);
+    dmq::databus::DataBus::AddParticipant(s.group);
+    dmq::databus::DataBus::RegisterSerializer<DataMsg>(SystemTopic::DataMsg, s.serializer);
 }
 
 int main(int argc, char* argv[]) {
@@ -56,13 +56,15 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Starting DataBus Multicast SERVER (Publisher)..." << std::endl;
 
-    NetworkContext winsock;
-    std::string localIP = NetworkContext::GetLocalAddress();
+#ifdef _WIN32
+    dmq::util::NetworkContext winsock;
+#endif
+    std::string localIP = dmq::util::NetworkContext::GetLocalAddress();
     std::cout << "Local Interface: " << localIP << std::endl;
 
 #ifdef DMQ_DATABUS_TOOLS
     SpyBridge::StartMulticast("239.1.1.1", 9999, localIP);
-    dmq::DataBus::RegisterStringifier<DataMsg>(SystemTopic::DataMsg, [](const DataMsg& msg) {
+    dmq::databus::DataBus::RegisterStringifier<DataMsg>(SystemTopic::DataMsg, [](const DataMsg& msg) {
         std::ostringstream ss;
         ss << "Multicast Data: " << msg.actuators.size() << " actuators, " << msg.sensors.size() << " sensors";
         return ss.str();
@@ -93,7 +95,7 @@ int main(int argc, char* argv[]) {
         msg.sensors.push_back(sen);
 
         std::cout << "Multicast Publishing DataMsg, iteration: " << iteration << std::endl;
-        dmq::DataBus::Publish<DataMsg>(SystemTopic::DataMsg, msg);
+        dmq::databus::DataBus::Publish<DataMsg>(SystemTopic::DataMsg, msg);
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
         iteration++;

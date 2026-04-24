@@ -43,6 +43,8 @@
 #include <mutex>
 #include <iostream> // For std::cout/cerr
 
+namespace dmq::transport {
+
 /// @brief ZeroMQ transport class.
 /// @details Logic now executes directly on the caller's thread, protected by a mutex
 /// to prevent concurrent access to the underlying ZeroMQ socket.
@@ -178,7 +180,7 @@ public:
         }
     }
 
-    virtual int Send(xostringstream& os, const DmqHeader& header) override
+    virtual int Send(dmq::xostringstream& os, const DmqHeader& header) override
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
@@ -212,7 +214,7 @@ public:
         }
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
-        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write header values from the COPY
         auto marker = htons(headerCopy.GetMarker());
@@ -249,7 +251,7 @@ public:
         return 0;
     }
 
-    virtual int Receive(xstringstream& is, DmqHeader& header) override
+    virtual int Receive(dmq::xstringstream& is, DmqHeader& header) override
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
@@ -282,7 +284,7 @@ public:
             return -1;
         }
 
-        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write the received header data into the stringstream
         headerStream.write(m_buffer, DmqHeader::HEADER_SIZE);
@@ -326,7 +328,7 @@ public:
             if (m_transportMonitor && m_sendTransport)
             {
                 // Send header with received seqNum as the ack message
-                xostringstream ss_ack;
+                dmq::xostringstream ss_ack;
                 DmqHeader ack;
                 ack.SetId(dmq::ACK_REMOTE_ID);
                 ack.SetSeqNum(header.GetSeqNum());
@@ -372,5 +374,7 @@ private:
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE] = {};
 };
+
+} // namespace dmq::transport
 
 #endif

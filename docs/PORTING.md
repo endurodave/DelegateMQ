@@ -10,11 +10,11 @@ Numerous predefined platforms are already supported — Windows, Linux, FreeRTOS
 - [Porting Checklist](#porting-checklist)
 - [Embedded Systems](#embedded-systems)
 - [Interfaces](#interfaces)
-  - [`IThread`](#ithread)
-    - [Send `DelegateMsg`](#send-delegatemsg)
-    - [Receive `DelegateMsg`](#receive-delegatemsg)
-  - [`ISerializer`](#iserializer)
-  - [`IDispatcher`](#idispatcher)
+  - [`dmq::IThread`](#ithread)
+    - [Send `dmq::DelegateMsg`](#send-delegatemsg)
+    - [Receive `dmq::DelegateMsg`](#receive-delegatemsg)
+  - [`dmq::ISerializer`](#iserializer)
+  - [`dmq::IDispatcher`](#idispatcher)
 - [Thread Implementations](#thread-implementations)
   - [Thread Priority and Latency](#thread-priority-and-latency)
   - [Message Queueing](#message-queueing)
@@ -25,12 +25,12 @@ Numerous predefined platforms are already supported — Windows, Linux, FreeRTOS
 ## Porting Checklist
 
 1. **Search codebase for `@TODO`** — find specific decision locations tagged in the source files.
-2. **Implement `IThread`** — required to use **Asynchronous** delegates.
-3. **Implement `ISerializer` and `ITransport`** — required to use **Remote** delegates across processes/processors.
-   - *Optional:* Implement `ITransportMonitor` if your application layer requires command acknowledgments (ACKs).
+2. **Implement `dmq::IThread`** — required to use **Asynchronous** delegates.
+3. **Implement `dmq::ISerializer` and `dmq::transport::ITransport`** — required to use **Remote** delegates across processes/processors.
+   - *Optional:* Implement `dmq::transport::ITransportMonitor` if your application layer requires command acknowledgments (ACKs).
    - See [Sample Projects](DETAILS.md#sample-projects) for numerous remote delegate examples.
 4. **Check System Clock** — ensure `std::chrono::steady_clock` is supported on your target hardware, as it is required for timers and transport timeouts. Otherwise, change `dmq::Clock` in `DelegateOpt.h` to a new clock type.
-5. **Call `Timer::ProcessTimers()`** — periodically call `ProcessTimers()` (e.g., from a main loop or hardware timer ISR) to support timers and thread watchdogs.
+5. **Call `dmq::util::Timer::ProcessTimers()`** — periodically call `ProcessTimers()` (e.g., from a main loop or hardware timer ISR) to support timers and thread watchdogs.
 6. **Configure Build Options** — set CMake DMQ library build options within `CMakeLists.txt`.
    - Example: `DMQ_ASSERTS` for debug assertions.
    - Example: `DMQ_ALLOCATOR` to switch between standard heap (`new`/`delete`) and the deterministic Fixed Block Allocator.
@@ -60,9 +60,9 @@ See the `stm32-freertos` example `README.md` for a complete implementation of st
 
 DelegateMQ interface classes allow customizing the library's runtime behavior.
 
-### `IThread`
+### `dmq::IThread`
 
-The `IThread` interface sends a delegate and its argument data through a message queue. A delegate thread is required to dispatch asynchronous delegates to a specified target thread. The delegate library automatically constructs a `DelegateMsg` containing everything necessary for the destination thread.
+The `dmq::IThread` interface sends a delegate and its argument data through a message queue. A delegate thread is required to dispatch asynchronous delegates to a specified target thread. The delegate library automatically constructs a `dmq::DelegateMsg` containing everything necessary for the destination thread.
 
 ```cpp
 class IThread
@@ -81,7 +81,7 @@ public:
 };
 ```
 
-#### Send `DelegateMsg`
+#### Send `dmq::DelegateMsg`
 
 An asynchronous delegate's `operator()(Args... args)` calls `DispatchDelegate()` to send a delegate message to the destination thread.
 
@@ -94,9 +94,9 @@ if (thread) {
 }
 ```
 
-`DispatchDelegate()` inserts a message into the thread's message queue. The `Thread` class uses an underlying `std::thread` on stdlib/Win32 platforms and a FreeRTOS task on embedded. Create a unique `DispatchDelegate()` implementation based on your platform's OS API.
+`DispatchDelegate()` inserts a message into the thread's message queue. The `dmq::Thread` class uses an underlying `std::thread` on stdlib/Win32 platforms and a FreeRTOS task on embedded. Create a unique `DispatchDelegate()` implementation based on your platform's OS API.
 
-The implementation should handle the queue-full case according to `FullPolicy` before allocating the message. On platforms with a lockable queue (stdlib, Win32), check first then allocate to avoid wasting heap on drops. On RTOS platforms (FreeRTOS, Zephyr, etc.) the OS queue API is atomic, so allocate first and delete on failure:
+The implementation should handle the queue-full case according to `dmq::FullPolicy` before allocating the message. On platforms with a lockable queue (stdlib, Win32), check first then allocate to avoid wasting heap on drops. On RTOS platforms (FreeRTOS, Zephyr, etc.) the OS queue API is atomic, so allocate first and delete on failure:
 
 ```cpp
 // stdlib / Win32 style — check under lock before allocating
@@ -106,7 +106,7 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 
     if (MAX_QUEUE_SIZE > 0 && m_queue.size() >= MAX_QUEUE_SIZE)
     {
-        if (FULL_POLICY == FullPolicy::DROP)
+        if (FULL_POLICY == dmq::FullPolicy::DROP)
             return;  // discard — no allocation wasted
 
         // BLOCK: wait until consumer drains a slot
@@ -126,15 +126,15 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     ThreadMsg* threadMsg = new (std::nothrow) ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
     if (!threadMsg) return;
 
-    TickType_t timeout = (FULL_POLICY == FullPolicy::DROP) ? 0 : portMAX_DELAY;
+    TickType_t timeout = (FULL_POLICY == dmq::FullPolicy::DROP) ? 0 : portMAX_DELAY;
     if (xQueueSend(m_queue, &threadMsg, timeout) != pdPASS)
         delete threadMsg;  // queue full, dropped per policy
 }
 ```
 
-#### Receive `DelegateMsg`
+#### Receive `dmq::DelegateMsg`
 
-Inherit from `IDelegateInvoker` and implement the `Invoke()` function. The destination thread calls `Invoke()` once the message is dequeued.
+Inherit from `dmq::IDelegateInvoker` and implement the `Invoke()` function. The destination thread calls `Invoke()` once the message is dequeued.
 
 ```cpp
 /// @brief Abstract base class to support asynchronous delegate function invoke
@@ -153,7 +153,7 @@ public:
 };
 ```
 
-The `Thread::Process()` loop below shows the dispatch pattern. `Invoke()` is called for each incoming `MSG_DISPATCH_DELEGATE` queue message.
+The `dmq::Thread::Process()` loop below shows the dispatch pattern. `Invoke()` is called for each incoming `MSG_DISPATCH_DELEGATE` queue message.
 
 ```cpp
 void Thread::Process()
@@ -192,7 +192,7 @@ void Thread::Process()
             }
 
             case MSG_TIMER:
-                Timer::ProcessTimers();
+                dmq::util::Timer::ProcessTimers();
                 break;
 
             case MSG_EXIT_THREAD:
@@ -211,9 +211,9 @@ void Thread::Process()
 
 ---
 
-### `ISerializer`
+### `dmq::ISerializer`
 
-The `ISerializer` interface serializes argument data for sending to a remote destination endpoint. Each argument is serialized and deserialized according to system requirements. Custom serialization libraries such as [MessagePack](https://msgpack.org/index.html) are supported. The `examples/sample-projects` folder contains working examples.
+The `dmq::ISerializer` interface serializes argument data for sending to a remote destination endpoint. Each argument is serialized and deserialized according to system requirements. Custom serialization libraries such as [MessagePack](https://msgpack.org/index.html) are supported. The `examples/sample-projects` folder contains working examples.
 
 ```cpp
 template <class R>
@@ -246,9 +246,9 @@ public:
 
 ---
 
-### `IDispatcher`
+### `dmq::IDispatcher`
 
-The `IDispatcher` interface dispatches serialized argument data to a remote destination endpoint. Custom dispatchers using sockets, named pipes, ZeroMQ, or any other transport are supported. The `examples/sample-projects` folder contains working examples.
+The `dmq::IDispatcher` interface dispatches serialized argument data to a remote destination endpoint. Custom dispatchers using sockets, named pipes, ZeroMQ, or any other transport are supported. The `examples/sample-projects` folder contains working examples.
 
 ```cpp
 /// @brief Delegate interface class to dispatch serialized function argument data
@@ -275,7 +275,7 @@ public:
 
 ## Thread Implementations
 
-While DelegateMQ provides the `IThread` interface, the library includes concrete `Thread` class implementations for many OSs (stdlib, Win32, FreeRTOS, etc.). These implementations provide a standard event loop and several advanced features for robustness and flow control.
+While DelegateMQ provides the `dmq::IThread` interface, the library includes concrete `dmq::Thread` class implementations for many OSs (stdlib, Win32, FreeRTOS, etc.). These implementations provide a standard event loop and several advanced features for robustness and flow control.
 
 ### Thread Priority and Latency
 
@@ -289,39 +289,39 @@ The end-to-end dispatch latency is primarily dominated by the destination thread
 
 ### Message Queueing
 
-The `Thread` class uses an underlying `std::priority_queue` to ensure high-priority delegate messages jump to the front of the line.
+The `dmq::Thread` class uses an underlying `std::priority_queue` to ensure high-priority delegate messages jump to the front of the line.
 
-#### FullPolicy (Back Pressure / Drop)
+#### dmq::FullPolicy (Back Pressure / Drop)
 
-When a thread's message queue has a fixed size (`maxQueueSize > 0`), `FullPolicy` controls what `DispatchDelegate()` does when the queue is full. The default is `FullPolicy::BLOCK`.
+When a thread's message queue has a fixed size (`maxQueueSize > 0`), `dmq::FullPolicy` controls what `DispatchDelegate()` does when the queue is full. The default is `dmq::FullPolicy::BLOCK`.
 
 ```cpp
 // Never drop — block the publisher until the consumer has room
-Thread cmdThread("CmdThread", /*maxQueueSize=*/50, FullPolicy::BLOCK);
+dmq::Thread cmdThread("CmdThread", /*maxQueueSize=*/50, dmq::FullPolicy::BLOCK);
 
 // Drop stale samples rather than stall the publisher
-Thread sensorThread("SensorThread", /*maxQueueSize=*/10, FullPolicy::DROP);
+dmq::Thread sensorThread("SensorThread", /*maxQueueSize=*/10, dmq::FullPolicy::DROP);
 ```
 
-- **`FullPolicy::BLOCK`** *(default)*: `DispatchDelegate()` blocks the caller until the consumer drains a slot. This provides automatic back pressure, slowing the producer to match the consumer's rate. Use for critical topics (commands, state transitions) where no message may be lost.
-- **`FullPolicy::DROP`**: `DispatchDelegate()` silently discards the message and returns immediately without stalling the caller. Ideal for high-rate best-effort data (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher.
+- **`dmq::FullPolicy::BLOCK`** *(default)*: `DispatchDelegate()` blocks the caller until the consumer drains a slot. This provides automatic back pressure, slowing the producer to match the consumer's rate. Use for critical topics (commands, state transitions) where no message may be lost.
+- **`dmq::FullPolicy::DROP`**: `DispatchDelegate()` silently discards the message and returns immediately without stalling the caller. Ideal for high-rate best-effort data (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher.
 
-Setting `maxQueueSize = 0` disables the limit entirely — `FullPolicy` has no effect and all messages are queued regardless of consumer speed.
+Setting `maxQueueSize = 0` disables the limit entirely — `dmq::FullPolicy` has no effect and all messages are queued regardless of consumer speed.
 
-`FullPolicy` is a thread-level setting. All delegates dispatched to the same `Thread` instance share the policy. If a single thread serves both drop-tolerant and loss-intolerant subscribers, split them across separate threads with different policies.
+`dmq::FullPolicy` is a thread-level setting. All delegates dispatched to the same `dmq::Thread` instance share the policy. If a single thread serves both drop-tolerant and loss-intolerant subscribers, split them across separate threads with different policies.
 
 ### Watchdog Integration
 
-All `Thread` port implementations (stdlib, Win32, FreeRTOS, CMSIS-RTOS2, ThreadX, Zephyr, Qt) support an optional watchdog. Enable it by passing a timeout to `CreateThread()`:
+All `dmq::Thread` port implementations (stdlib, Win32, FreeRTOS, CMSIS-RTOS2, ThreadX, Zephyr, Qt) support an optional watchdog. Enable it by passing a timeout to `CreateThread()`:
 
 ```cpp
 thread.CreateThread(std::chrono::seconds(2));  // fault if thread stalls > 2s
 ```
 
-The mechanism uses two `Timer` objects — no additional OS threads are created:
+The mechanism uses two `dmq::util::Timer` objects — no additional OS threads are created:
 
-- **`m_threadTimer`** (fires every `timeout/4`): dispatches `ThreadCheck()` to the worker thread via `MakeDelegate`. When the worker processes it, `m_lastAliveTime` is updated. This also wakes an idle sleeping thread so it does not false-alarm.
-- **`m_watchdogTimer`** (fires every `timeout/2`): calls `WatchdogCheck()` synchronously on the `Timer::ProcessTimers()` caller. If `now − m_lastAliveTime > timeout`, a fault is triggered.
+- **`m_threadTimer`** (fires every `timeout/4`): dispatches `ThreadCheck()` to the worker thread via `dmq::MakeDelegate`. When the worker processes it, `m_lastAliveTime` is updated. This also wakes an idle sleeping thread so it does not false-alarm.
+- **`m_watchdogTimer`** (fires every `timeout/2`): calls `WatchdogCheck()` synchronously on the `dmq::util::Timer::ProcessTimers()` caller. If `now − m_lastAliveTime > timeout`, a fault is triggered.
 
 ```
 ProcessTimers() caller (ISR or high-priority task)
@@ -337,7 +337,7 @@ ProcessTimers() caller (ISR or high-priority task)
 
 #### Priority Requirement — Critical on Single-Core RTOS
 
-The watchdog **only catches CPU-spinning runaway threads** if `Timer::ProcessTimers()` runs at a **higher priority** than the threads it watches. On a single-core RTOS (FreeRTOS, ThreadX, Zephyr, CMSIS-RTOS2), a runaway high-priority task starves all lower-priority tasks including the one calling `ProcessTimers()` — the watchdog timers never fire and the fault is never detected.
+The watchdog **only catches CPU-spinning runaway threads** if `dmq::util::Timer::ProcessTimers()` runs at a **higher priority** than the threads it watches. On a single-core RTOS (FreeRTOS, ThreadX, Zephyr, CMSIS-RTOS2), a runaway high-priority task starves all lower-priority tasks including the one calling `ProcessTimers()` — the watchdog timers never fire and the fault is never detected.
 
 | Failure mode | ProcessTimers() priority requirement |
 |:---|:---|
@@ -347,18 +347,18 @@ The watchdog **only catches CPU-spinning runaway threads** if `Timer::ProcessTim
 
 Two acceptable approaches for embedded targets:
 
-**Option 1 — Hardware timer ISR (recommended):** Call `Timer::ProcessTimers()` from a SysTick or similar periodic ISR. ISRs preempt all tasks regardless of priority, so the watchdog fires even if the highest-priority task runs away.
+**Option 1 — Hardware timer ISR (recommended):** Call `dmq::util::Timer::ProcessTimers()` from a SysTick or similar periodic ISR. ISRs preempt all tasks regardless of priority, so the watchdog fires even if the highest-priority task runs away.
 
 ```cpp
 // FreeRTOS / CMSIS-RTOS2 example: SysTick ISR
 extern "C" void SysTick_Handler(void)
 {
-    Timer::ProcessTimers();  // preempts all tasks — watchdog always fires
+    dmq::util::Timer::ProcessTimers();  // preempts all tasks — watchdog always fires
     // ... other SysTick work
 }
 ```
 
-**Option 2 — Highest-priority task:** Dedicate the system's highest-priority task to calling `Timer::ProcessTimers()` in a tight loop. This task must be strictly higher priority than any thread it is watching — a runaway task at equal or lower priority will starve it and defeat the watchdog.
+**Option 2 — Highest-priority task:** Dedicate the system's highest-priority task to calling `dmq::util::Timer::ProcessTimers()` in a tight loop. This task must be strictly higher priority than any thread it is watching — a runaway task at equal or lower priority will starve it and defeat the watchdog.
 
 ```cpp
 // FreeRTOS example: dedicated watchdog task at highest priority
@@ -366,7 +366,7 @@ void WatchdogTask(void*)
 {
     while (true)
     {
-        Timer::ProcessTimers();
+        dmq::util::Timer::ProcessTimers();
         vTaskDelay(pdMS_TO_TICKS(10));  // 10ms tick rate
     }
 }

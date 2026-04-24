@@ -28,6 +28,8 @@
 #include "port/transport/ITransport.h"
 #include <sstream>
 
+namespace dmq {
+
 /// @brief Dispatcher sends data to the transport for transmission to the endpoint.
 class Dispatcher : public dmq::IDispatcher
 {
@@ -35,7 +37,7 @@ public:
     Dispatcher() = default;
     ~Dispatcher() = default;
 
-    void SetTransport(ITransport* transport)
+    void SetTransport(transport::ITransport* transport)
     {
         m_transport = transport;
     }
@@ -43,11 +45,11 @@ public:
     // Send argument data to the transport
     int Dispatch(std::ostream& os, dmq::DelegateRemoteId id) override
     {
-        xostringstream* ss = static_cast<xostringstream*>(&os);
+        dmq::xostringstream* ss = static_cast<dmq::xostringstream*>(&os);
 
         if (m_transport)
         {
-            DmqHeader header(id, DmqHeader::GetNextSeqNum());
+            transport::DmqHeader header(id, transport::DmqHeader::GetNextSeqNum());
             int err = m_transport->Send(*ss, header);
             LOG_INFO("Dispatcher::Dispatch id={} seqNum={} err={}", header.GetId(), header.GetSeqNum(), err);
             return err;
@@ -56,7 +58,10 @@ public:
     }
 
 private:
-    ITransport* m_transport = nullptr;
+    transport::ITransport* m_transport = nullptr;
 };
+
+} // namespace dmq
+
 
 #endif

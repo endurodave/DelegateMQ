@@ -15,10 +15,12 @@
 #include <type_traits>
 #include <vector>
 
+namespace dmq::serialization::msgpack {
+
 // make_serialized serializes each remote function argument
 template<typename... Args>
-void make_serialized(msgpack::sbuffer& buffer, Args&&... args) {
-    (msgpack::pack(buffer, args), ...);  // C++17 fold expression to serialize
+void make_serialized(::msgpack::sbuffer& buffer, Args&&... args) {
+    (::msgpack::pack(buffer, args), ...);  // C++17 fold expression to serialize
 }
 
 template <class R>
@@ -46,7 +48,7 @@ public:
                 ss->str("");
             }
 
-            msgpack::sbuffer buffer;
+            ::msgpack::sbuffer buffer;
             make_serialized(buffer, args...);
             os.write(buffer.data(), buffer.size());
         }
@@ -72,7 +74,7 @@ public:
             // Helper lambda to unpack one argument at a time from the buffer
             auto unpack_one = [&](auto& arg) {
                 // msgpack::unpack parses one object and updates 'offset' to point to the next byte
-                msgpack::object_handle oh = msgpack::unpack(buffer_data.data(), buffer_data.size(), offset);
+                ::msgpack::object_handle oh = ::msgpack::unpack(buffer_data.data(), buffer_data.size(), offset);
 
                 // Convert msgpack object to specific C++ type
                 arg = oh.get().as<std::decay_t<decltype(arg)>>();
@@ -81,7 +83,7 @@ public:
             // Use C++17 fold expression to call unpack_one for each argument in 'args'
             (unpack_one(args), ...);
         }
-        catch (const msgpack::type_error& e) {
+        catch (const ::msgpack::type_error& e) {
             std::cerr << "Deserialize type conversion error: " << e.what() << std::endl;
             throw;
         }
@@ -92,5 +94,8 @@ public:
         return is;
     }
 };
+
+} // namespace dmq::serialization::msgpack
+
 
 #endif // SERIALIZER_H

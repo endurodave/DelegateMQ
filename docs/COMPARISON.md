@@ -74,7 +74,7 @@ public:
     }
 private:
     void OnData(int value) { ... }
-    Thread m_thread;
+    dmq::Thread m_thread;
     dmq::ScopedConnection m_conn;
 };
 ```
@@ -85,9 +85,9 @@ private:
 |---|---|---|
 | Base class required | Yes (`QObject`) | No |
 | Code generation step | Yes (`moc`) | No |
-| Thread dispatch mechanism | Qt event loop (`moveToThread`) | Any `IThread` — RTOS, stdlib, bare-metal |
+| Thread dispatch mechanism | Qt event loop (`moveToThread`) | Any `dmq::IThread` — RTOS, stdlib, bare-metal |
 | Usable without Qt runtime | No | Yes |
-| RAII connection handle | `QMetaObject::Connection` (manual `disconnect`) | `ScopedConnection` (auto on scope exit) |
+| RAII connection handle | `QMetaObject::Connection` (manual `disconnect`) | `dmq::ScopedConnection` (auto on scope exit) |
 | Embedded / RTOS use | No | Yes |
 
 ---
@@ -113,7 +113,7 @@ sig.connect([&queue](int v) {
 // Worker thread then pops and calls the real handler
 ```
 
-**DelegateMQ** delivers the slot directly to the subscriber's thread via `MakeDelegate(..., thread)`:
+**DelegateMQ** delivers the slot directly to the subscriber's thread via `dmq::MakeDelegate(..., thread)`:
 
 ```cpp
 // Slot executed on m_thread, not on the emitting thread
@@ -125,9 +125,9 @@ m_conn = signal.Connect(dmq::MakeDelegate(this, &MyClass::OnEvent, m_thread));
 | | Boost.Signals2 | DelegateMQ |
 |---|---|---|
 | Thread-safe connect/disconnect | Yes | Yes |
-| RAII connection handle | `scoped_connection` | `ScopedConnection` |
+| RAII connection handle | `scoped_connection` | `dmq::ScopedConnection` |
 | Slot called on subscriber's thread | No — manual dispatch required | Yes — specify thread at connect time |
-| Blocking async slot (wait for result) | No | Yes (`DelegateAsyncWait`) |
+| Blocking async slot (wait for result) | No | Yes (`dmq::DelegateAsyncWait`) |
 | Embedded / no-STL-heap use | No | Yes (fixed-block allocator) |
 | Header-only | Yes | Yes |
 
@@ -149,7 +149,7 @@ These libraries are good for in-thread event wiring where every subscriber runs 
 - Blocking until a slot on another thread completes
 - Connections across process or network boundaries
 
-**DelegateMQ** covers all three, with the same `Signal<Sig>` API scaling from synchronous slots to async cross-thread delivery.
+**DelegateMQ** covers all three, with the same `dmq::Signal<Sig>` API scaling from synchronous slots to async cross-thread delivery.
 
 ---
 
@@ -160,7 +160,7 @@ These libraries are good for in-thread event wiring where every subscriber runs 
 | No base class required | No | Yes | Yes | Yes |
 | No code generation | No (`moc`) | Yes | Yes | Yes |
 | RAII auto-disconnect | Partial | Yes | Yes | Yes |
-| Slot on subscriber's thread | Yes (event loop) | No | No | Yes (any `IThread`) |
+| Slot on subscriber's thread | Yes (event loop) | No | No | Yes (any `dmq::IThread`) |
 | Blocking async slot (return value) | No | No | No | Yes |
 | Works without OS event loop | No | Yes | Yes | Yes |
 | Embedded / RTOS support | No | No | Limited | Yes |
@@ -172,14 +172,14 @@ These libraries are good for in-thread event wiring where every subscriber runs 
 
 ### DataBus (DDS Lite)
 
-`DataBus` is a high-level middleware built on top of DelegateMQ core. It provides a topic-based publish/subscribe system that functions as a "DDS Lite" or "MQTT Lite" specifically optimized for C++ applications that span multiple threads and remote nodes.
+`dmq::databus::DataBus` is a high-level middleware built on top of DelegateMQ core. It provides a topic-based publish/subscribe system that functions as a "DDS Lite" or "MQTT Lite" specifically optimized for C++ applications that span multiple threads and remote nodes.
 
 | Feature | DDS (Full) | MQTT | DelegateMQ DataBus |
 |---|---|---|---|
 | Complexity | Very High | Medium | Low |
 | Footprint | Large (MBs) | Medium (Client lib) | Tiny (Header-only) |
 | IDL Required | Yes | No | No (Plain C++) |
-| Thread Safety | Manual Dispatch | Manual Dispatch | Automatic (via `IThread`) |
+| Thread Safety | Manual Dispatch | Manual Dispatch | Automatic (via `dmq::IThread`) |
 | Local inter-thread use | Impractical (10–15 threads overhead) | No | Yes (zero overhead) |
 | Remote distribution | Yes | Yes | Yes |
 | Location Transparency | Yes | Yes | Yes |
@@ -190,13 +190,13 @@ These libraries are good for in-thread event wiring where every subscriber runs 
 | QoS - Reliability | Complex Policies | Levels 0, 1, 2 | Reliable (Unicast) or Best-Effort (Multicast) |
 | Primary Use Case | Remote/Network distribution | IoT / Cloud | Inter-thread and/or Remote |
 
-**Key Advantage**: Unlike full DDS systems that require complex IDL compilation and manual thread management to get data into your application's control loop, `DataBus` handles the thread-safe delivery automatically. You simply provide a pointer to your `Thread` object, and the callback is guaranteed to execute in that specific context.
+**Key Advantage**: Unlike full DDS systems that require complex IDL compilation and manual thread management to get data into your application's control loop, `dmq::databus::DataBus` handles the thread-safe delivery automatically. You simply provide a pointer to your `dmq::Thread` object, and the callback is guaranteed to execute in that specific context.
 
-**Local and Remote with One API**: DDS is designed as network middleware — it is technically capable of intra-process communication, but doing so still spins up 10–15 threads for discovery and RTPS machinery, adds megabytes of footprint, and goes through full serialization overhead. In practice, DDS systems use a separate mechanism (mutexes, condition variables, OS queues) for inter-thread communication and reserve DDS for inter-node distribution. `DataBus` makes no such distinction. The same `Publish`/`Subscribe` call works whether the subscriber is on the same thread, a different thread in the same process, or a different machine entirely — and local delivery costs nothing extra (no serialization, no network stack, no extra threads). Adding a `Participant` extends the existing bus to the network; removing it collapses it back to purely local.
+**Local and Remote with One API**: DDS is designed as network middleware — it is technically capable of intra-process communication, but doing so still spins up 10–15 threads for discovery and RTPS machinery, adds megabytes of footprint, and goes through full serialization overhead. In practice, DDS systems use a separate mechanism (mutexes, condition variables, OS queues) for inter-thread communication and reserve DDS for inter-node distribution. `dmq::databus::DataBus` makes no such distinction. The same `Publish`/`Subscribe` call works whether the subscriber is on the same thread, a different thread in the same process, or a different machine entirely — and local delivery costs nothing extra (no serialization, no network stack, no extra threads). Adding a `dmq::databus::Participant` extends the existing bus to the network; removing it collapses it back to purely local.
 
-**Data Model — One Type Per Topic**: Like DDS, `DataBus` enforces the data-centric constraint that each topic carries exactly one typed value (`void(T)`). A topic represents the *current state* of something in the system; a publish is a single snapshot of that state. This is intentional — it mirrors `DataWriter::write(const T& data)` in real DDS and encourages well-typed data modeling. When you need to call a remote function with multiple arguments (RPC semantics), use `RemoteChannel` directly rather than routing through `DataBus`. See [Pub/Sub vs. RPC](../docs/DETAILS.md#pubsub-vs-rpc) in DETAILS.md for the full comparison.
+**Data Model — One Type Per Topic**: Like DDS, `dmq::databus::DataBus` enforces the data-centric constraint that each topic carries exactly one typed value (`void(T)`). A topic represents the *current state* of something in the system; a publish is a single snapshot of that state. This is intentional — it mirrors `DataWriter::write(const T& data)` in real DDS and encourages well-typed data modeling. When you need to call a remote function with multiple arguments (RPC semantics), use `dmq::RemoteChannel` directly rather than routing through `dmq::databus::DataBus`. See [Pub/Sub vs. RPC](../docs/DATABUS.md#pubsub-vs-rpc) in DATABUS.md for the full comparison.
 
-Additionally, the DataBus supports **UDP Multicast**, allowing a single publisher to reach an unlimited number of subscribers with zero extra CPU or network overhead per client—ideal for high-frequency telemetry and monitoring tools like the [DelegateMQ Spy](#unified-api-the-core-differentiator).
+Additionally, the `dmq::databus::DataBus` supports **UDP Multicast**, allowing a single publisher to reach an unlimited number of subscribers with zero extra CPU or network overhead per client—ideal for high-frequency telemetry and monitoring tools like the [DelegateMQ Spy](#unified-api-the-core-differentiator).
 
 ---
 
@@ -270,13 +270,13 @@ void AppThreadLoop() {
 
 ```cpp
 // Type definition — no IDL, no codegen
-class SensorData : public serialize::I {
+class SensorData : public dmq::serialize::I {
 public:
     int x = 0, y = 0; std::string msg;
-    std::ostream& write(serialize& ms, std::ostream& os) override {
+    std::ostream& write(dmq::serialize& ms, std::ostream& os) override {
         ms.write(os, x); ms.write(os, y); ms.write(os, msg); return os;
     }
-    std::istream& read(serialize& ms, std::istream& is) override {
+    std::istream& read(dmq::serialize& ms, std::istream& is) override {
         ms.read(is, x); ms.read(is, y); ms.read(is, msg); return is;
     }
 };
@@ -284,7 +284,7 @@ public:
 // Receiver — Poll() runs on m_thread; DataUpdate() called directly on m_thread
 class Receiver {
 public:
-    Receiver(ITransport& transport, DelegateRemoteId id)
+    Receiver(dmq::transport::ITransport& transport, dmq::DelegateRemoteId id)
         : m_channel(transport, m_serializer)
     {
         m_channel.Bind(this, &Receiver::DataUpdate, id);
@@ -295,14 +295,14 @@ public:
     }
 private:
     void Poll() {
-        DmqHeader hdr; xstringstream is(...);
+        dmq::transport::DmqHeader hdr; dmq::xstringstream is(...);
         if (m_transport.Receive(is, hdr) == 0)
             m_channel.GetEndpoint()->Invoke(is);  // DataUpdate called here on m_thread
     }
     void DataUpdate(SensorData data) { /* on m_thread */ }
 
-    Thread m_thread; Timer m_pollTimer; dmq::ScopedConnection m_timerConn;
-    Serializer<void(SensorData)> m_serializer;
+    dmq::Thread m_thread; dmq::util::Timer m_pollTimer; dmq::ScopedConnection m_timerConn;
+    dmq::Serializer<void(SensorData)> m_serializer;
     dmq::RemoteChannel<void(SensorData)> m_channel;
 };
 ```
@@ -312,12 +312,12 @@ private:
 | Feature | DDS | DelegateMQ |
 |---|---|---|
 | Type definition | IDL file + code generator + generated files | Plain C++ class + `write()`/`read()` |
-| Publisher setup | `Participant → Topic → Publisher → DataWriter` | `RemoteChannel` + `Bind()` |
-| Subscriber setup | `Participant → Topic → Subscriber → DataReader` | `RemoteChannel` + `Bind()` |
+| Publisher setup | `Participant → Topic → Publisher → DataWriter` | `dmq::RemoteChannel` + `Bind()` |
+| Subscriber setup | `Participant → Topic → Subscriber → DataReader` | `dmq::RemoteChannel` + `Bind()` |
 | Thread dispatch on receive | Manual (listener on DDS thread → queue → your thread) | Automatic (Poll runs on your thread) |
 | Discovery | Automatic (multicast/unicast, topic matching) | Partial (via Multicast group) |
 | QoS policies | Rich (reliability, durability, history, lifespan, ...) | LVC, Lifespan, Min Separation, Deadline Monitoring, Fixed-block, Reliable/Best-Effort |
-| Transport | RTPS over UDP/TCP, multicast, secure | Pluggable `ITransport` — Unicast & Multicast UDP |
+| Transport | RTPS over UDP/TCP, multicast, secure | Pluggable `dmq::transport::ITransport` — Unicast & Multicast UDP |
 | IDL / build tool required | Yes | No |
 | Embedded / RTOS support | Limited | Yes |
 | Interoperability standard | RTPS (vendor-interoperable) | No standard |
@@ -336,7 +336,7 @@ A full DDS middleware creates a significant number of threads automatically on b
 
 RTI Connext typically spawns **10–15 threads** per `DomainParticipant`. CycloneDDS is leaner at **3–5**. FastDDS sits in the middle at **4–8**. These threads exist regardless of application complexity and are largely opaque to the developer.
 
-`DataBus` creates **zero library threads**. The application owns one polling thread that calls `Participant::ProcessIncoming()` in a loop. Every thread in the system is visible, named, and under application control — a critical requirement for RTOS environments with fixed thread budgets and deterministic scheduling.
+`dmq::databus::DataBus` creates **zero library threads**. The application owns one polling thread that calls `dmq::databus::Participant::ProcessIncoming()` in a loop. Every thread in the system is visible, named, and under application control — a critical requirement for RTOS environments with fixed thread budgets and deterministic scheduling.
 
 | | DDS (RTI Connext) | DDS (CycloneDDS) | DelegateMQ DataBus |
 |---|---|---|---|
@@ -352,14 +352,14 @@ Full DDS implementations carry substantial binary and RAM overhead driven by dis
 | | DDS (RTI Connext) | DDS (FastDDS) | DDS (CycloneDDS) | Micro XRCE-DDS | DelegateMQ DataBus |
 |---|---|---|---|---|---|
 | Library binary size | 15–50 MB | 5–15 MB | 2–5 MB | ~100 KB flash | **0** (header-only) |
-| RAM per participant | 10+ MB | Several MB | 1–3 MB | ~20 KB | Per-topic `Signal<>` + map entry |
+| RAM per participant | 10+ MB | Several MB | 1–3 MB | ~20 KB | Per-topic `dmq::Signal<>` + map entry |
 | Dynamic heap use | Continuous | Continuous | Continuous | Continuous | Optional (fixed-block allocator available) |
 | Bare-metal capable | No | No | No | Limited | Yes |
 
 Key points:
 
 - **Header-only**: DelegateMQ has no precompiled library binary. Compiled code size scales with the templates instantiated — topics and serializers you don't use contribute zero code.
-- **Predictable allocation**: Per-topic overhead is a `Signal<>` and a small `unordered_map` entry. No hidden history queues or discovery tables consume memory in the background.
+- **Predictable allocation**: Per-topic overhead is a `dmq::Signal<>` and a small `unordered_map` entry. No hidden history queues or discovery tables consume memory in the background.
 - **Fixed-block allocator**: Building with `DMQ_ALLOCATOR=ON` replaces `new`/`delete` with a fixed-block pool, eliminating heap fragmentation. No DDS implementation offers this.
 - **Bare-metal proof**: The `bare-metal-arm` sample runs on a Cortex-M4 with no OS, no heap, and no transport — demonstrating the lower bound of the footprint.
 
@@ -395,7 +395,7 @@ The generated code is then used directly in C++. Schema changes require regenera
 | Type + service definition | `.proto` file + `protoc` code generation | Plain C++ class + `Bind()` |
 | Call syntax on sender | `stub->SendData(&ctx, request, &response)` | `m_channel(data)` |
 | Thread dispatch on receive | Manual (gRPC thread → your thread) | Automatic (Poll on your thread) |
-| Transport | HTTP/2 only | Pluggable (`ITransport`) |
+| Transport | HTTP/2 only | Pluggable (`dmq::transport::ITransport`) |
 | Streaming | Yes (bidirectional) | No |
 | Embedded / RTOS support | No | Yes |
 | External dependencies | gRPC + Protobuf runtimes | None (header-only core) |
@@ -419,12 +419,12 @@ MyData* d = static_cast<MyData*>(reply.data());
 // dispatch to your thread manually...
 ```
 
-DelegateMQ can use ZeroMQ or NNG as its `ITransport` backend, adding type-safe function-call semantics, automatic argument serialization, and thread dispatch on top.
+DelegateMQ can use ZeroMQ or NNG as its `dmq::transport::ITransport` backend, adding type-safe function-call semantics, automatic argument serialization, and thread dispatch on top.
 
 | Feature | Raw ZeroMQ / NNG | DelegateMQ (with ZeroMQ transport) |
 |---|---|---|
 | Type safety | None — raw bytes | Full — C++ function signature |
-| Serialization | Manual | `ISerializer` (MessagePack, RapidJSON, etc.) |
+| Serialization | Manual | `dmq::ISerializer` (MessagePack, RapidJSON, etc.) |
 | Call semantics | `socket.send()` / `socket.recv()` | `m_channel(arg1, arg2)` |
 | Thread dispatch on receive | Manual | Automatic |
 | Transport reliability | Yes (ZMQ/NNG built-in) | Delegated to transport layer |
@@ -439,9 +439,9 @@ DelegateMQ can use ZeroMQ or NNG as its `ITransport` backend, adding type-safe f
 | Type-safe call syntax | Partial (generated) | Yes (generated) | No | Yes (C++ template) |
 | Thread dispatch on receive | Manual | Manual | Manual | Automatic |
 | Embedded / RTOS support | Limited | No | Limited | Yes |
-| Transport agnostic | No (RTPS) | No (HTTP/2) | Yes (core) | Yes (`ITransport`) |
+| Transport agnostic | No (RTPS) | No (HTTP/2) | Yes (core) | Yes (`dmq::transport::ITransport`) |
 | Automatic discovery | Yes | Via service mesh | No | No |
-| Blocking remote call (return value) | No (DDS) | Yes | No | Yes (`DelegateAsyncWait`) |
+| Blocking remote call (return value) | No (DDS) | Yes | No | Yes (`dmq::DelegateAsyncWait`) |
 | External runtime dependencies | Yes | Yes | Yes | None (core) |
 
 ---
@@ -460,7 +460,7 @@ auto result = fut.get();  // block for result
 
 `std::async` also has no publish/subscribe, no multicast, and no remote dispatch. It is a one-shot call primitive, not a messaging layer.
 
-**DelegateMQ's `DelegateAsyncWait`** dispatches to a *named, specific thread* and returns the result:
+**DelegateMQ's `dmq::DelegateAsyncWait`** dispatches to a *named, specific thread* and returns the result:
 
 ```cpp
 // Dispatches to 'workerThread', blocks until complete, returns result
@@ -470,10 +470,10 @@ auto result = dmq::MakeDelegate(&obj, &MyClass::Process, workerThread, dmq::WAIT
 | Feature | `std::async` | DelegateMQ |
 |---|---|---|
 | Target a specific thread | No | Yes |
-| Return value from async call | Yes (`future`) | Yes (`DelegateAsyncWait` or `AsyncInvoke`) |
-| Multicast (multiple targets) | No | Yes (`MulticastDelegateSafe`) |
-| Publish / subscribe | No | Yes (`Signal`) |
-| Remote dispatch | No | Yes (`RemoteChannel`) |
+| Return value from async call | Yes (`future`) | Yes (`dmq::DelegateAsyncWait` or `AsyncInvoke`) |
+| Multicast (multiple targets) | No | Yes (`dmq::MulticastDelegateSafe`) |
+| Publish / subscribe | No | Yes (`dmq::Signal`) |
+| Remote dispatch | No | Yes (`dmq::RemoteChannel`) |
 | Embedded / RTOS | No | Yes |
 
 ---
@@ -515,7 +515,7 @@ dmq::MakeDelegate(this, &SensorTask::HandleSensor, workerThread)(5, 10);
 | Boilerplate per message type | High | None |
 | Automatic argument marshalling | No | Yes |
 | Object lifetime safety | No | Yes (`weak_ptr`) |
-| Return value from async call | No | Yes (`DelegateAsyncWait`) |
+| Return value from async call | No | Yes (`dmq::DelegateAsyncWait`) |
 | Multicast / pub-sub | No | Yes |
 
 ---
@@ -537,9 +537,9 @@ Asio requires you to capture all arguments into the lambda manually. There is no
 |---|---|---|
 | Dispatch to specific thread/strand | Yes | Yes |
 | Automatic argument marshalling | No (manual capture) | Yes (by-value, by-pointer, by-reference) |
-| Signal / slot | No | Yes (`Signal<Sig>`) |
-| Blocking async call with return | No (manual future/promise) | Yes (`DelegateAsyncWait`) |
-| Remote dispatch | No | Yes (`RemoteChannel`) |
+| Signal / slot | No | Yes (`dmq::Signal<Sig>`) |
+| Blocking async call with return | No (manual future/promise) | Yes (`dmq::DelegateAsyncWait`) |
+| Remote dispatch | No | Yes (`dmq::RemoteChannel`) |
 | Embedded / RTOS | No | Yes |
 
 ---
@@ -575,7 +575,7 @@ dmq::MakeDelegate(&obj, &MyClass::Process, workerThread)(data);
 m_remoteChannel(data);
 ```
 
-And the same `Signal<Sig>` subscriber can be synchronous or asynchronous simply by how the delegate is constructed at connect time — no change to the signal or the slot:
+And the same `dmq::Signal<Sig>` subscriber can be synchronous or asynchronous simply by how the delegate is constructed at connect time — no change to the signal or the slot:
 
 ```cpp
 // Synchronous slot (called on emitter's thread)

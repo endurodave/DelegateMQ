@@ -26,6 +26,8 @@
 #include <string>
 #include <vector>
 
+namespace dmq::util {
+
 class NetworkContext
 {
 public:
@@ -116,5 +118,8 @@ public:
 #endif
     }
 };
+
+} // namespace dmq::util
+
 
 #endif // NETWORK_CONNECT_H

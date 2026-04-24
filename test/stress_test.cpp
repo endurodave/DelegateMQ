@@ -51,6 +51,9 @@
 #endif
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
 
 // --- Configuration ---
 const int NUM_PUBLISHERS = 4;

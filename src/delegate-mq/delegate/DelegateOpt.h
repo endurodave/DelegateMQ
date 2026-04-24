@@ -116,7 +116,7 @@ namespace dmq
 
 #elif defined(DMQ_THREAD_FREERTOS)
     // Use the custom FreeRTOS wrapper
-    using Clock = dmq::FreeRTOSClock;
+    using Clock = dmq::os::FreeRTOSClock;
 
 #elif defined(DMQ_THREAD_THREADX)
     // Use the custom ThreadX wrapper
@@ -127,7 +127,7 @@ namespace dmq
     using Clock = dmq::ZephyrClock;
 
 #elif defined(DMQ_THREAD_CMSIS_RTOS2)
-    using Clock = dmq::CmsisRtos2Clock;
+    using Clock = dmq::os::CmsisRtos2Clock;
 
 #else
     // Assuming implemented the 'g_ticks' variable
@@ -237,35 +237,37 @@ namespace dmq
     #undef XALLOCATOR
     #define XALLOCATOR
 
-    // Use default std::allocator for dynamic storage allocation
-    template <typename T, typename Alloc = std::allocator<T>>
-    class xlist : public std::list<T, Alloc> {
-    public:
-        using std::list<T, Alloc>::list; // Inherit constructors
-        using std::list<T, Alloc>::operator=;
-    };
+    namespace dmq {
+        // Use default std::allocator for dynamic storage allocation
+        template <typename T, typename Alloc = std::allocator<T>>
+        class xlist : public std::list<T, Alloc> {
+        public:
+            using std::list<T, Alloc>::list; // Inherit constructors
+            using std::list<T, Alloc>::operator=;
+        };
 
-    typedef std::basic_ostringstream<char, std::char_traits<char>> xostringstream;
-    typedef std::basic_stringstream<char, std::char_traits<char>> xstringstream;
+        typedef std::basic_ostringstream<char, std::char_traits<char>> xostringstream;
+        typedef std::basic_stringstream<char, std::char_traits<char>> xstringstream;
 
-    typedef std::string xstring;
+        typedef std::string xstring;
 
-    // Fallback xmake_shared — uses std::make_shared when fixed-block allocator is disabled
-    template <typename T, typename... Args>
-    inline std::shared_ptr<T> xmake_shared(Args&&... args)
-    {
-        return std::make_shared<T>(std::forward<Args>(args)...);
-    }
+        // Fallback xmake_shared — uses std::make_shared when fixed-block allocator is disabled
+        template <typename T, typename... Args>
+        inline std::shared_ptr<T> xmake_shared(Args&&... args)
+        {
+            return std::make_shared<T>(std::forward<Args>(args)...);
+        }
 
-    // Fallback xnew/xdelete — use standard new/delete when fixed-block allocator is disabled
-    template<typename T, typename... Args>
-    inline T* xnew(Args&&... args) {
-        return new(std::nothrow) T(std::forward<Args>(args)...);
-    }
+        // Fallback xnew/xdelete — use standard new/delete when fixed-block allocator is disabled
+        template<typename T, typename... Args>
+        inline T* xnew(Args&&... args) {
+            return new(std::nothrow) T(std::forward<Args>(args)...);
+        }
 
-    template<typename T>
-    inline void xdelete(T* p) {
-        delete p;
+        template<typename T>
+        inline void xdelete(T* p) {
+            delete p;
+        }
     }
 #endif
 

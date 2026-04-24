@@ -9,7 +9,7 @@
 // and incremented by your SysTick_Handler (or other timer ISR).
 extern "C" volatile uint64_t g_ticks;
 
-namespace dmq {
+namespace dmq::os {
 
     struct BareMetalClock {
         // 2. Define duration traits

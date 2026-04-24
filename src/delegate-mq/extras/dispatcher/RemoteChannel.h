@@ -14,7 +14,7 @@
 ///   Dispatcher dispatcher;
 ///   dispatcher.SetTransport(&transport);
 ///   Serializer<void(int)> serializer;
-///   xostringstream stream(std::ios::in | std::ios::out | std::ios::binary);
+///   dmq::xostringstream stream(std::ios::in | std::ios::out | std::ios::binary);
 ///
 ///   DelegateFreeRemote<void(int)> remote(REMOTE_ID);
 ///   remote.SetSerializer(&serializer);
@@ -39,6 +39,7 @@
 
 #include "Dispatcher.h"
 #include "delegate/DelegateRemote.h"
+#include "delegate/Signal.h"
 #include "port/transport/ITransport.h"
 
 namespace dmq {
@@ -88,7 +89,7 @@ public:
     /// @brief Construct a RemoteChannel.
     /// @param[in] transport  The transport used to send serialized data. Caller owns it.
     /// @param[in] serializer The serializer matching the delegate signature. Caller owns it.
-    RemoteChannel(ITransport& transport, ISerializer<RetType(Args...)>& serializer)
+    RemoteChannel(transport::ITransport& transport, dmq::ISerializer<RetType(Args...)>& serializer)
         : m_serializer(&serializer)
         , m_stream(std::ios::in | std::ios::out | std::ios::binary)
     {
@@ -138,7 +139,7 @@ public:
     }
 
     /// @brief Bind a raw lambda or functor as the receive-side handler.
-    template <typename F, typename = std::enable_if_t<trait::is_callable<F>::value>>
+    template <typename F, typename = std::enable_if_t<dmq::trait::is_callable<F>::value>>
     void Bind(F&& func, DelegateRemoteId id) {
         m_delegate.Bind(std::forward<F>(func), id);
         ReconnectDelegate();
@@ -173,13 +174,13 @@ public:
     // -----------------------------------------------------------------------
 
     /// @internal Used by MakeDelegate overloads. Prefer Bind() in application code.
-    IDispatcher* GetDispatcher() noexcept { return &m_dispatcher; }
+    dmq::IDispatcher* GetDispatcher() noexcept { return &m_dispatcher; }
 
     /// @internal Used by MakeDelegate overloads. Prefer Bind() in application code.
-    ISerializer<RetType(Args...)>* GetSerializer() noexcept { return m_serializer; }
+    dmq::ISerializer<RetType(Args...)>* GetSerializer() noexcept { return m_serializer; }
 
     /// @internal Used by MakeDelegate overloads. Prefer Bind() in application code.
-    xostringstream& GetStream() noexcept { return m_stream; }
+    dmq::xostringstream& GetStream() noexcept { return m_stream; }
 
 private:
     void ReconnectDelegate() {
@@ -189,8 +190,8 @@ private:
     }
 
     Dispatcher m_dispatcher;
-    xostringstream m_stream;
-    ISerializer<RetType(Args...)>* m_serializer = nullptr;
+    dmq::xostringstream m_stream;
+    dmq::ISerializer<RetType(Args...)>* m_serializer = nullptr;
     DelegateFunctionRemote<RetType(Args...)> m_delegate;
 };
 
@@ -198,7 +199,7 @@ private:
 /// @details Enables `RemoteChannel channel(transport, serializer)` without an explicit
 /// template argument.
 template <class RetType, class... Args>
-RemoteChannel(ITransport&, ISerializer<RetType(Args...)>&) -> RemoteChannel<RetType(Args...)>;
+RemoteChannel(transport::ITransport&, dmq::ISerializer<RetType(Args...)>&) -> RemoteChannel<RetType(Args...)>;
 
 // ---- MakeDelegate overloads for RemoteChannel ----------------------------------
 //
@@ -317,7 +318,7 @@ auto MakeDelegate(std::function<RetType(Args...)> func, DelegateRemoteId id, Rem
 }
 
 /// @brief Creates a remote delegate bound to a raw lambda or functor via a RemoteChannel.
-template <typename F, typename Sig, typename = std::enable_if_t<trait::is_callable<F>::value>>
+template <typename F, typename Sig, typename = std::enable_if_t<dmq::trait::is_callable<F>::value>>
 auto MakeDelegate(F&& func, DelegateRemoteId id, RemoteChannel<Sig>& channel)
 {
     DelegateFunctionRemote<Sig> d(std::forward<F>(func), id);

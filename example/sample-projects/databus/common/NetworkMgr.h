@@ -39,7 +39,7 @@
 ///     3. *Future-based:* Returns a `std::future` immediately, allowing retrieval of the result at a later time.
 /// * **Error & Status Reporting:** Provides registration points (`OnNetworkError`, `OnSendStatus`) for clients to subscribe
 ///   to transmission results and error notifications.
-class NetworkMgr : public NetworkEngine
+class NetworkMgr : public dmq::util::NetworkEngine
 {
 public:
     // Public Signals — clients Connect() to these using RAII ScopedConnection.
@@ -48,7 +48,7 @@ public:
     dmq::Signal<void(DataMsg&)>                                                         OnData;
     dmq::Signal<void(ActuatorMsg&)>                                                     OnActuator;
     dmq::Signal<void(dmq::DelegateRemoteId, dmq::DelegateError, dmq::DelegateErrorAux)> OnNetworkError;
-    dmq::Signal<void(dmq::DelegateRemoteId, uint16_t, TransportMonitor::Status)>        OnSendStatus;
+    dmq::Signal<void(dmq::DelegateRemoteId, uint16_t, dmq::util::TransportMonitor::Status)>   OnSendStatus;
 
     static NetworkMgr& Instance() { static NetworkMgr instance; return instance; }
 
@@ -68,7 +68,7 @@ public:
 protected:
     // Override base class hooks to fire our Signals
     void OnError(dmq::DelegateRemoteId id, dmq::DelegateError error, dmq::DelegateErrorAux aux) override;
-    void OnStatus(dmq::DelegateRemoteId id, uint16_t seq, TransportMonitor::Status status) override;
+    void OnStatus(dmq::DelegateRemoteId id, uint16_t seq, dmq::util::TransportMonitor::Status status) override;
 
 private:
     NetworkMgr();
@@ -81,10 +81,10 @@ private:
     void ForwardActuator(ActuatorMsg& msg)              { OnActuator(msg); }
 
     // Per-signature serializers (one per message type)
-    Serializer<void(AlarmMsg&, AlarmNote&)> m_alarmSer;
-    Serializer<void(CommandMsg&)>           m_commandSer;
-    Serializer<void(DataMsg&)>              m_dataSer;
-    Serializer<void(ActuatorMsg&)>          m_actuatorSer;
+    dmq::serialization::serializer::Serializer<void(AlarmMsg&, AlarmNote&)> m_alarmSer;
+    dmq::serialization::serializer::Serializer<void(CommandMsg&)>           m_commandSer;
+    dmq::serialization::serializer::Serializer<void(DataMsg&)>              m_dataSer;
+    dmq::serialization::serializer::Serializer<void(ActuatorMsg&)>          m_actuatorSer;
 
     // Channels aggregate the dispatcher, stream, serializer, and delegate binding
     // for each signature. Initialized in Create() once the send transport is available.

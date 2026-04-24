@@ -18,7 +18,7 @@ class RpmSensor
 public:
     void Initialize(dmq::IThread& thread)
     {
-        m_conn = dmq::DataBus::Subscribe<CentrifugeSpeedMsg>(
+        m_conn = dmq::databus::DataBus::Subscribe<CentrifugeSpeedMsg>(
             topics::CMD_CENTRIFUGE_SPEED,
             [this](CentrifugeSpeedMsg msg) {
                 m_currentRpm.store(msg.rpm);
@@ -28,7 +28,7 @@ public:
 
     void Poll()
     {
-        dmq::DataBus::Publish<CentrifugeSpeedMsg>(
+        dmq::databus::DataBus::Publish<CentrifugeSpeedMsg>(
             cellutron::topics::RPM,
             { m_currentRpm.load() });
     }

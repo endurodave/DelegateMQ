@@ -46,6 +46,8 @@
 #include <mutex>
 #include <iostream>
 
+namespace dmq::transport {
+
 /// @brief NNG transport class. 
 /// @details Logic now executes directly on the caller's thread, protected by a mutex
 /// to prevent concurrent access to the underlying NNG socket.
@@ -133,6 +135,7 @@ public:
             rc = nng_dial(m_nngSocket, addr, nullptr, 0);
             if (rc != 0) {
                 std::cerr << "Failed to dial address: " << nng_strerror(rc) << std::endl;
+                nng_close(m_nngSocket);
                 return rc;
             }
 
@@ -183,7 +186,7 @@ public:
         // NNG doesn't require explicit context terminations like ZMQ
     }
 
-    virtual int Send(xostringstream& os, const DmqHeader& header) override
+    virtual int Send(dmq::xostringstream& os, const DmqHeader& header) override
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
@@ -213,7 +216,7 @@ public:
         }
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
-        xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
 
         // Write header values from the COPY (using htons)
         uint16_t marker = htons(headerCopy.GetMarker());
@@ -254,7 +257,7 @@ public:
         return 0;
     }
 
-    virtual int Receive(xstringstream& is, DmqHeader& header) override
+    virtual int Receive(dmq::xstringstream& is, DmqHeader& header) override
     {
         // Lock Guard
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -274,7 +277,7 @@ public:
             return -1;
         }
 
-        xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
+        dmq::xstringstream headerStream(std::ios::in | std::ios::out | std::ios::binary);
 
         size_t size = sizeof(m_buffer);
         
@@ -335,7 +338,7 @@ public:
             if (m_transportMonitor && m_sendTransport)
             {
                 // Send header with received seqNum as the ack message
-                xostringstream ss_ack;
+                dmq::xostringstream ss_ack;
                 DmqHeader ack;
                 ack.SetId(dmq::ACK_REMOTE_ID);
                 ack.SetSeqNum(header.GetSeqNum());
@@ -380,5 +383,7 @@ private:
     static const int BUFFER_SIZE = 4096;
     char m_buffer[BUFFER_SIZE] = {};
 };
+
+} // namespace dmq::transport
 
 #endif

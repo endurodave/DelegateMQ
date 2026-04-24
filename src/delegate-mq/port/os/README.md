@@ -2,7 +2,7 @@
 
 This directory contains the Operating System abstraction layer for **DelegateMQ**. It provides the concrete threading implementations required to execute asynchronous delegates.
 
-By abstracting the threading model behind the `IThread` interface, DelegateMQ can run seamlessly on everything from high-performance servers (Windows/Linux) to resource-constrained embedded systems (FreeRTOS, ThreadX, Zephyr).
+By abstracting the threading model behind the `dmq::IThread` interface, DelegateMQ can run seamlessly on everything from high-performance servers (Windows/Linux) to resource-constrained embedded systems (FreeRTOS, ThreadX, Zephyr).
 
 ## Implementations
 

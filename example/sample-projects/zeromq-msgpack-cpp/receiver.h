@@ -11,6 +11,10 @@
 #include "data.h"
 
 using namespace dmq;
+using namespace dmq::os;
+using namespace dmq::util;
+using namespace dmq::transport;
+using namespace dmq::serialization::msgpack;
 using namespace std;
 
 /// @brief Receiver receives data from the Sender.
