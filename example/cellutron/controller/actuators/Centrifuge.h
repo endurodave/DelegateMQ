@@ -78,7 +78,7 @@ private:
     dmq::Duration m_rampDuration = std::chrono::milliseconds(0);
     dmq::TimePoint m_rampStartTime;
 
-    Timer m_pollTimer;
+    dmq::util::Timer m_pollTimer;
     dmq::ScopedConnection m_pollTimerConn;
     std::shared_ptr<const RampData> m_data;
 };

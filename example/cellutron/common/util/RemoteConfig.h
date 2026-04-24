@@ -29,15 +29,15 @@ static constexpr dmq::DelegateRemoteId RID_CONTROLLER_HB       = 109;
 static constexpr dmq::DelegateRemoteId RID_GUI_HB              = 110;
 
 // Shared Serializers
-extern Serializer<void(StartProcessMsg)>    serStart;
-extern Serializer<void(StopProcessMsg)>     serStop;
-extern Serializer<void(CentrifugeSpeedMsg)> serSpeed;
-extern Serializer<void(CentrifugeStatusMsg)> serStatus;
-extern Serializer<void(RunStatusMsg)>       serRun;
-extern Serializer<void(FaultMsg)>           serFault;
-extern Serializer<void(ActuatorStatusMsg)>  serActuator;
-extern Serializer<void(SensorStatusMsg)>    serSensor;
-extern Serializer<void(HeartbeatMsg)>       serHeartbeat;
+extern dmq::serialization::serializer::Serializer<void(StartProcessMsg)>    serStart;
+extern dmq::serialization::serializer::Serializer<void(StopProcessMsg)>     serStop;
+extern dmq::serialization::serializer::Serializer<void(CentrifugeSpeedMsg)> serSpeed;
+extern dmq::serialization::serializer::Serializer<void(CentrifugeStatusMsg)> serStatus;
+extern dmq::serialization::serializer::Serializer<void(RunStatusMsg)>       serRun;
+extern dmq::serialization::serializer::Serializer<void(FaultMsg)>           serFault;
+extern dmq::serialization::serializer::Serializer<void(ActuatorStatusMsg)>  serActuator;
+extern dmq::serialization::serializer::Serializer<void(SensorStatusMsg)>    serSensor;
+extern dmq::serialization::serializer::Serializer<void(HeartbeatMsg)>       serHeartbeat;
 
 void RegisterSerializers();
 void RegisterStringifiers();

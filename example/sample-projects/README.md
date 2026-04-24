@@ -19,9 +19,9 @@ Remote delegates invoke a target function that runs in a separate processor or p
 The following remote delegate projects have no external library dependencies. They rely only on the standard system APIs (Windows API, POSIX, etc.) or headers included within the repository.
 
 * [bare-metal-remote](./bare-metal-remote/) - Simple remote delegate app on Windows and Linux.
-* [databus](./databus/) - Distributed sensor/actuator system using `dmq::DataBus` over UDP.
+* [databus](./databus/) - Distributed sensor/actuator system using `dmq::databus::DataBus` over UDP.
 * [databus-freertos](./databus-freertos/) - FreeRTOS server (Win32 simulator, 32-bit) publishing sensor data to a Linux/Windows client over UDP, with the client sending rate-control commands back. Demonstrates mixed-platform DataBus with the FreeRTOS port.
-* [databus-multicast](./databus-multicast/) - Distributed sensor/actuator system using `dmq::DataBus` over UDP Multicast.
+* [databus-multicast](./databus-multicast/) - Distributed sensor/actuator system using `dmq::databus::DataBus` over UDP Multicast.
 * [freertos-bare-metal](./freertos-bare-metal/) - FreeRTOS example on Windows (32-bit).
 * [linux-tcp-serializer](./linux-tcp-serializer/) - Simple TCP remote delegate app on Linux.
 * [linux-udp-serializer](./linux-udp-serializer/) - Simple UDP remote delegate app on Linux.
@@ -34,8 +34,8 @@ The following remote delegate projects have no external library dependencies. Th
 
 The following projects require external 3rd party library support (e.g., ZeroMQ, MQTT, RapidJSON, etc.). See [Examples Setup](../../docs/DETAILS.md#examples-setup) for external library installation setup.
 
-* [databus-interop](./databus-interop/) - Cross-language communication between C++ server and Python/C# clients using `dmq::DataBus` and MessagePack.
-* [databus-shapes](./databus-shapes/) - Graphical TUI Shapes Demo using `dmq::DataBus`, UDP Multicast, and FTXUI.
+* [databus-interop](./databus-interop/) - Cross-language communication between C++ server and Python/C# clients using `dmq::databus::DataBus` and MessagePack.
+* [databus-shapes](./databus-shapes/) - Graphical TUI Shapes Demo using `dmq::databus::DataBus`, UDP Multicast, and FTXUI.
 * [mqtt-rapidjson](./mqtt-rapidjson/) - Remote delegate example with MQTT and RapidJSON.
 * [nnq-bitsery](./nnq-bitsery/) - Remote delegate example using NNG and Bitsery libraries.
 * [serialport-serializer](./serialport-serializer/) - Remote delegate example using libserialport.

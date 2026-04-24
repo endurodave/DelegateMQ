@@ -109,7 +109,7 @@ private:
     dmq::ScopedConnection m_pumpCompleteConn;
     dmq::ScopedConnection m_transitionConn;
 
-    Timer m_timer;
+    dmq::util::Timer m_timer;
     bool  m_newChange = false;
 };
 

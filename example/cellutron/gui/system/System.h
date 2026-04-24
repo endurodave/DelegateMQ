@@ -20,7 +20,7 @@ public:
     void Shutdown();
     void Tick(uint32_t ms);
 
-    Thread& GetThread() { return m_thread; }
+    dmq::os::Thread& GetThread() { return m_thread; }
 
 private:
     System() : m_heartbeat("GUI", topics::GUI_HEARTBEAT, m_thread) {}
@@ -33,10 +33,10 @@ private:
     void SetupWatchdog();
     void StartTimerThread();
 
-    Thread m_thread{"SystemThread", 200, FullPolicy::DROP};
+    dmq::os::Thread m_thread{"SystemThread", 200, dmq::os::FullPolicy::DROP};
     
     std::atomic<bool> m_timerRunning{false};
-    Thread m_backgroundTimer{"BackgroundTimerThread", 10, FullPolicy::DROP};
+    dmq::os::Thread m_backgroundTimer{"BackgroundTimerThread", 10, dmq::os::FullPolicy::DROP};
 
     util::Heartbeat m_heartbeat;
 };

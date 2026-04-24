@@ -42,15 +42,15 @@ When a state machine waits for an external signal (e.g., from hardware or anothe
 *   **`cellutron::process`**: High-level process logic, state machines, and system coordinators.
 *   **`cellutron::actuators`**: Low-level actuator abstractions (Valve, Pump, Centrifuge) and management.
 *   **`cellutron::sensors`**: Low-level sensor abstractions and monitoring.
-*   **Global**: `Thread`, `Timer`, and `FullPolicy` are global classes from the DelegateMQ extras/ports. **Never** prefix them with `dmq::`.
+*   **Global**: `dmq::Thread`, `dmq::util::Timer`, and `dmq::FullPolicy` are classes from the DelegateMQ extras/ports. Always prefix them with `dmq::` or `dmq::util::`.
 *   **DelegateMQ Inclusions**: Always include `DelegateMQ.h` as the primary entry point for the library. It automatically includes all necessary delegate types, port abstractions, and transport layers based on the build configuration. **Do not** include internal library files directly (e.g., avoid `#include "port/transport/win32-udp/Win32UdpTransport.h"`) to maintain platform portability.
 
 ## 4. Portability & Types
 To ensure the system can run on FreeRTOS, Windows (Win32), and Standard C++ targets without code changes, use the provided portable abstractions instead of OS-specific or `std` primitives:
-*   **Threading**: Use `Thread` (never `std::thread` or `xTaskCreate`).
-*   **Sleep/Delay**: Use `Thread::Sleep()` (never `vTaskDelay`, `::Sleep()`, or `std::this_thread::sleep_for()`).
-*   **Synchronization**: Use `Mutex` or `RecursiveMutex` (never `std::mutex` or `SemaphoreHandle_t`).
-*   **Time**: Use `Timer`, `dmq::Duration`, and `dmq::TimePoint`.
+*   **Threading**: Use `dmq::Thread` (never `std::thread` or `xTaskCreate`).
+*   **Sleep/Delay**: Use `dmq::Thread::Sleep()` (never `vTaskDelay`, `::Sleep()`, or `std::this_thread::sleep_for()`).
+*   **Synchronization**: Use `dmq::Mutex` or `dmq::RecursiveMutex` (never `std::mutex` or `SemaphoreHandle_t`).
+*   **Time**: Use `dmq::util::Timer`, `dmq::Duration`, and `dmq::TimePoint`.
 *   **Fixed-Block Allocator**: Use the `XALLOCATOR` macro in class definitions to enable the optional fixed-block memory allocator.
 
 ## 5. Active Object & Threading

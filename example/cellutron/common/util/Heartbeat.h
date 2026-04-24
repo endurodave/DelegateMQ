@@ -22,7 +22,7 @@ public:
     /// @param name The human-readable name of this node (for logging).
     /// @param localTopic The topic this node publishes its heartbeat on.
     /// @param thread The thread to run emitter and monitor callbacks on.
-    Heartbeat(const std::string& name, const char* localTopic, Thread& thread);
+    Heartbeat(const std::string& name, const char* localTopic, dmq::os::Thread& thread);
     ~Heartbeat();
 
     /// Start the heartbeat emitter.
@@ -45,9 +45,9 @@ private:
 
     std::string m_name;
     const char* m_localTopic;
-    Thread&     m_thread;
+    dmq::os::Thread&     m_thread;
 
-    Timer       m_timer;
+    dmq::util::Timer       m_timer;
     dmq::ScopedConnection m_timerConn;
     uint32_t    m_counter = 0;
 

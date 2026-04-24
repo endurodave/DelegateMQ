@@ -1,6 +1,6 @@
 # DataBus Multicast System Architecture Example
 
-This example demonstrates a distributed system using `dmq::DataBus` over **UDP Multicast** for efficient one-to-many distribution. It implements a simulated sensor and actuator system where a single publisher (Server) can reach any number of subscribers (Clients) simultaneously.
+This example demonstrates a distributed system using `dmq::databus::DataBus` over **UDP Multicast** for efficient one-to-many distribution. It implements a simulated sensor and actuator system where a single publisher (Server) can reach any number of subscribers (Clients) simultaneously.
 
 ## Architecture
 

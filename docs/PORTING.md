@@ -94,9 +94,9 @@ if (thread) {
 }
 ```
 
-`DispatchDelegate()` inserts a message into the thread's message queue. The `dmq::Thread` class uses an underlying `std::thread` on stdlib/Win32 platforms and a FreeRTOS task on embedded. Create a unique `DispatchDelegate()` implementation based on your platform's OS API.
+`DispatchDelegate()` inserts a message into the thread's message queue. The `dmq::os::Thread` class uses an underlying `std::thread` on stdlib/Win32 platforms and a FreeRTOS task on embedded. Create a unique `DispatchDelegate()` implementation based on your platform's OS API.
 
-The implementation should handle the queue-full case according to `dmq::FullPolicy` before allocating the message. On platforms with a lockable queue (stdlib, Win32), check first then allocate to avoid wasting heap on drops. On RTOS platforms (FreeRTOS, Zephyr, etc.) the OS queue API is atomic, so allocate first and delete on failure:
+The implementation should handle the queue-full case according to `dmq::os::FullPolicy` before allocating the message. On platforms with a lockable queue (stdlib, Win32), check first then allocate to avoid wasting heap on drops. On RTOS platforms (FreeRTOS, Zephyr, etc.) the OS queue API is atomic, so allocate first and delete on failure:
 
 ```cpp
 // stdlib / Win32 style — check under lock before allocating
@@ -106,7 +106,7 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 
     if (MAX_QUEUE_SIZE > 0 && m_queue.size() >= MAX_QUEUE_SIZE)
     {
-        if (FULL_POLICY == dmq::FullPolicy::DROP)
+        if (FULL_POLICY == dmq::os::FullPolicy::DROP)
             return;  // discard — no allocation wasted
 
         // BLOCK: wait until consumer drains a slot
@@ -126,7 +126,7 @@ void Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
     ThreadMsg* threadMsg = new (std::nothrow) ThreadMsg(MSG_DISPATCH_DELEGATE, msg);
     if (!threadMsg) return;
 
-    TickType_t timeout = (FULL_POLICY == dmq::FullPolicy::DROP) ? 0 : portMAX_DELAY;
+    TickType_t timeout = (FULL_POLICY == dmq::os::FullPolicy::DROP) ? 0 : portMAX_DELAY;
     if (xQueueSend(m_queue, &threadMsg, timeout) != pdPASS)
         delete threadMsg;  // queue full, dropped per policy
 }
@@ -153,7 +153,7 @@ public:
 };
 ```
 
-The `dmq::Thread::Process()` loop below shows the dispatch pattern. `Invoke()` is called for each incoming `MSG_DISPATCH_DELEGATE` queue message.
+The `dmq::os::Thread::Process()` loop below shows the dispatch pattern. `Invoke()` is called for each incoming `MSG_DISPATCH_DELEGATE` queue message.
 
 ```cpp
 void Thread::Process()
@@ -275,7 +275,7 @@ public:
 
 ## Thread Implementations
 
-While DelegateMQ provides the `dmq::IThread` interface, the library includes concrete `dmq::Thread` class implementations for many OSs (stdlib, Win32, FreeRTOS, etc.). These implementations provide a standard event loop and several advanced features for robustness and flow control.
+While DelegateMQ provides the `dmq::IThread` interface, the library includes concrete `dmq::os::Thread` class implementations for many OSs (stdlib, Win32, FreeRTOS, etc.). These implementations provide a standard event loop and several advanced features for robustness and flow control.
 
 ### Thread Priority and Latency
 
@@ -289,30 +289,30 @@ The end-to-end dispatch latency is primarily dominated by the destination thread
 
 ### Message Queueing
 
-The `dmq::Thread` class uses an underlying `std::priority_queue` to ensure high-priority delegate messages jump to the front of the line.
+The `dmq::os::Thread` class uses an underlying `std::priority_queue` to ensure high-priority delegate messages jump to the front of the line.
 
-#### dmq::FullPolicy (Back Pressure / Drop)
+#### dmq::os::FullPolicy (Back Pressure / Drop)
 
-When a thread's message queue has a fixed size (`maxQueueSize > 0`), `dmq::FullPolicy` controls what `DispatchDelegate()` does when the queue is full. The default is `dmq::FullPolicy::BLOCK`.
+When a thread's message queue has a fixed size (`maxQueueSize > 0`), `dmq::os::FullPolicy` controls what `DispatchDelegate()` does when the queue is full. The default is `dmq::os::FullPolicy::BLOCK`.
 
 ```cpp
 // Never drop — block the publisher until the consumer has room
-dmq::Thread cmdThread("CmdThread", /*maxQueueSize=*/50, dmq::FullPolicy::BLOCK);
+dmq::os::Thread cmdThread("CmdThread", /*maxQueueSize=*/50, dmq::os::FullPolicy::BLOCK);
 
 // Drop stale samples rather than stall the publisher
-dmq::Thread sensorThread("SensorThread", /*maxQueueSize=*/10, dmq::FullPolicy::DROP);
+dmq::os::Thread sensorThread("SensorThread", /*maxQueueSize=*/10, dmq::os::FullPolicy::DROP);
 ```
 
-- **`dmq::FullPolicy::BLOCK`** *(default)*: `DispatchDelegate()` blocks the caller until the consumer drains a slot. This provides automatic back pressure, slowing the producer to match the consumer's rate. Use for critical topics (commands, state transitions) where no message may be lost.
-- **`dmq::FullPolicy::DROP`**: `DispatchDelegate()` silently discards the message and returns immediately without stalling the caller. Ideal for high-rate best-effort data (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher.
+- **`dmq::os::FullPolicy::BLOCK`** *(default)*: `DispatchDelegate()` blocks the caller until the consumer drains a slot. This provides automatic back pressure, slowing the producer to match the consumer's rate. Use for critical topics (commands, state transitions) where no message may be lost.
+- **`dmq::os::FullPolicy::DROP`**: `DispatchDelegate()` silently discards the message and returns immediately without stalling the caller. Ideal for high-rate best-effort data (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher.
 
-Setting `maxQueueSize = 0` disables the limit entirely — `dmq::FullPolicy` has no effect and all messages are queued regardless of consumer speed.
+Setting `maxQueueSize = 0` disables the limit entirely — `dmq::os::FullPolicy` has no effect and all messages are queued regardless of consumer speed.
 
-`dmq::FullPolicy` is a thread-level setting. All delegates dispatched to the same `dmq::Thread` instance share the policy. If a single thread serves both drop-tolerant and loss-intolerant subscribers, split them across separate threads with different policies.
+`dmq::os::FullPolicy` is a thread-level setting. All delegates dispatched to the same `dmq::os::Thread` instance share the policy. If a single thread serves both drop-tolerant and loss-intolerant subscribers, split them across separate threads with different policies.
 
 ### Watchdog Integration
 
-All `dmq::Thread` port implementations (stdlib, Win32, FreeRTOS, CMSIS-RTOS2, ThreadX, Zephyr, Qt) support an optional watchdog. Enable it by passing a timeout to `CreateThread()`:
+All `dmq::os::Thread` port implementations (stdlib, Win32, FreeRTOS, CMSIS-RTOS2, ThreadX, Zephyr, Qt) support an optional watchdog. Enable it by passing a timeout to `CreateThread()`:
 
 ```cpp
 thread.CreateThread(std::chrono::seconds(2));  // fault if thread stalls > 2s

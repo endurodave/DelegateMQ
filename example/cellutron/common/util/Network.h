@@ -15,6 +15,12 @@
 namespace cellutron {
 namespace util {
 
+#if defined(DMQ_TRANSPORT_WIN32_UDP)
+    using UdpTransport = dmq::transport::Win32UdpTransport;
+#elif defined(DMQ_TRANSPORT_LINUX_UDP)
+    using UdpTransport = dmq::transport::LinuxUdpTransport;
+#endif
+
 class Network {
 public:
     enum class Reliability {
@@ -71,13 +77,14 @@ private:
     std::shared_ptr<dmq::databus::Participant> m_subParticipant;
     
     // Standardized thread name for Active Object subsystem. 
-    Thread m_thread{"NetworkThread", 100, FullPolicy::FAULT};
+    dmq::os::Thread m_thread{"NetworkThread", 100, dmq::os::FullPolicy::FAULT};
 
     struct RemoteNode {
         std::unique_ptr<UdpTransport> rawTransport;
-        std::unique_ptr<TransportMonitor> transportMonitor;
-        std::unique_ptr<RetryMonitor> retryMonitor;
-        std::unique_ptr<ReliableTransport> reliableTransport;
+        std::unique_ptr<dmq::util::TransportMonitor> transportMonitor;
+        std::unique_ptr<dmq::util::RetryMonitor> retryMonitor;
+        std::unique_ptr<dmq::util::ReliableTransport> reliableTransport;
+
         
         std::shared_ptr<dmq::databus::Participant> reliableParticipant;
         std::shared_ptr<dmq::databus::Participant> unreliableParticipant;

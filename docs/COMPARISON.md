@@ -74,7 +74,7 @@ public:
     }
 private:
     void OnData(int value) { ... }
-    dmq::Thread m_thread;
+    dmq::os::Thread m_thread;
     dmq::ScopedConnection m_conn;
 };
 ```
@@ -190,7 +190,7 @@ These libraries are good for in-thread event wiring where every subscriber runs 
 | QoS - Reliability | Complex Policies | Levels 0, 1, 2 | Reliable (Unicast) or Best-Effort (Multicast) |
 | Primary Use Case | Remote/Network distribution | IoT / Cloud | Inter-thread and/or Remote |
 
-**Key Advantage**: Unlike full DDS systems that require complex IDL compilation and manual thread management to get data into your application's control loop, `dmq::databus::DataBus` handles the thread-safe delivery automatically. You simply provide a pointer to your `dmq::Thread` object, and the callback is guaranteed to execute in that specific context.
+**Key Advantage**: Unlike full DDS systems that require complex IDL compilation and manual thread management to get data into your application's control loop, `dmq::databus::DataBus` handles the thread-safe delivery automatically. You simply provide a pointer to your `dmq::os::Thread` object, and the callback is guaranteed to execute in that specific context.
 
 **Local and Remote with One API**: DDS is designed as network middleware — it is technically capable of intra-process communication, but doing so still spins up 10–15 threads for discovery and RTPS machinery, adds megabytes of footprint, and goes through full serialization overhead. In practice, DDS systems use a separate mechanism (mutexes, condition variables, OS queues) for inter-thread communication and reserve DDS for inter-node distribution. `dmq::databus::DataBus` makes no such distinction. The same `Publish`/`Subscribe` call works whether the subscriber is on the same thread, a different thread in the same process, or a different machine entirely — and local delivery costs nothing extra (no serialization, no network stack, no extra threads). Adding a `dmq::databus::Participant` extends the existing bus to the network; removing it collapses it back to purely local.
 
@@ -301,8 +301,8 @@ private:
     }
     void DataUpdate(SensorData data) { /* on m_thread */ }
 
-    dmq::Thread m_thread; dmq::util::Timer m_pollTimer; dmq::ScopedConnection m_timerConn;
-    dmq::Serializer<void(SensorData)> m_serializer;
+    dmq::os::Thread m_thread; dmq::util::Timer m_pollTimer; dmq::ScopedConnection m_timerConn;
+    dmq::serialization::serializer::Serializer<void(SensorData)> m_serializer;
     dmq::RemoteChannel<void(SensorData)> m_channel;
 };
 ```

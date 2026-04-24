@@ -9,7 +9,7 @@ using namespace dmq::util;
 namespace cellutron {
 namespace util {
 
-Heartbeat::Heartbeat(const std::string& name, const char* localTopic, Thread& thread) :
+Heartbeat::Heartbeat(const std::string& name, const char* localTopic, dmq::os::Thread& thread) :
     m_name(name),
     m_localTopic(localTopic),
     m_thread(thread)
@@ -52,7 +52,7 @@ void Heartbeat::Tick(uint32_t ms)
 
 void Heartbeat::OnTimerExpired()
 {
-    DataBus::Publish<HeartbeatMsg>(m_localTopic, { ++m_counter });
+    dmq::databus::DataBus::Publish<HeartbeatMsg>(m_localTopic, { ++m_counter });
 }
 
 void Heartbeat::OnMonitorTimeout(const std::string& nodeName, FaultCode faultCode)
@@ -77,7 +77,7 @@ void Heartbeat::TriggerFault(const std::string& nodeName, FaultCode faultCode)
     printf("[%s] CRITICAL - %s heartbeat lost! TRIGGERING FAULT.\n", m_name.c_str(), nodeName.c_str());
     
     // Publish fault to network
-    DataBus::Publish<FaultMsg>(topics::FAULT, { static_cast<uint8_t>(faultCode) });
+    dmq::databus::DataBus::Publish<FaultMsg>(topics::FAULT, { static_cast<uint8_t>(faultCode) });
 }
 
 } // namespace util

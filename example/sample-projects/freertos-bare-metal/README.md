@@ -6,7 +6,7 @@ This sample project demonstrates how to integrate **DelegateMQ** into a **FreeRT
 
 1.  **Unicast & Multicast Delegates**: Basic function pointer and member function wrapping.
 2.  **Lambda Support**: Using C++ lambdas with captures as delegate targets.
-3.  **Cross-Thread Dispatch**: Using `dmq::Thread` (FreeRTOS port) to safely send delegate messages from one task to another.
+3.  **Cross-Thread Dispatch**: Using `dmq::os::Thread` (FreeRTOS port) to safely send delegate messages from one task to another.
 4.  **Thread-Safe Signals**: Using `MulticastDelegateSafe` to handle connections and emissions across multiple tasks.
 5.  **RAII Connections**: Using `ScopedConnection` to automatically manage the lifetime of signal-slot connections.
 6.  **RTOS Timers**: Integrating DelegateMQ's timer system with the FreeRTOS tick/timer daemon.
@@ -47,6 +47,6 @@ python 04_build_samples.py
 
 ## How it Works
 
-The example starts a "MainTask" which executes a suite of tests. One of the key tests creates a `dmq::Thread` object named "WorkerThread". When an asynchronous delegate is invoked on this thread, DelegateMQ wraps the call into a message and posts it to a FreeRTOS queue. The "WorkerThread" (running its own event loop) retrieves the message and executes the delegate in its own context.
+The example starts a "MainTask" which executes a suite of tests. One of the key tests creates a `dmq::os::Thread` object named "WorkerThread". When an asynchronous delegate is invoked on this thread, DelegateMQ wraps the call into a message and posts it to a FreeRTOS queue. The "WorkerThread" (running its own event loop) retrieves the message and executes the delegate in its own context.
 
 This architecture allows for safe, non-blocking communication between tasks without the need for manual semaphore management or complex shared state.

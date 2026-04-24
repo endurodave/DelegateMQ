@@ -94,7 +94,7 @@ private:
     dmq::ScopedConnection m_valveConn;
     dmq::ScopedConnection m_pumpConn;
     dmq::ScopedConnection m_timerConn;
-    Timer m_timer;
+    dmq::util::Timer m_timer;
     std::shared_ptr<const PumpData> m_data;
 };
 

@@ -26,7 +26,7 @@ public:
     void Tick(uint32_t ms);
 
     /// Get the system thread.
-    Thread& GetThread() { return m_thread; }
+    dmq::os::Thread& GetThread() { return m_thread; }
 
 private:
     System() : m_heartbeat("Controller", topics::CONTROLLER_HEARTBEAT, m_thread) {}
@@ -39,7 +39,7 @@ private:
     void SetupNetwork();
     void SetupWatchdog();
 
-    Thread m_thread{"SystemThread", 200, FullPolicy::BLOCK};
+    dmq::os::Thread m_thread{"SystemThread", 200, dmq::os::FullPolicy::BLOCK};
 
     // Connections to the local DataBus
     dmq::ScopedConnection m_startConn;

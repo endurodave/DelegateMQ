@@ -217,14 +217,14 @@ void CellProcess::CentrifugeStopped()
 STATE_DEFINE(cellutron::process::CellProcess, Idle, NoEventData)
 {
     printf("CellProcess: ST_IDLE\n");
-    DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::IDLE });
+    dmq::databus::DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::IDLE });
     m_timer.Stop();
 }
 
 STATE_DEFINE(cellutron::process::CellProcess, FillSolutionA, NoEventData)
 {
     printf("CellProcess: ST_FILL_SOLUTION_A\n");
-    DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::PROCESSING });
+    dmq::databus::DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::PROCESSING });
     // Use Pump ID 1, Valve 1, Forward
     m_pumpProcess.Start(std::make_shared<PumpData>(1, 50, std::chrono::seconds(2), false));
 }
@@ -271,7 +271,7 @@ STATE_DEFINE(cellutron::process::CellProcess, Complete, NoEventData)
 STATE_DEFINE(cellutron::process::CellProcess, Aborting, NoEventData)
 {
     printf("CellProcess: ST_ABORTING (Shutting down hardware)\n");
-    DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::ABORTING });
+    dmq::databus::DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::ABORTING });
 
     // Stop single pump immediately
     actuators::Actuators::GetInstance().SetPump(1, 0);
@@ -286,7 +286,7 @@ STATE_DEFINE(cellutron::process::CellProcess, Aborting, NoEventData)
 STATE_DEFINE(cellutron::process::CellProcess, Fault, NoEventData)
 {
     printf("CellProcess: ST_FAULT\n");
-    DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::FAULT });
+    dmq::databus::DataBus::Publish<RunStatusMsg>(topics::STATUS_RUN, { RunStatus::FAULT });
     
     // Stop single pump
     actuators::Actuators::GetInstance().SetPump(1, 0);

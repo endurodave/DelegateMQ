@@ -55,8 +55,8 @@ Originally published on CodeProject at <a href="https://www.codeproject.com/Arti
 
 ## Key Concepts
 
-- `dmq::MakeDelegate` – Creates a delegate bound to any callable. Adding a `dmq::Thread` argument makes it asynchronous; adding a `dmq::RemoteChannel` makes it remote. The call syntax is the same in all three cases.
-- `dmq::Thread` – A cross-platform thread class. Passed to `dmq::MakeDelegate` to dispatch a call to a specific worker thread.
+- `dmq::MakeDelegate` – Creates a delegate bound to any callable. Adding a `dmq::os::Thread` argument makes it asynchronous; adding a `dmq::RemoteChannel` makes it remote. The call syntax is the same in all three cases.
+- `dmq::os::Thread` – A cross-platform thread class. Passed to `dmq::MakeDelegate` to dispatch a call to a specific worker thread.
 - `dmq::RemoteChannel<Sig>` – Owns the transport wiring for one message signature. Call `Bind()` once to configure, then invoke with `operator()` to send remotely.
 - `dmq::Signal<Sig>` – Thread-safe multicast signal. `Connect()` returns a `dmq::ScopedConnection` that auto-disconnects on scope exit. Declare as a plain class member — no `shared_ptr` required.
 - `dmq::MulticastDelegateSafe` – Thread-safe delegate container for broadcast invocation without RAII connection management.
@@ -98,7 +98,7 @@ Asynchronous delegates simplify multithreaded programming by allowing you to inv
   * **Asynchronous:** Use standard `std::future` to retrieve results later.
 
 ```cpp
-dmq::Thread thread("WorkerThread");
+dmq::os::Thread thread("WorkerThread");
 thread.CreateThread();
 
 // 1. Asynchronous Invocation (Non-blocking / Fire-and-forget)
@@ -149,7 +149,7 @@ public:
 
 private:
     Data m_data;        // Data storage
-    dmq::Thread m_thread;    // Internal thread
+    dmq::os::Thread m_thread;    // Internal thread
 };
 ```
 
@@ -189,7 +189,7 @@ public:
 private:
     void HandlePress(int buttonId) { std::cout << "Button " << buttonId << "\n"; }
 
-    dmq::Thread m_thread;
+    dmq::os::Thread m_thread;
     dmq::ScopedConnection m_conn;
 };
 
@@ -368,8 +368,8 @@ Key advantages of using DelegateMQ in your application.
 | One invocation model | Sync, async, and remote delegates share the same `dmq::MakeDelegate` syntax — promoting a call to async or remote is a one-line change. |
 | Runs everywhere C++ runs | Small pure-virtual interfaces (`dmq::IThread`, `dmq::transport::ITransport`) mean the same application code compiles on Windows, Linux, FreeRTOS, and bare metal. |
 | No imposed dependencies | Header-only core requires only C++17; serialization, transport, and threading are injected externally with no mandatory third-party packages. |
-| Application owns every thread | No internal threads are created — every `dmq::Thread` is constructed by the application, keeping scheduling, watchdogs, and stack sizes explicit and auditable. |
-| Gradual adoption | Use synchronous delegates first, add a `dmq::Thread` to go async, add a `dmq::RemoteChannel` to go cross-process — each step is independent and reversible. |
+| Application owns every thread | No internal threads are created — every `dmq::os::Thread` is constructed by the application, keeping scheduling, watchdogs, and stack sizes explicit and auditable. |
+| Gradual adoption | Use synchronous delegates first, add a `dmq::os::Thread` to go async, add a `dmq::RemoteChannel` to go cross-process — each step is independent and reversible. |
 | Targeted thread dispatch | Callbacks, signal slots, and DataBus subscribers each specify the thread they run on — the library handles the dispatch, so handlers always execute in the correct thread context without manual queuing. |
 | Off-target development | The stdlib port lets embedded application logic run and be tested on a Windows or Linux host without target hardware; moving to the device swaps the thread port (e.g. FreeRTOS) and transport — application code is unchanged. |
 | DataBus location transparency | Subscribers receive data identically whether the publisher is in the same thread, a different process, or a remote processor — no code change when moving between local and remote. |

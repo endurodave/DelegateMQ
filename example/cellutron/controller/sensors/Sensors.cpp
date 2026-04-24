@@ -40,13 +40,13 @@ bool Sensors::IsAirInLine() {
 
 int Sensors::InternalGetPressure() {
     int pressure = 0;
-    DataBus::Publish<SensorStatusMsg>(topics::STATUS_SENSOR, { SensorType::PRESSURE, (int16_t)pressure });
+    dmq::databus::DataBus::Publish<SensorStatusMsg>(topics::STATUS_SENSOR, { SensorType::PRESSURE, (int16_t)pressure });
     return pressure; 
 }
 
 bool Sensors::InternalIsAirInLine() {
     bool air = false;
-    DataBus::Publish<SensorStatusMsg>(topics::STATUS_SENSOR, { SensorType::AIR_IN_LINE, (int16_t)(air ? 1 : 0) });
+    dmq::databus::DataBus::Publish<SensorStatusMsg>(topics::STATUS_SENSOR, { SensorType::AIR_IN_LINE, (int16_t)(air ? 1 : 0) });
     return air;
 }
 

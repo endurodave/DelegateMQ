@@ -50,7 +50,7 @@ private:
         std::cout << "Button " << buttonId << " pressed\n";
     }
 
-    dmq::Thread m_thread;
+    dmq::os::Thread m_thread;
     dmq::ScopedConnection m_conn;  // RAII: disconnects on destruction
 };
 

@@ -33,15 +33,15 @@ void System::Tick(uint32_t ms) {
 }
 
 void System::SetupLocalSubscriptions() {
-    m_speedConn = DataBus::Subscribe<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, [this](CentrifugeSpeedMsg msg) {
+    m_speedConn = dmq::databus::DataBus::Subscribe<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, [this](CentrifugeSpeedMsg msg) {
         if (!m_faulted && msg.rpm > MAX_CENTRIFUGE_RPM) {
             m_faulted = true;
             printf("Safety: CRITICAL - Centrifuge speed exceeded limit! (%u RPM). TRIGGERING FAULT.\n", msg.rpm);
-            DataBus::Publish<FaultMsg>(topics::FAULT, { FAULT_OVERSPEED });
+            dmq::databus::DataBus::Publish<FaultMsg>(topics::FAULT, { FAULT_OVERSPEED });
         }
     }, &m_thread);
 
-    m_faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg) {
+    m_faultConn = dmq::databus::DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg) {
         m_faulted = true;
     }, &m_thread);
 }

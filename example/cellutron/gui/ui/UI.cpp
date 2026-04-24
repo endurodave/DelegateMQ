@@ -44,18 +44,18 @@ void UI::Start() {
     m_thread.CreateThread(WATCHDOG_TIMEOUT);
 
     // 2. Setup DataBus Subscriptions
-    auto statusConn = DataBus::Subscribe<CentrifugeStatusMsg>(topics::STATUS_CENTRIFUGE, [this](CentrifugeStatusMsg msg) {
+    auto statusConn = dmq::databus::DataBus::Subscribe<CentrifugeStatusMsg>(topics::STATUS_CENTRIFUGE, [this](CentrifugeStatusMsg msg) {
         auto* screen = ScreenInteractive::Active();
         if (screen) screen->PostEvent(Event::Custom);
     }, &m_thread);
 
-    auto cmdConn = DataBus::Subscribe<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, [this](CentrifugeSpeedMsg msg) {
+    auto cmdConn = dmq::databus::DataBus::Subscribe<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, [this](CentrifugeSpeedMsg msg) {
         m_currentRpm = msg.rpm;
         auto* screen = ScreenInteractive::Active();
         if (screen) screen->PostEvent(Event::Custom);
     }, &m_thread);
 
-    auto runConn = DataBus::Subscribe<RunStatusMsg>(topics::STATUS_RUN, [this](RunStatusMsg msg) {
+    auto runConn = dmq::databus::DataBus::Subscribe<RunStatusMsg>(topics::STATUS_RUN, [this](RunStatusMsg msg) {
         std::string status_text;
         switch (msg.status) {
             case RunStatus::IDLE: status_text = "IDLE"; break;
@@ -69,7 +69,7 @@ void UI::Start() {
         if (screen) screen->PostEvent(Event::Custom);
     }, &m_thread);
 
-    auto pumpConn = DataBus::Subscribe<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, [this](ActuatorStatusMsg msg) {
+    auto pumpConn = dmq::databus::DataBus::Subscribe<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, [this](ActuatorStatusMsg msg) {
         if (msg.type == ActuatorType::PUMP && msg.id == 1) {
             m_currentPumpSpeed = msg.value;
             auto* screen = ScreenInteractive::Active();
@@ -77,7 +77,7 @@ void UI::Start() {
         }
     }, &m_thread);
 
-    auto faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg msg) {
+    auto faultConn = dmq::databus::DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg msg) {
         AddLog(">>> CRITICAL FAULT RECEIVED <<<");
         m_runStatus = RunStatus::FAULT;
         m_currentRpm = 0;
@@ -122,10 +122,10 @@ void UI::Start() {
         RunStatus current = m_runStatus.load();
         if (current == RunStatus::IDLE) {
             AddLog("Command: START Process");
-            DataBus::Publish<StartProcessMsg>(topics::CMD_RUN, {});
+            dmq::databus::DataBus::Publish<StartProcessMsg>(topics::CMD_RUN, {});
         } else if (current == RunStatus::PROCESSING) {
             AddLog("Command: ABORT Process");
-            DataBus::Publish<StopProcessMsg>(topics::CMD_ABORT, {});
+            dmq::databus::DataBus::Publish<StopProcessMsg>(topics::CMD_ABORT, {});
         }
     });
 

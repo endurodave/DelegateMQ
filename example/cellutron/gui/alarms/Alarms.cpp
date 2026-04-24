@@ -24,7 +24,7 @@ void Alarms::Initialize() {
     m_alarmGraceTimer->Start(std::chrono::milliseconds(1000));
 
     // 1. Subscribe to system faults
-    m_faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg msg) {
+    m_faultConn = dmq::databus::DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg msg) {
         // If we are already showing an alarm, don't overwrite it with a generic one
         if (m_alarmActive && msg.faultCode == FAULT_OVERSPEED) {
              // Let overspeed through as it is high priority
@@ -45,8 +45,8 @@ void Alarms::Initialize() {
     }, &m_thread);
 
     // 2. Filtered subscription to run status. Only receive when the system is in FAULT.
-    // This demonstrates the DataBus::SubscribeFilter feature.
-    m_runStatusConn = DataBus::SubscribeFilter<RunStatusMsg>(
+    // This demonstrates the dmq::databus::DataBus::SubscribeFilter feature.
+    m_runStatusConn = dmq::databus::DataBus::SubscribeFilter<RunStatusMsg>(
         topics::STATUS_RUN, 
         [this](RunStatusMsg) {
             SetAlarm("ALARM: System-wide Fault Detected", true);

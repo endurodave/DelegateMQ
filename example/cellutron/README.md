@@ -47,7 +47,7 @@ Cellutron demonstrates all major DelegateMQ functional areas in a single integra
 - **Synchronous-over-Asynchronous**: Demonstrates blocking hardware abstractions where a thread blocks until an asynchronous hardware operation confirms completion.
 - **RAII Signal & Slot**: Uses `dmq::Signal` with `dmq::ScopedConnection` for automatic cleanup of internal events when components are destroyed.
 - **Non-Intrusive Monitoring**: Uses the `Monitor()` feature to "spy" on the distributed bus for audit logging without modifying core application logic.
-- **Triangle Heartbeat**: Cross-node health monitoring via `dmq::DeadlineSubscription`. Missed heartbeats trigger a coordinated system-wide `FAULT`.
+- **Triangle Heartbeat**: Cross-node health monitoring via `dmq::databus::DeadlineSubscription`. Missed heartbeats trigger a coordinated system-wide `FAULT`.
 - **Multi-OS Portability**: Identical application source code runs on **Standard C++ (GUI CPU)** and **FreeRTOS (Controller/Safety CPUs)**.
 - **Safe Error Handling**: Uses the `FullPolicy::FAULT` to ensure that any message queue overflow is treated as a critical system failure.
 

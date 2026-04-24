@@ -40,11 +40,11 @@ private:
     void SetAlarm(const std::string& message, bool active);
 
     // Standardized thread name for Active Object subsystem
-    Thread m_thread{"AlarmsThread", 200, FullPolicy::DROP};
+    dmq::os::Thread m_thread{"AlarmsThread", 200, dmq::os::FullPolicy::DROP};
 
     dmq::ScopedConnection m_faultConn;
     dmq::ScopedConnection m_runStatusConn;
-    std::unique_ptr<Timer> m_alarmGraceTimer;
+    std::unique_ptr<dmq::util::Timer> m_alarmGraceTimer;
     dmq::ScopedConnection m_alarmGraceConn;
     std::unique_ptr<dmq::databus::DeadlineSubscription<HeartbeatMsg>> m_safetyWatchdog;
     std::unique_ptr<dmq::databus::DeadlineSubscription<HeartbeatMsg>> m_controllerWatchdog;

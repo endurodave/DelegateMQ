@@ -179,13 +179,13 @@ The dominant terms are network transit and receive blocking. Once `Publish()` is
 
 ### Thread Queue Full Policy
 
-When a subscriber is registered with a worker thread, `dmq::databus::DataBus::Publish()` posts a message to that thread's internal queue. If a slow subscriber falls behind a fast publisher the queue grows. `dmq::Thread` provides a configurable `FullPolicy` to control what happens when the queue reaches its limit (`maxQueueSize`):
+When a subscriber is registered with a worker thread, `dmq::databus::DataBus::Publish()` posts a message to that thread's internal queue. If a slow subscriber falls behind a fast publisher the queue grows. `dmq::os::Thread` provides a configurable `FullPolicy` to control what happens when the queue reaches its limit (`maxQueueSize`):
 
 | Policy | Behavior when full | Publisher stalled? |
 |:---|:---|:---|
-| `dmq::FullPolicy::FAULT` (default) | `DispatchDelegate()` triggers a system fault and terminates the application | No (Crash) |
-| `dmq::FullPolicy::BLOCK` | `DispatchDelegate()` blocks the caller until the consumer drains a slot | Yes |
-| `dmq::FullPolicy::DROP` | `DispatchDelegate()` discards the message and returns immediately | No |
+| `dmq::os::FullPolicy::FAULT` (default) | `DispatchDelegate()` triggers a system fault and terminates the application | No (Crash) |
+| `dmq::os::FullPolicy::BLOCK` | `DispatchDelegate()` blocks the caller until the consumer drains a slot | Yes |
+| `dmq::os::FullPolicy::DROP` | `DispatchDelegate()` discards the message and returns immediately | No |
 
 **Choosing a policy**
 
@@ -197,11 +197,11 @@ Use `BLOCK` for topics where every message must be delivered but application ter
 
 ```cpp
 // Sensor thread: drop stale readings rather than stall the publisher
-dmq::Thread sensorThread("SensorThread", /*maxQueueSize=*/10, dmq::FullPolicy::DROP);
+dmq::os::Thread sensorThread("SensorThread", /*maxQueueSize=*/10, dmq::os::FullPolicy::DROP);
 sensorThread.CreateThread();
 
 // Command thread: never drop, apply back pressure to the publisher
-dmq::Thread cmdThread("CmdThread", /*maxQueueSize=*/50, dmq::FullPolicy::BLOCK);
+dmq::os::Thread cmdThread("CmdThread", /*maxQueueSize=*/50, dmq::os::FullPolicy::BLOCK);
 cmdThread.CreateThread();
 
 auto connSensor = dmq::databus::DataBus::Subscribe<ImuData>("sensor/imu",
@@ -215,7 +215,7 @@ auto connCmd = dmq::databus::DataBus::Subscribe<ActuatorCmd>("cmd/actuator",
 
 **Trade-offs**
 
-- `FullPolicy` is a thread-level setting, not per-subscription. All subscribers on the same `dmq::Thread` instance share the same policy. If a single thread serves both drop-tolerant and drop-intolerant topics, split them across two threads.
+- `FullPolicy` is a thread-level setting, not per-subscription. All subscribers on the same `dmq::os::Thread` instance share the same policy. If a single thread serves both drop-tolerant and drop-intolerant topics, split them across two threads.
 - With `BLOCK`, a backed-up subscriber thread stalls the publishing thread. If the publisher also drives other topics or dispatches to other threads, that stall propagates. Isolate publishers with strong back-pressure requirements onto a dedicated polling or dispatch thread.
 - With `DROP`, a fast publisher and slow subscriber can result in the subscriber seeing only a fraction of publishes. Pair `DROP` with `minSeparation` QoS on the subscriber to proactively rate-limit delivery before the queue ever fills — this keeps delivery uniform rather than bursty-then-silent.
 - Setting `maxQueueSize = 0` disables the limit entirely; `FullPolicy` has no effect and all messages are queued regardless of consumer speed.
@@ -321,7 +321,7 @@ The object is non-copyable and non-movable. Declare it as a class member or use 
 
 ### `dmq::util::Timer::ProcessTimers()` requirement
 
-The deadline fires only when `dmq::util::Timer::ProcessTimers()` is called. On platforms where a `dmq::Thread` with a watchdog is already running, this is driven automatically. On bare-metal targets, call `ProcessTimers()` from the main super-loop or a SysTick handler. If `ProcessTimers()` is never called, `onMissed` silently never fires.
+The deadline fires only when `dmq::util::Timer::ProcessTimers()` is called. On platforms where a `dmq::os::Thread` with a watchdog is already running, this is driven automatically. On bare-metal targets, call `ProcessTimers()` from the main super-loop or a SysTick handler. If `ProcessTimers()` is never called, `onMissed` silently never fires.
 
 On bare-metal with no thread argument, `onMissed` may execute in an ISR context — keep it short and non-blocking, or use a flag that is processed in the main loop.
 
@@ -480,7 +480,7 @@ This example shows a fully bidirectional three-node system. CPU-A sends actuator
 
 ### CPU-A Setup
 
-**Platform: Linux.** Include `port/os/stdlib/Thread.h` and `port/transport/linux-udp/LinuxUdpTransport.h`. `dmq::Thread` maps to `std::thread`. No platform-specific changes to any of the DataBus calls below.
+**Platform: Linux.** Include `port/os/stdlib/Thread.h` and `port/transport/linux-udp/LinuxUdpTransport.h`. `dmq::os::Thread` maps to `std::thread`. No platform-specific changes to any of the DataBus calls below.
 
 CPU-A sends actuator commands via unicast (reliable, ACK expected) and subscribes to sensor data arriving from CPU-B via multicast (best effort). The transport choice at setup time is the reliability contract — the `Publish` and `Subscribe` calls themselves are identical regardless of transport.
 
@@ -513,9 +513,9 @@ dmq::databus::DataBus::Subscribe<TempData>("sensor/temp", [](const TempData& t) 
 // --- Publish and polling ---
 dmq::databus::DataBus::Publish<ActuatorCmd>("cmd/actuator", cmd);  // unicast, ACK expected
 
-// dmq::Thread is the DelegateMQ abstraction — maps to stdlib, FreeRTOS, RTX, etc.
+// dmq::os::Thread is the DelegateMQ abstraction — maps to stdlib, FreeRTOS, RTX, etc.
 // Priority can be set before or after CreateThread().
-dmq::Thread m_pollSensor("PollSensor");
+dmq::os::Thread m_pollSensor("PollSensor");
 m_pollSensor.CreateThread();
 dmq::MakeDelegate(this, &CpuA::PollSensor, m_pollSensor).AsyncInvoke();
 
@@ -526,11 +526,11 @@ dmq::MakeDelegate(this, &CpuA::PollSensor, m_pollSensor).AsyncInvoke();
 
 ### CPU-B Setup (Bridge Node)
 
-**Platform: FreeRTOS + lwIP.** Include `port/os/freertos/Thread.h` and `port/transport/arm-lwip-udp/ArmLwipUdpTransport.h`. The lwIP transport exposes the same `UdpTransport` class name and `Create(Type, addr, port)` signature as the Linux version — no code changes to the snippets below. `dmq::Thread` maps to a FreeRTOS task created via `xTaskCreate`; priority can be set per-thread with `SetThreadPriority()`. For the serial legs, include `port/transport/stm32-uart/Stm32UartTransport.h`, which uses interrupt-driven ring buffering and a binary semaphore so the FreeRTOS task sleeps until data arrives.
+**Platform: FreeRTOS + lwIP.** Include `port/os/freertos/Thread.h` and `port/transport/arm-lwip-udp/ArmLwipUdpTransport.h`. The lwIP transport exposes the same `UdpTransport` class name and `Create(Type, addr, port)` signature as the Linux version — no code changes to the snippets below. `dmq::os::Thread` maps to a FreeRTOS task created via `xTaskCreate`; priority can be set per-thread with `SetThreadPriority()`. For the serial legs, include `port/transport/stm32-uart/Stm32UartTransport.h`, which uses interrupt-driven ring buffering and a binary semaphore so the FreeRTOS task sleeps until data arrives.
 
 > **`Stm32UartTransport` single-channel constraint.** The current implementation routes all UART ISR bytes through a single global pointer (`g_uartTransportInstance`). Each `Create()` call overwrites that pointer, so only the last transport to call `Create()` receives ISR bytes. For a two-MCU bridge you need two separate globals and two separate `HAL_UART_RxCpltCallback` dispatchers — one per UART peripheral. The snippets below assume that extension is in place. Alternatively, a single-MCU variant of CPU-B (one serial link) avoids the issue entirely.
 
-CPU-B is purely a bridge — it does not originate or consume any topics itself. It receives on three incoming transports (one Ethernet, two serial) and forwards in both directions. `AddIncomingTopic` handles the re-publish in one line per topic per transport. The serializer can differ per leg; CPU-B always works with plain C++ objects between the two legs. Each polling thread is a named `dmq::Thread` instance whose priority can be set independently — for example, the serial MCU threads could be raised above the Ethernet thread if sensor latency is more critical than command latency on a given target.
+CPU-B is purely a bridge — it does not originate or consume any topics itself. It receives on three incoming transports (one Ethernet, two serial) and forwards in both directions. `AddIncomingTopic` handles the re-publish in one line per topic per transport. The serializer can differ per leg; CPU-B always works with plain C++ objects between the two legs. Each polling thread is a named `dmq::os::Thread` instance whose priority can be set independently — for example, the serial MCU threads could be raised above the Ethernet thread if sensor latency is more critical than command latency on a given target.
 
 ```cpp
 // ── Inbound from CPU-A: actuator commands ──────────────────────────────
@@ -574,10 +574,10 @@ dmq::databus::DataBus::AddParticipant(toA);
 dmq::databus::DataBus::RegisterSerializer<TempData>("sensor/temp", sensorEthSerializer);
 
 // ── Polling threads: one per incoming transport (three total) ──────────
-// Named dmq::Thread instances — priority settable per thread, portable to RTOS.
-dmq::Thread m_pollFromA("PollFromA");
-dmq::Thread m_pollFromC("PollFromMcuC");
-dmq::Thread m_pollFromD("PollFromMcuD");
+// Named dmq::os::Thread instances — priority settable per thread, portable to RTOS.
+dmq::os::Thread m_pollFromA("PollFromA");
+dmq::os::Thread m_pollFromC("PollFromMcuC");
+dmq::os::Thread m_pollFromD("PollFromMcuD");
 m_pollFromA.CreateThread();
 m_pollFromC.CreateThread();
 m_pollFromD.CreateThread();
@@ -596,9 +596,9 @@ When `cmd/actuator` arrives from CPU-A, `AddIncomingTopic` re-publishes it local
 
 ### MCU-C / MCU-D Setup
 
-**Platform: Bare metal (no OS).** There is no RTOS, so there are no `dmq::Thread` instances and no blocking primitives. Two things change from the FreeRTOS nodes above:
+**Platform: Bare metal (no OS).** There is no RTOS, so there are no `dmq::os::Thread` instances and no blocking primitives. Two things change from the FreeRTOS nodes above:
 
-1. **No polling thread.** `ProcessIncoming()` is called directly from the main super-loop (or from a timer/DMA callback). There is no `dmq::Thread::CreateThread()` or `AsyncInvoke()`.
+1. **No polling thread.** `ProcessIncoming()` is called directly from the main super-loop (or from a timer/DMA callback). There is no `dmq::os::Thread::CreateThread()` or `AsyncInvoke()`.
 2. **Synchronous dispatch.** `dmq::databus::DataBus::Subscribe` is called *without* a thread argument. When `ProcessIncoming()` delivers a message, the subscriber callback fires synchronously in the same call stack — no queue, no context switch.
 
 The serial transport on bare metal is a custom `dmq::transport::ITransport` implementation that polls or interrupt-drives your MCU's UART peripheral directly. `BareMetalClock.h` (`port/os/bare-metal/BareMetalClock.h`) provides the timing source, fed by your SysTick handler incrementing `g_ticks`. The `dmq::databus::DataBus::Publish` and `AddIncomingTopic` calls are unchanged.
@@ -634,7 +634,7 @@ dmq::databus::DataBus::RegisterSerializer<TempData>("sensor/temp", sensorSerialS
 // Publish sensor reading (triggered by timer or hardware event)
 dmq::databus::DataBus::Publish<TempData>("sensor/temp", reading);
 
-// ── Super-loop polling (no dmq::Thread, no RTOS) ────────────────────────────
+// ── Super-loop polling (no dmq::os::Thread, no RTOS) ────────────────────────────
 // In main():
 while (true)
 {

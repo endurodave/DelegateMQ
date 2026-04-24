@@ -31,6 +31,12 @@ def main():
 
     print("--- Starting Cellutron Distributed System ---")
 
+    # Delete spy_logs.txt before launch to prevent slowdown from large log files
+    spy_log = os.path.normpath(os.path.join(base_path, "../../tools/build/Release/spy_logs.txt"))
+    if os.path.exists(spy_log):
+        os.remove(spy_log)
+        print(f"Deleted {spy_log}")
+
     # 1. Launch Tools (Monitor/Spy)
     for tool in tools:
         exe_path = os.path.normpath(os.path.join(base_path, tool["path"]))

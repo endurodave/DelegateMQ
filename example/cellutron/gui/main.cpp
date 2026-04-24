@@ -19,20 +19,20 @@
 using namespace cellutron;
 
 int main() {
-    static NetworkContext networkContext;
+    static dmq::util::NetworkContext networkContext;
     std::cout << "Cellutron GUI Processor starting..." << std::endl;
 
     cellutron::System::GetInstance().Initialize();
 
     // Start a background thread to tick the system (heartbeat warmup, etc.)
     // since UI::Start() is a blocking call.
-    static Thread tickThread{"TickThread"};
+    static dmq::os::Thread tickThread{"TickThread"};
     tickThread.CreateThread();
 
     dmq::MakeDelegate([]() {
         while (true) {
             cellutron::System::GetInstance().Tick(100);
-            Thread::Sleep(std::chrono::milliseconds(100));
+            dmq::os::Thread::Sleep(std::chrono::milliseconds(100));
         }
     }, tickThread).AsyncInvoke();
 

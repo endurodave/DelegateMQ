@@ -1,6 +1,6 @@
 # DataBus System Architecture Example
 
-This example demonstrates a distributed system using `dmq::DataBus` for inter-process communication over UDP. It implements a simulated sensor and actuator system across two standalone applications (Client and Server), showcasing location transparency and decoupled architecture.
+This example demonstrates a distributed system using `dmq::databus::DataBus` for inter-process communication over UDP. It implements a simulated sensor and actuator system across two standalone applications (Client and Server), showcasing location transparency and decoupled architecture.
 
 ## Architecture
 

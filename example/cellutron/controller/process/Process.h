@@ -53,7 +53,7 @@ private:
 
     void InternalFault();
 
-    Thread            m_thread{"ProcessThread", 50, FullPolicy::BLOCK};
+    dmq::os::Thread            m_thread{"ProcessThread", 50, dmq::os::FullPolicy::BLOCK};
     PumpProcess       m_pumpProcess;
     CellProcess       m_cellProcess;
 };

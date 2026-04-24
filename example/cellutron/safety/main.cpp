@@ -80,10 +80,10 @@ static void vSafetyTask(void* /*pvParams*/) {
 
 int main(void) {
     prvInitialiseHeap();
-    static NetworkContext networkContext;
+    static dmq::util::NetworkContext networkContext;
     printf("Cellutron Safety Processor starting (FreeRTOS Win32)...\n");
 
-    TimerHandle_t sysTimer = xTimerCreate("SysTimer", pdMS_TO_TICKS(10), pdTRUE, NULL, [](TimerHandle_t) { Timer::ProcessTimers(); });
+    TimerHandle_t sysTimer = xTimerCreate("SysTimer", pdMS_TO_TICKS(10), pdTRUE, NULL, [](TimerHandle_t) { dmq::util::Timer::ProcessTimers(); });
     xTimerStart(sysTimer, 0);
 
     xTaskCreate(vSafetyTask, "Safety", 2048, NULL, 6, NULL);

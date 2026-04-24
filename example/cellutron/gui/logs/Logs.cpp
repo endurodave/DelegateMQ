@@ -30,21 +30,21 @@ void Logs::Initialize() {
     // Enable DelegateMQ Watchdog
     m_thread.CreateThread(WATCHDOG_TIMEOUT);
 
-    m_startConn = DataBus::Subscribe<StartProcessMsg>(topics::CMD_RUN, [this](StartProcessMsg) {
+    m_startConn = dmq::databus::DataBus::Subscribe<StartProcessMsg>(topics::CMD_RUN, [this](StartProcessMsg) {
         WriteToFile("[CMD] START Process Command Sent");
     }, &m_thread);
 
-    m_stopConn = DataBus::Subscribe<StopProcessMsg>(topics::CMD_ABORT, [this](StopProcessMsg) {
+    m_stopConn = dmq::databus::DataBus::Subscribe<StopProcessMsg>(topics::CMD_ABORT, [this](StopProcessMsg) {
         WriteToFile("[CMD] ABORT Process Command Sent");
     }, &m_thread);
 
-    m_speedConn = DataBus::Subscribe<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, [this](CentrifugeSpeedMsg msg) {
+    m_speedConn = dmq::databus::DataBus::Subscribe<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, [this](CentrifugeSpeedMsg msg) {
         std::stringstream ss;
         ss << "[STATUS] Centrifuge Speed: " << msg.rpm << " RPM";
         WriteToFile(ss.str());
     }, &m_thread);
 
-    m_runConn = DataBus::Subscribe<RunStatusMsg>(topics::STATUS_RUN, [this](RunStatusMsg msg) {
+    m_runConn = dmq::databus::DataBus::Subscribe<RunStatusMsg>(topics::STATUS_RUN, [this](RunStatusMsg msg) {
         std::string status_text;
         switch (msg.status) {
             case RunStatus::IDLE: status_text = "IDLE"; break;
@@ -55,12 +55,12 @@ void Logs::Initialize() {
         WriteToFile("[STATUS] System State: " + status_text);
     }, &m_thread);
 
-    m_faultConn = DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg) {
+    m_faultConn = dmq::databus::DataBus::Subscribe<FaultMsg>(topics::FAULT, [this](FaultMsg) {
         WriteToFile("[CRITICAL] FAULT DETECTED BY SAFETY NODE");
     }, &m_thread);
 
     // Hardware Logging
-    m_actuatorConn = DataBus::Subscribe<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, [this](ActuatorStatusMsg msg) {
+    m_actuatorConn = dmq::databus::DataBus::Subscribe<ActuatorStatusMsg>(topics::STATUS_ACTUATOR, [this](ActuatorStatusMsg msg) {
         std::stringstream ss;
         if (msg.type == ActuatorType::VALVE) {
             ss << "[HW] Valve " << (int)msg.id << " changed to " << (msg.value ? "OPEN" : "CLOSED");
@@ -70,7 +70,7 @@ void Logs::Initialize() {
         WriteToFile(ss.str());
     }, &m_thread);
 
-    m_sensorConn = DataBus::Subscribe<SensorStatusMsg>(topics::STATUS_SENSOR, [this](SensorStatusMsg msg) {
+    m_sensorConn = dmq::databus::DataBus::Subscribe<SensorStatusMsg>(topics::STATUS_SENSOR, [this](SensorStatusMsg msg) {
         std::stringstream ss;
         if (msg.type == SensorType::PRESSURE) {
             ss << "[HW] Pressure Sensor: " << msg.value;

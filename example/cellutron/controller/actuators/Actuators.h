@@ -41,7 +41,7 @@ public:
     Pump& GetPump(int id) { return m_pumps.at(id); }
 
     /// Get the actuator thread.
-    Thread& GetThread() { return m_thread; }
+    dmq::os::Thread& GetThread() { return m_thread; }
 
 private:
     Actuators() = default;
@@ -57,7 +57,7 @@ private:
     void HandlePumpChanged(int id, int speed);
 
     // Use standardized thread name for Active Object subsystem
-    Thread m_thread{"ActuatorsThread", 50, FullPolicy::BLOCK};
+    dmq::os::Thread m_thread{"ActuatorsThread", 50, dmq::os::FullPolicy::BLOCK};
     Centrifuge m_centrifuge;
 
     std::map<int, Valve> m_valves;

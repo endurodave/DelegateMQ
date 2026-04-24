@@ -17,7 +17,11 @@
       "Bash(sed -i 's/dmq::Serializer</dmq::serialization::serializer::Serializer</g' C:/Projects/DelegateMQWorkspace/DelegateMQ/test/unit-tests/databus/DataBusRemoteTest.cpp C:/Projects/DelegateMQWorkspace/DelegateMQ/test/unit-tests/dispatcher/DispatcherTests.cpp)",
       "Bash(grep -v \"::os::\\\\|::util::\\\\|::transport::\\\\|::serialization::\\\\|//.*dmq::\")",
       "Bash(xargs sed *)",
-      "Bash(grep -v \"//.*dmq::\")"
+      "Bash(grep -v \"//.*dmq::\")",
+      "Bash(git -C \"C:/Projects/DelegateMQWorkspace/DelegateMQ\" diff HEAD -- src/delegate-mq/DelegateMQ.h)",
+      "Bash(git *)",
+      "Bash(grep -v \"binary\\\\|\\\\.vs\\\\|build\\\\\\\\\")",
+      "Bash(xargs grep *)"
     ]
   }
 }

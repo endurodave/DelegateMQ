@@ -3,15 +3,15 @@
 
 namespace cellutron {
 
-Serializer<void(StartProcessMsg)>    serStart;
-Serializer<void(StopProcessMsg)>     serStop;
-Serializer<void(CentrifugeSpeedMsg)> serSpeed;
-Serializer<void(CentrifugeStatusMsg)> serStatus;
-Serializer<void(RunStatusMsg)>       serRun;
-Serializer<void(FaultMsg)>           serFault;
-Serializer<void(ActuatorStatusMsg)>  serActuator;
-Serializer<void(SensorStatusMsg)>    serSensor;
-Serializer<void(HeartbeatMsg)>       serHeartbeat;
+dmq::serialization::serializer::Serializer<void(StartProcessMsg)>    serStart;
+dmq::serialization::serializer::Serializer<void(StopProcessMsg)>     serStop;
+dmq::serialization::serializer::Serializer<void(CentrifugeSpeedMsg)> serSpeed;
+dmq::serialization::serializer::Serializer<void(CentrifugeStatusMsg)> serStatus;
+dmq::serialization::serializer::Serializer<void(RunStatusMsg)>       serRun;
+dmq::serialization::serializer::Serializer<void(FaultMsg)>           serFault;
+dmq::serialization::serializer::Serializer<void(ActuatorStatusMsg)>  serActuator;
+dmq::serialization::serializer::Serializer<void(SensorStatusMsg)>    serSensor;
+dmq::serialization::serializer::Serializer<void(HeartbeatMsg)>       serHeartbeat;
 
 void RegisterSerializers() {
     dmq::databus::DataBus::RegisterSerializer<StartProcessMsg>(cellutron::topics::CMD_RUN, serStart);

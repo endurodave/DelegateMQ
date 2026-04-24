@@ -17,7 +17,7 @@ public:
     void Initialize();
     void Tick(uint32_t ms);
 
-    Thread& GetThread() { return m_thread; }
+    dmq::os::Thread& GetThread() { return m_thread; }
 
 private:
     System() : m_heartbeat("Safety", topics::SAFETY_HEARTBEAT, m_thread) {}
@@ -30,7 +30,7 @@ private:
     void SetupNetwork();
     void SetupWatchdog();
 
-    Thread m_thread{"SystemThread", 50, FullPolicy::BLOCK};
+    dmq::os::Thread m_thread{"SystemThread", 50, dmq::os::FullPolicy::BLOCK};
 
     dmq::ScopedConnection m_speedConn;
     dmq::ScopedConnection m_faultConn;

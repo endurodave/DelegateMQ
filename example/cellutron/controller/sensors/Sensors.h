@@ -34,7 +34,7 @@ private:
     bool InternalIsAirInLine();
 
     // Use standardized thread name for Active Object subsystem
-    Thread m_thread{"SensorsThread"};
+    dmq::os::Thread m_thread{"SensorsThread"};
 };
 
 } // namespace sensors

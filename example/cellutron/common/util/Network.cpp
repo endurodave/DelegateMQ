@@ -18,7 +18,7 @@ void Network::Initialize(uint16_t subPort, const std::string& nodeName) {
     if (m_running) return;
 
     m_nodeName = nodeName;
-    m_subParticipant = std::make_shared<Participant>(m_subTransport);
+    m_subParticipant = std::make_shared<dmq::databus::Participant>(m_subTransport);
 
     std::cout << "Network: Initializing node '" << m_nodeName << "' on port " << subPort << "..." << std::endl;
 
@@ -81,8 +81,8 @@ void Network::AddRemoteNode(const std::string& nodeName, const std::string& addr
 
         // 2. Setup Participants
         // One for reliable topics, one for unreliable
-        node.reliableParticipant = std::make_shared<Participant>(*node.reliableTransport);
-        node.unreliableParticipant = std::make_shared<Participant>(*node.rawTransport);
+        node.reliableParticipant = std::make_shared<dmq::databus::Participant>(*node.reliableTransport);
+        node.unreliableParticipant = std::make_shared<dmq::databus::Participant>(*node.rawTransport);
 
         // 3. Connect raw transport to the monitor for sequence tracking
         node.rawTransport->SetTransportMonitor(node.transportMonitor.get());
@@ -97,8 +97,8 @@ void Network::AddRemoteNode(const std::string& nodeName, const std::string& addr
         }
 
         // 5. Register participants with DataBus for global distribution
-        DataBus::AddParticipant(node.reliableParticipant);
-        DataBus::AddParticipant(node.unreliableParticipant);
+        dmq::databus::DataBus::AddParticipant(node.reliableParticipant);
+        dmq::databus::DataBus::AddParticipant(node.unreliableParticipant);
 
         m_remoteNodes[nodeName] = std::move(node);
         
@@ -129,7 +129,7 @@ void Network::ReceiverThread() {
     //
     // CRITICAL DESIGN PATTERN: In a DelegateMQ Active Object thread, we avoid 
     // infinite while(true) loops. Instead, we perform one unit of work and then 
-    // AsyncInvoke() ourselves again. This returns control to the dmq::Thread 
+    // AsyncInvoke() ourselves again. This returns control to the dmq::os::Thread 
     // dispatcher, allowing it to process other high-priority messages in the 
     // queue (like internal Watchdog Heartbeats or Shutdown requests) before 
     // starting the next network receive cycle.

@@ -1,6 +1,6 @@
 # DataBus FreeRTOS Example
 
-Demonstrates `dmq::DataBus` communication between a **FreeRTOS server** (Win32 simulator) and a **standard C++ client** (Windows or Linux). The server simulates an embedded node that publishes periodic sensor readings and alarm state changes; the client subscribes to both and sends rate-control commands back.
+Demonstrates `dmq::databus::DataBus` communication between a **FreeRTOS server** (Win32 simulator) and a **standard C++ client** (Windows or Linux). The server simulates an embedded node that publishes periodic sensor readings and alarm state changes; the client subscribes to both and sends rate-control commands back.
 
 The transport layer is the only platform-specific piece. Swapping `Win32UdpTransport` for `ArmLwipUdpTransport` on real hardware requires no changes to the DataBus or application logic.
 

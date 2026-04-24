@@ -77,7 +77,7 @@ STATE_DEFINE(cellutron::actuators::Centrifuge, Idle, NoEventData)
     m_currentRpm = 0;
     StopPoll();
     m_data = nullptr;
-    DataBus::Publish<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, { 0 });
+    dmq::databus::DataBus::Publish<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, { 0 });
     
     if (wasRamping) {
         OnTargetReached(0);
@@ -121,7 +121,7 @@ STATE_DEFINE(cellutron::actuators::Centrifuge, Ramping, cellutron::actuators::Ce
         float progress = static_cast<float>(elapsed.count()) / m_rampDuration.count();
         m_currentRpm = static_cast<uint16_t>(m_startRpm + (static_cast<int32_t>(m_targetRpm) - m_startRpm) * progress);
         printf("Centrifuge: ST_RAMPING (%u RPM)\n", m_currentRpm);
-        DataBus::Publish<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, { m_currentRpm });
+        dmq::databus::DataBus::Publish<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, { m_currentRpm });
     }
 }
 
@@ -134,7 +134,7 @@ STATE_DEFINE(cellutron::actuators::Centrifuge, AtSpeed, NoEventData)
 {
     printf("Centrifuge: ST_AT_SPEED (%u RPM)\n", m_currentRpm);
     StopPoll();
-    DataBus::Publish<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, { m_currentRpm });
+    dmq::databus::DataBus::Publish<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, { m_currentRpm });
     OnTargetReached(m_currentRpm);
 }
 
@@ -165,7 +165,7 @@ STATE_DEFINE(cellutron::actuators::Centrifuge, Stopping, cellutron::actuators::C
         float progress = static_cast<float>(elapsed.count()) / m_rampDuration.count();
         m_currentRpm = static_cast<uint16_t>(m_startRpm + (static_cast<int32_t>(m_targetRpm) - m_startRpm) * progress);
         printf("Centrifuge: ST_STOPPING (%u RPM)\n", m_currentRpm);
-        DataBus::Publish<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, { m_currentRpm });
+        dmq::databus::DataBus::Publish<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, { m_currentRpm });
     }
 }
 

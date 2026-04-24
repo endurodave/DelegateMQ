@@ -248,7 +248,7 @@ include("${CMAKE_SOURCE_DIR}/path/to/delegate-mq/DelegateMQ.cmake")
 
 Update `External.cmake` external library paths if necessary.
 
-Add `DMQ_PORT_SOURCES` to your sources if using the predefined supporting DelegateMQ classes (e.g. `dmq::Thread`, `dmq::Serializer`, ...).
+Add `DMQ_PORT_SOURCES` to your sources if using the predefined supporting DelegateMQ classes (e.g. `dmq::os::Thread`, `dmq::Serializer`, ...).
 
 ```
 # Collect DelegateMQ port/extras source files
@@ -283,7 +283,7 @@ using namespace dmq;
 // Your DelegateMQ code...
 ```
 
-**Note:** If using utility features (like `dmq::Thread` or `dmq::util::Timer`), ensure you compile and link the corresponding `.cpp` files found in the `delegate-mq/port` and `delegate-mq/extras` directories.
+**Note:** If using utility features (like `dmq::os::Thread` or `dmq::util::Timer`), ensure you compile and link the corresponding `.cpp` files found in the `delegate-mq/port` and `delegate-mq/extras` directories.
 
 # Quick Start
 
@@ -363,7 +363,7 @@ float value = readDelegate();
 Add a `thread` argument. The function is queued onto that thread and the caller returns immediately. No return value is available.
 
 ```cpp
-dmq::Thread workerThread("Worker");
+dmq::os::Thread workerThread("Worker");
 workerThread.CreateThread();
 
 // Invoke Log() on workerThread — caller does not wait
@@ -504,7 +504,7 @@ public:
     void Save(const Data& data)
     {
         // If called from the wrong thread, re-invoke on m_thread (non-blocking)
-        if (dmq::Thread::GetCurrentThreadId() != m_thread.GetThreadId()) {
+        if (dmq::os::Thread::GetCurrentThreadId() != m_thread.GetThreadId()) {
             dmq::MakeDelegate(this, &DataStore::Save, m_thread)(data);
             return;
         }
@@ -514,7 +514,7 @@ public:
 
 private:
     Data m_data;
-    dmq::Thread m_thread;
+    dmq::os::Thread m_thread;
 };
 ```
 
@@ -715,7 +715,7 @@ An asynchronous delegate invokes a callable on a user-specified thread of contro
 Create an asynchronous delegate by adding an extra thread argument to `dmq::MakeDelegate()`.
 
 ```cpp
-dmq::Thread workerThread1("WorkerThread1");
+dmq::os::Thread workerThread1("WorkerThread1");
 workerThread.CreateThread();
 
 // Create delegate and invoke FreeFuncInt() on workerThread
@@ -749,7 +749,7 @@ delegateH("Hello world", 2020);
 Create an asynchronous blocking delegate by adding an thread and timeout arguments to `dmq::MakeDelegate()`.
 
 ```cpp
-dmq::Thread workerThread1("WorkerThread1");
+dmq::os::Thread workerThread1("WorkerThread1");
 workerThread.CreateThread();
 
 // Create delegate and invoke FreeFuncInt() on workerThread 
@@ -869,7 +869,7 @@ The sender sends the remote delegate. All function argument data is serialized a
 ```cpp
 // Dispatcher and serializer instances
 dmq::util::Dispatcher dispatcher;
-dmq::Serializer<void(int)> serializer;
+dmq::serialization::serializer::Serializer<void(int)> serializer;
 
 // Send delegate and registers dispatcher and serializer
 dmq::DelegateFreeRemote<void(int)> delegateRemote(REMOTE_ID);
@@ -887,7 +887,7 @@ The receiver receives the serialized function argument data bytes and invokes th
 void FreeFuncInt(int i) { std::cout << i; }
 
 // Serializer used to deserialize incoming data
-dmq::Serializer<void(int)> serializer;
+dmq::serialization::serializer::Serializer<void(int)> serializer;
 
 // Receiver delegate and registers serializer
 dmq::DelegateFreeRemote<void(int)> delegateRemote(FreeFuncInt, REMOTE_ID);
@@ -923,17 +923,17 @@ LOG_INFO("Dispatcher::Dispatch id={} seqNum={} err={}", header.GetId(), header.G
 Log output can be directed to multiple sinks, such as files, consoles, or custom handlers.
 
 ```text
-[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::Thread::CreateThread dmq::transport::Win32UdpTransport
-[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::Thread::Process NetworkMgr
-[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::Thread::CreateThread NetworkMgr
-[2025-05-29 12:47:13.067] [msvc_logger] [info] dmq::Thread::DispatchDelegate
+[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::os::Thread::CreateThread dmq::transport::Win32UdpTransport
+[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::os::Thread::Process NetworkMgr
+[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::os::Thread::CreateThread NetworkMgr
+[2025-05-29 12:47:13.067] [msvc_logger] [info] dmq::os::Thread::DispatchDelegate
    thread=NetworkMgr
    target=class dmq::DelegateMemberAsyncWait<class NetworkMgr,int __cdecl(void)>
-[2025-05-29 12:47:13.067] [msvc_logger] [info] dmq::Thread::DispatchDelegate
+[2025-05-29 12:47:13.067] [msvc_logger] [info] dmq::os::Thread::DispatchDelegate
    thread=dmq::transport::Win32UdpTransport
    target=class dmq::DelegateMemberAsyncWait<class dmq::transport::Win32UdpTransport,int __cdecl(enum dmq::transport::Win32UdpTransport::Type,char const * __ptr64,unsigned short)>
 'delegate_client_app.exe' (Win32): Loaded 'C:\Windows\System32\mswsock.dll'. Symbol loading disabled by Include/Exclude setting.
-[2025-05-29 12:47:13.069] [msvc_logger] [info] dmq::Thread::DispatchDelegate
+[2025-05-29 12:47:13.069] [msvc_logger] [info] dmq::os::Thread::DispatchDelegate
    thread=dmq::transport::Win32UdpTransport
    target=class dmq::DelegateMemberAsyncWait<class dmq::transport::Win32UdpTransport,int __cdecl(enum dmq::transport::Win32UdpTransport::Type,char const * __ptr64,unsigned short)>
 ```
@@ -1077,7 +1077,7 @@ private:
         std::cout << msg << std::endl; 
     }
 
-    dmq::Thread m_thread;
+    dmq::os::Thread m_thread;
 
     // Store the delegate to allow safe unregistration in the destructor.
     // 'Sp' suffix indicates this delegate is specialized for smart pointers.
@@ -1669,7 +1669,7 @@ See example `SafeTimer.cpp` to prevent a latent callback on a dead object and [O
 An example combining `std::async`/`std::future` and an asynchronous delegate to target a specific worker thread during communication transmission.
 
 ```cpp
-dmq::Thread commThread("CommunicationThread");
+dmq::os::Thread commThread("CommunicationThread");
 
 // Assume SendMsg() is not thread-safe and may only be called on commThread context.
 // A random std::async thread from the pool is unacceptable and causes cross-threading.
@@ -1773,7 +1773,7 @@ Interface implementation details.
 
 | Interface | Implementation | Details |
 | --- | --- | --- |
-| `dmq::IThread` | `dmq::Thread` | Implemented using `std::thread` | 
+| `dmq::IThread` | `dmq::os::Thread` | Implemented using `std::thread` | 
 | `dmq::ISerializer` | `dmq::Serializer` | Implemented using MessagePack library | 
 | `dmq::IDispatcher` | `dmq::util::Dispatcher` | Universal delegate dispatcher |
 | `dmq::transport::ITransport` | `dmq::transport::ZeroMqTransport` | ZeroMQ message transport |
@@ -1877,7 +1877,7 @@ The DelegateMQ library Valgrind test results using the heap.
 ==140605==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
 ==140605==    by 0x59D59B: dmq::util::Timer::GetTimers() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605==    by 0x59CC27: dmq::util::Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x590298: dmq::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x590298: dmq::os::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605==    by 0x4FAC44: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605== 
 ==140605== 40 bytes in 1 blocks are still reachable in loss record 2 of 2
@@ -1885,7 +1885,7 @@ The DelegateMQ library Valgrind test results using the heap.
 ==140605==    by 0x59D69D: dmq::util::Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605==    by 0x59C7E3: dmq::util::Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605==    by 0x593F5B: std::__detail::_MakeUniq<dmq::util::Timer>::__single_object std::make_unique<dmq::util::Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x59014C: dmq::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==140605==    by 0x59014C: dmq::os::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605==    by 0x4FAC44: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==140605== 
 ==140605== LEAK SUMMARY:
@@ -1913,7 +1913,7 @@ Test results with the fixed-block allocator. See [stl_allocator](https://github.
 ==144812==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
 ==144812==    by 0x5B2535: dmq::util::Timer::GetTimers[abi:cxx11]() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812==    by 0x5B1B77: dmq::util::Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5A3FD4: dmq::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5A3FD4: dmq::os::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812==    by 0x50DEC4: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812== 
 ==144812== 40 bytes in 1 blocks are still reachable in loss record 2 of 2
@@ -1921,7 +1921,7 @@ Test results with the fixed-block allocator. See [stl_allocator](https://github.
 ==144812==    by 0x5B267A: dmq::util::Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812==    by 0x5B1733: dmq::util::Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812==    by 0x5A7D61: std::__detail::_MakeUniq<dmq::util::Timer>::__single_object std::make_unique<dmq::util::Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5A3E88: dmq::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
+==144812==    by 0x5A3E88: dmq::os::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812==    by 0x50DEC4: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
 ==144812== 
 ==144812== LEAK SUMMARY:
