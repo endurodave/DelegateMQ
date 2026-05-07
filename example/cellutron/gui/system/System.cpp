@@ -69,7 +69,7 @@ void System::Tick(uint32_t ms) {
 }
 
 void System::SetupNetwork() {
-    util::Network::GetInstance().Initialize(5010, "GUI", "GUI"); 
+    util::Network::GetInstance().Initialize(5010, 5020, "GUI", "GUI"); 
     // Incoming Topics
     util::Network::GetInstance().RegisterIncomingTopic<RunStatusMsg>(topics::STATUS_RUN, RID_RUN_STATUS, serRun);
     util::Network::GetInstance().RegisterIncomingTopic<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, RID_CENTRIFUGE_SPEED, serSpeed);
@@ -81,13 +81,16 @@ void System::SetupNetwork() {
     util::Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
 
     // Outgoing Topics
-    util::Network::GetInstance().AddRemoteNode("Controller", "127.0.0.1", 5011);
-    util::Network::GetInstance().AddRemoteNode("Safety", "127.0.0.1", 5013);
+    util::Network::GetInstance().AddRemoteNode("Controller", "127.0.0.1", 5011, 5021);
+    util::Network::GetInstance().AddRemoteNode("Safety", "127.0.0.1", 5013, 5023);
 
-    util::Network::GetInstance().RegisterOutgoingTopic<StartProcessMsg>(topics::CMD_RUN, RID_START_PROCESS, serStart, util::Network::Reliability::RELIABLE);
-    util::Network::GetInstance().RegisterOutgoingTopic<StopProcessMsg>(topics::CMD_ABORT, RID_STOP_PROCESS, serStop, util::Network::Reliability::RELIABLE);
+    // Commands and critical status use TCP for guaranteed delivery
+    util::Network::GetInstance().RegisterOutgoingTopic<StartProcessMsg>(topics::CMD_RUN, RID_START_PROCESS, serStart, util::Network::Reliability::TCP);
+    util::Network::GetInstance().RegisterOutgoingTopic<StopProcessMsg>(topics::CMD_ABORT, RID_STOP_PROCESS, serStop, util::Network::Reliability::TCP);
+    util::Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault, util::Network::Reliability::TCP);
+    
+    // Heartbeat uses UDP for low overhead
     util::Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
-    util::Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault, util::Network::Reliability::RELIABLE);
 }
 
 void System::SetupWatchdog() {

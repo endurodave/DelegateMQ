@@ -81,16 +81,19 @@ void System::SetupLocalSubscriptions() {
 }
 
 void System::SetupNetwork() {
-    util::Network::GetInstance().Initialize(5013, "Safety", "Safety"); 
+    util::Network::GetInstance().Initialize(5013, 5023, "Safety", "Safety"); 
     util::Network::GetInstance().RegisterIncomingTopic<CentrifugeSpeedMsg>(topics::CMD_CENTRIFUGE_SPEED, RID_CENTRIFUGE_SPEED, serSpeed);
     util::Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::CONTROLLER_HEARTBEAT, RID_CONTROLLER_HB, serHeartbeat);
     util::Network::GetInstance().RegisterIncomingTopic<HeartbeatMsg>(topics::GUI_HEARTBEAT, RID_GUI_HB, serHeartbeat);
     util::Network::GetInstance().RegisterIncomingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault);
 
-    util::Network::GetInstance().AddRemoteNode("Controller", "127.0.0.1", 5011);
-    util::Network::GetInstance().AddRemoteNode("GUI", "127.0.0.1", 5010);
+    util::Network::GetInstance().AddRemoteNode("Controller", "127.0.0.1", 5011, 5021);
+    util::Network::GetInstance().AddRemoteNode("GUI", "127.0.0.1", 5010, 5020);
 
-    util::Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault, util::Network::Reliability::RELIABLE);
+    // Faults use TCP for guaranteed delivery
+    util::Network::GetInstance().RegisterOutgoingTopic<FaultMsg>(topics::FAULT, RID_FAULT_EVENT, serFault, util::Network::Reliability::TCP);
+    
+    // Heartbeat uses UDP for low overhead
     util::Network::GetInstance().RegisterOutgoingTopic<HeartbeatMsg>(topics::SAFETY_HEARTBEAT, RID_SAFETY_HB, serHeartbeat);
 }
 

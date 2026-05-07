@@ -43,7 +43,8 @@ When a state machine waits for an external signal (e.g., from hardware or anothe
 *   **`cellutron::actuators`**: Low-level actuator abstractions (Valve, Pump, Centrifuge) and management.
 *   **`cellutron::sensors`**: Low-level sensor abstractions and monitoring.
 *   **Global**: `dmq::Thread`, `dmq::util::Timer`, and `dmq::FullPolicy` are classes from the DelegateMQ extras/ports. Always prefix them with `dmq::` or `dmq::util::`.
-*   **DelegateMQ Inclusions**: Always include `DelegateMQ.h` as the primary entry point for the library. It automatically includes all necessary delegate types, port abstractions, and transport layers based on the build configuration. **Do not** include internal library files directly (e.g., avoid `#include "port/transport/win32-udp/Win32UdpTransport.h"`) to maintain platform portability.
+*   **DelegateMQ Inclusions**: Always include `DelegateMQ.h` as the primary entry point for the library. It automatically includes all necessary delegate types, port abstractions, and transport layers based on the build configuration. 
+    *   *Exception*: The `cellutron::util::Network` class includes specific transport headers (e.g., `Win32TcpTransport.h`) to support the **Hybrid TCP/UDP** model. This is an architectural exception to allow simultaneous multi-protocol polling that is not supported by the default single-transport `DelegateMQ.h` configuration.
 
 ## 4. Portability & Types
 To ensure the system can run on FreeRTOS, Windows (Win32), and Standard C++ targets without code changes, use the provided portable abstractions instead of OS-specific or `std` primitives:
@@ -56,12 +57,10 @@ To ensure the system can run on FreeRTOS, Windows (Win32), and Standard C++ targ
 ## 5. Active Object & Threading
 *   **Initialization**: Every application `main()` must instantiate `static NetworkContext networkContext;` at the very beginning to initialize the platform network stack (WinSock).
 *   **Thread Marshaling**: Use `dmq::MakeDelegate` and the state machine's `SetThread()` capability to ensure all logic for a subsystem executes on a single dedicated thread.
-*   **Watchdogs**: Every worker thread should be created with a watchdog timeout (typically 2 seconds) to allow the system to detect and handle deadlocks.
+*   **Watchdogs**: Every worker thread should be created with a watchdog timeout (typically 30 seconds) to allow the system to detect and handle deadlocks.
 
 ## 6. Communication & DataBus
-*   **Serializers**: Every remote message type must be registered via `RegisterSerializers()` in `RemoteConfig.cpp` using the standardized `RID_` constants.
-*   **Stringifiers**: Every topic must have a stringifier registered via `RegisterStringifiers()` to ensure `dmq-spy` and `dmq-monitor` can display human-readable data instead of "?".
-*   **Topic Mapping**: Outgoing topics must be mapped to remote nodes using `Network::GetInstance().AddRemoteNode()` and the appropriate `RID_` identifiers.
+*   **Hybrid Transport**: The project uses a tiered communication model. Use **TCP** (via `Reliability::TCP`) for commands and critical state transitions. Use **UDP** (default) for high-frequency sensor updates and heartbeats.
 
 ## 7. Debugging & Tooling
 *   **Spy & Monitor Tools**: Use the `dmq-spy` and `dmq-monitor` tools (found in `tools/build/Release`) to visualize DataBus traffic in real-time.
