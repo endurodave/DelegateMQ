@@ -58,7 +58,10 @@ Cellutron demonstrates all major DelegateMQ functional areas in a single integra
 ### Hardware Topology
 ![Cellutron Architecture](cellutron_architecture.svg)
 
-The system is distributed across three independent processors (CPUs) communicating over a UDP-based distributed **DataBus**.
+The system is distributed across three independent processors (CPUs) communicating over a **Hybrid TCP/UDP** distributed **DataBus**. 
+
+- **TCP (Guaranteed)**: Used for critical control commands (Start, Abort) and Fault events to ensure zero data loss.
+- **UDP (Low Latency)**: Used for high-frequency telemetry (RPM, Sensors) and Heartbeats where speed is prioritized over reliability.
 
 | CPU Node | Operating System | Primary Responsibility |
 |:---|:---|:---|
@@ -68,13 +71,13 @@ The system is distributed across three independent processors (CPUs) communicati
 
 ### Thread Topology
 
-Every CPU in the system uses a standardized thread architecture to handle network communication and DataBus (Active Object) dispatching. All threads (excluding the OS Main Thread) are monitored by the **DelegateMQ Watchdog** with a 5-second timeout to detect and handle deadlocks.
+Every CPU in the system uses a standardized thread architecture to handle network communication and DataBus (Active Object) dispatching. All threads (excluding the OS Main Thread) are monitored by the **DelegateMQ Watchdog** with a 30-second timeout to detect and handle deadlocks.
 
 #### GUI CPU
 | Thread | Role | Description |
 |:---|:---|:---|
 | **Main Thread** | UI Event Loop | Handles FTXUI keyboard/mouse input and terminal rendering. |
-| **NetworkThread** | UDP Receiver | Managed by the `Network` singleton. Listens for status updates from other CPUs. |
+| **NetworkThread** | Multi-Protocol Poller | Managed by the `Network` singleton. Simultaneously polls UDP telemetry and TCP command links. |
 | **SystemThread** | Active Object SM | Runs system-level logic, coordinates heartbeat, and dispatches DataBus callbacks. |
 | **BackgroundTimerThread** | Timer Dispatch | Drives `Timer::ProcessTimers()` and the periodic system tick at 100 ms. |
 | **UIThread** | DataBus Callbacks | Receives DataBus subscription callbacks and triggers FTXUI screen refresh events. |
@@ -85,7 +88,7 @@ Every CPU in the system uses a standardized thread architecture to handle networ
 | Thread | Role | Description |
 |:---|:---|:---|
 | **Main/Timer Thread** | OS Orchestration | FreeRTOS application task; handles startup, system init, and `Timer` processing. |
-| **NetworkThread** | UDP Receiver | Managed by the `Network` singleton. Listens for commands from the GUI. |
+| **NetworkThread** | Multi-Protocol Poller | Managed by the `Network` singleton. Listens for TCP commands and broadcasts UDP telemetry. |
 | **SystemThread** | Active Object SM | Runs system-level logic and dispatches DataBus callbacks (start/stop/fault). |
 | **ProcessThread** | Process State Machine | Runs `CellProcess` and `PumpProcess` state machines for instrument sequencing. |
 | **ActuatorsThread** | Hardware Output | Dedicated thread for executing valve and pump commands via blocking sync calls. |
@@ -95,8 +98,8 @@ Every CPU in the system uses a standardized thread architecture to handle networ
 | Thread | Role | Description |
 |:---|:---|:---|
 | **Main/Timer Thread** | OS Orchestration | FreeRTOS application task; handles startup, system init, and `Timer` processing. |
-| **NetworkThread** | UDP Receiver | Managed by the `Network` singleton. Listens for real-time RPM updates. |
-| **SystemThread** | Active Object SM | Monitors centrifuge speed and publishes fault events when limits are exceeded. |
+| **NetworkThread** | Multi-Protocol Poller | Managed by the `Network` singleton. Listens for real-time RPM updates via UDP. |
+| **SystemThread** | Active Object SM | Monitors centrifuge speed and publishes fault events over TCP when limits are exceeded. |
 
 ### Pneumatics System
 ![Cellutron Pneumatics](pneumatics.svg)

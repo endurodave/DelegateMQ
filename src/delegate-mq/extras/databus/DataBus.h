@@ -123,8 +123,11 @@ public:
             ::FaultHandler(__FILE__, (unsigned short)__LINE__);
             return {};
         }
+
         DataBus& instance = GetInstance();
-        std::lock_guard<dmq::RecursiveMutex> lock(instance.m_mutex);
+
+        // Establish connection OUTSIDE the global DataBus lock to prevent 
+        // lock inversion deadlocks. Signal::Connect() is already thread-safe.
         if (thread) {
             auto del = dmq::MakeDelegate(std::move(func), *thread);
             del.SetPriority(priority);
@@ -174,11 +177,11 @@ private:
         // own independent last-delivery timestamp, so different subscribers on the same
         // topic can have different (or no) rate limits without affecting each other.
         if (qos.minSeparation.has_value()) {
-            auto minSepRep = qos.minSeparation.value().count();
-            auto lastDeliveryRep = std::make_shared<std::atomic<int64_t>>(0);
+            auto minSepRep = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(qos.minSeparation.value()).count());
+            auto lastDeliveryRep = std::make_shared<std::atomic<uint32_t>>(0);
             auto inner = std::move(typedFunc);
             typedFunc = [inner = std::move(inner), minSepRep, lastDeliveryRep](T data) {
-                auto nowRep = static_cast<int64_t>(dmq::Clock::now().time_since_epoch().count());
+                auto nowRep = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(dmq::Clock::now().time_since_epoch()).count());
                 auto lastRep = lastDeliveryRep->load(std::memory_order_relaxed);
                 if (nowRep - lastRep >= minSepRep) {
                     lastDeliveryRep->store(nowRep, std::memory_order_relaxed);
@@ -201,18 +204,25 @@ private:
 
             // 2. Get or create signal with type safety check (std::type_index)
             signal = GetOrCreateSignal<T>(topic);
-            if (!signal) {
-                return {}; // Type mismatch or other failure
-            }
+        }
 
-            // 3. Establish connection while holding the lock. This ensures no publishes
-            // are missed, as any new publish will be blocked until this lock is released.
-            if (thread) {
-                conn = signal->Connect(dmq::MakeDelegate(typedFunc, *thread));
-            } else {
-                conn = signal->Connect(dmq::MakeDelegate(typedFunc));
-            }
+        if (!signal) {
+            return {}; // Type mismatch or other failure
+        }
 
+        // 3. Establish connection OUTSIDE the lock to prevent deadlock with Timer/Signal locks.
+        // NOTE: There is a theoretical race where a publish happens between releasing the 
+        // DataBus lock and acquiring the Signal lock. However, both use RecursiveMutex 
+        // and InternalPublish also snapshots signals outside its lock, so this is 
+        // architecturally consistent with the "lock-free dispatch" pattern used elsewhere.
+        if (thread) {
+            conn = signal->Connect(dmq::MakeDelegate(typedFunc, *thread));
+        } else {
+            conn = signal->Connect(dmq::MakeDelegate(typedFunc));
+        }
+
+        {
+            std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
             // 4. Prepare LVC delivery if enabled and available
             if (qos.lastValueCache) {
                 auto it = m_lastValues.find(topic);
@@ -437,4 +447,3 @@ private:
 
 
 #endif // DMQ_DATABUS_H
-

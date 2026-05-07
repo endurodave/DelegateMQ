@@ -10,6 +10,8 @@
 /// @details
 /// This class implements the ITransport interface using Windows Sockets (Winsock2). 
 /// It supports both CLIENT and SERVER modes for transmitting serialized delegate data.
+/// In SERVER mode, it supports multiple simultaneous client connections and broadcasts
+/// outgoing messages to all connected participants.
 /// 
 /// Key Features:
 /// 1. **Direct I/O**: Executes socket operations directly on the calling thread, 
@@ -18,7 +20,9 @@
 ///    numbers and acknowledge (ACK) receipts.
 /// 3. **Non-Blocking I/O**: Utilizes `select()` in the receive loop to prevent 
 ///    thread blocking when no data is available, facilitating clean shutdowns.
-/// 4. **Socket Management**: Use WinsockConnect class in main() for `WSAStartup` and 
+/// 4. **Multi-Client Multiplexing**: SERVER mode manages a list of clients and 
+///    polls them for data using `select()`.
+/// 5. **Socket Management**: Use WinsockConnect class in main() for `WSAStartup` and 
 ///    socket creation/cleanup.
 
 #if !defined(_WIN32) && !defined(_WIN64)
@@ -37,9 +41,11 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 namespace dmq::transport {
 
+/// @brief A TCP transport implementation for Win32 using Winsock.
 class Win32TcpTransport : public ITransport
 {
 public:
@@ -58,6 +64,11 @@ public:
         Close();
     }
 
+    /// @brief Create a TCP transport.
+    /// @param type SERVER or CLIENT.
+    /// @param addr The IP address string.
+    /// @param port The TCP port.
+    /// @return 0 on success, -1 on failure.
     int Create(Type type, LPCSTR addr, USHORT port)
     {
         m_type = type;
@@ -71,31 +82,35 @@ public:
             m_listenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
             if (m_listenSocket == INVALID_SOCKET) return -1;
 
+            // Allow address reuse to facilitate quick restarts during development
+            int opt = 1;
+            setsockopt(m_listenSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt, sizeof(opt));
+
             if (bind(m_listenSocket, (SOCKADDR*)&service, sizeof(service)) == SOCKET_ERROR)
             {
-                std::cerr << "Bind failed: " << WSAGetLastError() << std::endl;
+                std::cerr << "Win32TcpTransport: Bind failed: " << WSAGetLastError() << std::endl;
                 Close();
                 return -1;
             }
 
-            if (listen(m_listenSocket, 1) == SOCKET_ERROR)
-            {
-                std::cerr << "Listen failed." << std::endl;
+            if (listen(m_listenSocket, SOMAXCONN) == SOCKET_ERROR) {
+                std::cerr << "Win32TcpTransport: Listen failed." << std::endl;
                 Close();
                 return -1;
             }
-            std::cout << "Server listening on " << port << " (Async accept)..." << std::endl;
+            std::cout << "Win32TcpTransport: Server listening on " << port << "..." << std::endl;
         }
         else if (type == Type::CLIENT)
         {
             m_clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
             if (connect(m_clientSocket, (SOCKADDR*)&service, sizeof(service)) == SOCKET_ERROR)
             {
-                std::cerr << "Connect failed: " << WSAGetLastError() << std::endl;
-                Close();
+                // Silent fail for clients to support polling/retries in application layer
+                closesocket(m_clientSocket);
+                m_clientSocket = INVALID_SOCKET;
                 return -1;
             }
-            std::cout << "Connected to server." << std::endl;
+            std::cout << "Win32TcpTransport: Client connected to " << addr << ":" << port << std::endl;
 
             DWORD timeout = 2000;
             setsockopt(m_clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
@@ -104,34 +119,76 @@ public:
         return 0;
     }
 
+    /// @brief Close all sockets and clean up.
     void Close()
     {    
-        // Close Client Socket (Breaks recv())
+        // Close Client Socket
         if (m_clientSocket != INVALID_SOCKET) {
             shutdown(m_clientSocket, SD_BOTH); 
             closesocket(m_clientSocket);
             m_clientSocket = INVALID_SOCKET;
         }
 
-        // Close Listen Socket (Breaks accept())
+        // Close all server-accepted clients
+        for (auto s : m_serverClients) {
+            shutdown(s, SD_BOTH);
+            closesocket(s);
+        }
+        m_serverClients.clear();
+
+        // Close Listen Socket
         if (m_listenSocket != INVALID_SOCKET) {
             closesocket(m_listenSocket);
             m_listenSocket = INVALID_SOCKET;
         }
     }
 
+    /// @brief Set the receive timeout for all active sockets.
     void SetRecvTimeout(std::chrono::milliseconds timeout)
     {
+        m_recvTimeoutMs = static_cast<DWORD>(timeout.count());
         if (m_clientSocket != INVALID_SOCKET)
         {
-            DWORD ms = static_cast<DWORD>(timeout.count());
-            setsockopt(m_clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&ms, sizeof(ms));
+            setsockopt(m_clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&m_recvTimeoutMs, sizeof(m_recvTimeoutMs));
+        }
+        for (auto s : m_serverClients) {
+            setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (const char*)&m_recvTimeoutMs, sizeof(m_recvTimeoutMs));
         }
     }
 
+    /// @brief Send data over the TCP link.
+    /// @details In SERVER mode, this broadcasts to all connected clients.
     virtual int Send(dmq::xostringstream& os, const DmqHeader& header) override
     {
-        if (m_clientSocket == INVALID_SOCKET) return -1;
+        if (m_type == Type::CLIENT) {
+            return SendToSocket(m_clientSocket, os, header);
+        } else {
+            int lastErr = 0;
+            for (auto s : m_serverClients) {
+                if (SendToSocket(s, os, header) != 0) lastErr = -1;
+            }
+            return lastErr;
+        }
+    }
+
+    /// @brief Receive data from the TCP link.
+    virtual int Receive(dmq::xstringstream& is, DmqHeader& header) override
+    {
+        if (m_type == Type::SERVER) {
+            return ReceiveServer(is, header);
+        } else {
+            return ReceiveSocket(m_clientSocket, is, header);
+        }
+    }
+
+    void SetTransportMonitor(ITransportMonitor* tm) { m_transportMonitor = tm; }
+    void SetSendTransport(ITransport* st) { m_sendTransport = st; }
+    void SetRecvTransport(ITransport* rt) { m_recvTransport = rt; }
+
+private:
+    /// @brief Internal helper to send to a specific socket.
+    int SendToSocket(SOCKET s, dmq::xostringstream& os, const DmqHeader& header) {
+        if (s == INVALID_SOCKET) return -1;
 
         DmqHeader headerCopy = header;
         auto payload = os.str();
@@ -139,7 +196,7 @@ public:
         headerCopy.SetLength(static_cast<uint16_t>(payload.length()));
 
         dmq::xostringstream ss(std::ios::in | std::ios::out | std::ios::binary);
-
+        
         // Convert to Network Byte Order (Big Endian)
         uint16_t marker = htons(headerCopy.GetMarker());
         uint16_t id = htons(headerCopy.GetId());
@@ -158,56 +215,78 @@ public:
 
         while (remaining > 0)
         {
-            int sent = send(m_clientSocket, ptr, remaining, 0);
+            int sent = send(s, ptr, remaining, 0);
             if (sent == SOCKET_ERROR) return -1;
             ptr += sent;
             remaining -= sent;
         }
 
         // Always track the message (unless it is an ACK)
-        // Use Host Byte Order for ID check
         if (headerCopy.GetId() != dmq::ACK_REMOTE_ID && m_transportMonitor)
             m_transportMonitor->Add(headerCopy.GetSeqNum(), headerCopy.GetId());
 
         return 0;
     }
 
-    virtual int Receive(dmq::xstringstream& is, DmqHeader& header) override
-    {
-        // Lazy Accept Logic (Server)
-        if (m_type == Type::SERVER && m_clientSocket == INVALID_SOCKET)
-        {
-            TIMEVAL tv = { 0, 1000 }; // 1ms poll
-            fd_set fds;
-            FD_ZERO(&fds);
-            FD_SET(m_listenSocket, &fds);
+    /// @brief Internal helper to handle server-side multiplexing.
+    int ReceiveServer(dmq::xstringstream& is, DmqHeader& header) {
+        // 1. Lazy Accept: Check for new client connections
+        TIMEVAL tv = { 0, 1000 }; // 1ms poll
+        fd_set fds;
+        FD_ZERO(&fds);
+        FD_SET(m_listenSocket, &fds);
 
-            if (select(0, &fds, NULL, NULL, &tv) > 0)
-            {
-                m_clientSocket = accept(m_listenSocket, NULL, NULL);
-                if (m_clientSocket != INVALID_SOCKET) {
-                    std::cout << "Client accepted!" << std::endl;
-                    DWORD timeout = 2000;
-                    setsockopt(m_clientSocket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
-                }
+        if (select(0, &fds, NULL, NULL, &tv) > 0) {
+            SOCKET client = accept(m_listenSocket, NULL, NULL);
+            if (client != INVALID_SOCKET) {
+                std::cout << "Win32TcpTransport: Accepted client connection." << std::endl;
+                setsockopt(client, SOL_SOCKET, SO_RCVTIMEO, (const char*)&m_recvTimeoutMs, sizeof(m_recvTimeoutMs));
+                m_serverClients.push_back(client);
             }
         }
 
-        if (m_clientSocket == INVALID_SOCKET) return -1;
+        // 2. Poll all connected clients for data
+        if (m_serverClients.empty()) return -1;
 
-        // Poll check to prevent blocking if no data is waiting (Critical for Sender polling ACKs)
         fd_set readfds;
         FD_ZERO(&readfds);
-        FD_SET(m_clientSocket, &readfds);
-        TIMEVAL tv = { 1, 0 }; // 1s poll to prevent busy loop
-
-        if (select(0, &readfds, NULL, NULL, &tv) <= 0) {
-            return -1;
+        for (auto s : m_serverClients) {
+            FD_SET(s, &readfds);
         }
+
+        tv.tv_usec = 1000; // 1ms poll
+        if (select(0, &readfds, NULL, NULL, &tv) > 0) {
+            for (auto it = m_serverClients.begin(); it != m_serverClients.end(); ) {
+                if (FD_ISSET(*it, &readfds)) {
+                    int result = ReceiveSocket(*it, is, header);
+                    if (result == -2) { // Disconnected
+                        std::cout << "Win32TcpTransport: Client disconnected." << std::endl;
+                        closesocket(*it);
+                        it = m_serverClients.erase(it);
+                        continue; 
+                    }
+                    return result;
+                }
+                ++it;
+            }
+        }
+        return -1;
+    }
+
+    /// @brief Internal helper to read from a specific socket and parse DMQ protocol.
+    int ReceiveSocket(SOCKET s, dmq::xstringstream& is, DmqHeader& header) {
+        if (s == INVALID_SOCKET) return -1;
+
+        // Poll check to prevent blocking if no data is waiting
+        fd_set readfds;
+        FD_ZERO(&readfds);
+        FD_SET(s, &readfds);
+        TIMEVAL tv = { 0, 1000 };
+        if (select(0, &readfds, NULL, NULL, &tv) <= 0) return -1;
 
         // 1. Read Header
         char headerBuf[DmqHeader::HEADER_SIZE];
-        if (!ReadExact(headerBuf, DmqHeader::HEADER_SIZE)) return -1;
+        if (!ReadExact(s, headerBuf, DmqHeader::HEADER_SIZE)) return -2; // Disconnected
 
         dmq::xstringstream hs(std::ios::in | std::ios::out | std::ios::binary);
         hs.write(headerBuf, DmqHeader::HEADER_SIZE);
@@ -228,11 +307,11 @@ public:
         if (length > 0)
         {
             std::vector<char> payload(length);
-            if (!ReadExact(payload.data(), length)) return -1;
+            if (!ReadExact(s, payload.data(), length)) return -2;
             is.write(payload.data(), length);
         }
 
-        // 3. Ack
+        // 3. Handle Acknowledgment
         if (header.GetId() == dmq::ACK_REMOTE_ID) {
             if (m_transportMonitor) m_transportMonitor->Remove(header.GetSeqNum());
         }
@@ -243,31 +322,15 @@ public:
             ack.SetSeqNum(header.GetSeqNum());
             m_sendTransport->Send(ss_ack, ack);
         }
-
         return 0;
     }
 
-    void SetTransportMonitor(ITransportMonitor* tm)
-    {
-        m_transportMonitor = tm;
-    }
-
-    void SetSendTransport(ITransport* st)
-    {
-        m_sendTransport = st;
-    }
-
-    void SetRecvTransport(ITransport* rt)
-    {
-        m_recvTransport = rt;
-    }
-
-private:
-    bool ReadExact(char* dest, int size)
+    /// @brief Read exactly 'size' bytes from the socket.
+    bool ReadExact(SOCKET s, char* dest, int size)
     {
         int total = 0;
         while (total < size) {
-            int r = recv(m_clientSocket, dest + total, size - total, 0);
+            int r = recv(s, dest + total, size - total, 0);
             if (r <= 0) return false;
             total += r;
         }
@@ -276,6 +339,8 @@ private:
 
     SOCKET m_listenSocket = INVALID_SOCKET;
     SOCKET m_clientSocket = INVALID_SOCKET;
+    std::vector<SOCKET> m_serverClients;
+    DWORD m_recvTimeoutMs = 2000;
     Type m_type = Type::SERVER;
     
     ITransport* m_sendTransport = nullptr;

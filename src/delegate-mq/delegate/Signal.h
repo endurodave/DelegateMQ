@@ -184,15 +184,49 @@ public:
 
     /// @brief Invoke all connected delegates.
     void operator()(Args... args) {
-        // Snapshot the list under the lock; invoke outside the lock to avoid
-        // deadlocks when a callback itself connects or disconnects.
-        xlist<std::shared_ptr<DelegateType>> snapshot;
+        auto snapshot = GetSnapshot();
+        InvokeSnapshot(snapshot, std::forward<Args>(args)...);
+    }
+
+    /// @brief Capture a snapshot of all current subscribers.
+    /// @details The snapshot holds shared_ptrs to the delegates, ensuring they
+    /// stay alive even if the Signal is destroyed.
+    struct Snapshot {
+        std::shared_ptr<DelegateType> small_buf[SIGNAL_SBO_COUNT];
+        xlist<std::shared_ptr<DelegateType>> large_buf;
+        size_t count = 0;
+    };
+
+    Snapshot GetSnapshot() const {
+        Snapshot s;
         {
             dmq::LockGuard<RecursiveMutex> lock(m_state->mtx);
-            snapshot = m_state->delegates;
+            s.count = m_state->delegates.size();
+            if (s.count <= SIGNAL_SBO_COUNT) {
+                size_t i = 0;
+                for (auto& d : m_state->delegates) {
+                    s.small_buf[i++] = d;
+                }
+            } else {
+                s.large_buf = m_state->delegates;
+            }
         }
-        for (auto& d : snapshot)
-            (*d)(args...);
+        return s;
+    }
+
+    /// @brief Invoke a previously captured snapshot of delegates.
+    static void InvokeSnapshot(const Snapshot& s, Args... args) {
+        if (s.count <= SIGNAL_SBO_COUNT) {
+            for (size_t i = 0; i < s.count; ++i) {
+                if (s.small_buf[i])
+                    (*s.small_buf[i])(args...);
+            }
+        } else {
+            for (auto& d : s.large_buf) {
+                if (d)
+                    (*d)(args...);
+            }
+        }
     }
 
     /// @brief Number of currently connected subscribers.

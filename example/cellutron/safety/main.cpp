@@ -18,6 +18,22 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "timers.h"
+#include <new>
+
+// ---------------------------------------------------------------------------
+// Heap: redirect C++ dynamic allocation through the FreeRTOS heap.
+// pvPortMalloc/vPortFree use taskENTER_CRITICAL, which prevents FreeRTOS from
+// preempting a task mid-allocation. This eliminates the Win32 CRT heap
+// CRITICAL_SECTION contention that causes deadlocks between FreeRTOS tasks.
+// ---------------------------------------------------------------------------
+void* operator new  (size_t n)                         { void* p = pvPortMalloc(n); configASSERT(p); return p; }
+void* operator new[](size_t n)                         { void* p = pvPortMalloc(n); configASSERT(p); return p; }
+void* operator new  (size_t n, const std::nothrow_t&) noexcept { return pvPortMalloc(n); }
+void* operator new[](size_t n, const std::nothrow_t&) noexcept { return pvPortMalloc(n); }
+void  operator delete  (void* p)               noexcept { vPortFree(p); }
+void  operator delete[](void* p)               noexcept { vPortFree(p); }
+void  operator delete  (void* p, size_t)       noexcept { vPortFree(p); }
+void  operator delete[](void* p, size_t)       noexcept { vPortFree(p); }
 
 using namespace dmq;
 using namespace dmq::os;
@@ -51,6 +67,10 @@ static void prvInitialiseHeap(void) {
 extern "C" void vApplicationIdleHook(void) { Sleep(1); }
 extern "C" void vApplicationTickHook(void) {}
 extern "C" void vApplicationMallocFailedHook(void) { printf("FreeRTOS Safety: Malloc Failed!\n"); for (;;); }
+extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
+    printf("FreeRTOS Safety: STACK OVERFLOW in task '%s'!\n", pcTaskName);
+    for (;;);
+}
 extern "C" void vApplicationDaemonTaskStartupHook(void) {}
 extern "C" void vAssertCalled(unsigned long ulLine, const char* const pcFileName) {
     printf("FreeRTOS Safety: ASSERT FAIL at %s:%lu\n", pcFileName, ulLine);
@@ -78,6 +98,13 @@ static void vSafetyTask(void* /*pvParams*/) {
     }
 }
 
+static void vWatchdogTask(void* /*pvParams*/) {
+    for (;;) {
+        Thread::WatchdogCheckAll();
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
+
 int main(void) {
     prvInitialiseHeap();
     static dmq::util::NetworkContext networkContext;
@@ -86,7 +113,8 @@ int main(void) {
     TimerHandle_t sysTimer = xTimerCreate("SysTimer", pdMS_TO_TICKS(10), pdTRUE, NULL, [](TimerHandle_t) { dmq::util::Timer::ProcessTimers(); });
     xTimerStart(sysTimer, 0);
 
-    xTaskCreate(vSafetyTask, "Safety", 2048, NULL, 6, NULL);
+    xTaskCreate(vSafetyTask, "Safety", 4096, NULL, 6, NULL);
+    xTaskCreate(vWatchdogTask, "Watchdog", 4096, NULL, configMAX_PRIORITIES - 1, NULL);
 
     vTaskStartScheduler();
     for (;;);

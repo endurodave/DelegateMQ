@@ -73,16 +73,19 @@ public:
         float latency_avg_ms;        // Avg wait in window
         float latency_max_window_ms; // Max wait since last snapshot
         float latency_max_all_ms;    // All-time max wait
+        float invoke_avg_ms;         // Avg execution in window
+        float invoke_max_window_ms;  // Max execution since last snapshot
+        float invoke_max_all_ms;     // All-time max execution
         uint64_t dispatch_count;      // Total dispatches (all-time)
     };
 #endif
 
     /// Default queue size if 0 is passed
-    static const size_t DEFAULT_QUEUE_SIZE = 20;
+    static const size_t DEFAULT_QUEUE_SIZE = dmq::DEFAULT_QUEUE_SIZE;
 
     /// Constructor
     /// @param threadName Name for the FreeRTOS task
-    /// @param maxQueueSize Max number of messages in queue (0 = Default 20)
+    /// @param maxQueueSize Max number of messages in queue (0 = Default dmq::DEFAULT_QUEUE_SIZE)
     /// @param fullPolicy Action when queue is full: FAULT (default), DROP, or TIMEOUT.
     /// @param dispatchTimeout Duration to wait before giving up when policy is TIMEOUT.
     /// @param cpuName Optional CPU/Core name grouping for monitoring tools.
@@ -142,6 +145,10 @@ public:
     /// alarm when a handler legitimately takes longer than watchdogTimeout.
     void ThreadCheck();
 
+    /// @brief Check all registered threads for watchdog expiration.
+    /// @details Call this from the highest-priority task in the system.
+    static void WatchdogCheckAll();
+
 #if defined(DMQ_DATABUS_TOOLS)
     /// @brief Capture and reset windowed statistics.
     ThreadStats SnapshotStats();
@@ -157,8 +164,22 @@ private:
     // Run loop called by Process
     void Run();
 
-    /// Check watchdog is expired. Called from Timer::ProcessTimers() context.
+    /// Check watchdog is expired for this instance. 
     void WatchdogCheck();
+
+    /// Get registry head using the "Immortal" Pattern
+    static Thread*& GetWatchdogHead()
+    {
+        static Thread* head = nullptr;
+        return head;
+    }
+
+    /// Get registry lock using the "Immortal" Pattern
+    static dmq::RecursiveMutex& GetWatchdogLock()
+    {
+        static dmq::RecursiveMutex* lock = new dmq::RecursiveMutex();
+        return *lock;
+    }
 
     const std::string THREAD_NAME;
     const std::string CPU_NAME;
@@ -174,26 +195,32 @@ private:
 
     // Static allocation support
     StackType_t* m_stackBuffer = nullptr;
-    uint32_t m_stackSize = 1024; // Default size (words)
+    uint32_t m_stackSize = 4096; // Default size (words)
     StaticTask_t m_tcb;          // TCB storage for static creation
 
     // Watchdog related members
-    dmq::TimePoint m_lastAliveTime;
-    std::unique_ptr<dmq::util::Timer> m_watchdogTimer;
-    dmq::ScopedConnection m_watchdogTimerConn;
-    dmq::Duration m_watchdogTimeout;
-    dmq::RecursiveMutex m_watchdogMtx;
+    std::atomic<uint32_t> m_lastAliveTime{0};
+    std::atomic<uint32_t> m_watchdogTimeout{0};
+    Thread* m_watchdogNext = nullptr;
 
 #if defined(DMQ_DATABUS_TOOLS)
     // Monitoring statistics members
-    size_t m_queueDepthMaxWindow = 0;
-    size_t m_queueDepthMaxAll = 0;
+    std::atomic<size_t> m_queueDepthMaxWindow{0};
+    std::atomic<size_t> m_queueDepthMaxAll{0};
 
-    dmq::Duration m_latencyTotalWindow = dmq::Duration(0);
-    uint32_t m_latencyCountWindow = 0;
-    dmq::Duration m_latencyMaxWindow = dmq::Duration(0);
-    dmq::Duration m_latencyMaxAll = dmq::Duration(0);
-    uint64_t m_dispatchCountAll = 0;
+    // Use a mutex to protect 64-bit stats on 32-bit platforms without libatomic
+    dmq::RecursiveMutex m_statsLock;
+    int64_t m_latencyTotalWindow{0};
+    uint32_t m_latencyCountWindow{0};
+    int64_t m_latencyMaxWindow{0};
+    int64_t m_latencyMaxAll{0};
+
+    int64_t m_invokeTotalWindow{0};
+    uint32_t m_invokeCountWindow{0};
+    int64_t m_invokeMaxWindow{0};
+    int64_t m_invokeMaxAll{0};
+
+    uint64_t m_dispatchCountAll{0};
 #endif
 };
 

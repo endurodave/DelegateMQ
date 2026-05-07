@@ -51,6 +51,19 @@ Thread::~Thread()
 {
     ExitThread();
 
+    const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
+    Thread** pp = &GetWatchdogHead();
+    while (*pp != nullptr)
+    {
+        if (*pp == this)
+        {
+            *pp = this->m_watchdogNext;
+            this->m_watchdogNext = nullptr;
+            break;
+        }
+        pp = &((*pp)->m_watchdogNext);
+    }
+
 #if defined(DMQ_DATABUS_TOOLS)
     tx_mutex_delete(&m_statMutex);
 #endif
@@ -130,10 +143,26 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
         {
             m_watchdogTimeout = watchdogTimeout.value();
 
-            m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
-            m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(
-                MakeDelegate(this, &Thread::WatchdogCheck));
-            m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
+            const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
+
+            // Add to watchdog registry if not already present
+            bool found = false;
+            Thread* p = GetWatchdogHead();
+            while (p != nullptr)
+            {
+                if (p == this)
+                {
+                    found = true;
+                    break;
+                }
+                p = p->m_watchdogNext;
+            }
+
+            if (!found)
+            {
+                m_watchdogNext = GetWatchdogHead();
+                GetWatchdogHead() = this;
+            }
         }
     }
     return true;
@@ -168,11 +197,6 @@ void Thread::ExitThread()
 {
     if (m_queue.tx_queue_id != 0)
     {
-        if (m_watchdogTimer)
-        {
-            m_watchdogTimer->Stop();
-            m_watchdogTimerConn.Disconnect();
-        }
         m_exit.store(true);
 
         // Send exit message
@@ -354,6 +378,46 @@ void Thread::ThreadCheck()
 }
 
 //----------------------------------------------------------------------------
+// WatchdogCheckAll
+//----------------------------------------------------------------------------
+void Thread::WatchdogCheckAll()
+{
+    Thread* snapshot[dmq::MAX_WATCHDOG_THREADS];
+    int count = 0;
+
+    {
+        const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
+        Thread* p = GetWatchdogHead();
+        while (p != nullptr && count < static_cast<int>(dmq::MAX_WATCHDOG_THREADS))
+        {
+            snapshot[count++] = p;
+            p = p->m_watchdogNext;
+        }
+    }
+
+    for (int i = 0; i < count; i++)
+        snapshot[i]->WatchdogCheck();
+}
+
+//----------------------------------------------------------------------------
+// GetWatchdogHead
+//----------------------------------------------------------------------------
+Thread*& Thread::GetWatchdogHead()
+{
+    static Thread* head = nullptr;
+    return head;
+}
+
+//----------------------------------------------------------------------------
+// GetWatchdogLock
+//----------------------------------------------------------------------------
+dmq::RecursiveMutex& Thread::GetWatchdogLock()
+{
+    static dmq::RecursiveMutex* lock = new dmq::RecursiveMutex();
+    return *lock;
+}
+
+//----------------------------------------------------------------------------
 // Run (Member Function Loop)
 //----------------------------------------------------------------------------
 void Thread::Run()
@@ -402,7 +466,22 @@ void Thread::Run()
             ASSERT_TRUE(delegateMsg);
             auto invoker = delegateMsg->GetInvoker();
             ASSERT_TRUE(invoker);
+
+#if defined(DMQ_DATABUS_TOOLS)
+            dmq::TimePoint start = Timer::GetNow();
+#endif
             bool success = invoker->Invoke(delegateMsg);
+#if defined(DMQ_DATABUS_TOOLS)
+            dmq::Duration invokeTime = Timer::GetNow() - start;
+            {
+                tx_mutex_get(&m_statMutex, TX_WAIT_FOREVER);
+                m_invokeTotalWindow += invokeTime;
+                m_invokeCountWindow++;
+                if (invokeTime > m_invokeMaxWindow) m_invokeMaxWindow = invokeTime;
+                if (invokeTime > m_invokeMaxAll) m_invokeMaxAll = invokeTime;
+                tx_mutex_put(&m_statMutex);
+            }
+#endif
             ASSERT_TRUE(success);
         }
         
@@ -440,6 +519,16 @@ Thread::ThreadStats Thread::SnapshotStats()
 
     stats.latency_max_window_ms = (float)std::chrono::duration_cast<std::chrono::microseconds>(m_latencyMaxWindow).count() / 1000.0f;
     stats.latency_max_all_ms = (float)std::chrono::duration_cast<std::chrono::microseconds>(m_latencyMaxAll).count() / 1000.0f;
+
+    if (m_invokeCountWindow > 0) {
+        stats.invoke_avg_ms = (float)std::chrono::duration_cast<std::chrono::microseconds>(m_invokeTotalWindow).count() / (m_invokeCountWindow * 1000.0f);
+    } else {
+        stats.invoke_avg_ms = 0.0f;
+    }
+
+    stats.invoke_max_window_ms = (float)std::chrono::duration_cast<std::chrono::microseconds>(m_invokeMaxWindow).count() / 1000.0f;
+    stats.invoke_max_all_ms = (float)std::chrono::duration_cast<std::chrono::microseconds>(m_invokeMaxAll).count() / 1000.0f;
+
     stats.dispatch_count = m_dispatchCountAll;
 
     // Reset windowed stats
@@ -447,6 +536,10 @@ Thread::ThreadStats Thread::SnapshotStats()
     m_latencyTotalWindow = Duration(0);
     m_latencyCountWindow = 0;
     m_latencyMaxWindow = Duration(0);
+
+    m_invokeTotalWindow = Duration(0);
+    m_invokeCountWindow = 0;
+    m_invokeMaxWindow = Duration(0);
 
     tx_mutex_put(&m_statMutex);
     return stats;

@@ -75,6 +75,9 @@ public:
         float latency_avg_ms;        // Avg wait in window
         float latency_max_window_ms; // Max wait since last snapshot
         float latency_max_all_ms;    // All-time max wait
+        float invoke_avg_ms;         // Avg execution in window
+        float invoke_max_window_ms;  // Max execution since last snapshot
+        float invoke_max_all_ms;     // All-time max execution
         uint64_t dispatch_count;      // Total dispatches (all-time)
     };
 #endif
@@ -132,6 +135,9 @@ public:
     /// alarm when a handler legitimately takes longer than watchdogTimeout.
     void ThreadCheck();
 
+    /// @brief Static method to check all registered threads for watchdog expiration.
+    static void WatchdogCheckAll();
+
 #if defined(DMQ_DATABUS_TOOLS)
     /// @brief Capture and reset windowed statistics.
     ThreadStats SnapshotStats();
@@ -151,6 +157,12 @@ private:
     /// In a real-time OS, Timer::ProcessTimers() typically is called by the highest
     /// priority task in the system.
     void WatchdogCheck();
+
+    /// @brief Returns the head of the watchdog linked list.
+    static Thread*& GetWatchdogHead();
+
+    /// @brief Returns the recursive mutex for protecting the watchdog list.
+    static dmq::RecursiveMutex& GetWatchdogLock();
 
     std::optional<std::thread> m_thread;
     std::atomic<bool> m_exit;
@@ -188,9 +200,8 @@ private:
 
     // Watchdog related members
     std::atomic<dmq::TimePoint> m_lastAliveTime;
-    std::unique_ptr<dmq::util::Timer> m_watchdogTimer;
-    dmq::ScopedConnection m_watchdogTimerConn;
     std::atomic<dmq::Duration> m_watchdogTimeout;
+    Thread* m_watchdogNext = nullptr;
 
 #if defined(DMQ_DATABUS_TOOLS)
     // Monitoring statistics members
@@ -201,6 +212,12 @@ private:
     uint32_t m_latencyCountWindow = 0;
     dmq::Duration m_latencyMaxWindow = dmq::Duration(0);
     dmq::Duration m_latencyMaxAll = dmq::Duration(0);
+
+    dmq::Duration m_invokeTotalWindow = dmq::Duration(0);
+    uint32_t m_invokeCountWindow = 0;
+    dmq::Duration m_invokeMaxWindow = dmq::Duration(0);
+    dmq::Duration m_invokeMaxAll = dmq::Duration(0);
+
     uint64_t m_dispatchCountAll = 0;
 #endif
 };

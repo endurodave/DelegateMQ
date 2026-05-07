@@ -13,14 +13,14 @@
 #define configUSE_TICK_HOOK                     1
 #define configUSE_DAEMON_TASK_STARTUP_HOOK      1
 #define configTICK_RATE_HZ                      ( 1000 )
-#define configMINIMAL_STACK_SIZE                ( ( unsigned short ) 70 )
-#define configTOTAL_HEAP_SIZE                   ( ( size_t ) ( 49 * 1024 ) )
+#define configMINIMAL_STACK_SIZE                ( ( unsigned short ) 256 )
+#define configTOTAL_HEAP_SIZE                   ( ( size_t ) ( 256 * 1024 ) )
 #define configMAX_TASK_NAME_LEN                 ( 12 )
 #define configUSE_TRACE_FACILITY                0
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
 #define configUSE_MUTEXES                       1
-#define configCHECK_FOR_STACK_OVERFLOW          0
+#define configCHECK_FOR_STACK_OVERFLOW          2
 #define configUSE_RECURSIVE_MUTEXES             1
 #define configQUEUE_REGISTRY_SIZE               20
 #define configUSE_MALLOC_FAILED_HOOK            1

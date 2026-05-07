@@ -3,6 +3,7 @@
 
 #include "../../delegate/DelegateOpt.h"
 #include "../../delegate/Signal.h"
+#include <atomic>
 #include <list>
 
 namespace dmq::util {
@@ -93,17 +94,15 @@ private:
     Timer& operator=(const Timer&);
 
     /// Called to check for expired timers and callback registered clients.
-    void CheckExpired();
+    bool CheckExpired();
 
-    typedef xlist<Timer*>::iterator TimersIterator;
-
-    /// Get list using the "Immortal" Pattern
-    static xlist<Timer*>& GetTimers()
+    /// Get list head using the "Immortal" Pattern
+    static Timer*& GetTimersHead()
     {
-        // Allocate on heap and NEVER delete. Prevents lock from being destroyed 
+        // Static head pointer. NEVER delete. Prevents lock from being destroyed 
         // before the last Timer destructor runs at app shutdown.
-        static xlist<Timer*>* instance = new xlist<Timer*>();
-        return *instance;
+        static Timer* head = nullptr;
+        return head;
     }
 
     /// Get lock using the "Immortal" Pattern
@@ -117,9 +116,10 @@ private:
 
     dmq::Duration m_timeout = dmq::Duration(0);		
     dmq::TimePoint m_expireTime;
-    bool m_enabled = false;
+    std::atomic<bool> m_enabled{false};
     bool m_once = false;
-    static bool m_timerStopped;
+    Timer* m_next = nullptr;
+    static std::atomic<bool> m_timerStopped;
 };
 
 } // namespace dmq::util

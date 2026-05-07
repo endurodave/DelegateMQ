@@ -15,21 +15,35 @@ Network::~Network() {
     Shutdown();
 }
 
-void Network::Initialize(uint16_t subPort, const std::string& nodeName, const std::string& cpuName) {
+void Network::Initialize(uint16_t subPort, uint16_t tcpPort, const std::string& nodeName, const std::string& cpuName) {
     if (m_running) return;
 
     m_nodeName = nodeName;
-    m_subParticipant = std::make_shared<dmq::databus::Participant>(m_subTransport);
 
-    std::cout << "Network: Initializing node '" << m_nodeName << "' on port " << subPort << "..." << std::endl;
+    std::cout << "Network: Initializing node '" << m_nodeName << "' (UDP:" << subPort << ", TCP:" << tcpPort << ")..." << std::endl;
 
+    // 1. Setup UDP Telemetry Subscriber
     if (m_subTransport.Create(UdpTransport::Type::SUB, "127.0.0.1", subPort) != 0) {
         std::cerr << "Network: ERROR - Failed to create subscriber transport on port " << subPort << std::endl;
         return;
     }
+    m_subTransport.SetRecvTimeout(std::chrono::milliseconds(1));
+    m_subParticipant = std::make_shared<dmq::databus::Participant>(m_subTransport);
+    for (auto& in : m_incomingTopics)
+        in.adder(in.serializer, in.topic, in.remoteId, *m_subParticipant);
 
-    // Set a short receive timeout so the ReceiverThread can check m_running periodically
-    m_subTransport.SetRecvTimeout(std::chrono::milliseconds(100));
+    // 2. Setup TCP Command Server (if port provided)
+    if (tcpPort > 0) {
+        if (m_tcpServerTransport.Create(TcpTransport::Type::SERVER, "127.0.0.1", tcpPort) != 0) {
+             std::cerr << "Network: ERROR - Failed to create TCP server on port " << tcpPort << std::endl;
+        } else {
+             m_tcpServerTransport.SetRecvTimeout(std::chrono::milliseconds(1));
+             std::cout << "Network: TCP Server listening on port " << tcpPort << std::endl;
+             m_tcpServerParticipant = std::make_shared<dmq::databus::Participant>(m_tcpServerTransport);
+             for (auto& in : m_incomingTopics)
+                 in.adder(in.serializer, in.topic, in.remoteId, *m_tcpServerParticipant);
+        }
+    }
 
     // Initialize thread with CPU name and register for monitoring
     m_thread = std::make_unique<Thread>(m_nodeName + "_NetworkThread", 100, FullPolicy::FAULT, dmq::DEFAULT_DISPATCH_TIMEOUT, cpuName);
@@ -50,8 +64,6 @@ void Network::Initialize(uint16_t subPort, const std::string& nodeName, const st
 
     // Post the receiver loop to the standardized worker thread
     (void)dmq::MakeDelegate(this, &Network::ReceiverThread, *m_thread).AsyncInvoke();
-    
-    std::cout << "Network: Receiver thread started on port " << subPort << std::endl;
 }
 
 void Network::Shutdown() {
@@ -60,6 +72,7 @@ void Network::Shutdown() {
     std::cout << "Network: Shutting down..." << std::endl;
     m_running = false;
     m_subTransport.Close();
+    m_tcpServerTransport.Close();
     if (m_thread) {
         m_thread->ExitThread();
     }
@@ -67,82 +80,100 @@ void Network::Shutdown() {
     m_remoteNodes.clear();
 }
 
-void Network::AddRemoteNode(const std::string& nodeName, const std::string& addr, uint16_t port) {
-    std::cout << "Network: Adding remote node '" << nodeName << "' at " << addr << ":" << port << "..." << std::endl;
+void Network::AddRemoteNode(const std::string& nodeName, const std::string& addr, uint16_t udpPort, uint16_t tcpPort) {
+    std::cout << "Network: Adding remote node '" << nodeName << "' (UDP:" << udpPort << ", TCP:" << tcpPort << ")..." << std::endl;
     
-    auto rawTransport = std::make_unique<UdpTransport>();
-    if (rawTransport->Create(UdpTransport::Type::PUB, addr.c_str(), port) == 0) {
-        
-        RemoteNode node;
-        node.rawTransport = std::move(rawTransport);
+    RemoteNode node;
 
-        // 1. Create Reliability Stack for this node
-        // TransportMonitor tracks sequence numbers and detects timeouts
+    // 1. Setup UDP Pipeline
+    node.rawTransport = std::make_unique<UdpTransport>();
+    if (node.rawTransport->Create(UdpTransport::Type::PUB, addr.c_str(), udpPort) == 0) {
         node.transportMonitor = std::make_unique<TransportMonitor>();
-        
-        // RetryMonitor handles the re-sending of binary data on timeout
         node.retryMonitor = std::make_unique<RetryMonitor>(*node.rawTransport, *node.transportMonitor);
-        
-        // ReliableTransport is a decorator that routes Send() through the RetryMonitor
         node.reliableTransport = std::make_unique<ReliableTransport>(*node.rawTransport, *node.retryMonitor);
-
-        // 2. Setup Participants
-        // One for reliable topics, one for unreliable
         node.reliableParticipant = std::make_shared<dmq::databus::Participant>(*node.reliableTransport);
         node.unreliableParticipant = std::make_shared<dmq::databus::Participant>(*node.rawTransport);
-
-        // 3. Connect raw transport to the monitor for sequence tracking
         node.rawTransport->SetTransportMonitor(node.transportMonitor.get());
-
-        // 4. Apply all outgoing topic-RID mappings registered so far
-        for (const auto& out : m_outgoingTopics) {
-            if (out.reliability == Reliability::RELIABLE) {
-                node.reliableParticipant->AddRemoteTopic(out.topic, out.remoteId);
-            } else {
-                node.unreliableParticipant->AddRemoteTopic(out.topic, out.remoteId);
-            }
-        }
-
-        // 5. Register participants with DataBus for global distribution
+        
+        node.reliableParticipant->SetSendThread(m_thread.get());
+        node.unreliableParticipant->SetSendThread(m_thread.get());
         dmq::databus::DataBus::AddParticipant(node.reliableParticipant);
         dmq::databus::DataBus::AddParticipant(node.unreliableParticipant);
-
-        m_remoteNodes[nodeName] = std::move(node);
-        
-        std::cout << "Network: SUCCESS - Remote node '" << nodeName << "' added to DataBus with Reliability Support." << std::endl;
-    } else {
-        std::cerr << "Network: ERROR - Failed to connect to node " << nodeName << " at " << addr << ":" << port << std::endl;
     }
+
+    // 2. Setup TCP Pipeline (Client)
+    if (tcpPort > 0) {
+        node.tcpTransport = std::make_unique<TcpTransport>();
+        if (node.tcpTransport->Create(TcpTransport::Type::CLIENT, addr.c_str(), tcpPort) == 0) {
+            node.tcpTransport->SetRecvTimeout(std::chrono::milliseconds(1));
+            node.tcpParticipant = std::make_shared<dmq::databus::Participant>(*node.tcpTransport);
+            node.tcpParticipant->SetSendThread(m_thread.get());
+            dmq::databus::DataBus::AddParticipant(node.tcpParticipant);
+            
+            // Register all existing incoming topics on this new TCP client connection
+            for (auto& in : m_incomingTopics) {
+                in.adder(in.serializer, in.topic, in.remoteId, *node.tcpParticipant);
+            }
+
+            std::cout << "Network: TCP Client connected to " << nodeName << std::endl;
+        }
+    }
+
+    // 3. Apply all outgoing topic-RID mappings
+    for (const auto& out : m_outgoingTopics) {
+        if (out.reliability == Reliability::TCP && node.tcpParticipant) {
+            node.tcpParticipant->AddRemoteTopic(out.topic, out.remoteId);
+        } else if (out.reliability == Reliability::RELIABLE) {
+            node.reliableParticipant->AddRemoteTopic(out.topic, out.remoteId);
+        } else {
+            node.unreliableParticipant->AddRemoteTopic(out.topic, out.remoteId);
+        }
+    }
+
+    m_remoteNodes[nodeName] = std::move(node);
 }
 
 void Network::ReceiverThread() {
-    // Process a single batch of incoming network data. This call blocks until 
-    // a packet is received or the transport timeout (100ms) expires.
+    // Process multiple units of work per cycle to clear backlogs efficiently
+    const int MAX_WORK_PER_CYCLE = 20;
+
+    // 1. Process UDP Telemetry
     if (m_subParticipant) {
-        int result = m_subParticipant->ProcessIncoming();
-        if (result != 0 && result != -1) { 
-            std::cerr << "Network: ProcessIncoming returned error " << result << std::endl;
+        for (int i = 0; i < MAX_WORK_PER_CYCLE; ++i) {
+            if (m_subParticipant->ProcessIncoming() != 0) break;
         }
     }
 
-    // Periodically process reliable transport monitors for timeouts/retries
+    // 2. Process TCP Commands (Server)
+    if (m_tcpServerParticipant) {
+        for (int i = 0; i < MAX_WORK_PER_CYCLE; ++i) {
+            if (m_tcpServerParticipant->ProcessIncoming() != 0) break;
+        }
+    }
+
+    // 3. Process TCP Client connections
     for (auto& [name, node] : m_remoteNodes) {
-        if (node.transportMonitor) {
-            node.transportMonitor->Process();
+        if (node.tcpParticipant) {
+            for (int i = 0; i < MAX_WORK_PER_CYCLE; ++i) {
+                if (node.tcpParticipant->ProcessIncoming() != 0) break;
+            }
         }
     }
 
-    // Yield and re-dispatch self to the standardized worker thread. 
-    //
-    // CRITICAL DESIGN PATTERN: In a DelegateMQ Active Object thread, we avoid 
-    // infinite while(true) loops. Instead, we perform one unit of work and then 
-    // AsyncInvoke() ourselves again. This returns control to the dmq::os::Thread 
-    // dispatcher, allowing it to process other high-priority messages in the 
-    // queue (like internal Watchdog Heartbeats or Shutdown requests) before 
-    // starting the next network receive cycle.
-    //
-    // The "loop" speed is governed by the transport receive timeout (100ms).
+    // 4. Process reliable transport monitors
+    static auto lastTimeoutCheck = std::chrono::steady_clock::now();
+    auto now = std::chrono::steady_clock::now();
+    if (now - lastTimeoutCheck >= std::chrono::milliseconds(500)) {
+        for (auto& [name, node] : m_remoteNodes) {
+            if (node.transportMonitor) {
+                node.transportMonitor->Process();
+            }
+        }
+        lastTimeoutCheck = now;
+    }
+
     if (m_running) {
+        // Reduced sleep to improve throughput
         Thread::Sleep(std::chrono::milliseconds(10));
         (void)dmq::MakeDelegate(this, &Network::ReceiverThread, *m_thread).AsyncInvoke();
     }
