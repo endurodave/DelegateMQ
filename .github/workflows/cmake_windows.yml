@@ -13,20 +13,18 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest  # Use Windows environment for the build
+    runs-on: windows-2022  # Explicitly use Windows 2022 to match Visual Studio 2022
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4  # Checkout the repository code
-
-    - name: Set up Visual Studio
-      uses: microsoft/setup-msbuild@v2  # Set up Visual Studio environment (MSBuild)
+      uses: actions/checkout@v4
 
     - name: Configure CMake
-      run: cmake -S . -B build -G "Visual Studio 17 2022" # Configure CMake for Visual Studio
+      # Use default generator for windows-2022 image (Visual Studio 2022)
+      run: cmake -S . -B build
 
     - name: Build
-      run: cmake --build build --config Release  # Build the project using CMake with Release configuration
+      run: cmake --build build --config Release
 
     - name: Run delegate_app
-      run: .\build\delegate_app\Release\delegate_app.exe  # Run the built executable (adjust path for MSBuild)
+      run: .\build\delegate_app\Release\delegate_app.exe
