@@ -54,6 +54,7 @@ class Worker : public QObject
     Q_OBJECT
 public:
     Worker(Thread* thread = nullptr) : m_thread(thread) {}
+    void ClearThread() { m_thread = nullptr; }
 
 public slots:
     void OnDispatch(std::shared_ptr<dmq::DelegateMsg> msg);
@@ -187,8 +188,6 @@ private:
 
     // Watchdog related members
     std::atomic<dmq::TimePoint> m_lastAliveTime;
-    std::unique_ptr<dmq::util::Timer> m_watchdogTimer;
-    dmq::ScopedConnection m_watchdogTimerConn;
     std::atomic<dmq::Duration> m_watchdogTimeout;
     Thread* m_watchdogNext = nullptr;
 

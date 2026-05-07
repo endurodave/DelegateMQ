@@ -19,7 +19,6 @@ void Network::Initialize(uint16_t subPort, uint16_t tcpPort, const std::string& 
     if (m_running) return;
 
     m_nodeName = nodeName;
-    m_subParticipant = std::make_shared<dmq::databus::Participant>(m_subTransport);
 
     std::cout << "Network: Initializing node '" << m_nodeName << "' (UDP:" << subPort << ", TCP:" << tcpPort << ")..." << std::endl;
 
@@ -28,17 +27,21 @@ void Network::Initialize(uint16_t subPort, uint16_t tcpPort, const std::string& 
         std::cerr << "Network: ERROR - Failed to create subscriber transport on port " << subPort << std::endl;
         return;
     }
-    // Very short timeout for UDP to prevent blocking other transports
     m_subTransport.SetRecvTimeout(std::chrono::milliseconds(1));
+    m_subParticipant = std::make_shared<dmq::databus::Participant>(m_subTransport);
+    for (auto& in : m_incomingTopics)
+        in.adder(in.serializer, in.topic, in.remoteId, *m_subParticipant);
 
     // 2. Setup TCP Command Server (if port provided)
     if (tcpPort > 0) {
-        m_tcpServerParticipant = std::make_shared<dmq::databus::Participant>(m_tcpServerTransport);
         if (m_tcpServerTransport.Create(TcpTransport::Type::SERVER, "127.0.0.1", tcpPort) != 0) {
              std::cerr << "Network: ERROR - Failed to create TCP server on port " << tcpPort << std::endl;
         } else {
              m_tcpServerTransport.SetRecvTimeout(std::chrono::milliseconds(1));
              std::cout << "Network: TCP Server listening on port " << tcpPort << std::endl;
+             m_tcpServerParticipant = std::make_shared<dmq::databus::Participant>(m_tcpServerTransport);
+             for (auto& in : m_incomingTopics)
+                 in.adder(in.serializer, in.topic, in.remoteId, *m_tcpServerParticipant);
         }
     }
 
@@ -171,7 +174,7 @@ void Network::ReceiverThread() {
 
     if (m_running) {
         // Reduced sleep to improve throughput
-        Thread::Sleep(std::chrono::milliseconds(1));
+        Thread::Sleep(std::chrono::milliseconds(10));
         (void)dmq::MakeDelegate(this, &Network::ReceiverThread, *m_thread).AsyncInvoke();
     }
 }

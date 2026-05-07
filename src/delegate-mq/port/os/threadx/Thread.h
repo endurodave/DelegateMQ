@@ -188,8 +188,6 @@ private:
 
     // Watchdog related members
     std::atomic<dmq::TimePoint> m_lastAliveTime;
-    std::unique_ptr<Timer> m_watchdogTimer;
-    dmq::ScopedConnection m_watchdogTimerConn;
     std::atomic<dmq::Duration> m_watchdogTimeout;
     Thread* m_watchdogNext = nullptr;
 

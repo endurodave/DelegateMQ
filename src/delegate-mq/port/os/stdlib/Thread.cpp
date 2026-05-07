@@ -79,19 +79,25 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
         {
             m_watchdogTimeout = watchdogTimeout.value();
 
-            // Checks that Process() loop is iterating. Fires at half the watchdog
-            // interval so a stall is detected within one full watchdogTimeout window.
-            // WatchdogCheck runs synchronously in ProcessTimers() context — no dispatch,
-            // so ProcessTimers() cannot stall waiting on this thread's queue.
-            m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
-            m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(MakeDelegate(this, &Thread::WatchdogCheck));
-            m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
-
-            // Add this thread to the watchdog list
+            // Add to watchdog registry if not already present
             {
                 dmq::LockGuard<dmq::RecursiveMutex> lock(GetWatchdogLock());
-                m_watchdogNext = GetWatchdogHead();
-                GetWatchdogHead() = this;
+                bool found = false;
+                Thread* p = GetWatchdogHead();
+                while (p != nullptr)
+                {
+                    if (p == this)
+                    {
+                        found = true;
+                        break;
+                    }
+                    p = p->m_watchdogNext;
+                }
+                if (!found)
+                {
+                    m_watchdogNext = GetWatchdogHead();
+                    GetWatchdogHead() = this;
+                }
             }
         }
     }
@@ -164,12 +170,6 @@ void Thread::ExitThread()
 {
     if (!m_thread)
         return;
-
-    if (m_watchdogTimer)
-    {
-        m_watchdogTimer->Stop();
-        m_watchdogTimerConn.Disconnect();
-    }
 
     // Create a new ThreadMsg
     auto threadMsg = xmake_shared<ThreadMsg>(MSG_EXIT_THREAD, nullptr);
@@ -286,13 +286,21 @@ bool Thread::DispatchDelegate(std::shared_ptr<dmq::DelegateMsg> msg)
 //----------------------------------------------------------------------------
 void Thread::WatchdogCheckAll()
 {
-    const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
-    Thread* p = GetWatchdogHead();
-    while (p != nullptr)
+    Thread* snapshot[dmq::MAX_WATCHDOG_THREADS];
+    int count = 0;
+
     {
-        p->WatchdogCheck();
-        p = p->m_watchdogNext;
+        const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
+        Thread* p = GetWatchdogHead();
+        while (p != nullptr && count < static_cast<int>(dmq::MAX_WATCHDOG_THREADS))
+        {
+            snapshot[count++] = p;
+            p = p->m_watchdogNext;
+        }
     }
+
+    for (int i = 0; i < count; i++)
+        snapshot[i]->WatchdogCheck();
 }
 
 //----------------------------------------------------------------------------

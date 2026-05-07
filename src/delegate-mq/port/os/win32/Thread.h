@@ -170,12 +170,6 @@ private:
     /// Get registry lock using the "Immortal" Pattern
     static dmq::RecursiveMutex& GetWatchdogLock();
 
-    /// @brief Manually update the watchdog alive timestamp.
-    /// @details The Run() loop refreshes the timestamp automatically on every iteration.
-    /// Call this from inside long-running message handlers to prevent a false watchdog
-    /// alarm when a handler legitimately takes longer than watchdogTimeout.
-    void ThreadCheck();
-
     HANDLE m_hThread = NULL;
     DWORD m_threadId = 0;
 
@@ -210,8 +204,6 @@ private:
 
     // Watchdog related members
     std::atomic<dmq::TimePoint> m_lastAliveTime;
-    std::unique_ptr<dmq::util::Timer> m_watchdogTimer;
-    dmq::ScopedConnection m_watchdogTimerConn;
     std::atomic<dmq::Duration> m_watchdogTimeout;
 
 #if defined(DMQ_DATABUS_TOOLS)

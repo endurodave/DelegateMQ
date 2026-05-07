@@ -177,11 +177,11 @@ private:
         // own independent last-delivery timestamp, so different subscribers on the same
         // topic can have different (or no) rate limits without affecting each other.
         if (qos.minSeparation.has_value()) {
-            auto minSepRep = static_cast<uint32_t>(qos.minSeparation.value().count());
+            auto minSepRep = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(qos.minSeparation.value()).count());
             auto lastDeliveryRep = std::make_shared<std::atomic<uint32_t>>(0);
             auto inner = std::move(typedFunc);
             typedFunc = [inner = std::move(inner), minSepRep, lastDeliveryRep](T data) {
-                auto nowRep = static_cast<uint32_t>(dmq::Clock::now().time_since_epoch().count());
+                auto nowRep = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(dmq::Clock::now().time_since_epoch()).count());
                 auto lastRep = lastDeliveryRep->load(std::memory_order_relaxed);
                 if (nowRep - lastRep >= minSepRep) {
                     lastDeliveryRep->store(nowRep, std::memory_order_relaxed);

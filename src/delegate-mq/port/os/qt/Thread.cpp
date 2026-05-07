@@ -114,16 +114,25 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
         {
             m_watchdogTimeout = watchdogTimeout.value();
 
-            m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
-            m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(
-                MakeDelegate(this, &Thread::WatchdogCheck));
-            m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
-
-            // Add this thread to the watchdog list
+            // Add to watchdog registry if not already present
             {
                 dmq::LockGuard<dmq::RecursiveMutex> lock(GetWatchdogLock());
-                m_watchdogNext = GetWatchdogHead();
-                GetWatchdogHead() = this;
+                bool found = false;
+                Thread* p = GetWatchdogHead();
+                while (p != nullptr)
+                {
+                    if (p == this)
+                    {
+                        found = true;
+                        break;
+                    }
+                    p = p->m_watchdogNext;
+                }
+                if (!found)
+                {
+                    m_watchdogNext = GetWatchdogHead();
+                    GetWatchdogHead() = this;
+                }
             }
         }
     }
@@ -157,13 +166,21 @@ void Thread::ThreadCheck()
 //----------------------------------------------------------------------------
 void Thread::WatchdogCheckAll()
 {
-    const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
-    Thread* p = GetWatchdogHead();
-    while (p != nullptr)
+    Thread* snapshot[dmq::MAX_WATCHDOG_THREADS];
+    int count = 0;
+
     {
-        p->WatchdogCheck();
-        p = p->m_watchdogNext;
+        const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
+        Thread* p = GetWatchdogHead();
+        while (p != nullptr && count < static_cast<int>(dmq::MAX_WATCHDOG_THREADS))
+        {
+            snapshot[count++] = p;
+            p = p->m_watchdogNext;
+        }
     }
+
+    for (int i = 0; i < count; i++)
+        snapshot[i]->WatchdogCheck();
 }
 
 //----------------------------------------------------------------------------
@@ -191,11 +208,6 @@ void Thread::ExitThread()
 {
     if (m_thread)
     {
-        if (m_watchdogTimer)
-        {
-            m_watchdogTimer->Stop();
-            m_watchdogTimerConn.Disconnect();
-        }
         m_thread->quit();
 
         // Wake any blocked threads
@@ -204,12 +216,14 @@ void Thread::ExitThread()
         m_mutex.unlock();
 
         m_thread->wait();
-        
+
+        // Worker thread has fully stopped; null the back-pointer so the Worker
+        // cannot access this Thread if it is kept alive by deleteLater.
+        m_worker->ClearThread();
+
         // Cleanup manually if not using deleteLater
-        delete m_thread; 
+        delete m_thread;
         m_thread = nullptr;
-        
-        // Worker is usually deleted by deleteLater, but we can force null here
         m_worker = nullptr;
     }
 }

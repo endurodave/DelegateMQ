@@ -299,13 +299,21 @@ void Thread::Process(void* instance)
 //----------------------------------------------------------------------------
 void Thread::WatchdogCheckAll()
 {
-    const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
-    Thread* p = GetWatchdogHead();
-    while (p != nullptr)
+    Thread* snapshot[dmq::MAX_WATCHDOG_THREADS];
+    int count = 0;
+
     {
-        p->WatchdogCheck();
-        p = p->m_watchdogNext;
+        const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
+        Thread* p = GetWatchdogHead();
+        while (p != nullptr && count < static_cast<int>(dmq::MAX_WATCHDOG_THREADS))
+        {
+            snapshot[count++] = p;
+            p = p->m_watchdogNext;
+        }
     }
+
+    for (int i = 0; i < count; i++)
+        snapshot[i]->WatchdogCheck();
 }
 
 //----------------------------------------------------------------------------

@@ -3,6 +3,7 @@
 
 #include "../../delegate/DelegateOpt.h"
 #include "../../delegate/Signal.h"
+#include <atomic>
 #include <list>
 
 namespace dmq::util {
@@ -115,10 +116,10 @@ private:
 
     dmq::Duration m_timeout = dmq::Duration(0);		
     dmq::TimePoint m_expireTime;
-    bool m_enabled = false;
+    std::atomic<bool> m_enabled{false};
     bool m_once = false;
     Timer* m_next = nullptr;
-    static bool m_timerStopped;
+    static std::atomic<bool> m_timerStopped;
 };
 
 } // namespace dmq::util

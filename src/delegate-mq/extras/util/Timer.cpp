@@ -7,7 +7,7 @@ namespace dmq::util {
 
 using namespace std;
 
-bool Timer::m_timerStopped = false;
+std::atomic<bool> Timer::m_timerStopped{false};
 
 //------------------------------------------------------------------------------
 // Constructor
@@ -144,9 +144,9 @@ bool Timer::CheckExpired()
 //------------------------------------------------------------------------------
 void Timer::ProcessTimers()
 {
-    // Use fixed-size arrays to avoid heap allocation. 
-    // Most systems don't have hundreds of concurrent timers.
-    dmq::Signal<void()>::Snapshot snapshots[dmq::MAX_TIMER_EXPIRED];
+    // Static: ProcessTimers() is called from a single thread, so reusing the
+    // same buffer each call is safe and avoids ~2.5KB of stack per invocation.
+    static dmq::Signal<void()>::Snapshot snapshots[dmq::MAX_TIMER_EXPIRED];
     size_t count = 0;
 
     {
@@ -202,6 +202,7 @@ void Timer::ProcessTimers()
     for (size_t i = 0; i < count; ++i)
     {
         dmq::Signal<void()>::InvokeSnapshot(snapshots[i]);
+        snapshots[i] = {};  // release shared_ptr refs so delegates aren't held between calls
     }
 }
 

@@ -112,11 +112,6 @@ bool Thread::CreateThread(std::optional<dmq::Duration> watchdogTimeout)
         {
             m_watchdogTimeout = watchdogTimeout.value();
 
-            m_watchdogTimer = std::unique_ptr<Timer>(new Timer());
-            m_watchdogTimerConn = m_watchdogTimer->OnExpired.Connect(
-                dmq::MakeDelegate(this, &Thread::WatchdogCheck));
-            m_watchdogTimer->Start(m_watchdogTimeout.load() / 2);
-
             const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
 
             // Add to watchdog registry if not already present
@@ -149,11 +144,6 @@ void Thread::ExitThread()
 {
     if (m_stackMemory)
     {
-        if (m_watchdogTimer)
-        {
-            m_watchdogTimer->Stop();
-            m_watchdogTimerConn.Disconnect();
-        }
         m_exit.store(true);
 
         // Send exit message
@@ -327,13 +317,21 @@ void Thread::ThreadCheck()
 //----------------------------------------------------------------------------
 void Thread::WatchdogCheckAll()
 {
-    const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
-    Thread* p = GetWatchdogHead();
-    while (p != nullptr)
+    Thread* snapshot[dmq::MAX_WATCHDOG_THREADS];
+    int count = 0;
+
     {
-        p->WatchdogCheck();
-        p = p->m_watchdogNext;
+        const std::lock_guard<dmq::RecursiveMutex> lock(GetWatchdogLock());
+        Thread* p = GetWatchdogHead();
+        while (p != nullptr && count < static_cast<int>(dmq::MAX_WATCHDOG_THREADS))
+        {
+            snapshot[count++] = p;
+            p = p->m_watchdogNext;
+        }
     }
+
+    for (int i = 0; i < count; i++)
+        snapshot[i]->WatchdogCheck();
 }
 
 //----------------------------------------------------------------------------

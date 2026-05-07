@@ -13,8 +13,8 @@
 #define configUSE_TICK_HOOK                     1
 #define configUSE_DAEMON_TASK_STARTUP_HOOK      1
 #define configTICK_RATE_HZ                      ( 1000 )
-#define configMINIMAL_STACK_SIZE                ( ( unsigned short ) 4096 )
-#define configTOTAL_HEAP_SIZE                   ( ( size_t ) ( 512 * 1024 ) )
+#define configMINIMAL_STACK_SIZE                ( ( unsigned short ) 256 )
+#define configTOTAL_HEAP_SIZE                   ( ( size_t ) ( 256 * 1024 ) )
 #define configMAX_TASK_NAME_LEN                 ( 12 )
 #define configUSE_TRACE_FACILITY                0
 #define configUSE_16_BIT_TICKS                  0
@@ -39,7 +39,7 @@
 #define configUSE_TIMERS                        1
 #define configTIMER_TASK_PRIORITY               ( configMAX_PRIORITIES - 1 )
 #define configTIMER_QUEUE_LENGTH                20
-#define configTIMER_TASK_STACK_DEPTH            ( configMINIMAL_STACK_SIZE )
+#define configTIMER_TASK_STACK_DEPTH            ( configMINIMAL_STACK_SIZE * 2 )
 
 /* Run time stats */
 #define configRUN_TIME_COUNTER_TYPE             uint64_t
