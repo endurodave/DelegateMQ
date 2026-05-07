@@ -78,13 +78,16 @@ BUILD_CONFIG = "Release"
 def find_library(build_dir, lib_name):
     """Search common CMake output sub-directories for a built library."""
     suffix = ".dll" if IS_WINDOWS else ".so"
+    # Linux adds 'lib' prefix to shared libraries
+    full_name = lib_name if IS_WINDOWS else "lib" + lib_name
+    
     candidates = [
-        os.path.join(build_dir, "bin", BUILD_CONFIG, lib_name + suffix),
-        os.path.join(build_dir, "lib", BUILD_CONFIG, lib_name + suffix),
-        os.path.join(build_dir, "bin", lib_name + suffix),
-        os.path.join(build_dir, "lib", lib_name + suffix),
-        os.path.join(build_dir, BUILD_CONFIG, lib_name + suffix),
-        os.path.join(build_dir, lib_name + suffix),
+        os.path.join(build_dir, "bin", BUILD_CONFIG, full_name + suffix),
+        os.path.join(build_dir, "lib", BUILD_CONFIG, full_name + suffix),
+        os.path.join(build_dir, "bin", full_name + suffix),
+        os.path.join(build_dir, "lib", full_name + suffix),
+        os.path.join(build_dir, BUILD_CONFIG, full_name + suffix),
+        os.path.join(build_dir, full_name + suffix),
     ]
     for path in candidates:
         if os.path.isfile(path):
@@ -95,12 +98,11 @@ def find_library(build_dir, lib_name):
 def copy_interop_dll(build_dir, repo_root):
     """Copy built DmqInterop DLL/SO to interop/python/."""
     lib_name = "DmqInterop"
-    suffix = ".dll" if IS_WINDOWS else ".so"
     src = find_library(build_dir, lib_name)
     
     if src:
         dest_dir = os.path.join(repo_root, "interop", "python")
-        dest = os.path.join(dest_dir, lib_name + suffix)
+        dest = os.path.join(dest_dir, os.path.basename(src))
         try:
             os.makedirs(dest_dir, exist_ok=True)
             shutil.copy2(src, dest)
