@@ -73,27 +73,35 @@ Ensure `NodeBridge` is started (see Node Monitor section above). It will automat
 
 ## dmq-spy — DataBus Spy Console
 
-**DelegateMQ Spy** is a modern, standalone diagnostic TUI for the DelegateMQ `dmq::databus::DataBus`. It captures, filters, and displays every message published to the bus in real-time across threads and network boundaries.
+**DelegateMQ Spy** is a modern, standalone diagnostic TUI for the DelegateMQ `dmq::databus::DataBus`. It captures, filters, and displays every message published to the bus in real-time across threads and network boundaries. 
 
-<img src="dmq-spy-screenshot.png" alt="DelegateMQ Spy Screenshot" style="max-width: 800px; width: 100%;">
+<img src="dmq-spy-screenshot.png" alt="DelegateMQ Spy Screenshot" style="max-width: 800px; width: 100%;">       
+
+### Logic Analyzer Mode
+
+`dmq-spy` features a "Logic Analyzer" engine for high-fidelity timing diagnostics:
+
+*   **Chrono-Sorting**: Automatically inserts late-arriving UDP packets into their correct historical position based on source timestamps. This eliminates confusion from network packet reordering.
+*   **Session Time**: Displays time in seconds relative to the start of the trace (`0.000000`).
+*   **Dual Delta Tracking**: 
+    *   **T-Delta (Topic Delta)**: Time since the previous message of the *same* topic from the *same* sender. Use for signal jitter and frequency analysis.
+    *   **B-Delta (Bus Delta)**: Time since *any* previous message from the same sender. Use for traffic density and burst analysis.
 
 ### Key Features
 
 *   **Real-Time Live Feed**: Instant visualization of every message published to the `dmq::databus::DataBus` (Newest at Top).
 *   **Regex-Based Filtering**: Dynamically filter topics using regular expressions to isolate specific system events.
+*   **Intelligent Color-Coding**: Values are highlighted based on content (Green for OK/Running, Red for Error/Fault, Yellow for Warn).
 *   **Unicast & Multicast Support**: Monitor point-to-point traffic or join a multicast group for one-to-many monitoring.
-*   **Auto-IP Detection**: Automatically identifies the correct physical network interface for multicast joining on Windows.
 *   **Log to Disk**: High-performance background logging to a file for later historical analysis.
 *   **High-Resolution Timestamps**: Every packet is timestamped at the source with microsecond precision using monotonic clocks.
+*   **Pause & Resume**: Press `Ctrl-P` to freeze the display for inspection. Data continues to be gathered in the background circular buffer (2,000 entries).
 *   **Zero-Impact Architecture**: The Spy Bridge uses an asynchronous internal queue and a dedicated background thread to ensure monitoring never blocks or slows down your main application.
-*   **Standalone TUI**: Built with [FTXUI](https://github.com/ArthurSonzogni/FTXUI), providing a responsive, full-screen dashboard in any terminal.
 
 ### How it Works
 
-1.  **The Spy Console** (`spy/main.cpp`): The standalone `dmq-spy` application that displays the data.
+1.  **The Spy Console** (`spy/main.cpp`): The standalone `dmq-spy` application that displays the data in an aligned table layout.
 2.  **The Spy Bridge** (`bridge/SpyBridge.cpp/.h`): A small component you add to your own application to export its internal bus traffic over UDP.
-
-Data is serialized using the built-in `msg_serialize` library and transmitted over UDP.
 
 ### Integrating SpyBridge into Your App
 
@@ -119,10 +127,7 @@ int main() {
     // Unicast to a specific console IP
     SpyBridge::Start("127.0.0.1", 9999);
 
-    // OR: Multicast to a group (allows multiple consoles to listen)
-    // SpyBridge::StartMulticast("239.1.1.1", 9999);
-
-    // ... your app logic ...
+    // OR: ...
     SpyBridge::Stop();
 }
 ```
@@ -135,15 +140,14 @@ int main() {
 # Basic unicast (default port 9999)
 ./dmq-spy
 
-# Join a multicast group (auto-detects local interface)
-./dmq-spy 9999 --multicast 239.1.1.1
-
-# Join multicast on a specific network interface
-./dmq-spy 9999 --multicast 239.1.1.1 --interface 192.168.1.5
-
 # Log all traffic to a file
 ./dmq-spy 9999 --log traffic.log
 ```
+
+**Controls:**
+- `Ctrl-P` — Pause / Resume live feed
+- `c` — Clear trace and reset session time
+- `q` — Quit
 
 ---
 
@@ -183,9 +187,6 @@ int main() {
     // Unicast heartbeats to the monitor console
     NodeBridge::Start("SensorNode-1", "127.0.0.1", 9998);
 
-    // OR: Multicast heartbeats (all monitors on the group will see this node)
-    // NodeBridge::StartMulticast("SensorNode-1", "239.1.1.1", 9998);
-
     // ... your app logic ...
     NodeBridge::Stop();
 }
@@ -203,9 +204,6 @@ Topic and message count tracking is automatic — NodeBridge subscribes to `dmq:
 
 # Join a multicast group (auto-detects local interface)
 ./dmq-monitor 9998 --multicast 239.1.1.1
-
-# Join multicast on a specific network interface
-./dmq-monitor 9998 --multicast 239.1.1.1 --interface 192.168.1.5
 ```
 
 **Controls:**
