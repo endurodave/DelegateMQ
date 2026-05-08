@@ -77,15 +77,19 @@ Ensure `NodeBridge` is started (see Node Monitor section above). It will automat
 
 <img src="dmq-spy-screenshot.png" alt="DelegateMQ Spy Screenshot" style="max-width: 800px; width: 100%;">       
 
-### Logic Analyzer Mode
+### Timing & Chrono-Sorting
 
-`dmq-spy` features a "Logic Analyzer" engine for high-fidelity timing diagnostics:
+`dmq-spy` uses a **Split-Timing Architecture** to provide stable diagnostics across distributed systems with unsynchronized clocks:
 
-*   **Chrono-Sorting**: Automatically inserts late-arriving UDP packets into their correct historical position based on source timestamps. This eliminates confusion from network packet reordering.
-*   **Session Time**: Displays time in seconds relative to the start of the trace (`0.000000`).
-*   **Dual Delta Tracking**: 
-    *   **T-Delta (Topic Delta)**: Time since the previous message of the *same* topic from the *same* sender. Use for signal jitter and frequency analysis.
-    *   **B-Delta (Bus Delta)**: Time since *any* previous message from the same sender. Use for traffic density and burst analysis.
+*   **Monotonic Session Timeline**: The "Session Time" (left column) is driven by the Spy tool's **local steady clock**. This ensures the timeline is always strictly increasing and starts at `0.000000` regardless of when remote nodes booted.
+*   **High-Precision Jitter Analysis**: The `T-Delta` and `B-Delta` columns use the **remote source timestamps** contained within the packets. This preserves microsecond-accurate frequency analysis for each sender.
+*   **Arrival-Order Sorting**: Messages are sorted by their physical arrival at the Spy tool. This prevents UI "jumps" caused by remote clock drift or network reordering.
+
+#### Interpreting Negative Deltas
+You may occasionally see negative values in the Delta columns (e.g., `-0.015` ms). This is a normal diagnostic indicator that reveals:
+*   **Network Reordering**: A packet arrived at the Spy tool *after* a sibling packet, even though its source timestamp indicates it was sent *before*.
+*   **Network Jitter**: Micro-fluctuations in network latency caused packets sent in rapid succession to swap positions during transit.
+*   **Multi-Core Race Conditions**: On high-speed systems, two threads may publish to the bus so closely that the slightly later message physically hits the network wire first.
 
 ### Key Features
 
@@ -118,19 +122,30 @@ dmq::databus::DataBus::RegisterStringifier<MyData>("sensor/temp", [](const MyDat
 ```
 
 #### 3. Start the Bridge
-Call `Start` (unicast) or `StartMulticast` at application initialization:
+Call `Start` (unicast) or `StartMulticast` at application initialization. It is highly recommended to provide a unique **Node ID** so the Spy tool can distinguish between multiple processes running on the same machine:
 
 ```cpp
 #include "SpyBridge.h"
 
 int main() {
-    // Unicast to a specific console IP
-    SpyBridge::Start("127.0.0.1", 9999);
+    // Unicast to a specific console IP with a unique Node ID
+    SpyBridge::Start("127.0.0.1", 9999, "Node-Alpha");
 
-    // OR: ...
-    SpyBridge::Stop();
+    // OR: Multicast with a unique Node ID
+    SpyBridge::StartMulticast("239.1.1.1", 9999, "Node-Beta");
 }
 ```
+
+### Distributed DataBus "Echo" Effect
+
+In a distributed DelegateMQ system, you may see multiple nodes "sending" the same topic (e.g., both a Controller and a GUI sending `sensor/rpm`). This is a normal behavior of the DataBus architecture:
+
+1.  The **Producer** (Controller) publishes the data locally.
+2.  The **Network Bridge** transmits that data to the **Consumer** (GUI).
+3.  The GUI's Network Bridge receives the data and calls `DataBus::Publish()` **locally** so that its own internal subscribers can hear it.
+4.  The Spy tool reports a message from the "GUI" because the message physically appeared on the GUI's local bus.
+
+These "reflections" indicate that the data has successfully traversed the network and is being injected into the remote node's bus.
 
 ### Usage
 
@@ -146,8 +161,8 @@ int main() {
 
 **Controls:**
 - `Ctrl-P` — Pause / Resume live feed
-- `c` — Clear trace and reset session time
-- `q` — Quit
+- `Ctrl-C` — Clear trace and reset session time
+- `Ctrl-Q` — Quit
 
 ---
 

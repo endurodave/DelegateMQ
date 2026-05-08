@@ -59,7 +59,7 @@ void Network::Initialize(uint16_t subPort, uint16_t tcpPort, const std::string& 
     m_thread->CreateThread(WATCHDOG_TIMEOUT);
 
     // Initialize Bridges for dmq-spy and dmq-monitor
-    SpyBridge::Start("127.0.0.1", 9999);
+    SpyBridge::Start("127.0.0.1", 9999, m_nodeName);
     NodeBridge::StartMulticast(m_nodeName, "239.1.1.1", 9998);
 
     // Post the receiver loop to the standardized worker thread

@@ -31,14 +31,16 @@
 using namespace ftxui;
 
 struct LogEntry {
-    uint64_t timestamp;
-    std::string sender_ip;
+    uint64_t source_timestamp;
+    uint64_t arrival_timestamp;
+    std::string sender_id;
     std::string topic;
     std::string value;
 };
 
 // Global state
 std::vector<LogEntry> g_messages;
+std::atomic<uint64_t> g_sessionStart{0};
 std::mutex g_msgMutex;
 std::atomic<bool> g_running{true};
 std::atomic<bool> g_paused{false};
@@ -76,9 +78,20 @@ void ReceiverThread(uint16_t port, std::string multicastGroup, std::string local
             std::istringstream iss(std::string(reinterpret_cast<char*>(buffer.data()), received), std::ios::binary);
             ms_decoder.read(iss, packet);
             if (iss.good()) {
-                if (g_fileLogger) g_fileLogger->info("[{}] [{}] {}", senderIp, packet.topic, packet.value);
+                if (g_fileLogger) g_fileLogger->info("[{}] [{}] [{}] {}", senderIp, packet.nodeId, packet.topic, packet.value);
+                
+                auto arrival = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+                
                 std::lock_guard<std::mutex> lock(g_msgMutex);
-                g_messages.push_back({packet.timestamp_us, senderIp, (std::string)packet.topic, (std::string)packet.value});
+                // If this is the very first message of the session, use its arrival time as T=0
+                if (g_sessionStart == 0) {
+                    g_sessionStart = arrival;
+                }
+
+                std::string senderId = (std::string)packet.nodeId;
+                if (senderId.empty()) senderId = senderIp;
+
+                g_messages.push_back({packet.timestamp_us, static_cast<uint64_t>(arrival), senderId, (std::string)packet.topic, (std::string)packet.value});
                 if (g_messages.size() > 2000) g_messages.erase(g_messages.begin());
             }
         }
@@ -99,6 +112,9 @@ int main(int argc, char* argv[]) {
     }
     dmq::util::NetworkContext winsock;
     if (logFile.size()) g_fileLogger = spdlog::basic_logger_mt("spy_logger", logFile);
+
+    // Initial state: waiting for the first message to define T=0
+    g_sessionStart = 0;
 
     auto screen = ScreenInteractive::Fullscreen();
     std::thread receiver(ReceiverThread, port, multicastGroup, localInterface);
@@ -123,36 +139,48 @@ int main(int argc, char* argv[]) {
             std::lock_guard<std::mutex> lock(g_msgMutex);
             if (!g_paused) {
                 display_cache = g_messages;
-                std::sort(display_cache.begin(), display_cache.end(), [](const LogEntry& a, const LogEntry& b) {
-                    return a.timestamp < b.timestamp;
+                // Sort by local arrival time to ensure a perfectly monotonic timeline
+                std::stable_sort(display_cache.begin(), display_cache.end(), [](const LogEntry& a, const LogEntry& b) {
+                    return a.arrival_timestamp < b.arrival_timestamp;
                 });
             }
         }
 
         if (!display_cache.empty()) {
-            uint64_t sessionStart = display_cache.front().timestamp;
             std::map<std::string, uint64_t> lastBus;
             std::map<std::pair<std::string, std::string>, uint64_t> lastTopic;
 
             std::vector<Element> data_rows;
             for (size_t i = 0; i < display_cache.size(); ++i) {
                 auto& msg = display_cache[i];
+
+                // Filter first so deltas and session time are calculated for visible rows
+                if (!g_filter.empty() && msg.topic.find(g_filter) == std::string::npos) continue;
                 
+                // Deltas use HIGH-PRECISION source timestamps for jitter analysis
                 int64_t bDelta = 0;
-                if (lastBus.count(msg.sender_ip)) bDelta = msg.timestamp - lastBus[msg.sender_ip];
-                lastBus[msg.sender_ip] = msg.timestamp;
+                if (lastBus.count(msg.sender_id)) {
+                    bDelta = static_cast<int64_t>(msg.source_timestamp) - static_cast<int64_t>(lastBus[msg.sender_id]);
+                    // Cap at 1 hour; if larger, it's likely a boot-time jump or first message
+                    if (std::abs(bDelta) > 3600000000LL) bDelta = 0;
+                }
+                lastBus[msg.sender_id] = msg.source_timestamp;
 
                 int64_t tDelta = 0;
-                auto tKey = std::make_pair(msg.sender_ip, msg.topic);
-                if (lastTopic.count(tKey)) tDelta = msg.timestamp - lastTopic[tKey];
-                lastTopic[tKey] = msg.timestamp;
+                auto tKey = std::make_pair(msg.sender_id, msg.topic);
+                if (lastTopic.count(tKey)) {
+                    tDelta = static_cast<int64_t>(msg.source_timestamp) - static_cast<int64_t>(lastTopic[tKey]);
+                    // Cap at 1 hour; if larger, it's likely a boot-time jump or first message
+                    if (std::abs(tDelta) > 3600000000LL) tDelta = 0;
+                }
+                lastTopic[tKey] = msg.source_timestamp;
 
-                if (!g_filter.empty() && msg.topic.find(g_filter) == std::string::npos) continue;
+                // Session time uses LOCAL arrival time for absolute stability
+                int64_t relTimeUs = static_cast<int64_t>(msg.arrival_timestamp) - static_cast<int64_t>(g_sessionStart);
+                double relTime = static_cast<double>(relTimeUs < 0 ? 0 : relTimeUs) / 1000000.0;
 
-                double relTime = static_cast<double>(msg.timestamp - sessionStart) / 1000000.0;
                 auto fmtDelta = [](int64_t d) {
                     if (d == 0) return std::string("0.000");
-                    if (d > 3600000000LL) return std::string("---"); 
                     std::stringstream ss; ss << std::fixed << std::setprecision(3) << (static_cast<double>(d) / 1000.0);
                     return ss.str();
                 };
@@ -169,7 +197,7 @@ int main(int argc, char* argv[]) {
                     text(" " + ssRel.str()) | color(Color::GrayDark) | size(WIDTH, EQUAL, 16), separator(),
                     text(" " + fmtDelta(tDelta)) | color(Color::Cyan) | size(WIDTH, EQUAL, 12), separator(),
                     text(" " + fmtDelta(bDelta)) | color(Color::Blue) | size(WIDTH, EQUAL, 12), separator(),
-                    text(" " + msg.sender_ip) | color(Color::Green) | size(WIDTH, EQUAL, 16), separator(),
+                    text(" " + msg.sender_id) | color(Color::Green) | size(WIDTH, EQUAL, 16), separator(),
                     text(" " + msg.topic) | color(Color::Yellow) | size(WIDTH, EQUAL, 26), separator(),
                     text(" " + msg.value) | color(value_color) | flex
                 }));
@@ -187,16 +215,20 @@ int main(int argc, char* argv[]) {
             hbox({ 
                 text(" Messages: " + std::to_string(g_messages.size()) + (g_paused ? " [PAUSED]" : "")) | color(Color::BlueLight), 
                 filler(), 
-                text(" Ctrl-P pause | 'c' clear | 'q' quit ") | dim 
+                text(" Ctrl-P pause | Ctrl-C clear | Ctrl-Q quit ") | dim 
             }) | size(HEIGHT, EQUAL, 1)
         });
     });
 
     auto component = CatchEvent(renderer, [&](Event event) {
-        if (event == Event::Character('q')) { g_running = false; screen.Exit(); return true; }
+        if (event == Event::Character('\x11')) { g_running = false; screen.Exit(); return true; }
         if (event == Event::Character(static_cast<char>(16))) { g_paused = !g_paused; return true; }
-        if (event == Event::Character('c')) { std::lock_guard<std::mutex> lock(g_msgMutex); g_messages.clear(); return true; }
-        return false;
+        if (event == Event::Character('\x03')) {
+            std::lock_guard<std::mutex> lock(g_msgMutex);
+            g_messages.clear();
+            g_sessionStart = 0;
+            return true;
+        }        return false;
     });
 
     std::thread refresher([&] { while (g_running) { std::this_thread::sleep_for(std::chrono::milliseconds(100)); screen.PostEvent(Event::Custom); } });
