@@ -79,7 +79,7 @@ add_executable(cellutron_controller
     ${FREERTOS_SOURCES}
 )
 
-target_compile_definitions(cellutron_controller PRIVATE ${DMQ_COMPILE_DEFINITIONS})
+target_compile_definitions(cellutron_controller PRIVATE ${DMQ_COMPILE_DEFINITIONS} DMQ_USER_CONFIG="DelegateMQConfig.h")
 
 # Organize delegate source files within IDE (Visual Studio)
 source_group("Source Files" FILES main.cpp)

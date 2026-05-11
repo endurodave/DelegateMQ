@@ -34,7 +34,8 @@ Numerous predefined platforms are already supported — Windows, Linux, FreeRTOS
 6. **Configure Build Options** — set CMake DMQ library build options within `CMakeLists.txt`.
    - Example: `DMQ_ASSERTS` for debug assertions.
    - Example: `DMQ_ALLOCATOR` to switch between standard heap (`new`/`delete`) and the deterministic Fixed Block Allocator.
-7. **Implement Fault Handling** — customize `Fault.cpp` to route errors to your system's logger or crash handler.
+   - Example: copy `DelegateMQConfig_Template.h` to your project and set `-DDMQ_USER_CONFIG="DelegateMQConfig.h"` to tune numeric library constants (`DMQ_MAX_TIMER_EXPIRED`, `DMQ_MAX_WATCHDOG_THREADS`, `DMQ_DEFAULT_QUEUE_SIZE`, etc.) without editing library files. See `delegate/DelegateMQConfig_Default.h` for all available constants and their default values.
+7. **Implement Fault Handling** — customize `port/fault/Fault.cpp` to route errors to your system's logger or crash handler. This file is intentionally in the `port/` directory so it can be freely edited without touching the library source.
 
 ---
 

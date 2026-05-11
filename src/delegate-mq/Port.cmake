@@ -132,19 +132,24 @@ endif()
 if (DMQ_UTIL STREQUAL "ON")
     if (DMQ_THREAD STREQUAL "DMQ_THREAD_NONE")
         # Bare metal: Only include utilities that DON'T need mutexes
-        file(GLOB UTIL_SOURCES 
-            "${DMQ_ROOT_DIR}/extras/util/Fault.c*" 
+        # Fault.cpp lives in port/fault/ and is always included separately
+        file(GLOB UTIL_SOURCES
             "${DMQ_ROOT_DIR}/extras/util/Fault.h"
             # Explicitly exclude Timer.cpp and AsyncInvoke.cpp
         )
     else()
-        # OS/RTOS present: Include everything
-        file(GLOB UTIL_SOURCES 
-            "${DMQ_ROOT_DIR}/extras/util/*.c*" 
-            "${DMQ_ROOT_DIR}/extras/util/*.h" 
+        # OS/RTOS present: Include everything 
+        file(GLOB UTIL_SOURCES
+            "${DMQ_ROOT_DIR}/extras/util/*.c*"
+            "${DMQ_ROOT_DIR}/extras/util/*.h"
         )
     endif()
 endif()
+
+# Fault handler port — always included; override by filtering Fault.cpp from DMQ_PORT_SOURCES
+file(GLOB FAULT_SOURCES
+    "${DMQ_ROOT_DIR}/port/fault/Fault.cpp"
+)
 
 if (DMQ_ASSERTS STREQUAL "ON")
     add_compile_definitions(DMQ_ASSERTS)
@@ -160,6 +165,7 @@ list(APPEND DMQ_PORT_ONLY_SOURCES ${TRANSPORT_SOURCES})
 list(APPEND DMQ_PORT_ONLY_SOURCES ${SERIALIZE_SOURCES})
 list(APPEND DMQ_PORT_ONLY_SOURCES ${THREAD_SOURCES})
 list(APPEND DMQ_PORT_ONLY_SOURCES ${OS_SOURCES})
+list(APPEND DMQ_PORT_ONLY_SOURCES ${FAULT_SOURCES})
 
 # Extras sources: optional higher-level infrastructure (extras/ directory)
 set(DMQ_EXTRAS_SOURCES "")

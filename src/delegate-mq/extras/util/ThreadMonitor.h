@@ -5,7 +5,7 @@
 
 #if defined(DMQ_DATABUS)
 
-#include <vector>
+#include <array>
 #include <mutex>
 #include <thread>
 #include <atomic>
@@ -57,7 +57,8 @@ private:
 
     void MonitorLoop();
 
-    std::vector<dmq::os::Thread*> m_threads;
+    std::array<dmq::os::Thread*, dmq::MAX_WATCHDOG_THREADS> m_threads{};
+    size_t m_threadCount = 0;
     dmq::Mutex m_mutex;
     std::unique_ptr<dmq::os::Thread> m_monitorThread;
     std::atomic<bool> m_enabled{false};

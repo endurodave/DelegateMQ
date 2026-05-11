@@ -188,6 +188,27 @@ If no variables are set, DelegateMQ uses `Defaults.cmake` to guess the best sett
 - **RTOS (FreeRTOS/ThreadX/Zephyr)**: Native threading, `NONE` transport.
 - **All Platforms**: `SERIALIZE` serialization, `dmq::databus::DataBus` enabled, `Allocator` disabled.
 
+### 4. Library Constants (`DelegateMQConfig.h`)
+For per-project tuning of numeric library constants (queue depth, timer limits, watchdog thread count), copy `src/delegate-mq/delegate/DelegateMQConfig_Template.h` into your project and point the compiler at it:
+
+```cmake
+target_compile_definitions(my_app PRIVATE DMQ_USER_CONFIG="DelegateMQConfig.h")
+```
+
+Only define the values you want to change. Any omitted values fall back to the defaults in `DelegateMQConfig_Default.h`.
+
+| Constant | Default | Description |
+|---|---|---|
+| `DMQ_DEFAULT_DISPATCH_TIMEOUT` | `2` (seconds) | TIMEOUT queue-full policy wait before drop |
+| `DMQ_MAX_TIMER_EXPIRED` | `16` | Max timers processed per tick without heap |
+| `DMQ_SIGNAL_SBO_COUNT` | `8` | Signal subscribers before heap allocation |
+| `DMQ_DEFAULT_QUEUE_SIZE` | `20` | Default thread message queue depth |
+| `DMQ_MAX_WATCHDOG_THREADS` | `16` | Max threads registered with the watchdog |
+| `DMQ_SEQ_HISTORY_SIZE` | `8` | Duplicate-detection ring buffer depth per remote Participant |
+| `DMQ_MAX_PARTICIPANTS` | `8` | Max remote Participants the DataBus can hold without heap |
+
+Reducing `DMQ_MAX_TIMER_EXPIRED`, `DMQ_MAX_WATCHDOG_THREADS`, `DMQ_SEQ_HISTORY_SIZE`, and `DMQ_MAX_PARTICIPANTS` is recommended on RAM-constrained embedded targets (e.g. FreeRTOS nodes).
+
 ## Build Integration
 
 Follow these steps to integrate DelegateMQ into a project.
@@ -1061,7 +1082,7 @@ The `DelegateMQ` library external dependencies are based upon on the intended us
 
 ## Fixed-Block Memory Allocator
 
-The `DelegateMQ` library includes an optional fixed-block memory allocator designed to improve performance and reduce heap fragmentation in mission-critical systems. This feature is enabled by defining `DMQ_ALLOCATOR`. See `DelegateOpt.h` for configuration details. The underlying allocator implementation is based on the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
+The `DelegateMQ` library includes an optional fixed-block memory allocator designed to improve performance and reduce heap fragmentation in mission-critical systems. This feature is enabled by defining `DMQ_ALLOCATOR`. See `DelegateOpt.h` for configuration details and `DelegateMQConfig_Default.h` for tunable constants. The underlying allocator implementation is based on the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
 
 When `DMQ_ALLOCATOR` is defined, the `XALLOCATOR` macro is used to override `new` and `delete` operators for internal library objects.
 

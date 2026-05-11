@@ -219,8 +219,8 @@ public:
         }
 
         // Extract Payload
-        std::vector<char> payloadBuf(header.GetLength());
-        netbuf_copy_partial(buf, payloadBuf.data(), header.GetLength(), DmqHeader::HEADER_SIZE);
+        m_recvBuf.resize(header.GetLength());
+        netbuf_copy_partial(buf, m_recvBuf.data(), header.GetLength(), DmqHeader::HEADER_SIZE);
         
         if (is.good()) {
             is.write(payloadBuf.data(), header.GetLength());
@@ -252,6 +252,7 @@ public:
 private:
     struct netconn* m_conn = nullptr;
     ip_addr_t m_remoteIp{};
+    std::vector<char> m_recvBuf;
     uint16_t  m_remotePort = 0;
     Type m_type = Type::PUB;
 

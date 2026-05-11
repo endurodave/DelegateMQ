@@ -45,6 +45,7 @@ public:
 
     TransportMonitor(const dmq::Duration timeout = std::chrono::seconds(2)) : TRANSPORT_TIMEOUT(timeout)
     {
+        m_expiredItems.reserve(8);
     }
 
     ~TransportMonitor()
@@ -92,9 +93,8 @@ public:
     /// Call periodically to process message timeouts
     void Process()
     {
-        // 1. Collect expired items into a local list
-        struct ExpiredItem { uint16_t seq; TimeoutData data; };
-        std::vector<ExpiredItem> expiredItems;
+        // 1. Collect expired items (reuse member buffer — no heap alloc on steady-state calls)
+        m_expiredItems.clear();
 
         {
             // Lock ONLY while reading/modifying the map
@@ -116,7 +116,7 @@ public:
 
                 if (elapsed > TRANSPORT_TIMEOUT)
                 {
-                    expiredItems.push_back({ (*it).first, (*it).second });
+                    m_expiredItems.push_back({ (*it).first, (*it).second });
                     it = m_pending.erase(it);
                 }
                 else
@@ -129,7 +129,7 @@ public:
         } // Lock is RELEASED here
 
         // 2. Fire callbacks without holding the lock
-        for (const auto& item : expiredItems)
+        for (const auto& item : m_expiredItems)
         {
             OnSendStatus(item.data.remoteId, item.seq, Status::TIMEOUT);
         }
@@ -142,7 +142,10 @@ private:
         dmq::TimePoint timeStamp;
     };
 
+    struct ExpiredItem { uint16_t seq; TimeoutData data; };
+
     std::map<uint16_t, TimeoutData> m_pending;
+    std::vector<ExpiredItem> m_expiredItems;
     const dmq::Duration TRANSPORT_TIMEOUT;
     dmq::RecursiveMutex m_lock;
 };

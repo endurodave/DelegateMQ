@@ -8,6 +8,7 @@
 #include "port/transport/DmqHeader.h"
 #include "extras/dispatcher/RemoteChannel.h"
 #include "extras/util/Fault.h"
+#include <algorithm>
 #include <string>
 #include <memory>
 #include <unordered_map>
@@ -181,9 +182,11 @@ private:
 
     // --- Duplicate Filtering ---
     struct SeqHistory {
-        static constexpr size_t SIZE = 8;
-        uint16_t buffer[SIZE] = { 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF };
+        static constexpr size_t SIZE = DMQ_SEQ_HISTORY_SIZE;
+        uint16_t buffer[SIZE];
         size_t head = 0;
+
+        SeqHistory() { std::fill(buffer, buffer + SIZE, uint16_t(0xFFFF)); }
 
         bool is_duplicate(uint16_t seq) {
             for (size_t i = 0; i < SIZE; ++i) {

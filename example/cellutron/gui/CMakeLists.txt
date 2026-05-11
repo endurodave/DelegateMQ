@@ -69,7 +69,7 @@ add_executable(cellutron_gui
     ${DMQ_PORT_SOURCES}
 )
 
-target_compile_definitions(cellutron_gui PRIVATE ${DMQ_COMPILE_DEFINITIONS})
+target_compile_definitions(cellutron_gui PRIVATE ${DMQ_COMPILE_DEFINITIONS} DMQ_USER_CONFIG="DelegateMQConfig.h")
 if(WIN32)
     target_compile_definitions(cellutron_gui PRIVATE _WIN32_WINNT=0x0601)
 endif()

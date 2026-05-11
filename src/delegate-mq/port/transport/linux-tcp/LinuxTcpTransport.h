@@ -289,9 +289,9 @@ private:
         // 2. Read Payload
         uint16_t length = header.GetLength();
         if (length > 0) {
-            std::vector<char> payload(length);
-            if (!ReadExact(fd, payload.data(), length)) return -2;
-            is.write(payload.data(), length);
+            m_recvBuf.resize(length);
+            if (!ReadExact(fd, m_recvBuf.data(), length)) return -2;
+            is.write(m_recvBuf.data(), length);
         }
 
         // 3. Handle Acknowledgment
@@ -323,6 +323,7 @@ private:
     int m_socket = -1;
     int m_connFd = -1;
     std::vector<int> m_serverClients;
+    std::vector<char> m_recvBuf;
     std::chrono::milliseconds m_recvTimeout{2000};
     Type m_type = Type::SERVER;
     

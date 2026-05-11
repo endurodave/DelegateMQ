@@ -306,9 +306,9 @@ private:
         uint16_t length = header.GetLength();
         if (length > 0)
         {
-            std::vector<char> payload(length);
-            if (!ReadExact(s, payload.data(), length)) return -2;
-            is.write(payload.data(), length);
+            m_recvBuf.resize(length);
+            if (!ReadExact(s, m_recvBuf.data(), length)) return -2;
+            is.write(m_recvBuf.data(), length);
         }
 
         // 3. Handle Acknowledgment
@@ -340,6 +340,7 @@ private:
     SOCKET m_listenSocket = INVALID_SOCKET;
     SOCKET m_clientSocket = INVALID_SOCKET;
     std::vector<SOCKET> m_serverClients;
+    std::vector<char> m_recvBuf;
     DWORD m_recvTimeoutMs = 2000;
     Type m_type = Type::SERVER;
     

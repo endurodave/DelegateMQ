@@ -4,6 +4,13 @@
 /// @file
 /// @brief Delegate library options header file.
 
+// Pull in user config if provided, otherwise use library defaults.
+// To provide your own config: -DDMQ_USER_CONFIG="path/to/DelegateMQConfig.h"
+#ifdef DMQ_USER_CONFIG
+    #include DMQ_USER_CONFIG
+#endif
+#include "DelegateMQConfig_Default.h"
+
 #if defined(_WIN32) || defined(_WIN64)
     #ifndef WIN32_LEAN_AND_MEAN
         #define WIN32_LEAN_AND_MEAN
@@ -140,23 +147,31 @@ namespace dmq
     using TimePoint = typename Clock::time_point;
 
     /// @brief Default timeout for the TIMEOUT queue-full policy across all Thread ports.
-    /// Override per-thread at construction or project-wide before including this header.
-    inline constexpr std::chrono::seconds DEFAULT_DISPATCH_TIMEOUT{2};
+    /// Override via DMQ_DEFAULT_DISPATCH_TIMEOUT in DelegateMQConfig.h.
+    inline constexpr std::chrono::seconds DEFAULT_DISPATCH_TIMEOUT{DMQ_DEFAULT_DISPATCH_TIMEOUT};
 
     // --- RESOURCE LIMITS & SBO CONFIGURATION ---
-    
-    /// @brief Max timers processed in one tick without heap allocation.
-    inline constexpr size_t MAX_TIMER_EXPIRED = 16;
 
-    /// @brief Signal Small-Buffer Optimization (SBO) count. 
+    /// @brief Max timers processed in one tick without heap allocation.
+    /// Override via DMQ_MAX_TIMER_EXPIRED in delegatemqconfig.h.
+    inline constexpr size_t MAX_TIMER_EXPIRED = DMQ_MAX_TIMER_EXPIRED;
+
+    /// @brief Signal Small-Buffer Optimization (SBO) count.
     /// Signals with <= this many subscribers are invoked heap-free.
-    inline constexpr size_t SIGNAL_SBO_COUNT = 8;
+    /// Override via DMQ_SIGNAL_SBO_COUNT in delegatemqconfig.h.
+    inline constexpr size_t SIGNAL_SBO_COUNT = DMQ_SIGNAL_SBO_COUNT;
 
     /// @brief Default internal queue size for all dmq::os::Thread ports.
-    inline constexpr size_t DEFAULT_QUEUE_SIZE = 20;
+    /// Override via DMQ_DEFAULT_QUEUE_SIZE in delegatemqconfig.h.
+    inline constexpr size_t DEFAULT_QUEUE_SIZE = DMQ_DEFAULT_QUEUE_SIZE;
 
     /// @brief Max number of threads that can be monitored by the watchdog.
-    inline constexpr size_t MAX_WATCHDOG_THREADS = 16;
+    /// Override via DMQ_MAX_WATCHDOG_THREADS in delegatemqconfig.h.
+    inline constexpr size_t MAX_WATCHDOG_THREADS = DMQ_MAX_WATCHDOG_THREADS;
+
+    /// @brief Max number of remote Participants the DataBus can hold without heap allocation.
+    /// Override via DMQ_MAX_PARTICIPANTS in delegatemqconfig.h.
+    inline constexpr size_t MAX_PARTICIPANTS = DMQ_MAX_PARTICIPANTS;
 
     // --- MUTEX / LOCK SELECTION ---
 #if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT)

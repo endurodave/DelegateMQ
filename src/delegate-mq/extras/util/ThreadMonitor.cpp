@@ -3,7 +3,6 @@
 
 #if defined(DMQ_DATABUS)
 
-#include <algorithm>
 #include <chrono>
 
 namespace dmq::util {
@@ -17,16 +16,26 @@ void ThreadMonitor::Register(dmq::os::Thread* thread) {
     if (!thread) return;
     auto& instance = GetInstance();
     dmq::LockGuard<dmq::Mutex> lock(instance.m_mutex);
-    if (std::find(instance.m_threads.begin(), instance.m_threads.end(), thread) == instance.m_threads.end()) {
-        instance.m_threads.push_back(thread);
+    for (size_t i = 0; i < instance.m_threadCount; ++i) {
+        if (instance.m_threads[i] == thread) return;
     }
+    if (instance.m_threadCount < dmq::MAX_WATCHDOG_THREADS)
+        instance.m_threads[instance.m_threadCount++] = thread;
+    else
+        ::dmq::util::FaultHandler(__FILE__, (unsigned short)__LINE__);
 }
 
 void ThreadMonitor::Deregister(dmq::os::Thread* thread) {
     if (!thread) return;
     auto& instance = GetInstance();
     dmq::LockGuard<dmq::Mutex> lock(instance.m_mutex);
-    instance.m_threads.erase(std::remove(instance.m_threads.begin(), instance.m_threads.end(), thread), instance.m_threads.end());
+    for (size_t i = 0; i < instance.m_threadCount; ++i) {
+        if (instance.m_threads[i] == thread) {
+            instance.m_threads[i] = instance.m_threads[--instance.m_threadCount];
+            instance.m_threads[instance.m_threadCount] = nullptr;
+            return;
+        }
+    }
 }
 
 void ThreadMonitor::Enable(const std::string& topic) {
@@ -53,15 +62,16 @@ void ThreadMonitor::Disable() {
 void ThreadMonitor::MonitorLoop() {
     if (!m_enabled) return;
 
-    std::vector<dmq::os::Thread::ThreadStats> snapshots;
+    std::array<dmq::os::Thread::ThreadStats, dmq::MAX_WATCHDOG_THREADS> snapshots;
+    size_t snapshotCount = 0;
     {
         dmq::LockGuard<dmq::Mutex> lock(m_mutex);
-        for (auto* thread : m_threads) {
-            snapshots.push_back(thread->SnapshotStats());
-        }
+        for (size_t i = 0; i < m_threadCount; ++i)
+            snapshots[snapshotCount++] = m_threads[i]->SnapshotStats();
     }
 
-    for (const auto& s : snapshots) {
+    for (size_t i = 0; i < snapshotCount; ++i) {
+        const auto& s = snapshots[i];
         ThreadStatsPacket packet;
         packet.cpu_name = s.cpu_name;
         packet.thread_name = s.thread_name;
