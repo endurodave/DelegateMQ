@@ -10,6 +10,6 @@
 #define DMQ_DEFAULT_QUEUE_SIZE          20
 #define DMQ_MAX_WATCHDOG_THREADS        8
 #define DMQ_SEQ_HISTORY_SIZE            4
-#define DMQ_MAX_PARTICIPANTS            4
+#define DMQ_MAX_PARTICIPANTS            8
 
 #endif // _DELEGATEMQ_CONFIG_H
