@@ -42,6 +42,11 @@
 			<location>C:/Projects/DelegateMQWorkspace/DelegateMQ/src/delegate-mq</location>
 		</link>
 		<link>
+			<name>Application/User/databus_tests.cpp</name>
+			<type>1</type>
+			<location>C:/Projects/DelegateMQWorkspace/DelegateMQ/example/sample-projects/stm32-freertos/server/Src/databus_tests.cpp</location>
+		</link>
+		<link>
 			<name>Application/User/main.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Src/main.cpp</locationURI>

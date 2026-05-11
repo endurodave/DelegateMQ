@@ -21,6 +21,7 @@
 #define RUN_SIMPLE_TESTS
 //#define RUN_STRESS_TESTS
 //#define RUN_NETWORK_TESTS
+//#define RUN_DATABUS_TESTS
 
 // ============================================================================
 // FORWARD DECLARATIONS
@@ -28,6 +29,7 @@
 extern void StartSimpleTests();
 extern void StartStressTests();
 extern void StartNetworkTests();
+extern void StartDatabusTests();
 
 // Global Handles
 UART_HandleTypeDef huart6;
@@ -51,13 +53,21 @@ static void MX_GPIO_Init(void);
 static void MX_USART6_UART_Init(void); 
 static void Error_Handler(void);
 
-#if defined(DMQ_THREAD_FREERTOS)
-    #define mainTIMER_FREQUENCY_MS pdMS_TO_TICKS(10UL)
-    static void TimerCallback(TimerHandle_t xTimerHandle)
-    {
-        dmq::util::Timer::ProcessTimers();
-    }
-#endif
+#define mainTIMER_FREQUENCY_MS pdMS_TO_TICKS(10UL)
+static void TimerCallback(TimerHandle_t xTimerHandle)
+{
+	dmq::util::Timer::ProcessTimers();
+}
+
+// Highest priority so it can preempt any stalled task,
+// including the FreeRTOS timer daemon that runs ProcessTimers().
+static void WatchdogTask(void* pvParameters)
+{
+	for (;;) {
+		dmq::os::Thread::WatchdogCheckAll();
+		vTaskDelay(pdMS_TO_TICKS(500));
+	}
+}
 
 // ============================================================================
 // MAIN TASK
@@ -80,6 +90,9 @@ void MainTask(void* pvParameters) {
     #elif defined(RUN_NETWORK_TESTS)
         printf("Mode: NETWORK TESTS\n");
         StartNetworkTests();
+    #elif defined(RUN_DATABUS_TESTS)
+        printf("Mode: DATABUS TESTS\n");
+        StartDatabusTests();
     #else
         #error "Please select a test mode in main.cpp"
     #endif
@@ -105,6 +118,7 @@ int main(void)
     BSP_LED_On(LED3);
 
     xTaskCreate(MainTask, "MainTask", 2048, NULL, 2, NULL);
+    xTaskCreate(WatchdogTask, "Watchdog", 256, NULL, configMAX_PRIORITIES - 1, NULL);
 
     vTaskStartScheduler();
 
