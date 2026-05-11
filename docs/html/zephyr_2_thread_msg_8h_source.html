@@ -127,25 +127,43 @@ $(function(){initNavTree('zephyr_2_thread_msg_8h_source.html',''); initResizable
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classdmq_1_1os_1_1_thread_msg.html#a2f885c53281e0225f94816fd09482154">   23</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classdmq_1_1os_1_1_thread_msg.html#a2f885c53281e0225f94816fd09482154">GetId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_id; }</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classdmq_1_1os_1_1_thread_msg.html#ac1552f4a0d687583df9fa44e45468fee">   24</a></span>    std::shared_ptr&lt;dmq::DelegateMsg&gt; <a class="code hl_function" href="classdmq_1_1os_1_1_thread_msg.html#ac1552f4a0d687583df9fa44e45468fee">GetData</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_data; }</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">int</span> m_id;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    std::shared_ptr&lt;dmq::DelegateMsg&gt; m_data;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_define" href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">XALLOCATOR</a></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classdmq_1_1os_1_1_thread_msg.html#a4bae12b2d3e73c74581c165b9c69cb4f">   27</a></span>    <a class="code hl_enumeration" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a> <a class="code hl_function" href="classdmq_1_1os_1_1_thread_msg.html#a4bae12b2d3e73c74581c165b9c69cb4f">GetPriority</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">return</span> m_data ? m_data-&gt;GetPriority() : <a class="code hl_enumvalue" href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    }</div>
 </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>} <span class="comment">// namespace dmq::os</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#if defined(DMQ_DATABUS_TOOLS)</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">void</span> SetEnqueueTime(<a class="code hl_typedef" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> time) { m_enqueueTime = time; }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_typedef" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> GetEnqueueTime()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> m_enqueueTime; }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">int</span> m_id;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::shared_ptr&lt;dmq::DelegateMsg&gt; m_data;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#if defined(DMQ_DATABUS_TOOLS)</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_typedef" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> m_enqueueTime;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_define" href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">XALLOCATOR</a></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>} <span class="comment">// namespace dmq::os</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_delegate_opt_8h_html"><div class="ttname"><a href="_delegate_opt_8h.html">DelegateOpt.h</a></div><div class="ttdoc">Delegate library options header file.</div></div>
-<div class="ttc" id="a_delegate_opt_8h_html_a5e800c556290ed548055177c33a66f5c"><div class="ttname"><a href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">XALLOCATOR</a></div><div class="ttdeci">#define XALLOCATOR</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:238</div></div>
+<div class="ttc" id="a_delegate_opt_8h_html_a5e800c556290ed548055177c33a66f5c"><div class="ttname"><a href="_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c">XALLOCATOR</a></div><div class="ttdeci">#define XALLOCATOR</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:272</div></div>
 <div class="ttc" id="aclassdmq_1_1os_1_1_thread_msg_html"><div class="ttname"><a href="classdmq_1_1os_1_1_thread_msg.html">dmq::os::ThreadMsg</a></div><div class="ttdoc">A class to hold a platform-specific thread messsage that will be passed through the OS message queue.</div><div class="ttdef"><b>Definition</b> zephyr/ThreadMsg.h:14</div></div>
 <div class="ttc" id="aclassdmq_1_1os_1_1_thread_msg_html_a2f885c53281e0225f94816fd09482154"><div class="ttname"><a href="classdmq_1_1os_1_1_thread_msg.html#a2f885c53281e0225f94816fd09482154">dmq::os::ThreadMsg::GetId</a></div><div class="ttdeci">int GetId() const</div><div class="ttdef"><b>Definition</b> zephyr/ThreadMsg.h:23</div></div>
+<div class="ttc" id="aclassdmq_1_1os_1_1_thread_msg_html_a4bae12b2d3e73c74581c165b9c69cb4f"><div class="ttname"><a href="classdmq_1_1os_1_1_thread_msg.html#a4bae12b2d3e73c74581c165b9c69cb4f">dmq::os::ThreadMsg::GetPriority</a></div><div class="ttdeci">dmq::Priority GetPriority() const</div><div class="ttdoc">Get the message priority.</div><div class="ttdef"><b>Definition</b> zephyr/ThreadMsg.h:27</div></div>
 <div class="ttc" id="aclassdmq_1_1os_1_1_thread_msg_html_a62c9137598de9d2a6f3ecdf0e5029bb3"><div class="ttname"><a href="classdmq_1_1os_1_1_thread_msg.html#a62c9137598de9d2a6f3ecdf0e5029bb3">dmq::os::ThreadMsg::ThreadMsg</a></div><div class="ttdeci">ThreadMsg(int id, std::shared_ptr&lt; dmq::DelegateMsg &gt; data=nullptr)</div><div class="ttdef"><b>Definition</b> zephyr/ThreadMsg.h:17</div></div>
 <div class="ttc" id="aclassdmq_1_1os_1_1_thread_msg_html_ac1552f4a0d687583df9fa44e45468fee"><div class="ttname"><a href="classdmq_1_1os_1_1_thread_msg.html#ac1552f4a0d687583df9fa44e45468fee">dmq::os::ThreadMsg::GetData</a></div><div class="ttdeci">std::shared_ptr&lt; dmq::DelegateMsg &gt; GetData() const</div><div class="ttdef"><b>Definition</b> zephyr/ThreadMsg.h:24</div></div>
 <div class="ttc" id="aclassdmq_1_1os_1_1_thread_msg_html_af873ec08ec9a0659d5b5b7067c48f5ac"><div class="ttname"><a href="classdmq_1_1os_1_1_thread_msg.html#af873ec08ec9a0659d5b5b7067c48f5ac">dmq::os::ThreadMsg::~ThreadMsg</a></div><div class="ttdeci">virtual ~ThreadMsg()=default</div></div>
 <div class="ttc" id="anamespacedmq_1_1os_html"><div class="ttname"><a href="namespacedmq_1_1os.html">dmq::os</a></div><div class="ttdef"><b>Definition</b> BareMetalClock.h:12</div></div>
+<div class="ttc" id="anamespacedmq_html_a6364022151f2bf1802343322638e8f25"><div class="ttname"><a href="namespacedmq.html#a6364022151f2bf1802343322638e8f25">dmq::Priority</a></div><div class="ttdeci">Priority</div><div class="ttdef"><b>Definition</b> DelegateMsg.h:20</div></div>
+<div class="ttc" id="anamespacedmq_html_a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051"><div class="ttname"><a href="namespacedmq.html#a6364022151f2bf1802343322638e8f25a1e23852820b9154316c7c06e2b7ba051">dmq::Priority::NORMAL</a></div><div class="ttdeci">@ NORMAL</div></div>
+<div class="ttc" id="anamespacedmq_html_a8ff86233aa2d05f03cada0b63ebf8aef"><div class="ttname"><a href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a></div><div class="ttdeci">typename Clock::time_point TimePoint</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:147</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

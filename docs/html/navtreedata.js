@@ -56,7 +56,6 @@ var NAVTREE =
         [ "Functions", "globals_func.html", null ],
         [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
-        [ "Enumerations", "globals_enum.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -66,17 +65,19 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_allocator_8cpp.html",
-"class_net_x_udp_transport.html#a198c12124c0d84412d09c647f9135b98",
-"classdmq_1_1_delegate_free_async_3_01_ret_type_07_args_8_8_8_08_4.html#aa2e9f3ac0d2253e81a560dba0028e61f",
-"classdmq_1_1_delegate_function_remote_3_01_ret_type_07_args_8_8_8_08_4.html#ab805f096f0efde8274cf9fb48ae80eeb",
-"classdmq_1_1_delegate_member_remote_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a2355f4be220c01ab92bd88260ee731a7",
-"classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a30ddda028ef2df79d998ec91f6389c00",
-"classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a88f26d20dc25d2959bfa748d1a7b9f4d",
-"classdmq_1_1os_1_1_thread.html#ac76fc5962fa650252a03b5a02fa091b3",
-"classdmq_1_1transport_1_1_win32_pipe_transport.html#a975c4c00e04cb262760887d978bb8f01",
-"cmsis-rtos2_2_thread_8h.html#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72",
-"namespacedmq_1_1os.html#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66",
-"structdmq_1_1trait_1_1function__traits_3_01_ret_type_07_class_type_1_1_5_08_07_args_8_8_8_08_01const_01_4.html"
+"_zephyr_mutex_8h.html#ac1c71ebbb72b7e1716ebd4757ef6a61b",
+"classdmq_1_1_delegate_function_3_01_ret_type_07_args_8_8_8_08_4.html",
+"classdmq_1_1_delegate_member_async_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a00d6ca1689ea2b7c39868714bb9ab63b",
+"classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html#a614207c2e7f1e7348e7adcbfbba464b0",
+"classdmq_1_1_remote_channel_3_01_ret_type_07_args_8_8_8_08_4.html#aecd2c6641f9fc996dabd77046ac991ec",
+"classdmq_1_1os_1_1_free_r_t_o_s_condition_variable.html#a42fcf3c827f4257e5013356b2587f94f",
+"classdmq_1_1os_1_1_thread_msg.html#ac1552f4a0d687583df9fa44e45468fee",
+"classdmq_1_1transport_1_1_net_x_udp_transport.html#a727415b2825870eb528ce05b7d0aba05",
+"classdmq_1_1transport_1_1_win32_udp_transport.html#a95534018bbe2bd951e7138c22033ff6e",
+"cmsis-rtos2_2_thread_8h.html#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff",
+"namespacedmq_1_1databus.html",
+"stdlib_2_thread_8h.html#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72",
+"threadx_2_thread_8h.html#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

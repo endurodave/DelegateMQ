@@ -152,7 +152,7 @@ Public Attributes</h2></td></tr>
 <p><b>Key Responsibilities:</b></p><ul>
 <li><b>Timeout Detection:</b> Identifies messages that have not been acknowledged within the configured <code>TRANSPORT_TIMEOUT</code> duration.</li>
 <li><b>Status Reporting:</b> Invokes the <code>SendStatusCb</code> delegate with <code><a class="el" href="#af11f1a3a7355d0e2fd46ab4196b4f42fad0749aaba8b833466dfcbb0428e4f89c">Status::SUCCESS</a></code> (upon ACK) or <code><a class="el" href="#af11f1a3a7355d0e2fd46ab4196b4f42fa070a0fb40f6c308ab544b227660aadff">Status::TIMEOUT</a></code> (upon expiration) to notify the application.</li>
-<li><b><a class="el" href="class_thread.html">Thread</a> Safety:</b> Internal state is protected by a recursive mutex, allowing safe access from multiple threads (e.g., sending thread vs. ACK receiving thread).</li>
+<li><b>Thread Safety:</b> Internal state is protected by a recursive mutex, allowing safe access from multiple threads (e.g., sending thread vs. ACK receiving thread).</li>
 </ul>
 <p><b>Usage Note:</b> This class relies on a cooperative polling model. The <code><a class="el" href="#a758a199012f1508a7ebab992e3e2f124" title="Call periodically to process message timeouts.">Process()</a></code> method must be called periodically (typically by a background timer or the network thread loop) to scan for and handle expired messages. </p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>

@@ -400,10 +400,12 @@ $(function(){initNavTree('_win32_udp_transport_8h_source.html',''); initResizabl
 <div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>};</div>
 </div>
 <div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>} <span class="comment">// namespace dmq::transport</span></div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span><span class="keyword">using </span><a class="code hl_typedef" href="namespacedmq_1_1transport.html#a63e104a5809b89f7000b570a84655d86">UdpTransport</a> = Win32UdpTransport;</div>
 <div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span> </div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>} <span class="comment">// namespace dmq::transport</span></div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span> </div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span> </div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_dmq_header_8h_html"><div class="ttname"><a href="_dmq_header_8h.html">DmqHeader.h</a></div></div>
 <div class="ttc" id="a_i_transport_8h_html"><div class="ttname"><a href="_i_transport_8h.html">ITransport.h</a></div></div>
 <div class="ttc" id="a_i_transport_monitor_8h_html"><div class="ttname"><a href="_i_transport_monitor_8h.html">ITransportMonitor.h</a></div></div>
@@ -437,10 +439,11 @@ $(function(){initNavTree('_win32_udp_transport_8h_source.html',''); initResizabl
 <div class="ttc" id="aclassdmq_1_1transport_1_1_win32_udp_transport_html_ac0916e567de641b424b93b603e2c767e"><div class="ttname"><a href="classdmq_1_1transport_1_1_win32_udp_transport.html#ac0916e567de641b424b93b603e2c767e">dmq::transport::Win32UdpTransport::SetRecvTransport</a></div><div class="ttdeci">void SetRecvTransport(ITransport *recvTransport)</div><div class="ttdef"><b>Definition</b> Win32UdpTransport.h:279</div></div>
 <div class="ttc" id="aclassdmq_1_1transport_1_1_win32_udp_transport_html_ad1f7f701ae402d0f9f2383f0325ca1ea"><div class="ttname"><a href="classdmq_1_1transport_1_1_win32_udp_transport.html#ad1f7f701ae402d0f9f2383f0325ca1ea">dmq::transport::Win32UdpTransport::Win32UdpTransport</a></div><div class="ttdeci">Win32UdpTransport()</div><div class="ttdef"><b>Definition</b> Win32UdpTransport.h:52</div></div>
 <div class="ttc" id="aclassdmq_1_1transport_1_1_win32_udp_transport_html_ad36f3c42685e149adcd00887ffefad9e"><div class="ttname"><a href="classdmq_1_1transport_1_1_win32_udp_transport.html#ad36f3c42685e149adcd00887ffefad9e">dmq::transport::Win32UdpTransport::~Win32UdpTransport</a></div><div class="ttdeci">~Win32UdpTransport()</div><div class="ttdef"><b>Definition</b> Win32UdpTransport.h:56</div></div>
-<div class="ttc" id="anamespacedmq_1_1transport_html"><div class="ttname"><a href="namespacedmq_1_1transport.html">dmq::transport</a></div><div class="ttdoc">Win32 UDP transport implementation for DelegateMQ.</div><div class="ttdef"><b>Definition</b> DmqHeader.h:11</div></div>
+<div class="ttc" id="anamespacedmq_1_1transport_html"><div class="ttname"><a href="namespacedmq_1_1transport.html">dmq::transport</a></div><div class="ttdoc">Linux TCP transport implementation for DelegateMQ.</div><div class="ttdef"><b>Definition</b> ArmLwipNetconnUdpTransport.h:35</div></div>
+<div class="ttc" id="anamespacedmq_1_1transport_html_a63e104a5809b89f7000b570a84655d86"><div class="ttname"><a href="namespacedmq_1_1transport.html#a63e104a5809b89f7000b570a84655d86">dmq::transport::UdpTransport</a></div><div class="ttdeci">LinuxUdpTransport UdpTransport</div><div class="ttdef"><b>Definition</b> LinuxUdpTransport.h:314</div></div>
 <div class="ttc" id="anamespacedmq_html_a621e40ea0fde57bf5426750dab582f0b"><div class="ttname"><a href="namespacedmq.html#a621e40ea0fde57bf5426750dab582f0b">dmq::ACK_REMOTE_ID</a></div><div class="ttdeci">const uint16_t ACK_REMOTE_ID</div><div class="ttdef"><b>Definition</b> IDispatcher.h:14</div></div>
-<div class="ttc" id="anamespacedmq_html_a96216b70259f3d7e0a6462222e96e3b0"><div class="ttname"><a href="namespacedmq.html#a96216b70259f3d7e0a6462222e96e3b0">dmq::xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:250</div></div>
-<div class="ttc" id="anamespacedmq_html_aa67d7309f9b005cc369e448ec28f8129"><div class="ttname"><a href="namespacedmq.html#aa67d7309f9b005cc369e448ec28f8129">dmq::xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:249</div></div>
+<div class="ttc" id="anamespacedmq_html_a96216b70259f3d7e0a6462222e96e3b0"><div class="ttname"><a href="namespacedmq.html#a96216b70259f3d7e0a6462222e96e3b0">dmq::xstringstream</a></div><div class="ttdeci">std::basic_stringstream&lt; char, std::char_traits&lt; char &gt; &gt; xstringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:284</div></div>
+<div class="ttc" id="anamespacedmq_html_aa67d7309f9b005cc369e448ec28f8129"><div class="ttname"><a href="namespacedmq.html#aa67d7309f9b005cc369e448ec28f8129">dmq::xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:283</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

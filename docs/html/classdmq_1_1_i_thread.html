@@ -113,8 +113,8 @@ Inheritance diagram for dmq::IThread:</div>
  <div class="center">
   <img src="classdmq_1_1_i_thread.png" usemap="#dmq::IThread_map" alt=""/>
   <map id="dmq::IThread_map" name="dmq::IThread_map">
-<area href="class_thread.html" alt="Thread" shape="rect" coords="0,56,99,80"/>
-<area href="class_thread.html" alt="Thread" shape="rect" coords="109,56,208,80"/>
+<area href="classdmq_1_1os_1_1_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux)." alt="dmq::os::Thread" shape="rect" coords="0,56,99,80"/>
+<area href="classdmq_1_1os_1_1_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux)." alt="dmq::os::Thread" shape="rect" coords="109,56,208,80"/>
 <area href="classdmq_1_1os_1_1_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux)." alt="dmq::os::Thread" shape="rect" coords="218,56,317,80"/>
 <area href="classdmq_1_1os_1_1_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux)." alt="dmq::os::Thread" shape="rect" coords="327,56,426,80"/>
 <area href="classdmq_1_1os_1_1_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux)." alt="dmq::os::Thread" shape="rect" coords="436,56,535,80"/>
@@ -128,9 +128,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9e6ada351d8e8f32bdee5cb8ae70b5bb" id="r_a9e6ada351d8e8f32bdee5cb8ae70b5bb"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e6ada351d8e8f32bdee5cb8ae70b5bb">~IThread</a> ()=default</td></tr>
 <tr class="memdesc:a9e6ada351d8e8f32bdee5cb8ae70b5bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
 <tr class="separator:a9e6ada351d8e8f32bdee5cb8ae70b5bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79a35ad35dd7564be046e01bade22433" id="r_a79a35ad35dd7564be046e01bade22433"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79a35ad35dd7564be046e01bade22433">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">DelegateMsg</a> &gt; msg)=0</td></tr>
-<tr class="memdesc:a79a35ad35dd7564be046e01bade22433"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueues a delegate message for execution on this thread.  <br /></td></tr>
-<tr class="separator:a79a35ad35dd7564be046e01bade22433"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b820b8175f7de2fb40288c1882878a9" id="r_a4b820b8175f7de2fb40288c1882878a9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b820b8175f7de2fb40288c1882878a9">DispatchDelegate</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">DelegateMsg</a> &gt; msg)=0</td></tr>
+<tr class="memdesc:a4b820b8175f7de2fb40288c1882878a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enqueues a delegate message for execution on this thread.  <br /></td></tr>
+<tr class="separator:a4b820b8175f7de2fb40288c1882878a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fbec4883b326e0aa8af4b45ba2b0dfd" id="r_a0fbec4883b326e0aa8af4b45ba2b0dfd"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fbec4883b326e0aa8af4b45ba2b0dfd">IsCurrentThread</a> ()=0</td></tr>
 <tr class="memdesc:a0fbec4883b326e0aa8af4b45ba2b0dfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the calling thread is this thread. Used to decide whether to marshal an event or execute inline.  <br /></td></tr>
 <tr class="separator:a0fbec4883b326e0aa8af4b45ba2b0dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -138,7 +138,7 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A base class for a delegate enabled execution thread. Implemented by application code if asynchronous delegates are used. </p>
 <p>@TODO Implement the <a class="el" href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...">IThread</a> interface if necessary. </p>
-<p>Each platform specific implementation must inherit from <code><a class="el" href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...">IThread</a></code> and provide an implementation for <code><a class="el" href="#a79a35ad35dd7564be046e01bade22433" title="Enqueues a delegate message for execution on this thread.">DispatchDelegate()</a></code>. The <code><a class="el" href="#a79a35ad35dd7564be046e01bade22433" title="Enqueues a delegate message for execution on this thread.">DispatchDelegate()</a></code> function is called by the source thread to initiate an asynchronous function call onto the destination thread of control. </p>
+<p>Each platform specific implementation must inherit from <code><a class="el" href="classdmq_1_1_i_thread.html" title="A base class for a delegate enabled execution thread. Implemented by application code if asynchronous...">IThread</a></code> and provide an implementation for <code><a class="el" href="#a4b820b8175f7de2fb40288c1882878a9" title="Enqueues a delegate message for execution on this thread.">DispatchDelegate()</a></code>. The <code><a class="el" href="#a4b820b8175f7de2fb40288c1882878a9" title="Enqueues a delegate message for execution on this thread.">DispatchDelegate()</a></code> function is called by the source thread to initiate an asynchronous function call onto the destination thread of control. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9e6ada351d8e8f32bdee5cb8ae70b5bb" name="a9e6ada351d8e8f32bdee5cb8ae70b5bb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9e6ada351d8e8f32bdee5cb8ae70b5bb">&#9670;&#160;</a></span>~IThread()</h2>
@@ -168,8 +168,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a79a35ad35dd7564be046e01bade22433" name="a79a35ad35dd7564be046e01bade22433"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a79a35ad35dd7564be046e01bade22433">&#9670;&#160;</a></span>DispatchDelegate()</h2>
+<a id="a4b820b8175f7de2fb40288c1882878a9" name="a4b820b8175f7de2fb40288c1882878a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b820b8175f7de2fb40288c1882878a9">&#9670;&#160;</a></span>DispatchDelegate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -178,7 +178,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void dmq::IThread::DispatchDelegate </td>
+          <td class="memname">virtual bool dmq::IThread::DispatchDelegate </td>
           <td>(</td>
           <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classdmq_1_1_delegate_msg.html">DelegateMsg</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>msg</em></span></td><td>)</td>
           <td></td>
@@ -200,8 +200,7 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-
-<p>Implemented in <a class="el" href="class_thread.html#aef7a8ebd5ab60700ca5296c77e43188d">Thread</a>, and <a class="el" href="class_thread.html#a50681ae734fd18e2acb2bfa89fef0a48">Thread</a>.</p>
+<dl class="section return"><dt>Returns</dt><dd>true if the message was successfully enqueued, false otherwise. </dd></dl>
 
 </div>
 </div>
@@ -230,7 +229,7 @@ Public Member Functions</h2></td></tr>
 
 <p>Returns true if the calling thread is this thread. Used to decide whether to marshal an event or execute inline. </p>
 
-<p>Implemented in <a class="el" href="classdmq_1_1os_1_1_thread.html#a984dc9a4df58608a80fe79942bd7596f">dmq::os::Thread</a>, <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>, <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>, <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>, <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>, <a class="el" href="class_thread.html#a984dc9a4df58608a80fe79942bd7596f">Thread</a>, and <a class="el" href="class_thread.html#a425529002347b5f39b0356c7c6697eda">Thread</a>.</p>
+<p>Implemented in <a class="el" href="classdmq_1_1os_1_1_thread.html#a65b74e34f8da1a14e9096c99eedfa791">dmq::os::Thread</a>, <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>, <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>, <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>, <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>, <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>, and <a class="el" href="classdmq_1_1os_1_1_thread.html#abb8278aab1f8b34a558c571cf36ce443">dmq::os::Thread</a>.</p>
 
 </div>
 </div>

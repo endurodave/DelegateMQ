@@ -97,8 +97,10 @@ $(function(){initNavTree('classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4.h
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">dmq::Signal&lt; RetType(Args...)&gt; Class Template Reference</div></div>
 </div><!--header-->
@@ -109,6 +111,12 @@ $(function(){initNavTree('classdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4.h
 
 <p><code>#include &lt;<a class="el" href="_signal_8h_source.html">Signal.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4_1_1_snapshot.html">Snapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture a snapshot of all current subscribers.  <a href="structdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4_1_1_snapshot.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:afa7af218c5d2c5e24833abedcd50af13" id="r_afa7af218c5d2c5e24833abedcd50af13"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa7af218c5d2c5e24833abedcd50af13">DelegateType</a> = <a class="el" href="classdmq_1_1_delegate.html">Delegate</a>&lt;RetType(Args...)&gt;</td></tr>
@@ -134,6 +142,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5e466348ff3ce4266d706c3bd3ab897b" id="r_a5e466348ff3ce4266d706c3bd3ab897b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5e466348ff3ce4266d706c3bd3ab897b">operator()</a> (Args... args)</td></tr>
 <tr class="memdesc:a5e466348ff3ce4266d706c3bd3ab897b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoke all connected delegates.  <br /></td></tr>
 <tr class="separator:a5e466348ff3ce4266d706c3bd3ab897b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b68d06fe937b67a244e76e4b540ff37" id="r_a2b68d06fe937b67a244e76e4b540ff37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4_1_1_snapshot.html">Snapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b68d06fe937b67a244e76e4b540ff37">GetSnapshot</a> () const</td></tr>
+<tr class="separator:a2b68d06fe937b67a244e76e4b540ff37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebbaee83fbda14127553dda050e5dd54" id="r_aebbaee83fbda14127553dda050e5dd54"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aebbaee83fbda14127553dda050e5dd54">Size</a> () const</td></tr>
 <tr class="memdesc:aebbaee83fbda14127553dda050e5dd54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of currently connected subscribers.  <br /></td></tr>
 <tr class="separator:aebbaee83fbda14127553dda050e5dd54"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -142,6 +152,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a161da9663d2f45fe7a6bf6617e67b32d" id="r_a161da9663d2f45fe7a6bf6617e67b32d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a161da9663d2f45fe7a6bf6617e67b32d">Clear</a> ()</td></tr>
 <tr class="memdesc:a161da9663d2f45fe7a6bf6617e67b32d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnect all subscribers.  <br /></td></tr>
 <tr class="separator:a161da9663d2f45fe7a6bf6617e67b32d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a162be39614d285539537c9e95ef3e0d7" id="r_a162be39614d285539537c9e95ef3e0d7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a162be39614d285539537c9e95ef3e0d7">InvokeSnapshot</a> (const <a class="el" href="structdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4_1_1_snapshot.html">Snapshot</a> &amp;s, Args... args)</td></tr>
+<tr class="memdesc:a162be39614d285539537c9e95ef3e0d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invoke a previously captured snapshot of delegates.  <br /></td></tr>
+<tr class="separator:a162be39614d285539537c9e95ef3e0d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;class RetType, class... Args&gt;<br />
@@ -357,6 +373,66 @@ template&lt;class RetType , class... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2b68d06fe937b67a244e76e4b540ff37" name="a2b68d06fe937b67a244e76e4b540ff37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b68d06fe937b67a244e76e4b540ff37">&#9670;&#160;</a></span>GetSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4_1_1_snapshot.html">Snapshot</a> <a class="el" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt; RetType(Args...)&gt;::GetSnapshot </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a162be39614d285539537c9e95ef3e0d7" name="a162be39614d285539537c9e95ef3e0d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a162be39614d285539537c9e95ef3e0d7">&#9670;&#160;</a></span>InvokeSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void <a class="el" href="classdmq_1_1_signal.html">dmq::Signal</a>&lt; RetType(Args...)&gt;::InvokeSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structdmq_1_1_signal_3_01_ret_type_07_args_8_8_8_08_4_1_1_snapshot.html">Snapshot</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>s</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Args...</td>          <td class="paramname"><span class="paramname"><em>args</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Invoke a previously captured snapshot of delegates. </p>
 
 </div>
 </div>

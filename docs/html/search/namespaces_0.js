@@ -11,5 +11,6 @@ var searchData=
   ['dmq_3a_3aserialization_3a_3aserializer_8',['serializer',['../namespacedmq_1_1serialization_1_1serializer.html',1,'dmq::serialization']]],
   ['dmq_3a_3atrait_9',['trait',['../namespacedmq_1_1trait.html',1,'dmq']]],
   ['dmq_3a_3atransport_10',['transport',['../namespacedmq_1_1transport.html',1,'dmq']]],
-  ['dmq_3a_3autil_11',['util',['../namespacedmq_1_1util.html',1,'dmq']]]
+  ['dmq_3a_3autil_11',['util',['../namespacedmq_1_1util.html',1,'dmq']]],
+  ['dmq_3a_3autil_3a_3adetail_12',['detail',['../namespacedmq_1_1util_1_1detail.html',1,'dmq::util']]]
 ];

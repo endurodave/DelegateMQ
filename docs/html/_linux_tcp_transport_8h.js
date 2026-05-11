@@ -1,4 +1,4 @@
 var _linux_tcp_transport_8h =
 [
-    [ "TcpTransport", "class_tcp_transport.html", "class_tcp_transport" ]
+    [ "dmq::transport::TcpTransport", "classdmq_1_1transport_1_1_tcp_transport.html", "classdmq_1_1transport_1_1_tcp_transport" ]
 ];

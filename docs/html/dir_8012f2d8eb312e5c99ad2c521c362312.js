@@ -3,6 +3,8 @@ var dir_8012f2d8eb312e5c99ad2c521c362312 =
     [ "Delegate.h", "_delegate_8h.html", "_delegate_8h" ],
     [ "DelegateAsync.h", "_delegate_async_8h.html", "_delegate_async_8h" ],
     [ "DelegateAsyncWait.h", "_delegate_async_wait_8h.html", null ],
+    [ "DelegateMQConfig_Default.h", "_delegate_m_q_config___default_8h.html", "_delegate_m_q_config___default_8h" ],
+    [ "DelegateMQConfig_Template.h", "_delegate_m_q_config___template_8h.html", "_delegate_m_q_config___template_8h" ],
     [ "DelegateMsg.h", "_delegate_msg_8h.html", "_delegate_msg_8h" ],
     [ "DelegateOpt.h", "_delegate_opt_8h.html", "_delegate_opt_8h" ],
     [ "DelegateRemote.h", "_delegate_remote_8h.html", "_delegate_remote_8h" ],

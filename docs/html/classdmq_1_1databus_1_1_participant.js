@@ -5,5 +5,6 @@ var classdmq_1_1databus_1_1_participant =
     [ "ProcessIncoming", "classdmq_1_1databus_1_1_participant.html#af26cc9f1e28013456363a90a0765c792", null ],
     [ "RegisterHandler", "classdmq_1_1databus_1_1_participant.html#ab56976f2cce735ecf159260213ac50a5", null ],
     [ "RegisterHandler", "classdmq_1_1databus_1_1_participant.html#a2029a33755db718eafadfeec4d45e10b", null ],
-    [ "Send", "classdmq_1_1databus_1_1_participant.html#a706b59cc0527c3bafb17950db6212d81", null ]
+    [ "Send", "classdmq_1_1databus_1_1_participant.html#a706b59cc0527c3bafb17950db6212d81", null ],
+    [ "SetSendThread", "classdmq_1_1databus_1_1_participant.html#ae119f0d610334a73b0f239bc4a35fbbf", null ]
 ];

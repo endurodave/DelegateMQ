@@ -5,8 +5,10 @@ var searchData=
   ['process_2',['Process',['../classdmq_1_1util_1_1_transport_monitor.html#a758a199012f1508a7ebab992e3e2f124',1,'dmq::util::TransportMonitor']]],
   ['process_5ffile_3',['process_file',['../namespacesrc__dup.html#a1f3a18a8b0b09a4da5e264a3322d1b08',1,'src_dup']]],
   ['processincoming_4',['ProcessIncoming',['../classdmq_1_1databus_1_1_participant.html#af26cc9f1e28013456363a90a0765c792',1,'dmq::databus::Participant']]],
-  ['processtimers_5',['ProcessTimers',['../classdmq_1_1util_1_1_timer.html#a5c8dc03d2e03b16f89d8593ef902120d',1,'dmq::util::Timer']]],
-  ['publish_6',['Publish',['../classdmq_1_1databus_1_1_data_bus.html#aefae844605e43ff33a8e5ae2b5a84a8d',1,'dmq::databus::DataBus']]],
-  ['pushback_7',['PushBack',['../classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a5e86333078978fc7d08006a1ae3a620d',1,'dmq::MulticastDelegate&lt; RetType(Args...)&gt;::PushBack()'],['../classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a2e203194bdde23e1aff76ceda0a0ac80',1,'dmq::MulticastDelegateSafe&lt; RetType(Args...)&gt;::PushBack()']]],
-  ['put_8',['Put',['../class_uart_ring_buffer.html#aff0ec274bfa5ca86c90641d81fab5c60',1,'UartRingBuffer']]]
+  ['processstart_5',['ProcessStart',['../namespacedmq_1_1util_1_1detail.html#ac796a83620e7b565da4426d366a96341',1,'dmq::util::detail']]],
+  ['processtimers_6',['ProcessTimers',['../classdmq_1_1util_1_1_timer.html#a5c8dc03d2e03b16f89d8593ef902120d',1,'dmq::util::Timer']]],
+  ['publish_7',['Publish',['../classdmq_1_1databus_1_1_data_bus.html#aefae844605e43ff33a8e5ae2b5a84a8d',1,'dmq::databus::DataBus']]],
+  ['publishlocal_8',['PublishLocal',['../classdmq_1_1databus_1_1_data_bus.html#a9eeb8e50b76c4737fdc619c801fd5ff3',1,'dmq::databus::DataBus']]],
+  ['pushback_9',['PushBack',['../classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a5e86333078978fc7d08006a1ae3a620d',1,'dmq::MulticastDelegate&lt; RetType(Args...)&gt;::PushBack()'],['../classdmq_1_1_multicast_delegate_safe_3_01_ret_type_07_args_8_8_8_08_4.html#a2e203194bdde23e1aff76ceda0a0ac80',1,'dmq::MulticastDelegateSafe&lt; RetType(Args...)&gt;::PushBack()']]],
+  ['put_10',['Put',['../classdmq_1_1transport_1_1_uart_ring_buffer.html#a376a83ef8cb1dde240d92bc079984622',1,'dmq::transport::UartRingBuffer']]]
 ];

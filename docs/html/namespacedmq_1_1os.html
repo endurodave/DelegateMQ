@@ -98,6 +98,7 @@ $(function(){initNavTree('namespacedmq_1_1os.html',''); initResizable(true); });
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle"><div class="title">dmq::os Namespace Reference</div></div>
 </div><!--header-->
@@ -115,6 +116,13 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1os_1_1_free_r_t_o_s_clock.html">FreeRTOSClock</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1os_1_1_free_r_t_o_s_condition_variable.html">FreeRTOSConditionVariable</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Production-grade wrapper around FreeRTOS Semaphore to mimic std::condition_variable.  <a href="classdmq_1_1os_1_1_free_r_t_o_s_condition_variable.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1os_1_1_free_r_t_o_s_mutex.html">FreeRTOSMutex</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1os_1_1_free_r_t_o_s_recursive_mutex.html">FreeRTOSRecursiveMutex</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1os_1_1_thread.html">Thread</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).  <a href="classdmq_1_1os_1_1_thread.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,128 +132,279 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1os_1_1_thread_msg_comparator.html">ThreadMsgComparator</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1os_1_1_thread_x_clock.html">ThreadXClock</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1os_1_1_thread_x_condition_variable.html">ThreadXConditionVariable</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Production-grade wrapper around ThreadX Semaphore to mimic std::condition_variable.  <a href="classdmq_1_1os_1_1_thread_x_condition_variable.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1os_1_1_thread_x_mutex.html">ThreadXMutex</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1os_1_1_worker.html">Worker</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structdmq_1_1os_1_1_zephyr_clock.html">ZephyrClock</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1os_1_1_zephyr_mutex.html">ZephyrMutex</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ab971206487f2e53432e7c2ad6a6e6df6" id="r_ab971206487f2e53432e7c2ad6a6e6df6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab971206487f2e53432e7c2ad6a6e6df6">ThreadXRecursiveMutex</a> = <a class="el" href="classdmq_1_1os_1_1_thread_x_mutex.html">ThreadXMutex</a></td></tr>
+<tr class="separator:ab971206487f2e53432e7c2ad6a6e6df6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1c71ebbb72b7e1716ebd4757ef6a61b" id="r_ac1c71ebbb72b7e1716ebd4757ef6a61b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1c71ebbb72b7e1716ebd4757ef6a61b">ZephyrRecursiveMutex</a> = <a class="el" href="classdmq_1_1os_1_1_zephyr_mutex.html">ZephyrMutex</a></td></tr>
+<tr class="separator:ac1c71ebbb72b7e1716ebd4757ef6a61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:ab586fc445563046cfef7bfed3d721030" id="r_ab586fc445563046cfef7bfed3d721030"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab586fc445563046cfef7bfed3d721030">FullPolicy</a> { <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
 , <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 <br />
  }</td></tr>
 <tr class="memdesc:ab586fc445563046cfef7bfed3d721030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy applied when the thread message queue is full.  <a href="#ab586fc445563046cfef7bfed3d721030">More...</a><br /></td></tr>
 <tr class="separator:ab586fc445563046cfef7bfed3d721030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab586fc445563046cfef7bfed3d721030" id="r_ab586fc445563046cfef7bfed3d721030"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab586fc445563046cfef7bfed3d721030">FullPolicy</a> { <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
 , <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 <br />
  }</td></tr>
 <tr class="memdesc:ab586fc445563046cfef7bfed3d721030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy applied when the FreeRTOS task queue is full.  <a href="#ab586fc445563046cfef7bfed3d721030">More...</a><br /></td></tr>
 <tr class="separator:ab586fc445563046cfef7bfed3d721030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab586fc445563046cfef7bfed3d721030" id="r_ab586fc445563046cfef7bfed3d721030"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab586fc445563046cfef7bfed3d721030">FullPolicy</a> { <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
 , <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 <br />
  }</td></tr>
 <tr class="memdesc:ab586fc445563046cfef7bfed3d721030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy applied when the thread message queue is full.  <a href="#ab586fc445563046cfef7bfed3d721030">More...</a><br /></td></tr>
 <tr class="separator:ab586fc445563046cfef7bfed3d721030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab586fc445563046cfef7bfed3d721030" id="r_ab586fc445563046cfef7bfed3d721030"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab586fc445563046cfef7bfed3d721030">FullPolicy</a> { <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
 , <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 <br />
  }</td></tr>
 <tr class="memdesc:ab586fc445563046cfef7bfed3d721030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy applied when the thread message queue is full.  <a href="#ab586fc445563046cfef7bfed3d721030">More...</a><br /></td></tr>
 <tr class="separator:ab586fc445563046cfef7bfed3d721030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab586fc445563046cfef7bfed3d721030" id="r_ab586fc445563046cfef7bfed3d721030"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab586fc445563046cfef7bfed3d721030">FullPolicy</a> { <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
-, <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <br />
 &#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
-, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
 , <br />
-&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66">BLOCK</a>
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
 , <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ab586fc445563046cfef7bfed3d721030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy applied when the thread message queue is full.  <a href="#ab586fc445563046cfef7bfed3d721030">More...</a><br /></td></tr>
+<tr class="separator:ab586fc445563046cfef7bfed3d721030"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab586fc445563046cfef7bfed3d721030" id="r_ab586fc445563046cfef7bfed3d721030"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab586fc445563046cfef7bfed3d721030">FullPolicy</a> { <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ab586fc445563046cfef7bfed3d721030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy applied when the thread message queue is full.  <a href="#ab586fc445563046cfef7bfed3d721030">More...</a><br /></td></tr>
+<tr class="separator:ab586fc445563046cfef7bfed3d721030"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab586fc445563046cfef7bfed3d721030" id="r_ab586fc445563046cfef7bfed3d721030"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab586fc445563046cfef7bfed3d721030">FullPolicy</a> { <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57">DROP</a>
+, <a class="el" href="#ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72">FAULT</a>
+, <br />
+&#160;&#160;<a class="el" href="#ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff">TIMEOUT</a>
 <br />
  }</td></tr>
 <tr class="memdesc:ab586fc445563046cfef7bfed3d721030"><td class="mdescLeft">&#160;</td><td class="mdescRight">Policy applied when the thread message queue is full.  <a href="#ab586fc445563046cfef7bfed3d721030">More...</a><br /></td></tr>
 <tr class="separator:ab586fc445563046cfef7bfed3d721030"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="ab971206487f2e53432e7c2ad6a6e6df6" name="ab971206487f2e53432e7c2ad6a6e6df6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab971206487f2e53432e7c2ad6a6e6df6">&#9670;&#160;</a></span>ThreadXRecursiveMutex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ab971206487f2e53432e7c2ad6a6e6df6">dmq::os::ThreadXRecursiveMutex</a> = <a class="el" href="classdmq_1_1os_1_1_thread_x_mutex.html">ThreadXMutex</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac1c71ebbb72b7e1716ebd4757ef6a61b" name="ac1c71ebbb72b7e1716ebd4757ef6a61b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1c71ebbb72b7e1716ebd4757ef6a61b">&#9670;&#160;</a></span>ZephyrRecursiveMutex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ac1c71ebbb72b7e1716ebd4757ef6a61b">dmq::os::ZephyrRecursiveMutex</a> = <a class="el" href="classdmq_1_1os_1_1_zephyr_mutex.html">ZephyrMutex</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="ab586fc445563046cfef7bfed3d721030" name="ab586fc445563046cfef7bfed3d721030"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[1/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[1/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -266,33 +425,39 @@ Enumerations</h2></td></tr>
 
 <p>Policy applied when the thread message queue is full. </p>
 <p>Only meaningful when maxQueueSize &gt; 0.</p><ul>
-<li>BLOCK: DispatchDelegate() blocks the caller until space is available (back pressure).</li>
 <li>DROP: DispatchDelegate() silently discards the message and returns immediately.</li>
 <li>FAULT: DispatchDelegate() triggers a system fault if the queue is full.</li>
+<li>TIMEOUT: DispatchDelegate() waits up to dispatchTimeout, then logs and drops.</li>
 </ul>
-<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. Use BLOCK for critical topics (commands, state transitions) where no message may be lost. FAULT is the default. </p>
+<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. FAULT is the default. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
 </div>
 <a id="ab586fc445563046cfef7bfed3d721030" name="ab586fc445563046cfef7bfed3d721030"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[2/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[2/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -314,32 +479,38 @@ Enumerations</h2></td></tr>
 <p>Policy applied when the FreeRTOS task queue is full. </p>
 <p>Controls the behavior of DispatchDelegate() when the queue has no space.</p><ul>
 <li>DROP: xQueueSend() with timeout 0 — returns immediately, message discarded.</li>
-<li>BLOCK: xQueueSend() with portMAX_DELAY — caller blocks until space is available.</li>
-<li>FAULT: xQueueSend() with timeout 0 - returns immediately, triggers a system fault if queue full.</li>
+<li>FAULT: xQueueSend() with timeout 0 — returns immediately, triggers a system fault if queue full.</li>
+<li>TIMEOUT: xQueueSend() with a finite timeout — logs and drops if space is not available in time.</li>
 </ul>
-<p>FAULT is the default. For embedded targets where the caller may be an ISR or high-priority task, consider using DROP to avoid priority inversion or blocking at an unsafe context. </p>
+<p>FAULT is the default. For embedded targets where the caller may be an ISR or high-priority task, consider DROP to avoid blocking at an unsafe context. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
 </div>
 <a id="ab586fc445563046cfef7bfed3d721030" name="ab586fc445563046cfef7bfed3d721030"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[3/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[3/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -360,33 +531,39 @@ Enumerations</h2></td></tr>
 
 <p>Policy applied when the thread message queue is full. </p>
 <p>Only meaningful when maxQueueSize &gt; 0.</p><ul>
-<li>BLOCK: DispatchDelegate() blocks the caller until space is available (back pressure).</li>
 <li>DROP: DispatchDelegate() silently discards the message and returns immediately.</li>
 <li>FAULT: DispatchDelegate() triggers a system fault if the queue is full.</li>
+<li>TIMEOUT: DispatchDelegate() waits up to dispatchTimeout, then logs and drops.</li>
 </ul>
-<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. Use BLOCK for critical topics (commands, state transitions) where no message may be lost. FAULT is the default. </p>
+<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. Use TIMEOUT for critical topics (commands, state transitions) where every message should be delivered if possible. FAULT is the default. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
 </div>
 <a id="ab586fc445563046cfef7bfed3d721030" name="ab586fc445563046cfef7bfed3d721030"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[4/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[4/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -407,33 +584,39 @@ Enumerations</h2></td></tr>
 
 <p>Policy applied when the thread message queue is full. </p>
 <p>Only meaningful when maxQueueSize &gt; 0.</p><ul>
-<li>BLOCK: DispatchDelegate() blocks the caller until space is available (back pressure).</li>
 <li>DROP: DispatchDelegate() silently discards the message and returns immediately.</li>
 <li>FAULT: DispatchDelegate() triggers a system fault if the queue is full.</li>
+<li>TIMEOUT: DispatchDelegate() waits up to dispatchTimeout, then logs and drops.</li>
 </ul>
-<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. Use BLOCK for critical topics (commands, state transitions) where no message may be lost. FAULT is the default. </p>
+<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. Use TIMEOUT for critical topics (commands, state transitions) where every message should be delivered if possible. FAULT is the default. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
 </div>
 <a id="ab586fc445563046cfef7bfed3d721030" name="ab586fc445563046cfef7bfed3d721030"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[5/5]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[5/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -454,27 +637,139 @@ Enumerations</h2></td></tr>
 
 <p>Policy applied when the thread message queue is full. </p>
 <p>Only meaningful when maxQueueSize &gt; 0.</p><ul>
-<li>BLOCK: DispatchDelegate() blocks the caller until space is available (back pressure).</li>
 <li>DROP: DispatchDelegate() silently discards the message and returns immediately.</li>
 <li>FAULT: DispatchDelegate() triggers a system fault if the queue is full.</li>
+<li>TIMEOUT: DispatchDelegate() waits up to dispatchTimeout, then logs and drops.</li>
 </ul>
-<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. Use BLOCK for critical topics (commands, state transitions) where no message may be lost. FAULT is the default. </p>
+<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. FAULT is the default. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66" name="ab586fc445563046cfef7bfed3d721030a4d34f53389ed7f28ca91fc31ea360a66"></a>BLOCK&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<a id="ab586fc445563046cfef7bfed3d721030" name="ab586fc445563046cfef7bfed3d721030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[6/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#ab586fc445563046cfef7bfed3d721030">dmq::os::FullPolicy</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Policy applied when the thread message queue is full. </p>
+<p>Only meaningful when maxQueueSize &gt; 0.</p><ul>
+<li>DROP: DispatchDelegate() silently discards the message and returns immediately.</li>
+<li>FAULT: DispatchDelegate() triggers a system fault if the queue is full.</li>
+<li>TIMEOUT: DispatchDelegate() waits up to dispatchTimeout, then logs and drops.</li>
+</ul>
+<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. Use TIMEOUT for critical topics (commands, state transitions) where every message should be delivered if possible. FAULT is the default. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<a id="ab586fc445563046cfef7bfed3d721030" name="ab586fc445563046cfef7bfed3d721030"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab586fc445563046cfef7bfed3d721030">&#9670;&#160;</a></span>FullPolicy <span class="overload">[7/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#ab586fc445563046cfef7bfed3d721030">dmq::os::FullPolicy</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Policy applied when the thread message queue is full. </p>
+<p>Only meaningful when maxQueueSize &gt; 0.</p><ul>
+<li>DROP: DispatchDelegate() silently discards the message and returns immediately.</li>
+<li>FAULT: DispatchDelegate() triggers a system fault if the queue is full.</li>
+<li>TIMEOUT: DispatchDelegate() waits up to dispatchTimeout, then logs and drops.</li>
+</ul>
+<p>Use DROP for high-rate best-effort topics (sensor telemetry, display updates) where a stale sample is preferable to stalling the publisher. Use TIMEOUT for critical topics (commands, state transitions) where every message should be delivered if possible. FAULT is the default. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57" name="ab586fc445563046cfef7bfed3d721030abf8f3be424eb6a72b21549fbb24ffb57"></a>DROP&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72" name="ab586fc445563046cfef7bfed3d721030a893b3aaf1661e3717b18e8335ff93a72"></a>FAULT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff" name="ab586fc445563046cfef7bfed3d721030a070a0fb40f6c308ab544b227660aadff"></a>TIMEOUT&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>

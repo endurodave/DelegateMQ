@@ -99,6 +99,7 @@ $(function(){initNavTree('classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">dmq::MulticastDelegate&lt; RetType(Args...)&gt; Class Template Reference</div></div>
 </div><!--header-->
@@ -177,6 +178,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a10c5c582f71e6e57446f274bcf25b718" id="r_a10c5c582f71e6e57446f274bcf25b718"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10c5c582f71e6e57446f274bcf25b718">operator bool</a> () const</td></tr>
 <tr class="memdesc:a10c5c582f71e6e57446f274bcf25b718"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implicit conversion operator to <code>bool</code>.  <br /></td></tr>
 <tr class="separator:a10c5c582f71e6e57446f274bcf25b718"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a4ec193a4b5bae1ce099b1742fe2bc9c2" id="r_a4ec193a4b5bae1ce099b1742fe2bc9c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdmq_1_1xlist.html">xlist</a>&lt; std::shared_ptr&lt; <a class="el" href="#afc2d436e07c0e49c030f486ce29ec40c">DelegateType</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ec193a4b5bae1ce099b1742fe2bc9c2">m_delegates</a></td></tr>
+<tr class="memdesc:a4ec193a4b5bae1ce099b1742fe2bc9c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of registered delegates.  <br /></td></tr>
+<tr class="separator:a4ec193a4b5bae1ce099b1742fe2bc9c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa83540d05cc1c53b15db0fbb0a923ed5" id="r_aa83540d05cc1c53b15db0fbb0a923ed5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa83540d05cc1c53b15db0fbb0a923ed5">m_broadcastCount</a> = 0</td></tr>
+<tr class="memdesc:aa83540d05cc1c53b15db0fbb0a923ed5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count of active nested broadcasts.  <br /></td></tr>
+<tr class="separator:aa83540d05cc1c53b15db0fbb0a923ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab34bf6a4dfa52bcff403200972478bc0" id="r_ab34bf6a4dfa52bcff403200972478bc0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab34bf6a4dfa52bcff403200972478bc0">m_cleanup</a> = false</td></tr>
+<tr class="memdesc:ab34bf6a4dfa52bcff403200972478bc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag for handling lazy delete.  <br /></td></tr>
+<tr class="separator:ab34bf6a4dfa52bcff403200972478bc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;class RetType, class... Args&gt;<br />
@@ -862,6 +875,85 @@ template&lt;class RetType , class... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Get the number of delegates stored. </p><dl class="section return"><dt>Returns</dt><dd>The number of delegates stored. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aa83540d05cc1c53b15db0fbb0a923ed5" name="aa83540d05cc1c53b15db0fbb0a923ed5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa83540d05cc1c53b15db0fbb0a923ed5">&#9670;&#160;</a></span>m_broadcastCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classdmq_1_1_multicast_delegate.html">dmq::MulticastDelegate</a>&lt; RetType(Args...)&gt;::m_broadcastCount = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Count of active nested broadcasts. </p>
+
+</div>
+</div>
+<a id="ab34bf6a4dfa52bcff403200972478bc0" name="ab34bf6a4dfa52bcff403200972478bc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab34bf6a4dfa52bcff403200972478bc0">&#9670;&#160;</a></span>m_cleanup</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classdmq_1_1_multicast_delegate.html">dmq::MulticastDelegate</a>&lt; RetType(Args...)&gt;::m_cleanup = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flag for handling lazy delete. </p>
+
+</div>
+</div>
+<a id="a4ec193a4b5bae1ce099b1742fe2bc9c2" name="a4ec193a4b5bae1ce099b1742fe2bc9c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ec193a4b5bae1ce099b1742fe2bc9c2">&#9670;&#160;</a></span>m_delegates</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class RetType , class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classdmq_1_1xlist.html">xlist</a>&lt;std::shared_ptr&lt;<a class="el" href="#afc2d436e07c0e49c030f486ce29ec40c">DelegateType</a>&gt; &gt; <a class="el" href="classdmq_1_1_multicast_delegate.html">dmq::MulticastDelegate</a>&lt; RetType(Args...)&gt;::m_delegates</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>List of registered delegates. </p>
 
 </div>
 </div>

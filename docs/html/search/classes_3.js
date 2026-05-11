@@ -30,5 +30,6 @@ var searchData=
   ['delegatemembersp_3c_20tclass_2c_20rettype_28args_2e_2e_2e_29_3e_27',['DelegateMemberSp&lt; TClass, RetType(Args...)&gt;',['../classdmq_1_1_delegate_member_sp_3_01_t_class_00_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
   ['delegatemsg_28',['DelegateMsg',['../classdmq_1_1_delegate_msg.html',1,'dmq']]],
   ['dispatcher_29',['Dispatcher',['../classdmq_1_1_dispatcher.html',1,'dmq']]],
-  ['dmqheader_30',['DmqHeader',['../classdmq_1_1transport_1_1_dmq_header.html',1,'dmq::transport']]]
+  ['dispatchtoken_30',['DispatchToken',['../structdmq_1_1util_1_1_dispatch_token.html',1,'dmq::util']]],
+  ['dmqheader_31',['DmqHeader',['../classdmq_1_1transport_1_1_dmq_header.html',1,'dmq::transport']]]
 ];

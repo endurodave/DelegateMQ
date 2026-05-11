@@ -101,14 +101,16 @@ $(function(){initNavTree('_delegate_opt_8h.html',''); initResizable(true); });
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">DelegateOpt.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Delegate library options header file.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;chrono&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="_delegate_m_q_config___default_8h_source.html">DelegateMQConfig_Default.h</a>&quot;</code><br />
+<code>#include &lt;chrono&gt;</code><br />
 <code>#include &quot;<a class="el" href="_bare_metal_clock_8h_source.html">port/os/bare-metal/BareMetalClock.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_fault_8h_source.html">extras/util/Fault.h</a>&quot;</code><br />
 <code>#include &lt;cassert&gt;</code><br />
@@ -154,11 +156,11 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a6f1a53bf2de6867efba33b34410fb827" id="r_a6f1a53bf2de6867efba33b34410fb827"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a6f1a53bf2de6867efba33b34410fb827">dmq::Clock</a> = dmq::BareMetalClock</td></tr>
-<tr class="separator:a6f1a53bf2de6867efba33b34410fb827"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b8f2ad24a4b0df29243c60121e10b7f" id="r_a9b8f2ad24a4b0df29243c60121e10b7f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> = typename Clock::duration</td></tr>
+<tr class="memitem:a597d3665a6aef02a9edba0d42f40b235" id="r_a597d3665a6aef02a9edba0d42f40b235"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a597d3665a6aef02a9edba0d42f40b235">dmq::Clock</a> = <a class="el" href="structdmq_1_1os_1_1_bare_metal_clock.html">dmq::os::BareMetalClock</a></td></tr>
+<tr class="separator:a597d3665a6aef02a9edba0d42f40b235"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b8f2ad24a4b0df29243c60121e10b7f" id="r_a9b8f2ad24a4b0df29243c60121e10b7f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a9b8f2ad24a4b0df29243c60121e10b7f">dmq::Duration</a> = typename <a class="el" href="structdmq_1_1os_1_1_bare_metal_clock.html#a9ad23af31cb47d7f5a201ed3cc1280cd">Clock::duration</a></td></tr>
 <tr class="separator:a9b8f2ad24a4b0df29243c60121e10b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ff86233aa2d05f03cada0b63ebf8aef" id="r_a8ff86233aa2d05f03cada0b63ebf8aef"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> = typename Clock::time_point</td></tr>
+<tr class="memitem:a8ff86233aa2d05f03cada0b63ebf8aef" id="r_a8ff86233aa2d05f03cada0b63ebf8aef"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a8ff86233aa2d05f03cada0b63ebf8aef">dmq::TimePoint</a> = typename <a class="el" href="structdmq_1_1os_1_1_bare_metal_clock.html#aef8abae3962c211cc5f3041c0d4066c8">Clock::time_point</a></td></tr>
 <tr class="separator:a8ff86233aa2d05f03cada0b63ebf8aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8698347146f2270db3906748c029c529" id="r_a8698347146f2270db3906748c029c529"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a8698347146f2270db3906748c029c529">dmq::Mutex</a> = <a class="el" href="structdmq_1_1_null_mutex.html">NullMutex</a></td></tr>
 <tr class="separator:a8698347146f2270db3906748c029c529"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -187,6 +189,27 @@ Functions</h2></td></tr>
 <tr class="memitem:a301d4b5ade45a49f32a348dfb42fb2b2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a301d4b5ade45a49f32a348dfb42fb2b2">dmq::xdelete</a> (T *p)</td></tr>
 <tr class="memdesc:a301d4b5ade45a49f32a348dfb42fb2b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy T and return its memory to the fixed-block pool.  <br /></td></tr>
 <tr class="separator:a301d4b5ade45a49f32a348dfb42fb2b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a03e75ec116b1db4a951cab0aea154a36" id="r_a03e75ec116b1db4a951cab0aea154a36"><td class="memItemLeft" align="right" valign="top">constexpr std::chrono::seconds&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a03e75ec116b1db4a951cab0aea154a36">dmq::DEFAULT_DISPATCH_TIMEOUT</a> {<a class="el" href="_delegate_m_q_config___default_8h.html#a6d4f7cfe72c2a4ad6c573571c336db5b">DMQ_DEFAULT_DISPATCH_TIMEOUT</a>}</td></tr>
+<tr class="memdesc:a03e75ec116b1db4a951cab0aea154a36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default timeout for the TIMEOUT queue-full policy across all Thread ports. Override via DMQ_DEFAULT_DISPATCH_TIMEOUT in DelegateMQConfig.h.  <br /></td></tr>
+<tr class="separator:a03e75ec116b1db4a951cab0aea154a36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf2ae0d8cf284588d5c27c53ed606bd8" id="r_acf2ae0d8cf284588d5c27c53ed606bd8"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#acf2ae0d8cf284588d5c27c53ed606bd8">dmq::MAX_TIMER_EXPIRED</a> = <a class="el" href="_delegate_m_q_config___default_8h.html#ae1555d863e85ab2d815860a6457cf1ed">DMQ_MAX_TIMER_EXPIRED</a></td></tr>
+<tr class="memdesc:acf2ae0d8cf284588d5c27c53ed606bd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max timers processed in one tick without heap allocation. Override via DMQ_MAX_TIMER_EXPIRED in delegatemqconfig.h.  <br /></td></tr>
+<tr class="separator:acf2ae0d8cf284588d5c27c53ed606bd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab63766cc3a5899f6fc9a675eed88dab4" id="r_ab63766cc3a5899f6fc9a675eed88dab4"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#ab63766cc3a5899f6fc9a675eed88dab4">dmq::SIGNAL_SBO_COUNT</a> = <a class="el" href="_delegate_m_q_config___default_8h.html#adef9b996057e209c7c6a4b31a4337694">DMQ_SIGNAL_SBO_COUNT</a></td></tr>
+<tr class="memdesc:ab63766cc3a5899f6fc9a675eed88dab4"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classdmq_1_1_signal.html">Signal</a> Small-Buffer Optimization (SBO) count. Signals with &lt;= this many subscribers are invoked heap-free. Override via DMQ_SIGNAL_SBO_COUNT in delegatemqconfig.h.  <br /></td></tr>
+<tr class="separator:ab63766cc3a5899f6fc9a675eed88dab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93973750d3ed0b71b524081d9f2e3f35" id="r_a93973750d3ed0b71b524081d9f2e3f35"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a93973750d3ed0b71b524081d9f2e3f35">dmq::DEFAULT_QUEUE_SIZE</a> = <a class="el" href="_delegate_m_q_config___default_8h.html#ac0bd0b262dcf873ad32ec34a1addaddc">DMQ_DEFAULT_QUEUE_SIZE</a></td></tr>
+<tr class="memdesc:a93973750d3ed0b71b524081d9f2e3f35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default internal queue size for all <a class="el" href="classdmq_1_1os_1_1_thread.html" title="Cross-platform thread for any system supporting C++11 std::thread (e.g. Windows, Linux).">dmq::os::Thread</a> ports. Override via DMQ_DEFAULT_QUEUE_SIZE in delegatemqconfig.h.  <br /></td></tr>
+<tr class="separator:a93973750d3ed0b71b524081d9f2e3f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a946391767dd0907a9c745fcf7594419a" id="r_a946391767dd0907a9c745fcf7594419a"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a946391767dd0907a9c745fcf7594419a">dmq::MAX_WATCHDOG_THREADS</a> = <a class="el" href="_delegate_m_q_config___default_8h.html#a48ff526be8cc82f0ea7f846f43c2187b">DMQ_MAX_WATCHDOG_THREADS</a></td></tr>
+<tr class="memdesc:a946391767dd0907a9c745fcf7594419a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max number of threads that can be monitored by the watchdog. Override via DMQ_MAX_WATCHDOG_THREADS in delegatemqconfig.h.  <br /></td></tr>
+<tr class="separator:a946391767dd0907a9c745fcf7594419a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5996b329a6a4ad786362e2b64d3a180c" id="r_a5996b329a6a4ad786362e2b64d3a180c"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html#a5996b329a6a4ad786362e2b64d3a180c">dmq::MAX_PARTICIPANTS</a> = <a class="el" href="_delegate_m_q_config___default_8h.html#a82fd3e9a7368f3ed51bcd74f1e30c8f6">DMQ_MAX_PARTICIPANTS</a></td></tr>
+<tr class="memdesc:a5996b329a6a4ad786362e2b64d3a180c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max number of remote Participants the DataBus can hold without heap allocation. Override via DMQ_MAX_PARTICIPANTS in delegatemqconfig.h.  <br /></td></tr>
+<tr class="separator:a5996b329a6a4ad786362e2b64d3a180c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Delegate library options header file. </p>

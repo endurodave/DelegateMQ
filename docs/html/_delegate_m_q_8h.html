@@ -110,6 +110,7 @@ $(function(){initNavTree('_delegate_m_q_8h.html',''); initResizable(true); });
 <code>#include &quot;<a class="el" href="_unicast_delegate_8h_source.html">delegate/UnicastDelegate.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_signal_8h_source.html">delegate/Signal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_fault_8h_source.html">extras/util/Fault.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_clock_helper_8h_source.html">extras/util/ClockHelper.h</a>&quot;</code><br />
 </div>
 <p><a href="_delegate_m_q_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -125,7 +126,7 @@ Macros</h2></td></tr>
 <li><b>Universal Target Support:</b> Binds to free functions, class member functions, static functions, lambdas, and <code>std::function</code>.</li>
 <li><b>Any Signature:</b> Handles any function signature with any number of arguments or return values.</li>
 <li><b>Argument Safety:</b> Supports all argument types (value, pointer, pointer-to-pointer, reference) and safely marshals them across thread boundaries for asynchronous calls.</li>
-<li><b><a class="el" href="class_thread.html">Thread</a> Control:</b> Unlike <code>std::async</code> (which uses a random thread pool), DelegateMQ executes the target function on a <em>specific</em> destination thread you control.</li>
+<li><b>Thread Control:</b> Unlike <code>std::async</code> (which uses a random thread pool), DelegateMQ executes the target function on a <em>specific</em> destination thread you control.</li>
 <li><b>Remote Invocation:</b> Capable of serializing arguments and invoking functions across network boundaries (UDP, TCP, ZeroMQ, etc.).</li>
 </ul>
 <p><b>Delegate Capabilities:</b> A delegate instance behaves like a first-class object:</p><ul>

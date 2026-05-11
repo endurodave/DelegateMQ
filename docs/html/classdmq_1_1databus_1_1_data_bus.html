@@ -116,6 +116,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aefae844605e43ff33a8e5ae2b5a84a8d" id="r_aefae844605e43ff33a8e5ae2b5a84a8d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aefae844605e43ff33a8e5ae2b5a84a8d"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aefae844605e43ff33a8e5ae2b5a84a8d">Publish</a> (const std::string &amp;topic, const T &amp;data)</td></tr>
 <tr class="separator:aefae844605e43ff33a8e5ae2b5a84a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eeb8e50b76c4737fdc619c801fd5ff3" id="r_a9eeb8e50b76c4737fdc619c801fd5ff3"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a9eeb8e50b76c4737fdc619c801fd5ff3"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a9eeb8e50b76c4737fdc619c801fd5ff3">PublishLocal</a> (const std::string &amp;topic, const T &amp;data)</td></tr>
+<tr class="separator:a9eeb8e50b76c4737fdc619c801fd5ff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16919ade4c2c00a8d1ffd64b5438d845" id="r_a16919ade4c2c00a8d1ffd64b5438d845"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a16919ade4c2c00a8d1ffd64b5438d845">AddParticipant</a> (std::shared_ptr&lt; <a class="el" href="classdmq_1_1databus_1_1_participant.html">Participant</a> &gt; participant)</td></tr>
 <tr class="separator:a16919ade4c2c00a8d1ffd64b5438d845"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a644874eee295aedcc9e570b9bec5c7ee" id="r_a644874eee295aedcc9e570b9bec5c7ee"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
@@ -124,6 +127,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ae80038cb8a88ffebf555ccf1f166f086" id="r_ae80038cb8a88ffebf555ccf1f166f086"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ae80038cb8a88ffebf555ccf1f166f086"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae80038cb8a88ffebf555ccf1f166f086">AddIncomingTopic</a> (const std::string &amp;topic, <a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId, <a class="el" href="classdmq_1_1databus_1_1_participant.html">Participant</a> &amp;participant, <a class="el" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt; void(T)&gt; &amp;serializer)</td></tr>
 <tr class="separator:ae80038cb8a88ffebf555ccf1f166f086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3777622598e7fd0e5bdbcbf7752567f" id="r_ab3777622598e7fd0e5bdbcbf7752567f"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ab3777622598e7fd0e5bdbcbf7752567f"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab3777622598e7fd0e5bdbcbf7752567f">AddRelayTopic</a> (const std::string &amp;topic, <a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a> remoteId, <a class="el" href="classdmq_1_1databus_1_1_participant.html">Participant</a> &amp;participant, <a class="el" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt; void(T)&gt; &amp;serializer)</td></tr>
+<tr class="separator:ab3777622598e7fd0e5bdbcbf7752567f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a018b5d7f5ef55e0fbc48d9c1d98878" id="r_a6a018b5d7f5ef55e0fbc48d9c1d98878"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a6a018b5d7f5ef55e0fbc48d9c1d98878"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a6a018b5d7f5ef55e0fbc48d9c1d98878">RegisterStringifier</a> (const std::string &amp;topic, std::function&lt; std::string(const T &amp;)&gt; func)</td></tr>
 <tr class="separator:a6a018b5d7f5ef55e0fbc48d9c1d98878"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -193,6 +199,47 @@ template&lt;typename T &gt; </div>
           <td>(</td>
           <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classdmq_1_1databus_1_1_participant.html">Participant</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>participant</em></span></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab3777622598e7fd0e5bdbcbf7752567f" name="ab3777622598e7fd0e5bdbcbf7752567f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3777622598e7fd0e5bdbcbf7752567f">&#9670;&#160;</a></span>AddRelayTopic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmq::databus::DataBus::AddRelayTopic </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>topic</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacedmq.html#a5c5e55328ae2cd1d800dfb6c83a21bda">dmq::DelegateRemoteId</a></td>          <td class="paramname"><span class="paramname"><em>remoteId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classdmq_1_1databus_1_1_participant.html">Participant</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>participant</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classdmq_1_1_i_serializer.html">dmq::ISerializer</a>&lt; void(T)&gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>serializer</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -280,6 +327,37 @@ template&lt;typename T &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">static void dmq::databus::DataBus::Publish </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>topic</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9eeb8e50b76c4737fdc619c801fd5ff3" name="a9eeb8e50b76c4737fdc619c801fd5ff3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eeb8e50b76c4737fdc619c801fd5ff3">&#9670;&#160;</a></span>PublishLocal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void dmq::databus::DataBus::PublishLocal </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>topic</em></span>, </td>
         </tr>

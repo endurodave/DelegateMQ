@@ -21,5 +21,8 @@ var classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "operator=", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ab04c64e9dcc0081bdee6fbc2e9fcd3ed", null ],
     [ "PushBack", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a5e86333078978fc7d08006a1ae3a620d", null ],
     [ "Remove", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a30ddda028ef2df79d998ec91f6389c00", null ],
-    [ "Size", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a801262f6e844dd45985224673f33fd7b", null ]
+    [ "Size", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a801262f6e844dd45985224673f33fd7b", null ],
+    [ "m_broadcastCount", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#aa83540d05cc1c53b15db0fbb0a923ed5", null ],
+    [ "m_cleanup", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ab34bf6a4dfa52bcff403200972478bc0", null ],
+    [ "m_delegates", "classdmq_1_1_multicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a4ec193a4b5bae1ce099b1742fe2bc9c2", null ]
 ];

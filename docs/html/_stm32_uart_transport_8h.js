@@ -1,6 +1,6 @@
 var _stm32_uart_transport_8h =
 [
-    [ "UartRingBuffer< Size >", "class_uart_ring_buffer.html", "class_uart_ring_buffer" ],
-    [ "Stm32UartTransport", "class_stm32_uart_transport.html", "class_stm32_uart_transport" ],
-    [ "g_uartTransportInstance", "_stm32_uart_transport_8h.html#a1508122476a57c80ad02468959ada2d8", null ]
+    [ "dmq::transport::UartRingBuffer< Size >", "classdmq_1_1transport_1_1_uart_ring_buffer.html", "classdmq_1_1transport_1_1_uart_ring_buffer" ],
+    [ "dmq::transport::Stm32UartTransport", "classdmq_1_1transport_1_1_stm32_uart_transport.html", "classdmq_1_1transport_1_1_stm32_uart_transport" ],
+    [ "g_uartTransportInstance", "_stm32_uart_transport_8h.html#a4ad3f5bfd9aded7c2db71605d5c9bd05", null ]
 ];

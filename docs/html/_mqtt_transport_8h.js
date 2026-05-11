@@ -1,4 +1,4 @@
 var _mqtt_transport_8h =
 [
-    [ "MqttTransport", "class_mqtt_transport.html", "class_mqtt_transport" ]
+    [ "dmq::transport::MqttTransport", "classdmq_1_1transport_1_1_mqtt_transport.html", "classdmq_1_1transport_1_1_mqtt_transport" ]
 ];

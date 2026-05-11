@@ -10,7 +10,7 @@ var _delegate_opt_8h =
     [ "LOG_ERROR", "_delegate_opt_8h.html#ad4a9117ce894e3319e903142347a0f63", null ],
     [ "LOG_INFO", "_delegate_opt_8h.html#a378e28bfcb78d17285210d6bbb70a083", null ],
     [ "XALLOCATOR", "_delegate_opt_8h.html#a5e800c556290ed548055177c33a66f5c", null ],
-    [ "Clock", "_delegate_opt_8h.html#a6f1a53bf2de6867efba33b34410fb827", null ],
+    [ "Clock", "_delegate_opt_8h.html#a597d3665a6aef02a9edba0d42f40b235", null ],
     [ "Duration", "_delegate_opt_8h.html#a9b8f2ad24a4b0df29243c60121e10b7f", null ],
     [ "LockGuard", "_delegate_opt_8h.html#a3630077fab3ab296436584a9b6dab522", null ],
     [ "Mutex", "_delegate_opt_8h.html#a8698347146f2270db3906748c029c529", null ],
@@ -21,5 +21,11 @@ var _delegate_opt_8h =
     [ "xstringstream", "_delegate_opt_8h.html#a96216b70259f3d7e0a6462222e96e3b0", null ],
     [ "xdelete", "_delegate_opt_8h.html#a301d4b5ade45a49f32a348dfb42fb2b2", null ],
     [ "xmake_shared", "_delegate_opt_8h.html#a9ee8623ed66c2814916b42dcf49418f1", null ],
-    [ "xnew", "_delegate_opt_8h.html#ad568c96484a6b6df174d0d597080c5fd", null ]
+    [ "xnew", "_delegate_opt_8h.html#ad568c96484a6b6df174d0d597080c5fd", null ],
+    [ "DEFAULT_DISPATCH_TIMEOUT", "_delegate_opt_8h.html#a03e75ec116b1db4a951cab0aea154a36", null ],
+    [ "DEFAULT_QUEUE_SIZE", "_delegate_opt_8h.html#a93973750d3ed0b71b524081d9f2e3f35", null ],
+    [ "MAX_PARTICIPANTS", "_delegate_opt_8h.html#a5996b329a6a4ad786362e2b64d3a180c", null ],
+    [ "MAX_TIMER_EXPIRED", "_delegate_opt_8h.html#acf2ae0d8cf284588d5c27c53ed606bd8", null ],
+    [ "MAX_WATCHDOG_THREADS", "_delegate_opt_8h.html#a946391767dd0907a9c745fcf7594419a", null ],
+    [ "SIGNAL_SBO_COUNT", "_delegate_opt_8h.html#ab63766cc3a5899f6fc9a675eed88dab4", null ]
 ];

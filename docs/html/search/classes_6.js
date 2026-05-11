@@ -36,8 +36,9 @@ var searchData=
   ['is_5funsupported_5fcontainer_3c_20std_3a_3aunordered_5fmultiset_3c_20t_2c_20hash_2c_20keyequal_2c_20alloc_20_3e_20_3e_33',['is_unsupported_container&lt; std::unordered_multiset&lt; T, Hash, KeyEqual, Alloc &gt; &gt;',['../structserialize__traits_1_1is__unsupported__container_3_01std_1_1unordered__multiset_3_01_t_00_062a8fb1713695d62e688ecb3f56d982b.html',1,'serialize_traits']]],
   ['iserializer_34',['ISerializer',['../classdmq_1_1_i_serializer.html',1,'dmq']]],
   ['iserializer_3c_20rettype_28args_2e_2e_2e_29_3e_35',['ISerializer&lt; RetType(Args...)&gt;',['../classdmq_1_1_i_serializer_3_01_ret_type_07_args_8_8_8_08_4.html',1,'dmq']]],
-  ['ithread_36',['IThread',['../classdmq_1_1_i_thread.html',1,'dmq']]],
-  ['ithreadinvoker_37',['IThreadInvoker',['../classdmq_1_1_i_thread_invoker.html',1,'dmq']]],
-  ['itransport_38',['ITransport',['../classdmq_1_1transport_1_1_i_transport.html',1,'dmq::transport']]],
-  ['itransportmonitor_39',['ITransportMonitor',['../classdmq_1_1transport_1_1_i_transport_monitor.html',1,'dmq::transport']]]
+  ['iserializer_3c_20void_28threadstatspacket_29_3e_36',['ISerializer&lt; void(ThreadStatsPacket)&gt;',['../classdmq_1_1_i_serializer.html',1,'dmq']]],
+  ['ithread_37',['IThread',['../classdmq_1_1_i_thread.html',1,'dmq']]],
+  ['ithreadinvoker_38',['IThreadInvoker',['../classdmq_1_1_i_thread_invoker.html',1,'dmq']]],
+  ['itransport_39',['ITransport',['../classdmq_1_1transport_1_1_i_transport.html',1,'dmq::transport']]],
+  ['itransportmonitor_40',['ITransportMonitor',['../classdmq_1_1transport_1_1_i_transport_monitor.html',1,'dmq::transport']]]
 ];

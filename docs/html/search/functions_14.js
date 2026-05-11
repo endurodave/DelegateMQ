@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['zephyrmutex_0',['ZephyrMutex',['../classdmq_1_1_zephyr_mutex.html#a8b465a2fee9a8150c66c585fd16fbcde',1,'dmq::ZephyrMutex::ZephyrMutex()'],['../classdmq_1_1_zephyr_mutex.html#a524012ed562191619324716cab7879e5',1,'dmq::ZephyrMutex::ZephyrMutex(const ZephyrMutex &amp;)=delete']]],
-  ['zephyrudptransport_1',['ZephyrUdpTransport',['../class_zephyr_udp_transport.html#a83b2f6ef503d244e64c99bc5abea324c',1,'ZephyrUdpTransport']]],
+  ['zephyrmutex_0',['ZephyrMutex',['../classdmq_1_1os_1_1_zephyr_mutex.html#af13ac758059d38fc883f01aa5fbb6826',1,'dmq::os::ZephyrMutex::ZephyrMutex()'],['../classdmq_1_1os_1_1_zephyr_mutex.html#ada7b3c74620e3d38f6a242ba6bb4d865',1,'dmq::os::ZephyrMutex::ZephyrMutex(const ZephyrMutex &amp;)=delete']]],
+  ['zephyrudptransport_1',['ZephyrUdpTransport',['../classdmq_1_1transport_1_1_zephyr_udp_transport.html#ab3137cd943085a90f05c4ab97ddff584',1,'dmq::transport::ZephyrUdpTransport']]],
   ['zeromqtransport_2',['ZeroMqTransport',['../classdmq_1_1transport_1_1_zero_mq_transport.html#ab1795502a4cb4bb7f2a433f55ef669fe',1,'dmq::transport::ZeroMqTransport']]]
 ];

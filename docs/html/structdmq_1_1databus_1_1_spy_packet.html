@@ -122,8 +122,8 @@ Inheritance diagram for dmq::databus::SpyPacket:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9615f2c4b0054f4943a5737b6f08977e" id="r_a9615f2c4b0054f4943a5737b6f08977e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9615f2c4b0054f4943a5737b6f08977e">SpyPacket</a> ()=default</td></tr>
 <tr class="separator:a9615f2c4b0054f4943a5737b6f08977e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97ba04ab001e8a757363bab60dc3aa8f" id="r_a97ba04ab001e8a757363bab60dc3aa8f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97ba04ab001e8a757363bab60dc3aa8f">SpyPacket</a> (const std::string &amp;t, const std::string &amp;v, uint64_t ts)</td></tr>
-<tr class="separator:a97ba04ab001e8a757363bab60dc3aa8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82e2f40394073270012fcf1dec9c125d" id="r_a82e2f40394073270012fcf1dec9c125d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a82e2f40394073270012fcf1dec9c125d">SpyPacket</a> (const std::string &amp;t, const std::string &amp;v, uint64_t ts, const std::string &amp;id=&quot;&quot;)</td></tr>
+<tr class="separator:a82e2f40394073270012fcf1dec9c125d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa454cb5eda9a25be756ef63a1523b347" id="r_aa454cb5eda9a25be756ef63a1523b347"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa454cb5eda9a25be756ef63a1523b347">write</a> (<a class="el" href="classserialize.html">::serialize</a> &amp;ms, std::ostream &amp;os) override</td></tr>
 <tr class="separator:aa454cb5eda9a25be756ef63a1523b347"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc26cebc34afea194f1be8dfae0b0f91" id="r_adc26cebc34afea194f1be8dfae0b0f91"><td class="memItemLeft" align="right" valign="top">std::istream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc26cebc34afea194f1be8dfae0b0f91">read</a> (<a class="el" href="classserialize.html">::serialize</a> &amp;ms, std::istream &amp;is) override</td></tr>
@@ -145,11 +145,14 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a44e7b4fb4777161c6c544ba2fa253178" id="r_a44e7b4fb4777161c6c544ba2fa253178"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44e7b4fb4777161c6c544ba2fa253178">timestamp_us</a></td></tr>
 <tr class="memdesc:a44e7b4fb4777161c6c544ba2fa253178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Microseconds (usually since boot) when the message was published.  <br /></td></tr>
 <tr class="separator:a44e7b4fb4777161c6c544ba2fa253178"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac77710c5eb68b8dfbada7983d2338e16" id="r_ac77710c5eb68b8dfbada7983d2338e16"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac77710c5eb68b8dfbada7983d2338e16">nodeId</a></td></tr>
+<tr class="memdesc:ac77710c5eb68b8dfbada7983d2338e16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unique identifier for the sending node.  <br /></td></tr>
+<tr class="separator:ac77710c5eb68b8dfbada7983d2338e16"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Standardized packet containing bus traffic metadata. </p>
 <p>This struct is passed to <a class="el" href="classdmq_1_1databus_1_1_data_bus.html#af36b7555f1e1081ff153e0afe466c437">DataBus::Monitor</a> subscribers and is designed to be serialized for transmission to external diagnostic tools.</p>
-<p>The timestamp_us field uses dmq::Clock::now(), which typically provides monotonic time since boot. </p>
+<p>The timestamp_us field uses <a class="el" href="structdmq_1_1os_1_1_bare_metal_clock.html#a048af431553c7673eea6214dab4f7276">dmq::Clock::now()</a>, which typically provides monotonic time since boot. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9615f2c4b0054f4943a5737b6f08977e" name="a9615f2c4b0054f4943a5737b6f08977e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9615f2c4b0054f4943a5737b6f08977e">&#9670;&#160;</a></span>SpyPacket() <span class="overload">[1/2]</span></h2>
@@ -176,8 +179,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a97ba04ab001e8a757363bab60dc3aa8f" name="a97ba04ab001e8a757363bab60dc3aa8f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97ba04ab001e8a757363bab60dc3aa8f">&#9670;&#160;</a></span>SpyPacket() <span class="overload">[2/2]</span></h2>
+<a id="a82e2f40394073270012fcf1dec9c125d" name="a82e2f40394073270012fcf1dec9c125d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82e2f40394073270012fcf1dec9c125d">&#9670;&#160;</a></span>SpyPacket() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -198,7 +201,12 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint64_t</td>          <td class="paramname"><span class="paramname"><em>ts</em></span>&#160;)</td>
+          <td class="paramtype">uint64_t</td>          <td class="paramname"><span class="paramname"><em>ts</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>id</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;&quot;</span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -270,6 +278,22 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="ac77710c5eb68b8dfbada7983d2338e16" name="ac77710c5eb68b8dfbada7983d2338e16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac77710c5eb68b8dfbada7983d2338e16">&#9670;&#160;</a></span>nodeId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string dmq::databus::SpyPacket::nodeId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unique identifier for the sending node. </p>
+
+</div>
+</div>
 <a id="a44e7b4fb4777161c6c544ba2fa253178" name="a44e7b4fb4777161c6c544ba2fa253178"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a44e7b4fb4777161c6c544ba2fa253178">&#9670;&#160;</a></span>timestamp_us</h2>
 

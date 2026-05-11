@@ -1,4 +1,4 @@
 var _zephyr_udp_transport_8h =
 [
-    [ "ZephyrUdpTransport", "class_zephyr_udp_transport.html", "class_zephyr_udp_transport" ]
+    [ "dmq::transport::ZephyrUdpTransport", "classdmq_1_1transport_1_1_zephyr_udp_transport.html", "classdmq_1_1transport_1_1_zephyr_udp_transport" ]
 ];

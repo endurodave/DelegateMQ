@@ -104,7 +104,7 @@ $(function(){initNavTree('_remote_channel_8h.html',''); initResizable(true); });
 </div><!--header-->
 <div class="contents">
 
-<p>Aggregates transport, serializer, dispatcher, and stream into a single object, mirroring how <code>IThread</code>/<code><a class="el" href="class_thread.html">Thread</a></code> hides async delegate wiring.  
+<p>Aggregates transport, serializer, dispatcher, and stream into a single object, mirroring how <code>IThread</code>/<code>Thread</code> hides async delegate wiring.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_dispatcher_8h_source.html">Dispatcher.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="_delegate_remote_8h_source.html">delegate/DelegateRemote.h</a>&quot;</code><br />
@@ -157,7 +157,7 @@ Functions</h2></td></tr>
 <tr class="separator:a1dac0d0ac0269f8aa43e9ca1cb3aa2f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Aggregates transport, serializer, dispatcher, and stream into a single object, mirroring how <code>IThread</code>/<code><a class="el" href="class_thread.html">Thread</a></code> hides async delegate wiring. </p>
+<div class="textblock"><p>Aggregates transport, serializer, dispatcher, and stream into a single object, mirroring how <code>IThread</code>/<code>Thread</code> hides async delegate wiring. </p>
 <dl class="section see"><dt>See also</dt><dd><a href="https://github.com/DelegateMQ/DelegateMQ">https://github.com/DelegateMQ/DelegateMQ</a> David Lafreniere, 2026.</dd></dl>
 <p>Setting up a remote delegate currently requires three separate objects: </p><div class="fragment"><div class="line">Dispatcher dispatcher;</div>
 <div class="line">dispatcher.SetTransport(&amp;transport);</div>
@@ -168,7 +168,7 @@ Functions</h2></td></tr>
 <div class="line">remote.SetSerializer(&amp;serializer);</div>
 <div class="line">remote.SetDispatcher(&amp;dispatcher);</div>
 <div class="line">remote.SetStream(&amp;stream);</div>
-<div class="ttc" id="anamespacedmq_html_aa67d7309f9b005cc369e448ec28f8129"><div class="ttname"><a href="namespacedmq.html#aa67d7309f9b005cc369e448ec28f8129">dmq::xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:249</div></div>
+<div class="ttc" id="anamespacedmq_html_aa67d7309f9b005cc369e448ec28f8129"><div class="ttname"><a href="namespacedmq.html#aa67d7309f9b005cc369e448ec28f8129">dmq::xostringstream</a></div><div class="ttdeci">std::basic_ostringstream&lt; char, std::char_traits&lt; char &gt; &gt; xostringstream</div><div class="ttdef"><b>Definition</b> DelegateOpt.h:283</div></div>
 </div><!-- fragment --><p><code>RemoteChannel</code> collapses this into one setup object: </p><div class="fragment"><div class="line">MyTransport transport;</div>
 <div class="line">Serializer&lt;void(<span class="keywordtype">int</span>)&gt; serializer;</div>
 <div class="line">RemoteChannel&lt;void(<span class="keywordtype">int</span>)&gt; channel(transport, serializer);</div>

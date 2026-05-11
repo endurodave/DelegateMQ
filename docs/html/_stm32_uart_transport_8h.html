@@ -98,6 +98,7 @@ $(function(){initNavTree('_stm32_uart_transport_8h.html',''); initResizable(true
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">Stm32UartTransport.h File Reference</div></div>
 </div><!--header-->
@@ -122,22 +123,31 @@ $(function(){initNavTree('_stm32_uart_transport_8h.html',''); initResizable(true
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_uart_ring_buffer.html">UartRingBuffer&lt; Size &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A lightweight, thread-safe (Single Producer / Single Consumer) Ring Buffer.  <a href="class_uart_ring_buffer.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1transport_1_1_uart_ring_buffer.html">dmq::transport::UartRingBuffer&lt; Size &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A lightweight, thread-safe (Single Producer / Single Consumer) Ring Buffer.  <a href="classdmq_1_1transport_1_1_uart_ring_buffer.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_stm32_uart_transport.html">Stm32UartTransport</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classdmq_1_1transport_1_1_stm32_uart_transport.html">dmq::transport::Stm32UartTransport</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq.html">dmq</a></td></tr>
+<tr class="memdesc:namespacedmq"><td class="mdescLeft">&#160;</td><td class="mdescRight">The delegate library namespace. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacedmq_1_1transport.html">dmq::transport</a></td></tr>
+<tr class="memdesc:namespacedmq_1_1transport"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linux TCP transport implementation for DelegateMQ. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a1508122476a57c80ad02468959ada2d8" id="r_a1508122476a57c80ad02468959ada2d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_stm32_uart_transport.html">Stm32UartTransport</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1508122476a57c80ad02468959ada2d8">g_uartTransportInstance</a></td></tr>
-<tr class="separator:a1508122476a57c80ad02468959ada2d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ad3f5bfd9aded7c2db71605d5c9bd05" id="r_a4ad3f5bfd9aded7c2db71605d5c9bd05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classdmq_1_1transport_1_1_stm32_uart_transport.html">dmq::transport::Stm32UartTransport</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4ad3f5bfd9aded7c2db71605d5c9bd05">g_uartTransportInstance</a></td></tr>
+<tr class="separator:a4ad3f5bfd9aded7c2db71605d5c9bd05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>STM32 HAL UART transport implementation for DelegateMQ (FreeRTOS). </p>
 <p>This class provides a robust, thread-safe transport layer for serial communication on STM32 microcontrollers running FreeRTOS.</p>
 <p><b>Key Architecture: Interrupt-Driven Ring Buffer</b> Instead of polling the UART (which wastes CPU) or using blocking HAL calls (which starve other FreeRTOS tasks), this implementation uses:</p><ol type="1">
-<li><b>UART RX Interrupt:</b> Fires immediately when a byte arrives, pushing it into a <code><a class="el" href="class_uart_ring_buffer.html" title="A lightweight, thread-safe (Single Producer / Single Consumer) Ring Buffer.">UartRingBuffer</a></code>.</li>
+<li><b>UART RX Interrupt:</b> Fires immediately when a byte arrives, pushing it into a <code>UartRingBuffer</code>.</li>
 <li><b>Binary Semaphore:</b> The <code>Receive()</code> task sleeps on this semaphore. It is only woken up by the ISR when data is actually available.</li>
 <li><b>Recursive Mutex:</b> Protects the <code>Send()</code> function to ensure atomic packet transmission even if multiple threads try to send simultaneously.</li>
 </ol>
@@ -147,8 +157,8 @@ Variables</h2></td></tr>
 <li>Handles reliable delivery via <code>TransportMonitor</code> (ACKs/Retries). </li>
 </ul>
 </div><h2 class="groupheader">Variable Documentation</h2>
-<a id="a1508122476a57c80ad02468959ada2d8" name="a1508122476a57c80ad02468959ada2d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1508122476a57c80ad02468959ada2d8">&#9670;&#160;</a></span>g_uartTransportInstance</h2>
+<a id="a4ad3f5bfd9aded7c2db71605d5c9bd05" name="a4ad3f5bfd9aded7c2db71605d5c9bd05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ad3f5bfd9aded7c2db71605d5c9bd05">&#9670;&#160;</a></span>g_uartTransportInstance</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -157,7 +167,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_stm32_uart_transport.html">Stm32UartTransport</a>* g_uartTransportInstance</td>
+          <td class="memname"><a class="el" href="classdmq_1_1transport_1_1_stm32_uart_transport.html">dmq::transport::Stm32UartTransport</a>* g_uartTransportInstance</td>
         </tr>
       </table>
   </td>

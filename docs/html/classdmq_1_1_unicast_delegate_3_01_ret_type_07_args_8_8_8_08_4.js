@@ -17,5 +17,6 @@ var classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4 =
     [ "operator=", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a3e9db62de8287cdfbd7234baa0b06263", null ],
     [ "operator=", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a94b84e3534885006b91a911fc93628bf", null ],
     [ "operator=", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#a4d6f8170ee078727b537167917f48f06", null ],
-    [ "Size", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ae39c6dfd89944766cca83a415db7c912", null ]
+    [ "Size", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ae39c6dfd89944766cca83a415db7c912", null ],
+    [ "m_delegate", "classdmq_1_1_unicast_delegate_3_01_ret_type_07_args_8_8_8_08_4.html#ad7c64729d80d189abede059e7b4c2218", null ]
 ];
