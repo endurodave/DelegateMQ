@@ -1,5 +1,6 @@
 #include "DelegateMQ.h"
 #include "UnitTestCommon.h"
+#include <atomic>
 #include <iostream>
 #include <set>
 #include <cstring>
@@ -188,7 +189,7 @@ static void DelegateFreeAsyncTests()
 
     // Test outgoing ptr-ptr argument
     StructParam* psparam = nullptr;
-    auto outgoingArg2 = MakeDelegate(&OutgoingPtrPtrArg, workerThread);
+    auto outgoingArg2 = MakeDelegate(&OutgoingPtrPtrArgAsync, workerThread);
     outgoingArg2(&psparam);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     ASSERT_TRUE(psparam == nullptr);
@@ -244,9 +245,9 @@ static void DelegateFreeAsyncTests()
     delete[] arr;
 
     // Priority queue test
-    int sleepCnt = 0;
-    bool failed = false;
-    bool once = false;
+    std::atomic<int> sleepCnt = 0;
+    std::atomic<bool> failed = false;
+    std::atomic<bool> once = false;
     std::function<void(dmq::Priority)> LambdaSleep = [&sleepCnt, &failed, &once](dmq::Priority priority) {
         std::cout << "LambdaSleep: " << sleepCnt << ", priority: " << static_cast<int>(priority) << std::endl;
         if (!once)

@@ -125,6 +125,11 @@ namespace UnitTestData
 		(*s) = param;
 	}
 
+	// Async variant: ptr-ptr output can't propagate back to caller, so no allocation
+	static void OutgoingPtrPtrArgAsync(StructParam** s) {
+		ASSERT_TRUE(*s == nullptr);
+	}
+
 	static void OutgoingRefArg(StructParam& s) {
 		s.val++;
 	}

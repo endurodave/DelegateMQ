@@ -66,7 +66,9 @@
 #endif
 
 #include <chrono>
-#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT)
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT) || \
+    defined(DMQ_THREAD_FREERTOS) || defined(DMQ_THREAD_THREADX) || \
+    defined(DMQ_THREAD_ZEPHYR) || defined(DMQ_THREAD_CMSIS_RTOS2)
     #include <mutex>
 #endif
 
@@ -79,12 +81,10 @@
     // Windows / Linux / macOS / Qt (Standard Library)
     #include <condition_variable>
 #elif defined(DMQ_THREAD_FREERTOS)
-    #include <mutex>
     #include "port/os/freertos/FreeRTOSClock.h"
     #include "port/os/freertos/FreeRTOSMutex.h"
     #include "port/os/freertos/FreeRTOSConditionVariable.h"
 #elif defined(DMQ_THREAD_THREADX)
-    #include <mutex>
     #include "port/os/threadx/ThreadXClock.h"
     #include "port/os/threadx/ThreadXMutex.h"
     #include "port/os/threadx/ThreadXConditionVariable.h"
@@ -113,6 +113,28 @@ namespace dmq
         PortableLockGuard(const PortableLockGuard&) = delete;
         PortableLockGuard& operator=(const PortableLockGuard&) = delete;
     };
+
+    // --- PORTABLE SCOPED LOCK ---
+    // Maps to std::scoped_lock on all known threaded ports (desktop + RTOS).
+    // All RTOS mutex types satisfy BasicLockable (lock/unlock), so std::scoped_lock
+    // works with them directly. Falls back to a no-op for DMQ_THREAD_NONE and for
+    // any unrecognized bare-metal build where no thread model is defined.
+#if defined(DMQ_THREAD_STDLIB) || defined(DMQ_THREAD_WIN32) || defined(DMQ_THREAD_QT) || \
+    defined(DMQ_THREAD_FREERTOS) || defined(DMQ_THREAD_THREADX) || \
+    defined(DMQ_THREAD_ZEPHYR) || defined(DMQ_THREAD_CMSIS_RTOS2)
+    template <typename... M>
+    using ScopedLock = std::scoped_lock<M...>;
+#else
+    // No-op: DMQ_THREAD_NONE or no thread model defined (bare-metal, single-threaded)
+    template <typename... M>
+    class ScopedLock {
+    public:
+        explicit ScopedLock(M&...) noexcept {}
+        ~ScopedLock() noexcept = default;
+        ScopedLock(const ScopedLock&) = delete;
+        ScopedLock& operator=(const ScopedLock&) = delete;
+    };
+#endif
 
     // @TODO: Change aliases to switch clock type globally if necessary
 

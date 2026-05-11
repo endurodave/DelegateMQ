@@ -24,12 +24,12 @@ public:
     virtual ~MulticastDelegateSafe() = default; 
 
     MulticastDelegateSafe(const MulticastDelegateSafe& rhs) : BaseType() {
-        std::scoped_lock lock(m_lock, rhs.m_lock);
+        dmq::ScopedLock<RecursiveMutex, RecursiveMutex> lock(m_lock, rhs.m_lock);
         BaseType::operator=(rhs);
     }
 
     MulticastDelegateSafe(MulticastDelegateSafe&& rhs) : BaseType() {
-        std::scoped_lock lock(m_lock, rhs.m_lock);
+        dmq::ScopedLock<RecursiveMutex, RecursiveMutex> lock(m_lock, rhs.m_lock);
         BaseType::operator=(std::move(rhs));
     }
 
@@ -124,7 +124,7 @@ public:
     MulticastDelegateSafe& operator=(const MulticastDelegateSafe& rhs) {
         if (this != &rhs) {
             // Lock both instances safely to prevent modification of source during copy
-            std::scoped_lock lock(m_lock, rhs.m_lock);
+            dmq::ScopedLock<RecursiveMutex, RecursiveMutex> lock(m_lock, rhs.m_lock);
             BaseType::operator=(rhs);
         }
         return *this;
@@ -135,7 +135,7 @@ public:
     /// @return A reference to the current object.
     MulticastDelegateSafe& operator=(MulticastDelegateSafe&& rhs) noexcept {
         if (this != &rhs) {
-            std::scoped_lock lock(m_lock, rhs.m_lock);
+            dmq::ScopedLock<RecursiveMutex, RecursiveMutex> lock(m_lock, rhs.m_lock);
             BaseType::operator=(std::move(rhs));
         }
         return *this;

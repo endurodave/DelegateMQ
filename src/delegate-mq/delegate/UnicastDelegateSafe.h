@@ -89,7 +89,7 @@ public:
     /// @return A reference to the current object.
     UnicastDelegateSafe& operator=(const UnicastDelegateSafe& rhs) {
         if (this != &rhs) {
-            std::scoped_lock lock(m_lock, rhs.m_lock);
+            dmq::ScopedLock<RecursiveMutex, RecursiveMutex> lock(m_lock, rhs.m_lock);
             BaseType::operator=(rhs);
         }
         return *this;
@@ -100,7 +100,7 @@ public:
     /// @return A reference to the current object.
     UnicastDelegateSafe& operator=(UnicastDelegateSafe&& rhs) noexcept {
         if (this != &rhs) {
-            std::scoped_lock lock(m_lock, rhs.m_lock);
+            dmq::ScopedLock<RecursiveMutex, RecursiveMutex> lock(m_lock, rhs.m_lock);
             BaseType::operator=(std::move(rhs));
         }
         return *this;
