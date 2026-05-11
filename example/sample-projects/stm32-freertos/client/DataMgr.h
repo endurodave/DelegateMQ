@@ -89,8 +89,8 @@ private:
         DataMsgCb(msg);
     }
 
-    Thread m_thread;
-    Timer m_timer;
+    dmq::os::Thread m_thread;
+    dmq::util::Timer m_timer;
     std::mutex m_mutex;
 
     // RAII Connection

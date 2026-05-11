@@ -105,15 +105,15 @@ private:
             std::cout << "ServerApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
+    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, dmq::util::TransportMonitor::Status status)
     {
-        if (status != TransportMonitor::Status::SUCCESS)
+        if (status != dmq::util::TransportMonitor::Status::SUCCESS)
             std::cout << "ServerApp Timeout: " << id << " " << seqNum << std::endl;
     }
 
-    Thread m_thread;
+    dmq::os::Thread m_thread;
 
-    Timer m_pollTimer;
+    dmq::util::Timer m_pollTimer;
 
     // RAII Connections
     dmq::ScopedConnection m_pollTimerConn;

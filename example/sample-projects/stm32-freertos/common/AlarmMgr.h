@@ -7,10 +7,7 @@
 #include <string>
 #include <iostream> 
 
-using namespace dmq;
-using namespace dmq::os;
-
-// AlarmMgr handles client and server alarms. 
+// AlarmMgr handles client and server alarms.
 class AlarmMgr
 {
 public:
@@ -82,7 +79,7 @@ private:
             std::cout << "AlarmMgr Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    Thread m_thread;
+    dmq::os::Thread m_thread;
 
     // RAII Connections
     dmq::ScopedConnection m_errorConn;

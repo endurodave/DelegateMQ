@@ -129,17 +129,17 @@ private:
             std::cout << "ClientApp Error: " << id << " " << (int)error << " " << aux << std::endl;
     }
 
-    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, TransportMonitor::Status status)
+    void SendStatusHandler(dmq::DelegateRemoteId id, uint16_t seqNum, dmq::util::TransportMonitor::Status status)
     {
         // Log timeouts so you know Retries are happening, but don't treat as fatal
-        if (status != TransportMonitor::Status::SUCCESS)
+        if (status != dmq::util::TransportMonitor::Status::SUCCESS)
             std::cout << "Msg Timeout (Retrying): ID " << id << " Seq " << seqNum << std::endl;
     }
 
-    Thread m_thread;
+    dmq::os::Thread m_thread;
 
-    Timer m_pollTimer;
-    Timer m_actuatorTimer;
+    dmq::util::Timer m_pollTimer;
+    dmq::util::Timer m_actuatorTimer;
 
     dmq::ScopedConnection m_pollTimerConn;
     dmq::ScopedConnection m_actuatorTimerConn;

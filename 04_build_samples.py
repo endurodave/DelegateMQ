@@ -18,10 +18,12 @@ Key Features:
 Skip List (always excluded):
     - atfe-armv7m-bare-metal  Embedded ARM target, requires ATfE toolchain + QEMU
     - bare-metal-arm          Embedded ARM target, requires cross-compiler
-    - stm32-freertos          Embedded STM32 target, requires cross-compiler
     - mqtt-rapidjson          Requires external MQTT broker (excluded from run)
     - serialport-serializer   Requires physical serial port hardware
     - system-architecture-python  Python-only client, no C++ build
+
+Windows-only (skipped on Linux):
+    - stm32-freertos          Client uses Win32 serial (libserialport) + UDP; server is embedded STM32
 
 Usage:
     Run this script FOURTH, after generating project files with 03_generate_samples.py.
@@ -42,7 +44,6 @@ import subprocess
 SKIP_ALWAYS = {
     "atfe-armv7m-bare-metal",
     "bare-metal-arm",
-    "stm32-freertos",
     "mqtt-rapidjson",
     "serialport-serializer",
     "system-architecture-python",
@@ -51,6 +52,7 @@ SKIP_ALWAYS = {
 WINDOWS_ONLY = {
     "databus-freertos",        # server uses FreeRTOS Win32 simulator (32-bit); full pair only meaningful on Windows
     "freertos-bare-metal",
+    "stm32-freertos",          # client uses Win32 serial (libserialport) and UDP; server is an embedded STM32 target
     "win32-pipe-serializer",
     "win32-tcp-serializer",
     "win32-udp-serializer",

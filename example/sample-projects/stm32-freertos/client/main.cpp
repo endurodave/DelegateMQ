@@ -14,6 +14,7 @@
 #include "AlarmMgr.h"
 #include "DataMgr.h"
 #include "ClientApp.h"
+#include "extras/util/NetworkConnect.h"
 #include <thread>
 
 #ifdef DMQ_LOG
@@ -24,7 +25,7 @@
 #endif
 #endif
 
-static Thread receiveThread("ReceiveThread");
+static dmq::os::Thread receiveThread("ReceiveThread");
 
 std::atomic<bool> processTimerExit = false;
 static void ProcessTimers()
@@ -32,7 +33,7 @@ static void ProcessTimers()
     while (!processTimerExit.load())
     {
         // Process all delegate-based timers
-        Timer::ProcessTimers();
+        dmq::util::Timer::ProcessTimers();
         std::this_thread::sleep_for(std::chrono::microseconds(50));
     }
 }
@@ -86,7 +87,7 @@ int main()
 
 #ifdef _WIN32
     // Starts Winsock now; automatically cleans up when main exits.
-    NetworkContext wsContext;
+    dmq::util::NetworkContext wsContext;
 #endif
 
     std::cout << "Client start!" << std::endl;
