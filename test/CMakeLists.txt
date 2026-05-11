@@ -42,6 +42,24 @@ if(TEST_COVERAGE)
   set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -fprofile-update=atomic")
 endif()
 
+# Sanitizer support — ASan and TSan are mutually exclusive
+set(SANITIZE "" CACHE STRING "Sanitizer to enable: address, thread, or undefined")
+if(SANITIZE STREQUAL "address")
+  message(STATUS "AddressSanitizer enabled")
+  add_compile_options(-fsanitize=address -fno-omit-frame-pointer -g)
+  add_link_options(-fsanitize=address)
+elseif(SANITIZE STREQUAL "thread")
+  message(STATUS "ThreadSanitizer enabled")
+  add_compile_options(-fsanitize=thread -fno-omit-frame-pointer -g)
+  add_link_options(-fsanitize=thread)
+elseif(SANITIZE STREQUAL "undefined")
+  message(STATUS "UndefinedBehaviorSanitizer enabled")
+  add_compile_options(-fsanitize=undefined -fno-omit-frame-pointer -g)
+  add_link_options(-fsanitize=undefined)
+elseif(NOT SANITIZE STREQUAL "")
+  message(FATAL_ERROR "Unknown sanitizer: ${SANITIZE}. Use address, thread, or undefined.")
+endif()
+
 # Add subdirectories to include path
 include_directories( 
     ${DMQ_INCLUDE_DIR}
