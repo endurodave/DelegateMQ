@@ -25,10 +25,15 @@ class Participant {
 public:
     Participant(dmq::transport::ITransport& transport) : m_transport(&transport) {}
 
-    // Set a thread to dispatch outgoing sends to. When set, Send() posts the
-    // channel invocation to this thread rather than executing inline on the
-    // calling thread. All remote sends are then serialized onto one thread,
-    // preventing blocking I/O from stalling unrelated publishing threads.
+    // Set a thread to serialize all outgoing sends.
+    // When set, Send() posts the channel invocation to this thread rather than
+    // executing inline on the caller's thread. This provides two benefits:
+    //   1. Thread safety: concurrent Publish() calls from multiple threads are
+    //      safe — each send is queued rather than racing on the shared stream.
+    //   2. Non-blocking callers: blocking I/O in the transport cannot stall
+    //      unrelated publishing threads.
+    // Without a send thread, concurrent calls to Send() for the same remote ID
+    // are a data race on the channel's internal stream buffer.
     void SetSendThread(dmq::IThread* thread) { m_sendThread = thread; }
 
     // Add a remote topic mapping.

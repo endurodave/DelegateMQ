@@ -121,6 +121,7 @@ int main(int argc, char* argv[]) {
     Component input_filter = Input(&g_filter, "topic filter...");
 
     static std::vector<LogEntry> display_cache;
+    int scroll_offset = 0;
     auto renderer = Renderer(input_filter, [&] {
         Elements rows;
         
@@ -203,7 +204,9 @@ int main(int argc, char* argv[]) {
                 }));
             }
             
-            for (auto it = data_rows.rbegin(); it != data_rows.rend(); ++it) {
+            size_t skip = g_paused ? static_cast<size_t>(scroll_offset) : 0;
+            skip = (std::min)(skip, data_rows.size());
+            for (auto it = data_rows.rbegin() + static_cast<std::ptrdiff_t>(skip); it != data_rows.rend(); ++it) {
                 rows.push_back(*it);
             }
         }
@@ -213,22 +216,37 @@ int main(int argc, char* argv[]) {
             hbox(text(" Filter: "), input_filter->Render()) | border,
             vbox(std::move(rows)) | yframe | flex | border,
             hbox({ 
-                text(" Messages: " + std::to_string(g_messages.size()) + (g_paused ? " [PAUSED]" : "")) | color(Color::BlueLight), 
-                filler(), 
-                text(" Ctrl-P pause | Ctrl-C clear | Ctrl-Q quit ") | dim 
+                text(" Messages: " + std::to_string(g_messages.size()) + (g_paused ? (" [PAUSED" + (scroll_offset > 0 ? " +" + std::to_string(scroll_offset) : "") + "]") : "")) | color(Color::BlueLight),
+                filler(),
+                text(" Ctrl-P pause | Ctrl-C clear | Ctrl-Q quit | wheel scrolls when paused ") | dim
             }) | size(HEIGHT, EQUAL, 1)
         });
     });
 
     auto component = CatchEvent(renderer, [&](Event event) {
         if (event == Event::Character('\x11')) { g_running = false; screen.Exit(); return true; }
-        if (event == Event::Character(static_cast<char>(16))) { g_paused = !g_paused; return true; }
+        if (event == Event::Character(static_cast<char>(16))) {
+            g_paused = !g_paused;
+            if (!g_paused) scroll_offset = 0;
+            return true;
+        }
         if (event == Event::Character('\x03')) {
             std::lock_guard<std::mutex> lock(g_msgMutex);
             g_messages.clear();
             g_sessionStart = 0;
+            scroll_offset = 0;
             return true;
-        }        return false;
+        }
+        if (g_paused && event.is_mouse()) {
+            if (event.mouse().button == Mouse::WheelDown) { ++scroll_offset; return true; }
+            if (event.mouse().button == Mouse::WheelUp) { if (scroll_offset > 0) --scroll_offset; return true; }
+        }
+        if (g_paused) {
+            int page = (std::max)(1, Terminal::Size().dimy - 7);
+            if (event == Event::PageDown) { scroll_offset += page; return true; }
+            if (event == Event::PageUp)   { scroll_offset = (std::max)(0, scroll_offset - page); return true; }
+        }
+        return false;
     });
 
     std::thread refresher([&] { while (g_running) { std::this_thread::sleep_for(std::chrono::milliseconds(100)); screen.PostEvent(Event::Custom); } });

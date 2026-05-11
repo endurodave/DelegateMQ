@@ -9,7 +9,7 @@
 - [Basic Usage](#basic-usage)
 - [Lambda Slots](#lambda-slots)
 - [Mixed Sync and Async Slots](#mixed-sync-and-async-slots)
-- [When to use `dmq::MulticastDelegateSafe` instead](#when-to-use-multicastdelegatesafe-instead)
+- [When to use `dmq::MulticastDelegateSafe` instead](#when-to-use-dmqmulticastdelegatesafe-instead)
 
 ---
 

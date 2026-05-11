@@ -1,0 +1,312 @@
+# DelegateMQ
+
+DelegateMQ is a header-only C++17 library that invokes any callable (free function, member function, static function, lambda) synchronously, asynchronously across threads, or remotely across process/network boundaries — all through a single unified API. The same `dmq::MakeDelegate()` syntax works regardless of invocation mode; switching between sync, async, or remote is a one-line change.
+
+## Core Abstractions
+
+### Delegates
+
+- `dmq::Delegate<Sig>` — synchronous, direct call on the caller's thread
+- `dmq::DelegateAsync<Sig>` — non-blocking async, fire-and-forget to a target thread
+- `dmq::DelegateAsyncWait<Sig>` — blocking async, waits for return value with optional timeout
+- `dmq::DelegateRemote<Sig>` — remote invocation, serializes arguments over a transport
+
+All four share the same `dmq::MakeDelegate()` factory and `operator()` invocation syntax.
+
+### Delegate Containers
+
+- `dmq::Signal<Sig>` — thread-safe multicast signal with RAII disconnect via `dmq::ScopedConnection`; the preferred pub/sub primitive
+- `dmq::MulticastDelegateSafe<Sig>` — thread-safe broadcast without RAII (manual `+=` / `-=`)
+- `dmq::UnicastDelegate<Sig>` / `dmq::UnicastDelegateSafe<Sig>` — single-slot variants
+
+### DataBus (DDS Lite)
+
+- `dmq::databus::DataBus` — topic-based publish/subscribe middleware, location-transparent across threads and remote nodes
+- `dmq::databus::Participant` — represents a remote node; bridges local and remote topics
+- `dmq::databus::QoS` — per-topic quality-of-service: Last Value Cache (LVC), Lifespan, Min Separation, Deadline Monitoring
+
+### Ports & Interfaces
+
+- `dmq::IThread` — cross-platform thread dispatch interface; pre-built ports for stdlib, Win32, FreeRTOS, ThreadX, Zephyr, CMSIS-RTOS2, Qt, and bare-metal ARM
+- `dmq::ISerializer<Sig>` — serialization interface; adapters for MessagePack, RapidJSON, Cereal, Bitsery
+- `dmq::transport::ITransport` — transport interface; adapters for ZeroMQ, NNG, MQTT, TCP/UDP, serial, pipes
+- `dmq::IDispatcher` — dispatches serialized data to remote endpoints
+
+## Key API Patterns
+
+### Synchronous delegate
+
+```cpp
+auto sync = dmq::MakeDelegate(&obj, &MyClass::Method);
+sync(args);
+```
+
+### Asynchronous non-blocking (fire-and-forget)
+
+```cpp
+dmq::os::Thread worker("Worker");
+worker.CreateThread();
+auto async = dmq::MakeDelegate(&obj, &MyClass::Method, worker);
+async(args);  // queued to worker; caller returns immediately
+```
+
+### Asynchronous blocking (with return value)
+
+```cpp
+auto asyncWait = dmq::MakeDelegate(&obj, &MyClass::Method, worker, dmq::WAIT_INFINITE);
+ReturnType result = asyncWait(args);  // caller blocks until worker completes
+```
+
+### Signal / slot
+
+```cpp
+dmq::Signal<void(int)> OnEvent;
+auto conn = OnEvent.Connect(dmq::MakeDelegate(&obj, &Listener::Handle, thread));
+OnEvent(42);  // conn auto-disconnects when it goes out of scope
+```
+
+### Remote delegate
+
+```cpp
+dmq::RemoteChannel<void(int)> channel(transport, serializer);
+channel.Bind(this, &Class::Handler, MSG_ID);
+dmq::RegisterEndpoint(MSG_ID, channel.GetEndpoint());
+channel(42);  // serialized and sent over the network
+```
+
+### DataBus publish/subscribe
+
+```cpp
+auto conn = dmq::databus::DataBus::Subscribe<float>(
+    "sensor/temp", [](float v) { use(v); }, workerThread);
+dmq::databus::DataBus::Publish<float>("sensor/temp", 25.5f);
+```
+
+## Threading and Async Model
+
+- No internal threads are created by the library; every thread is explicitly constructed by the application.
+- Async delegates are queued to the target thread's priority queue; the thread's `Process()` loop dequeues and invokes.
+- Non-blocking async (`DelegateAsync`) deep-copies all arguments to the heap so the caller can return immediately without stack lifetime risk.
+- Blocking async (`DelegateAsyncWait`) passes arguments on the stack; the caller blocks until the target thread completes.
+- Thread queue full policy is configurable per thread via `dmq::os::FullPolicy`: `DROP` (discard), `TIMEOUT` (wait then drop), or `FAULT` (assert/halt).
+
+## Object Lifetime Safety
+
+- **Raw pointer targets**: unsafe for non-blocking async — object may be destroyed before the queued callback executes.
+- **`std::shared_ptr` targets**: safe — delegate holds a `weak_ptr`; if the object is destroyed before dispatch the callback is silently skipped, no crash.
+- **Singletons / globals**: safe because their lifetime exceeds any thread.
+- Never call `shared_from_this()` in a destructor when delegates are involved.
+
+## Known Constraints and Gotchas
+
+- `DelegateAsync` (fire-and-forget) does not return the target function's return value. Use `DelegateAsyncWait` for blocking with return, or `Signal` for broadcast callbacks.
+- Out-parameters (pointer or reference arguments modified by the handler) are not reflected back to the caller for non-blocking async; deep-copying is one-way. Use blocking async if out-parameters are needed.
+- C-style array arguments decay to pointers per the C standard; pass `std::vector` or a struct instead.
+- Passing a `std::shared_ptr` argument through an async delegate copies the smart pointer, not the pointed-to object — the pointed-to data is shared, not duplicated.
+- Each DataBus topic has exactly one C++ type; a type mismatch between publisher and subscriber triggers a fault at runtime.
+- `Signal` is thread-safe for concurrent connect/disconnect/emit, but a synchronous subscriber connected to a `Signal` runs inline on the emitting thread (potential priority inversion).
+- Message dispatch order on a thread is by priority queue, not strict FIFO. Use explicit sequencing if ordering across multiple sources matters.
+- **LVC rewind (out-of-order delivery):** when a subscriber connects to a Last Value Cache topic with a worker thread, it may receive a fresh live value followed by a stale cached value delivered slightly late. The DataBus dispatches the LVC value outside its internal lock to prevent deadlocks, which opens a narrow window for a concurrent publisher to push a newer value first. The fix is an application-level sequence number: embed a `uint32_t seq` in every message (stamp it at publish time with an atomic counter) and guard the subscriber with `dmq::util::MonotonicGuard<uint32_t>::IsNewer(msg.seq)` — stale arrivals are silently discarded. `MonotonicGuard` handles `uint32_t` rollover correctly via signed-difference comparison.
+
+## Timer
+
+`dmq::util::Timer` is a non-template class providing one-shot or periodic callbacks. All timers share a global intrusive linked list; expiration is checked by calling `Timer::ProcessTimers()` from a periodic context.
+
+### Key members
+
+- `dmq::Signal<void()> OnExpired` — signal emitted when the timer fires; connect delegates to receive notifications
+- `void Start(dmq::Duration timeout, bool once = false)` — start the timer; `once = true` fires once then disables, `once = false` (default) repeats
+- `void Stop()` — stop the timer; removal from the list is deferred to the next `ProcessTimers()` call
+- `bool Enabled()` — returns whether the timer is currently active
+- `static dmq::TimePoint GetNow()` — current time from the steady clock
+
+### ProcessTimers()
+
+```cpp
+static void Timer::ProcessTimers();
+```
+
+Must be called periodically from the highest-priority context available (hardware ISR or highest-priority task). It checks every active timer, collects expired timers, then invokes their `OnExpired` signals **outside the lock** to prevent deadlocks. Frequency must be shorter than the shortest timer period; 5–10 ms is typical.
+
+**ProcessTimers() must never block.** Three scenarios that cause blocking:
+
+1. A timer callback dispatches to a thread whose queue is full and the thread uses `FullPolicy::TIMEOUT` — stalls up to the timeout. Fix: use `FullPolicy::FAULT` or `DROP` on threads that receive timer dispatches.
+2. A `DelegateAsyncWait` is connected to `OnExpired` — blocks indefinitely. Never do this.
+3. A synchronous callback connected to `OnExpired` runs slowly — blocks for its duration. Keep sync callbacks fast or dispatch work asynchronously.
+
+### Recommended call sites
+
+```cpp
+// Option 1 — hardware ISR (preempts all tasks; preferred on RTOS)
+extern "C" void SysTick_Handler() {
+    dmq::util::Timer::ProcessTimers();
+}
+
+// Option 2 — highest-priority dedicated task
+void WatchdogTask(void*) {
+    while (true) {
+        dmq::util::Timer::ProcessTimers();
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+```
+
+### Configuration constants (DelegateOpt.h)
+
+- `MAX_TIMER_EXPIRED = 16` — maximum timers that can expire in a single `ProcessTimers()` call without heap allocation
+- `MAX_WATCHDOG_THREADS = 16` — maximum threads registered for watchdog monitoring
+
+## MakeTimerDelegate
+
+`dmq::util::MakeTimerDelegate()` creates a timer-safe async delegate that prevents queue flooding. Unlike `MakeDelegate()`, it guarantees **at most one message in flight** to the target thread at any time — additional timer ticks are silently dropped while the previous dispatch is still pending. Use it whenever connecting a delegate to `Timer::OnExpired`.
+
+### Signature (representative overloads)
+
+```cpp
+// Member function, raw pointer
+template <typename TClass>
+auto MakeTimerDelegate(
+    TClass* obj,
+    void (TClass::*method)(),
+    dmq::IThread& thread,
+    std::function<void()> onStuck = {},   // optional: called if dispatch is stuck
+    dmq::Duration stuckTimeout = {});     // optional: how long before "stuck"
+
+// Member function, shared_ptr owner (lifetime-safe)
+template <typename TClass>
+auto MakeTimerDelegate(
+    std::shared_ptr<TClass> obj,
+    void (TClass::*method)(),
+    dmq::IThread& thread,
+    std::function<void()> onStuck = {},
+    dmq::Duration stuckTimeout = {});
+
+// Lambda / free function
+template <typename F>
+auto MakeTimerDelegate(
+    F&& func,
+    dmq::IThread& thread,
+    std::function<void()> onStuck = {},
+    dmq::Duration stuckTimeout = {});
+```
+
+Returns a `dmq::Delegate<void()>` that can be passed directly to `Timer::OnExpired.Connect()`.
+
+### How it differs from MakeDelegate
+
+| | `MakeDelegate` | `MakeTimerDelegate` |
+|---|---|---|
+| In-flight messages | Unlimited (one per tick) | At most one |
+| Queue flooding | Possible on fast timers | Prevented |
+| Blocking (`DelegateAsyncWait`) | Supported | Not supported (always async) |
+| Stuck detection | No | Optional via `onStuck` |
+| `shared_ptr` lifetime safety | Yes | Yes |
+
+### Usage examples
+
+```cpp
+// Basic usage — raw pointer
+m_conn = m_timer.OnExpired.Connect(
+    dmq::util::MakeTimerDelegate(this, &MyClass::OnTick, m_thread));
+m_timer.Start(std::chrono::milliseconds(100));
+
+// Shared_ptr owner — safe if object is destroyed before timer fires
+auto self = std::make_shared<MyClass>();
+auto d = dmq::util::MakeTimerDelegate(self, &MyClass::OnTick, m_thread);
+self->m_conn = self->m_timer.OnExpired.Connect(d);
+
+// With stuck detection — onStuck fires from ProcessTimers() context if
+// the previous dispatch has not completed after stuckTimeout
+m_conn = m_timer.OnExpired.Connect(
+    dmq::util::MakeTimerDelegate(this, &MyClass::OnTick, m_thread,
+        [this]{ HandleThreadStuck(); }, std::chrono::seconds(2)));
+```
+
+### At-most-one guarantee
+
+Internally, `MakeTimerDelegate` wraps the call in a `PacedDispatch` token. When the timer fires:
+- If the previous dispatch is still in flight (token alive), the tick is dropped.
+- If the previous dispatch completed (token destroyed), the next dispatch is queued.
+
+This prevents a slow handler from causing unbounded queue growth on the target thread.
+
+## Watchdog
+
+The watchdog is built into every `dmq::os::Thread`. It detects threads that deadlock, spin indefinitely, or become unresponsive. There is no separate Watchdog class — it is an optional feature of `Thread`.
+
+### Enabling the watchdog
+
+Pass a timeout to `CreateThread()`:
+
+```cpp
+dmq::os::Thread worker("Worker");
+worker.CreateThread(std::chrono::seconds(2));  // 2-second watchdog
+```
+
+Without a timeout argument, the watchdog is disabled for that thread.
+
+### How it works
+
+1. **Self-reporting:** The thread's `Process()` loop records `m_lastAliveTime = Timer::GetNow()` at the top of every iteration and again after waking from the queue wait. With a watchdog enabled the queue wait uses a finite timeout (`watchdogTimeout / 10`) so even idle threads loop frequently.
+2. **Checking:** `ProcessTimers()` fires a watchdog check timer at `watchdogTimeout / 2` intervals. It reads `m_lastAliveTime` atomically for each registered thread. If `now − lastAlive > watchdogTimeout`, `WatchdogHandler(threadName)` is called.
+3. **Fault:** `WatchdogHandler` is an `extern "C"` stub the application provides. The default triggers a `FAULT` (assert/halt); a custom implementation can log the thread name and initiate system recovery.
+
+### Long-running handlers
+
+If a message handler legitimately runs longer than `watchdogTimeout`, call `ThreadCheck()` inside the handler to reset the alive timestamp:
+
+```cpp
+void MyClass::LongHandler() {
+    for (auto& item : bigList) {
+        process(item);
+        m_thread.ThreadCheck();  // keep watchdog satisfied during long work
+    }
+}
+```
+
+### Key methods
+
+| Method | Purpose |
+|---|---|
+| `CreateThread(std::optional<dmq::Duration>)` | Pass a timeout to enable the watchdog and register the thread |
+| `ThreadCheck()` | Manually reset the alive timestamp inside a long handler |
+| `ExitThread()` | Unregisters the thread from the watchdog list |
+
+### Priority requirement
+
+The watchdog only catches a runaway thread if `ProcessTimers()` runs at **higher priority** than the runaway thread. On a single-core RTOS, a CPU-spinning task at equal or higher priority than the `ProcessTimers()` caller will starve the watchdog. The fix is to call `ProcessTimers()` from a hardware ISR, which preempts all software tasks.
+
+For maximum reliability, pair the software watchdog with a hardware watchdog (e.g., STM32 IWDG) and kick it only from inside `WatchdogCheck()` — that way a stuck `ProcessTimers()` caller also triggers a hardware reset.
+
+## Platform and OS Support
+
+Desktop / server: Windows (Win32), Linux (POSIX / stdlib), Qt event loop.
+
+Embedded / RTOS: FreeRTOS, ThreadX / NetX, Zephyr, CMSIS-RTOS2, ARM Cortex-M bare-metal, ATfE (picolibc).
+
+For unsupported platforms, implement the `dmq::IThread` interface and the library compiles unchanged.
+
+## Build and Integration
+
+- Include `DelegateMQ.h`; the core is header-only and requires only C++17.
+- CMake is the primary build system; it auto-detects the platform and selects defaults.
+- For async delegates or DataBus, also compile the `DMQ_PORT_SOURCES` for the target OS/thread port.
+- Key CMake options: `DMQ_THREAD` (e.g., `DMQ_THREAD_STDLIB`, `DMQ_THREAD_FREERTOS`, `DMQ_THREAD_WIN32`), `DMQ_ALLOCATOR` (fixed-block allocator), `DMQ_ASSERTS`, `DMQ_DATABUS_TOOLS`.
+
+## Diagnostic Tools (DMQ_TOOLS=ON)
+
+- `dmq-spy` — real-time feed of all DataBus messages with regex filtering
+- `dmq-monitor` — live network topology dashboard (nodes, IP, uptime, topics)
+- `dmq-thread` — per-thread performance dashboard (latency, queue depth)
+
+## Documentation
+
+- [README](README.md) — overview, quick start, comparison table
+- [DETAILS](docs/DETAILS.md) — in-depth API documentation and design rationale
+- [PORTING](docs/PORTING.md) — how to port to a new OS or thread model
+- [SIGNALS](docs/SIGNALS.md) — Signal/ScopedConnection usage guide
+- [example/cellutron/](example/cellutron/) — multi-node demo simulating a medical instrument with GUI, controller, and safety processor nodes
+
+## Comparison to Alternatives
+
+DelegateMQ differs from Qt signals (requires moc, Qt base class, Qt event loop), Boost.Signals2 (no async delivery, no remote, no embedded support), DDS (no IDL, no code gen, tiny footprint), and gRPC (no local/async mode, requires protobuf). DelegateMQ is the only option in this space that provides sync, async, and remote invocation in a single API with embedded/RTOS support.

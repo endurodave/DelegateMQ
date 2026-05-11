@@ -22,7 +22,8 @@
 /// * Command, Reactor, Proactor, and Producer-Consumer.
 ///
 /// **Configuration:**
-/// * To run performance/load tests, uncomment `#define STRESS_TEST` or `#define STRESS_TEST_REMOTE`.
+/// * To run performance/load tests, uncomment one of:
+///   `#define STRESS_TEST`, `#define STRESS_TEST_REMOTE`, or `#define STRESS_TEST_DATABUS`.
 ///
 /// See README.md for Library Overview.
 /// See DETAILS.md for Porting Guides and Design Documentation.
@@ -103,19 +104,18 @@ Timer& GetTimer()
 //------------------------------------------------------------------------------
 int main(void)
 {
-// Uncomment one to run the DelegateMQ stress tests. **Release** builds run faster!
-//#define STRESS_TEST
-//#define STRESS_TEST_REMOTE
+// Uncomment to run the DelegateMQ stress tests. **Release** builds run faster!
+//#define STRESS_TESTS
 
-#ifdef STRESS_TEST
+#ifdef STRESS_TESTS
     extern int stress_test();
     stress_test();
-    return 0;
-#endif
 
-#ifdef STRESS_TEST_REMOTE
     extern int stress_test_remote();
     stress_test_remote();
+
+    extern int stress_test_databus();
+    stress_test_databus();
     return 0;
 #endif
 

@@ -101,6 +101,32 @@ int DataBusLocalTestMain() {
         ASSERT_TRUE(stringReceived == true);
     }
 
+    // 6. SubscribeUnhandled — fires when no subscriber exists for a topic
+    {
+        dmq::databus::DataBus::ResetForTesting();
+        std::string unhandledTopic;
+        auto unhandledConn = dmq::databus::DataBus::SubscribeUnhandled([&](const std::string& topic) {
+            unhandledTopic = topic;
+        });
+
+        // No subscriber: unhandled fires synchronously
+        dmq::databus::DataBus::Publish<int>("ghost/topic", 42);
+        ASSERT_TRUE(unhandledTopic == "ghost/topic");
+
+        // With subscriber present: unhandled must NOT fire
+        unhandledTopic = "";
+        int received = 0;
+        auto sub = dmq::databus::DataBus::Subscribe<int>("ghost/topic", [&](int v) { received = v; });
+        dmq::databus::DataBus::Publish<int>("ghost/topic", 99);
+        ASSERT_TRUE(received == 99);
+        ASSERT_TRUE(unhandledTopic.empty());
+
+        // Different unhandled topic alongside a subscribed topic: only the unhandled one fires
+        unhandledTopic = "";
+        dmq::databus::DataBus::Publish<float>("another/ghost", 1.0f);
+        ASSERT_TRUE(unhandledTopic == "another/ghost");
+    }
+
     std::cout << "DataBusLocalTest PASSED!" << std::endl;
     return 0;
 }

@@ -7,9 +7,18 @@
 namespace dmq::util {
 
 /// @brief Utility to guard against out-of-order or stale messages.
-/// @details Uses 64-bit timestamps to provide permanent monotonic safety.
-/// @note This class is NOT thread-safe. It is intended to be used within a single 
-/// thread of control (e.g., an Active Object or a single subscriber thread).
+/// @details Tracks the last accepted sequence number and rejects any incoming value
+/// that is not strictly newer. Handles unsigned integer rollover for types of 32 bits
+/// or smaller via signed-difference comparison.
+///
+/// Primary use case — LVC rewind: when a DataBus subscriber connects with
+/// Last Value Cache enabled, it may receive a stale cached value AFTER a fresher
+/// value has already been delivered (see DataBus::InternalSubscribe, step 5).
+/// Embed a sequence number in every message (e.g. via MessageBase) and call
+/// IsNewer() in the subscriber to silently discard the stale arrival.
+///
+/// @note This class is NOT thread-safe. Use within a single thread of control
+/// (e.g., an Active Object or a dedicated subscriber thread).
 template <typename T>
 class MonotonicGuard {
     static_assert(std::is_integral_v<T> && std::is_unsigned_v<T>, "T must be an unsigned integral type");

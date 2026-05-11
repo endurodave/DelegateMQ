@@ -1,10 +1,14 @@
 #include "DelegateMQ.h"
 #include <iostream>
 #include <queue>
+#include <atomic>
+#include <thread>
+#include <chrono>
 
 #if defined(DMQ_DATABUS)
 
 using namespace dmq;
+using namespace dmq::os;
 using namespace dmq::transport;
 using namespace dmq::databus;
 using namespace dmq::serialization::serializer;
@@ -39,37 +43,178 @@ private:
 
 int DataBusRemoteTestMain() {
     std::cout << "Starting DataBusRemoteTest..." << std::endl;
-    DataBus::ResetForTesting();
 
-    DataBusLoopbackTransport transport;
-    dmq::serialization::serializer::Serializer<void(int)> serializer;
+    // 1. Basic remote publish/subscribe via loopback transport
+    {
+        DataBus::ResetForTesting();
+        DataBusLoopbackTransport transport;
+        dmq::serialization::serializer::Serializer<void(int)> serializer;
 
-    // Node B setup (Subscriber)
-    auto nodeB = std::make_shared<Participant>(transport);
-    
-    // In a real system, nodeB's DataBus would be separate. 
-    // Here we simulate it by having Node B's participant call back into a local variable.
-    int receivedValue = 0;
-    nodeB->RegisterHandler<int>(100, serializer, [&](int val) {
-        receivedValue = val;
-    });
+        auto nodeB = std::make_shared<Participant>(transport);
+        int receivedValue = 0;
+        nodeB->RegisterHandler<int>(100, serializer, [&](int val) {
+            receivedValue = val;
+        });
 
-    // Node A setup (Publisher)
-    auto nodeA_participant = std::make_shared<Participant>(transport);
-    nodeA_participant->AddRemoteTopic("remote/topic", 100);
-    
-    DataBus::AddParticipant(nodeA_participant);
-    DataBus::RegisterSerializer<int>("remote/topic", serializer);
+        auto nodeA_participant = std::make_shared<Participant>(transport);
+        nodeA_participant->AddRemoteTopic("remote/topic", 100);
+        DataBus::AddParticipant(nodeA_participant);
+        DataBus::RegisterSerializer<int>("remote/topic", serializer);
 
-    // Node A publishes
-    DataBus::Publish<int>("remote/topic", 42);
+        DataBus::Publish<int>("remote/topic", 42);
+        nodeB->ProcessIncoming();
 
-    // Simulate Node B processing incoming data
-    nodeB->ProcessIncoming();
+        ASSERT_TRUE(receivedValue == 42);
+    }
 
-    ASSERT_TRUE(receivedValue == 42);
+    // 2. PublishLocal vs Publish — PublishLocal skips remote participants
+    {
+        DataBus::ResetForTesting();
+        dmq::serialization::serializer::Serializer<void(int)> serializer;
+
+        // Count how many times the transport is asked to send
+        struct CountingTransport : public ITransport {
+            int sendCount = 0;
+            int Send(xostringstream&, const DmqHeader&) override { sendCount++; return 0; }
+            int Receive(xstringstream&, DmqHeader&) override { return -1; }
+        } countingTransport;
+
+        auto participant = std::make_shared<Participant>(countingTransport);
+        participant->AddRemoteTopic("local/topic", 200);
+        DataBus::AddParticipant(participant);
+        DataBus::RegisterSerializer<int>("local/topic", serializer);
+
+        bool localReceived = false;
+        auto conn = DataBus::Subscribe<int>("local/topic", [&](int) { localReceived = true; });
+
+        // PublishLocal: local subscriber gets it; transport is NOT called
+        DataBus::PublishLocal<int>("local/topic", 1);
+        ASSERT_TRUE(localReceived == true);
+        ASSERT_TRUE(countingTransport.sendCount == 0);
+
+        // Publish: local subscriber gets it AND transport is called
+        localReceived = false;
+        DataBus::Publish<int>("local/topic", 2);
+        ASSERT_TRUE(localReceived == true);
+        ASSERT_TRUE(countingTransport.sendCount == 1);
+    }
+
+    // 3. AddIncomingTopic vs AddRelayTopic
+    //    AddIncomingTopic → handler calls PublishLocal → does NOT re-forward to remote
+    //    AddRelayTopic    → handler calls Publish     → DOES re-forward to remote
+    {
+        dmq::serialization::serializer::Serializer<void(int)> serializer;
+
+        // Shared helper: inject one serialized int packet into transport via a temporary source node
+        auto injectPacket = [&](DataBusLoopbackTransport& transport, dmq::DelegateRemoteId remoteId, int value) {
+            Participant sourceNode(transport);
+            sourceNode.AddRemoteTopic("src/inject", remoteId);
+            sourceNode.Send("src/inject", value, serializer);
+        };
+
+        // 3a. AddIncomingTopic → PublishLocal → no re-forward
+        {
+            DataBus::ResetForTesting();
+
+            struct CountingTransport : public ITransport {
+                int sendCount = 0;
+                int Send(xostringstream&, const DmqHeader&) override { sendCount++; return 0; }
+                int Receive(xstringstream&, DmqHeader&) override { return -1; }
+            } downstreamTransport;
+
+            // Register a downstream participant that would receive re-forwarded data
+            auto downParticipant = std::make_shared<Participant>(downstreamTransport);
+            downParticipant->AddRemoteTopic("relay/data", 300);
+            DataBus::AddParticipant(downParticipant);
+            DataBus::RegisterSerializer<int>("relay/data", serializer);
+
+            int localValue = -1;
+            auto conn = DataBus::Subscribe<int>("relay/data", [&](int v) { localValue = v; });
+
+            DataBusLoopbackTransport upstreamTransport;
+            auto incomingParticipant = std::make_shared<Participant>(upstreamTransport);
+            DataBus::AddIncomingTopic<int>("relay/data", 400, *incomingParticipant, serializer);
+
+            injectPacket(upstreamTransport, 400, 55);
+            incomingParticipant->ProcessIncoming(); // → PublishLocal("relay/data", 55)
+
+            ASSERT_TRUE(localValue == 55);                  // local subscriber got it
+            ASSERT_TRUE(downstreamTransport.sendCount == 0); // NOT re-forwarded
+        }
+
+        // 3b. AddRelayTopic → Publish → re-forwards to registered remote participants
+        {
+            DataBus::ResetForTesting();
+
+            struct CountingTransport : public ITransport {
+                int sendCount = 0;
+                int Send(xostringstream&, const DmqHeader&) override { sendCount++; return 0; }
+                int Receive(xstringstream&, DmqHeader&) override { return -1; }
+            } downstreamTransport;
+
+            auto downParticipant = std::make_shared<Participant>(downstreamTransport);
+            downParticipant->AddRemoteTopic("relay/data", 300);
+            DataBus::AddParticipant(downParticipant);
+            DataBus::RegisterSerializer<int>("relay/data", serializer);
+
+            int localValue = -1;
+            auto conn = DataBus::Subscribe<int>("relay/data", [&](int v) { localValue = v; });
+
+            DataBusLoopbackTransport upstreamTransport;
+            auto relayParticipant = std::make_shared<Participant>(upstreamTransport);
+            DataBus::AddRelayTopic<int>("relay/data", 400, *relayParticipant, serializer);
+
+            injectPacket(upstreamTransport, 400, 77);
+            relayParticipant->ProcessIncoming(); // → Publish("relay/data", 77)
+
+            ASSERT_TRUE(localValue == 77);                   // local subscriber got it
+            ASSERT_TRUE(downstreamTransport.sendCount > 0);  // WAS re-forwarded
+        }
+    }
+
+    // 4. Participant::SetSendThread — transport.Send executes on the send thread, not caller
+    {
+        DataBus::ResetForTesting();
+        dmq::serialization::serializer::Serializer<void(int)> serializer;
+
+        dmq::os::Thread sendWorker("RemoteSendWorker");
+        sendWorker.CreateThread();
+
+        std::atomic<bool> sendCalledOnWorker{false};
+
+        class TrackingTransport : public ITransport {
+        public:
+            dmq::os::Thread* expectedThread = nullptr;
+            std::atomic<bool>* calledOnWorker = nullptr;
+            int Send(xostringstream&, const DmqHeader&) override {
+                if (calledOnWorker)
+                    calledOnWorker->store(expectedThread->IsCurrentThread());
+                return 0;
+            }
+            int Receive(xstringstream&, DmqHeader&) override { return -1; }
+        } trackingTransport;
+
+        trackingTransport.expectedThread = &sendWorker;
+        trackingTransport.calledOnWorker = &sendCalledOnWorker;
+
+        auto participant = std::make_shared<Participant>(trackingTransport);
+        participant->AddRemoteTopic("send/topic", 500);
+        participant->SetSendThread(&sendWorker);
+        DataBus::AddParticipant(participant);
+        DataBus::RegisterSerializer<int>("send/topic", serializer);
+
+        DataBus::Publish<int>("send/topic", 42); // returns immediately; send is async
+
+        int retries = 0;
+        while (!sendCalledOnWorker && retries++ < 50)
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+        ASSERT_TRUE(sendCalledOnWorker == true);
+
+        sendWorker.ExitThread();
+    }
+
     std::cout << "DataBusRemoteTest PASSED!" << std::endl;
-
     return 0;
 }
 

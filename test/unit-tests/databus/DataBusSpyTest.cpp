@@ -1,10 +1,14 @@
 #include "DelegateMQ.h"
 #include <iostream>
 #include <string>
+#include <atomic>
+#include <thread>
+#include <chrono>
 
 #if defined(DMQ_DATABUS)
 
 using namespace dmq;
+using namespace dmq::os;
 using namespace dmq::databus;
 
 int DataBusSpyTestMain() {
@@ -46,6 +50,32 @@ int DataBusSpyTestMain() {
     DataBus::Publish<float>("unknown/topic", 1.23f);
     ASSERT_TRUE(lastTopic == "unknown/topic");
     ASSERT_TRUE(lastValue == "?");
+
+    // 2. Async monitor — callback dispatches to the specified worker thread
+    {
+        DataBus::ResetForTesting();
+        Thread monThread("MonitorWorker");
+        monThread.CreateThread();
+
+        std::atomic<bool> monitorFired{false};
+        std::atomic<bool> calledOnWorker{false};
+
+        auto monConn = DataBus::Monitor([&](const SpyPacket&) {
+            calledOnWorker = monThread.IsCurrentThread();
+            monitorFired = true;
+        }, &monThread);
+
+        DataBus::Publish<int>("async/monitor", 7);
+
+        int retries = 0;
+        while (!monitorFired && retries++ < 50)
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+        ASSERT_TRUE(monitorFired == true);
+        ASSERT_TRUE(calledOnWorker == true);
+
+        monThread.ExitThread();
+    }
 
     std::cout << "DataBusSpyTest PASSED!" << std::endl;
     return 0;

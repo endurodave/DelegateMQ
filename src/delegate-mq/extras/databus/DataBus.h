@@ -245,8 +245,13 @@ private:
         // IMPORTANT: Because this happens after releasing the lock, a high-frequency
         // publisher on another thread could have already sent a new value to the
         // connected signal. The subscriber might receive the fresh value FIRST,
-        // followed by this stale LVC value. Users of LVC should ensure their
-        // logic handles potential out-of-order state arrival.
+        // followed by this stale LVC value — a "rewind" to an older state.
+        //
+        // Recommended mitigation: embed a monotonic sequence number in every message
+        // (see MessageBase) and reject stale arrivals in the subscriber using
+        // dmq::util::MonotonicGuard::IsNewer(). This is an application-level guard
+        // and is the correct fix — resolving the race inside the DataBus lock would
+        // require holding the lock across the async dispatch, which deadlocks.
         if (cachedValPtr) {
             if (thread) {
                 dmq::MakeDelegate(typedFunc, *thread).AsyncInvoke(*cachedValPtr);

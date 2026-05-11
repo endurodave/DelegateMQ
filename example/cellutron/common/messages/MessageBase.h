@@ -7,14 +7,19 @@
 namespace cellutron {
 
 /// @brief Base class for all Cellutron messages.
-/// @details Stamps every message with a process-local monotonic sequence number
-///          at construction time. Receivers use MessageGuard::IsNewer(msg.seq)
-///          to discard stale or reordered messages.
+/// @details Stamps every message with a process-local monotonic uint32_t sequence
+///          number at construction time. Receivers hold a MessageGuard and call
+///          guard.IsNewer(msg.seq) to silently discard stale or reordered arrivals.
 ///
-/// @note The counter is per-process, not synchronized across CPUs. MonotonicGuard
-///       is therefore only valid for single-publisher-per-topic scenarios. If a
-///       publisher process restarts, receivers must also call MessageGuard::Reset()
-///       to accept the restarted publisher's messages.
+///          The primary scenario this guards against is the DataBus LVC rewind:
+///          when a subscriber connects to a Last Value Cache topic, it may receive
+///          a fresh live value followed by an older cached value delivered slightly
+///          late. IsNewer() detects and drops the stale cached value automatically.
+///
+/// @note The counter is per-process and not synchronized across CPUs, so it is
+///       only meaningful for single-publisher-per-topic scenarios. If a publisher
+///       process restarts, receivers must call MessageGuard::Reset() to accept the
+///       restarted publisher's sequence numbers.
 struct MessageBase : public serialize::I
 {
     uint32_t seq = 0;

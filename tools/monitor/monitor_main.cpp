@@ -230,8 +230,7 @@ int main(int argc, char* argv[]) {
         std::string summary = " Nodes:  Online: " + std::to_string(nOnline) +
                               "  Stale: "  + std::to_string(nStale) +
                               "  Offline: " + std::to_string(nOffline) +
-                              "  |  Heartbeats: " + std::to_string(g_packetCount) +
-                              "  Errors: " + std::to_string(g_errorCount);
+                              "  |  Heartbeats: " + std::to_string(g_packetCount);
 
         auto statusColor = g_statusMessage.find("ERROR") != std::string::npos
                                ? Color::Red : Color::Blue;

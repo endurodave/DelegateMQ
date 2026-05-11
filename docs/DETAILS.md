@@ -13,13 +13,13 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Build](#build)
+  - [Example Projects](#example-projects)
+    - [Examples Build](#examples-build)
+    - [Examples Run](#examples-run)
   - [Configuration and Overrides](#configuration-and-overrides)
     - [1. Command Line (Highest Precedence)](#1-command-line-highest-precedence)
     - [2. CMakeLists.txt](#2-cmakeliststxt)
     - [3. Auto-Detection (Default)](#3-auto-detection-default)
-  - [Example Projects](#example-projects)
-    - [Examples Setup](#examples-setup)
-    - [Examples Build](#examples-build)
   - [Build Integration](#build-integration)
     - [CMake](#cmake)
     - [Generic (Make/IDE)](#generic-makeide)
@@ -34,9 +34,6 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
   - [Remote Delegate](#remote-delegate)
   - [DataBus](#databus)
   - [Performance Monitoring](#performance-monitoring)
-    - [Key Metrics](#key-metrics)
-    - [dmq-thread Dashboard](#dmq-thread-dashboard)
-    - [How it Works](#how-it-works)
   - [Async Public API Pattern](#async-public-api-pattern)
   - [Delegate Invocation Semantics](#delegate-invocation-semantics)
 - [Porting Guide](#porting-guide)
@@ -75,7 +72,7 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Array Argument Heap Copy](#array-argument-heap-copy)
 - [Interfaces](#interfaces)
 - [Cross-Language Interoperability](#cross-language-interoperability)
-    - [Key Features:](#key-features)
+    - [Key Features](#key-features)
     - [Synchronization](#synchronization)
 - [Examples](#examples)
   - [Callback Example](#callback-example)
@@ -89,50 +86,26 @@ The DelegateMQ C++ library enables function invocations on any callable, either 
     - [Paced Timer Delegate](#paced-timer-delegate)
   - [`std::async` Thread Targeting Example](#stdasync-thread-targeting-example)
   - [More Examples](#more-examples)
-  - [Sample Projects](#sample-projects)
-    - [External Dependencies](#external-dependencies)
-    - [system-architecture](#system-architecture)
-    - [Interop Libraries](#interop-libraries)
-    - [Sample Projects Comparison](#sample-projects-comparison)
-      - [Feature \& Toolchain Demos](#feature--toolchain-demos)
-      - [Remote Delegate Examples](#remote-delegate-examples)
+- [Sample Projects](#sample-projects)
+  - [Sample Projects Comparison](#sample-projects-comparison)
+    - [Feature \& Toolchain Demos](#feature--toolchain-demos)
+    - [Remote Examples](#remote-examples)
+    - [Showcase Projects](#showcase-projects)
 - [Tests](#tests)
   - [Unit Tests](#unit-tests)
-  - [Valgrind Memory Tests](#valgrind-memory-tests)
-    - [Results Summary](#results-summary)
-    - [Heap Memory Test Results](#heap-memory-test-results)
-    - [Fixed-Block Memory Allocator Test Results](#fixed-block-memory-allocator-test-results)
-- [Library Comparison](#library-comparison)
-- [References](#references)
+  - [Stress Tests](#stress-tests)
 
 # Introduction
 
 DelegateMQ is a C++ header-only library for invoking any callable (e.g., function, method, lambda):
 
-- Synchronously
-- Asynchronously
-- Remotely across processes or processors
+* Synchronously
+* Asynchronously (Blocking and non-blocking)
+* Multicast (Signal and Slot)
+* Remotely (Across processes or processors)
+* Topic-based (Publish/Subscribe across threads or nodes)
 
-It unifies function calls across threads or systems via a simple delegate interface. DelegateMQ is thread-safe, unit-tested, and easy to port to any platform.
-
-1. **Header-Only Library** – implemented using a small number of header files
-2. **Any Compiler** – standard C++17 code for any compiler
-3. **Any Function** – invoke any callable function: member, static, free, or lambda
-4. **Any Argument Type** – supports any argument type: value, reference, pointer, pointer to pointer
-5. **Multiple Arguments** – supports N number of function arguments for the bound function
-6. **Synchronous Invocation** – call the bound function synchronously
-7. **Asynchronous Invocation** – call the bound function asynchronously on a client specified thread
-8. **Blocking Asynchronous Invocation** - invoke asynchronously using blocking or non-blocking delegates
-9. **Remote Invocation** - call a function located on a remote endpoint.
-11. **Smart Pointer Support** - bind an instance function using a raw object pointer or `std::shared_ptr`
-12. **Lambda Support** - bind and invoke lambda functions asynchronously using delegates
-13. **Automatic Heap Handling** – automatically copy argument data to the heap for safe transport through a message queue
-14. **Memory Management** - support for global heap or fixed-block memory allocator
-15. **Any OS** – easy porting to any OS. Windows, Linux, FreeRTOS, ThreadX, and other port included
-16. **32/64-bit** - Support for 32 and 64-bit projects
-17. **Dynamic Storage Allocation** - optional fixed-block memory allocator
-18. **CMake Build** - CMake supports most toolchains including Windows, Linux, and others
-19. **Unit Tests** - extensive unit testing of the delegate library included
+It serves as a messaging layer for C++ applications, providing thread-safe asynchronous callbacks, a Signal & Slot mechanism, topic-based data distribution, and inter-thread data transfer. The library is unit-tested and has been ported to numerous embedded and PC platforms (e.g. Windows, Linux, RTOS, bare metal), with a design that facilitates easy porting to others.
 
 # Build
 
@@ -142,38 +115,11 @@ To build and run DelegateMQ, follow these simple steps. The library uses <a href
    `cmake -B build .`
 3. Build and run the project within the `build` directory. 
 
-## Configuration and Overrides
-
-DelegateMQ is designed for "zero-config" out of the box. When you include `DelegateMQ.cmake`, it automatically detects your platform and selects sensible defaults for threading, transport, and serialization.
-
-You can customize these behaviors using three methods (in order of precedence):
-
-### 1. Command Line (Highest Precedence)
-Override any setting directly when generating the build files:
-`cmake -B build -DDMQ_THREAD=DMQ_THREAD_NONE -DDMQ_ALLOCATOR=ON .`
-
-### 2. CMakeLists.txt
-Set variables **before** including `DelegateMQ.cmake`:
-```cmake
-set(DMQ_THREAD "DMQ_THREAD_FREERTOS")
-include("path/to/delegate-mq/DelegateMQ.cmake")
-```
-
-### 3. Auto-Detection (Default)
-If no variables are set, DelegateMQ uses `Defaults.cmake` to guess the best settings:
-- **Windows/Linux**: `STDLIB` threading, `UDP` transport.
-- **RTOS (FreeRTOS/ThreadX/Zephyr)**: Native threading, `NONE` transport.
-- **All Platforms**: `SERIALIZE` serialization, `dmq::databus::DataBus` enabled, `Allocator` disabled.
-
 ## Example Projects
 
-Remote delegate example projects are located within the `example/sample-projects` directory and explained in [Sample Projects](#sample-projects). 
+### Examples Build
 
-The [system-architecture](#system-architecture) project located within the `example/sample-projects/system-architecture-no-deps` directory is a client-server application with no external library dependencies. The app runs on Windows and Linux, showcasing various delegate-based design techniques, including remote communication, asynchronous callbacks/APIs, and more.
-
-### Examples Setup
-
-Most remote delegate example projects depend on external libraries. Scripts are used to automate setting up a sandbox test environment for remote delegate testing. 
+Most example projects depend on external libraries. Scripts are used to automate setting up a sandbox test environment for remote delegate testing. 
 
 1. Create a new workspace directory named `DelegateMQWorkspace`.
 2. Clone the DelegateMQ repo to the `DelegateMQWorkspace\DelegateMQ` directory.  
@@ -202,9 +148,9 @@ DelegateMQWorkspace/
 └── zeromq/
 ```
 
-### Examples Build
+### Examples Run
 
-Build and execute any remote delegate example within the `\DelegateMQ\example\sample-projects` directory. Each projects build files are located within a `build` subdirectory.
+Execute a delegate example project. Each projects build files are located within a `build` subdirectory. e.g.
 
 `DelegateMQ\example\sample-projects\zeromq-msgpack-cpp\build`
 
@@ -213,7 +159,34 @@ Client/server samples require running two applications.
 `\DelegateMQ\example\sample-projects\system-architecture\client\build`  
 `\DelegateMQ\example\sample-projects\system-architecture\server\build`
 
+Cellutron is a complex multi-processor, multi-OS example project running on Windows and FreeRTOS (Windows simulation) showcasing all DelegateMQ and DataBus features. Run `python run_cellutron.py` to start. See [Cellutron README](../example/cellutron/CELLUTRON.md).
+
+`\DelegateMQ\example\cellutron`
+
 See [Sample Projects](#sample-projects) for details regarding each sample project.
+
+## Configuration and Overrides
+
+DelegateMQ is designed for "zero-config" out of the box. When you include `DelegateMQ.cmake`, it automatically detects your platform and selects sensible defaults for threading, transport, and serialization.
+
+You can customize these behaviors using three methods (in order of precedence):
+
+### 1. Command Line (Highest Precedence)
+Override any setting directly when generating the build files:
+`cmake -B build -DDMQ_THREAD=DMQ_THREAD_NONE -DDMQ_ALLOCATOR=ON .`
+
+### 2. CMakeLists.txt
+Set variables **before** including `DelegateMQ.cmake`:
+```cmake
+set(DMQ_THREAD "DMQ_THREAD_FREERTOS")
+include("path/to/delegate-mq/DelegateMQ.cmake")
+```
+
+### 3. Auto-Detection (Default)
+If no variables are set, DelegateMQ uses `Defaults.cmake` to guess the best settings:
+- **Windows/Linux**: `STDLIB` threading, `UDP` transport.
+- **RTOS (FreeRTOS/ThreadX/Zephyr)**: Native threading, `NONE` transport.
+- **All Platforms**: `SERIALIZE` serialization, `dmq::databus::DataBus` enabled, `Allocator` disabled.
 
 ## Build Integration
 
@@ -282,8 +255,6 @@ DelegateMQ has **three invocation modes**. The right one depends entirely on whe
 | **Remote** | Target is on a different process or processor | `dmq::RemoteChannel<Sig>` + `Bind()` |
 
 The key insight: **adding a `thread` argument to `dmq::MakeDelegate()` is the only difference between synchronous and asynchronous**. Everything else — the call syntax, argument types, return values — is identical.
-
-See [Sample Projects](#sample-projects) for complete working examples.
 
 ---
 
@@ -481,25 +452,7 @@ See [DATABUS.md](DATABUS.md) for the full API reference, threading model, QoS op
 
 DelegateMQ includes high-resolution performance monitoring built directly into the `dmq::os::Thread` port layer. This instrumentation tracks how long every delegate message waits in a thread's queue before being processed, enabling real-time detection of thread contention, jitter, and system bottlenecks.
 
-### Key Metrics
-
-*   **LAvg (Latency Average)**: The average time (in milliseconds) messages spent in the queue during the last 1-second window. This reflects the thread's current load.
-*   **LWin (Latency Window Max)**: The worst-case latency recorded during the last 1-second window. Ideal for catching momentary "stutters" or long-running handlers.
-*   **LMax (Latency All-Time Max)**: The absolute worst-case latency seen since the application started. This value never resets and represents the system's lifetime "Worst Case Execution Time" (WCET) overhead.
-
-### dmq-thread Dashboard
-
-The metrics are visualized in the `dmq-thread` dashboard, which aggregates telemetry from all nodes on the network.
-
-<img src="../tools/dmq-thread-screenshot.png" alt="DelegateMQ Thread Monitor Screenshot" style="max-width: 800px; width: 100%;">
-
-### How it Works
-
-1.  **Source Instrumentation**: Every `dmq::os::Thread` port (Win32, FreeRTOS, etc.) captures an enqueue timestamp and calculates wait time during dispatch.
-2.  **Telemetry Service** (`dmq::util::ThreadMonitor`): A service within the application that polls registered threads at 1Hz, captures atomic snapshots of their metrics, and publishes them as a `ThreadStatsPacket` to the local DataBus.
-3.  **Distributed Visualization**: The standard `NodeBridge` automatically picks up these packets and broadcasts them to any listening `dmq-thread` console on the network.
-
-See [tools/TOOLS.md](../tools/TOOLS.md) for detailed integration steps.
+See [tools/TOOLS.md](../tools/TOOLS.md) for DataBus monitoring tools.
 
 ---
 
@@ -557,7 +510,7 @@ Numerous predefined platforms are already supported — Windows, Linux, FreeRTOS
 
 # Background
 
-If you're not familiar with a delegate, the concept is quite simple. A delegate can be thought of as a super function pointer. In C++, there 's no pointer type capable of pointing to all the possible function variations: instance member, virtual, const, static, free (global), and lambda. A function pointer can't point to instance member functions, and pointers to member functions have all sorts of limitations. However, delegate classes can, in a type-safe way, point to any function provided the function signature matches. In short, a delegate points to any function with a matching signature to support anonymous function invocation.
+A delegate can be thought of as a super function pointer. In C++, there 's no pointer type capable of pointing to all the possible function variations: instance member, virtual, const, static, free (global), and lambda. A function pointer can't point to instance member functions, and pointers to member functions have all sorts of limitations. However, delegate classes can, in a type-safe way, point to any function provided the function signature matches. In short, a delegate points to any function with a matching signature to support anonymous function invocation.
 
 In practice, while a delegate is useful, a multicast version significantly expands its utility. The ability to bind more than one function pointer and sequentially invoke all registrars' makes for an effective publisher/subscriber mechanism. Publisher code exposes a delegate container and one or more anonymous subscribers register with the publisher for callback notifications.
 
@@ -934,21 +887,6 @@ LOG_INFO("Dispatcher::Dispatch id={} seqNum={} err={}", header.GetId(), header.G
 
 Log output can be directed to multiple sinks, such as files, consoles, or custom handlers.
 
-```text
-[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::os::Thread::CreateThread dmq::transport::Win32UdpTransport
-[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::os::Thread::Process NetworkMgr
-[2025-05-29 12:47:13.066] [msvc_logger] [info] dmq::os::Thread::CreateThread NetworkMgr
-[2025-05-29 12:47:13.067] [msvc_logger] [info] dmq::os::Thread::DispatchDelegate
-   thread=NetworkMgr
-   target=class dmq::DelegateMemberAsyncWait<class NetworkMgr,int __cdecl(void)>
-[2025-05-29 12:47:13.067] [msvc_logger] [info] dmq::os::Thread::DispatchDelegate
-   thread=dmq::transport::Win32UdpTransport
-   target=class dmq::DelegateMemberAsyncWait<class dmq::transport::Win32UdpTransport,int __cdecl(enum dmq::transport::Win32UdpTransport::Type,char const * __ptr64,unsigned short)>
-'delegate_client_app.exe' (Win32): Loaded 'C:\Windows\System32\mswsock.dll'. Symbol loading disabled by Include/Exclude setting.
-[2025-05-29 12:47:13.069] [msvc_logger] [info] dmq::os::Thread::DispatchDelegate
-   thread=dmq::transport::Win32UdpTransport
-   target=class dmq::DelegateMemberAsyncWait<class dmq::transport::Win32UdpTransport,int __cdecl(enum dmq::transport::Win32UdpTransport::Type,char const * __ptr64,unsigned short)>
-```
 ## Object Lifetime and Async Delegates
 
 ### The Risk: Raw Pointers
@@ -1125,11 +1063,7 @@ The `DelegateMQ` library external dependencies are based upon on the intended us
 
 The `DelegateMQ` library includes an optional fixed-block memory allocator designed to improve performance and reduce heap fragmentation in mission-critical systems. This feature is enabled by defining `DMQ_ALLOCATOR`. See `DelegateOpt.h` for configuration details. The underlying allocator implementation is based on the [stl_allocator](https://github.com/endurodave/stl_allocator) repository.
 
-When `DMQ_ALLOCATOR` is defined, the `XALLOCATOR` macro is used to override `new` and `delete` operators for internal library objects. However, enabling this macro does not guarantee zero usage of the global heap.
-
-Even if total isolation from the global heap isn't achieved, employing `xallocator` with DelegateMQ can be helpful to reduce heap fragmentation and guarantees deterministic, constant-time O(1) memory operations for the system's most repetitive tasks.
-
-The  [Valgrind Memory Tests](#valgrind-memory-tests) shows global heap vs. fixed-block allocator. Notice the fixed-block allocator reduces reliance on the heap and overall uses less total heap memory (less heap fragmentation). 
+When `DMQ_ALLOCATOR` is defined, the `XALLOCATOR` macro is used to override `new` and `delete` operators for internal library objects.
 
 ## Function Argument Copy
 
@@ -1238,9 +1172,7 @@ dmq::MulticastDelegate<>
 dmq::Signal<>          // thread-safe multicast with RAII ScopedConnection
 ```
 
-Some degree of code duplication exists within the delegate inheritance hierarchy. This arises because the `Free`, `Member`, and `Function` classes support different target function types, making code sharing via inheritance difficult. Alternative solutions to share code either compromised type safety, caused non-intuitive user syntax, or significantly increased implementation complexity and code readability. Extensive unit tests ensure a reliable implementation.
-
-The Python script `src_dup.py` helps mitigate some of the maintenance overhead. See the script source for details.
+Some degree of code duplication exists within the delegate inheritance hierarchy. This arises because the `Free`, `Member`, and `Function` classes support different target function types, making code sharing via inheritance difficult. Alternative solutions to share code either compromised type safety, caused non-intuitive user syntax, or significantly increased implementation complexity and code readability.
 
 ## Heap Template Parameter Pack
 
@@ -1374,7 +1306,7 @@ DelegateMQ supports first-class interoperability between C++, **C#**, and **Pyth
 
 > Full documentation: **[INTEROP.md](INTEROP.md)**
 
-### Key Features:
+### Key Features
 - **Shared Native Core**: A C++ DLL (`DmqInterop`) handles UDP sockets, protocol framing, and reliability.
 - **Language Wrappers**: Thin, language-friendly libraries for C# (`P/Invoke`) and Python (`ctypes`).
 - **Binary Serialization**: Efficient data exchange using MessagePack.
@@ -1749,91 +1681,13 @@ int main(void)
 
 See the `examples/sample-code` directory for additional examples.
 
-## Sample Projects
+# Sample Projects
 
 Each project focuses on a transport and serialization pair, but you can freely mix and match any transport with any serializer. See the `examples/sample-projects` directory for example projects.
 
-### External Dependencies
+## Sample Projects Comparison
 
-The following remote delegate sample projects have no external library dependencies:
-
-* [bare-metal-remote](../example/sample-projects/bare-metal-remote/) - simple remote delegate app on Windows and Linux.
-* [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - complex remote delegate client/server apps using UDP on Windows or Linux.
-
-All other projects require external 3rd party library support. See [Examples Setup](#examples-setup) for external library installation setup.
-
-### system-architecture
-
-The System Architecture example demonstrates a complex client-server DelegateMQ application. This example implements a (simulated) sensor and actuator data acquisition across two applications. It showcases communication and collaboration between subsystems, threads, and processes or processors. Delegate communication, callbacks, asynchronous APIs, and error handling are also highlighted. Notice how easily DelegateMQ transfers event data between threads and processes with minimal application code. The application layer is completely isolated from message passing details.
-
-`NetworkMgr` has three types of remote delegate API examples:
-
-1. **Non-Blocking** - message is sent without waiting. 
-2. **Blocking** - message is sent and blocks waiting for the remote to acknowledge or timeout.
-3. **Future** - message is sent without waiting and a `std::future` is used to capture the return value later.
-
-Three System Architecture build projects exist:
-
-* [system-architecture](../example/sample-projects/system-architecture/) - builds on Windows and Linux. Requires MessagePack and ZeroMQ external libraries. See [Examples Setup](#examples-setup).
-* [system-architecture-no-deps](../example/sample-projects/system-architecture-no-deps/) - builds on Windows or Linux. No external libraries required.
-* [databus](../example/sample-projects/databus/) - builds on Windows or Linux. Abstracted using the Data Bus. No external libraries required.
-* [databus-multicast](../example/sample-projects/databus-multicast/) - builds on Windows or Linux. Demonstrates one-to-many distribution using the Data Bus and Multicast transport. No external libraries required.
-* [databus-shapes](../example/sample-projects/databus-shapes/) - builds on Windows or Linux. Graphical TUI demonstration of DataBus features including Multicast and location transparency.
-* [system-architecture-python](../example/sample-projects/system-architecture-python/) - Python client communicates with C++ server using MessagePack and ZeroMQ external libraries.
-* [databus-interop](../example/sample-projects/databus-interop/) - Python and C# clients communicate with a dmq::databus::DataBus server over UDP using MessagePack. No ZeroMQ required. Uses the generic interop libraries in `interop/`.
-
-Follow the steps below to execute the first two projects. See `README.txt` within [system-architecture-python](../example/sample-projects/system-architecture-python/) for the Python example.
-
-1. Setup ZeroMQ and MessagePack external library dependencies, if necessary ([Examples Setup](#examples-setup))
-2. Execute CMake command in `client` and `server` directories.  
-   `cmake -B build .`
-3. Build client and server applications within the `build` directory.
-4. Start `delegate_server_app` first.
-5. Start `delegate_client_app` second.
-6. Client and server communicate and output debug data to the console.
-
-| Class | Location | Details |
-| --- | --- | --- |
-| `ClientApp` | Client | Main client application. Handles local and remote sensors and actuators. |
-| `ServerApp` | Server | Main server application. Slave sensors and actuators application. |
-| `NetworkMgr` | Client<br>Server | Centralized, shared client and server communication interface using remote delegates. |
-| `DataMgr` | Client | Collects data from client (local) and server (remote) data sources |
-| `AlarmMgr` | Client<br>Server | Handles system alarms. Server sends alarms to client for processing. |
-| `Sensor` | Client<br>Server | Reads sensor data |
-| `Actuator` | Client<br>Server | Controls actuator |
-| `dmq::RemoteChannel` | Client<br>Server | Aggregates a `dmq::util::Dispatcher`, serialization stream, and `dmq::Serializer` for a single message signature; used to configure `dmq::DelegateMemberRemote` endpoints. |
-
-Interface implementation details. 
-
-| Interface | Implementation | Details |
-| --- | --- | --- |
-| `dmq::IThread` | `dmq::os::Thread` | Implemented using `std::thread` | 
-| `dmq::ISerializer` | `dmq::Serializer` | Implemented using MessagePack library | 
-| `dmq::IDispatcher` | `dmq::util::Dispatcher` | Universal delegate dispatcher |
-| `dmq::transport::ITransport` | `dmq::transport::ZeroMqTransport` | ZeroMQ message transport |
-| `dmq::transport::ITransportMonitor` | `dmq::util::TransportMonitor` | Monitor message timeouts |
-
-### Interop Libraries
-
-The `interop/` directory at the repository root contains reusable client libraries that let non-C++ applications communicate with any DelegateMQ dmq::databus::DataBus application over UDP. They implement the `dmq::transport::DmqHeader` wire protocol and MessagePack serialization — no DelegateMQ C++ code is needed on the client side.
-
-| Library | Location | Requirements |
-| --- | --- | --- |
-| Python | [`interop/python/`](../interop/python/) | `pip install msgpack` |
-| C# | [`interop/csharp/`](../interop/csharp/) | .NET 8+, `MessagePack` NuGet package |
-
-Both libraries expose the same conceptual API:
-
-- **`DmqDataBus`** — UDP socket manager. Call `start()`/`stop()`, register callbacks per remote ID with `register_callback()` / `RegisterCallback()`, and send messages with `send()` / `Send()`.
-- **`Serializer` / `pack` + `unpack`** — Encode and decode MessagePack arrays whose element order matches the C++ `MSGPACK_DEFINE` field order.
-
-The `databus-interop` sample project (`example/sample-projects/databus-interop/`) is a complete working demonstration: a C++ dmq::databus::DataBus server publishes sensor/actuator data (`DataMsg`) on port 8000 and receives a polling-rate command (`CommandMsg`) on port 8001. The Python and C# clients each subscribe to the data and send the command using their respective `DmqDataBus` libraries.
-
-See [`interop/README.md`](../interop/README.md) for the full wire protocol specification, and [`example/sample-projects/databus-interop/README.md`](../example/sample-projects/databus-interop/README.md) for build and run instructions.
-
-### Sample Projects Comparison
-
-#### Feature & Toolchain Demos
+### Feature & Toolchain Demos
 
 Demonstrate DelegateMQ delegate types (sync, async, asyncwait, multicast, signal) on specific platforms or compilers. No remote transport involved.
 
@@ -1845,7 +1699,7 @@ Demonstrate DelegateMQ delegate types (sync, async, asyncwait, multicast, signal
 | **keil-bare-metal** | Bare-metal example for ARM Cortex-M4. | None | Keil MDK (ARMCLANG) |
 | **stm32-freertos** | Embedded FreeRTOS example for STM32F4 Discovery. | FreeRTOS | STM32Cube / ARM GCC |
 
-#### Remote Delegate Examples
+### Remote Examples
 
 Invoke a target function running in a separate process or processor. Each project focuses on a transport-serialization pair.
 
@@ -1872,119 +1726,30 @@ Invoke a target function running in a separate process or processor. Each projec
 | **zeromq-msgpack-cpp** | ZeroMQ transport with MessagePack. | `std::thread` | MessagePack | ZeroMQ |
 | **zeromq-rapidjson** | ZeroMQ transport with RapidJSON. | `std::thread` | RapidJSON | ZeroMQ |
 | **zeromq-serializer** | ZeroMQ transport with custom `dmq::Serializer` class. | `std::thread` | `dmq::Serializer` class | ZeroMQ |
-# Tests
 
-The current master branch build passes all unit tests and Valgrind memory tests.
+### Showcase Projects
+
+Larger end-to-end projects that integrate multiple DelegateMQ features across several components. Located alongside (not inside) `sample-projects/`.
+
+| Project | Location | Description |
+| :--- | :--- | :--- |
+| **Cellutron** | `example/cellutron/` | Multi-processor medical instrument demo with three independent CPUs: GUI (stdlib thread), Controller, and Safety (both FreeRTOS on Windows simulation). Integrates DataBus with QoS LVC, Active Objects, `DeadlineSubscription` cross-node heartbeats, Spy Monitor audit logging, and explicit per-thread `FullPolicy`. Start with `python run_cellutron.py`. See [Cellutron README](../example/cellutron/CELLUTRON.md). |
+| **sample-interop** | `example/sample-interop/` | Cross-language interop demo: C++ server publishes `SensorData` and receives `Command`; C# and Python clients subscribe and respond — all via a shared native C++ DLL. Demonstrates that scripting-language clients share the same ACK/timeout reliability logic as the C++ core. See [INTEROP.md](INTEROP.md). |
+
+# Tests
 
 ## Unit Tests
 
-Build and execute runs all the unit tests contained within the `tests\unit-tests` directory.
+Building and executing `delegate_app` (the `test/` project) automatically runs all unit tests in `test/unit-tests/`. 
 
-## Valgrind Memory Tests
+## Stress Tests
 
-[Valgrind](https://valgrind.org/) dynamic storage allocation tests were performed using the global heap and fixed-block allocator builds. Valgrind is a programming tool for detecting memory leaks, memory errors, and profiling performance in applications, primarily for Linux-based systems. All tests run on Linux.
+Three long-running stress tests are available in `test/`. 
 
-### Results Summary
+| File | What it tests |
+| :--- | :--- |
+| `stress_test.cpp` | Signal pub/sub throughput and integrity with sync/async subscribers and a Chaos Monkey thread |
+| `stress_test_remote.cpp` | Remote delegate (RPC) serialization throughput over a virtual in-memory transport |
+| `stress_test_databus.cpp` | DataBus features under load: LVC, minSeparation, SubscribeFilter, remote participant round-trip, Monitor, SubscribeUnhandled, and dynamic subscription churn |
 
-**The Code is Memory-Safe (No Leaks)**: Both runs show `ERROR SUMMARY: 0 errors` and `definitely lost: 0 bytes`.
-
-**Reduction in System Overhead**: 50% Reduction in alloc calls and 78% Reduction in memory churn. Most uncaptured fixed-block allocatations from unit tests using the global heap, not DelegateMQ library itself. 
-
-| Metric | Heap Enabled (Standard `new`) | Fixed Block Allocator | Improvement |
-| :--- | :--- | :--- | :--- |
-| **Allocations** | 114,487,427 | 57,130,929 | **~50% Reduction** |
-| **Frees** | 114,487,425 | 57,130,927 | **~50% Reduction** |
-| **Total Bytes** | 5,858,329,010 (~5.8 GB) | 1,303,924,718 (~1.3 GB) | **~78% Reduction** |
-
-Note on "Still Reachable": The 64 bytes in 2 blocks reported in both runs are benign. The stack trace confirms these are **Static Singletons** (`dmq::util::Timer::GetTimers` and `dmq::util::Timer::GetLock`). Since these exist for the lifetime of the program and are reclaimed by the OS at exit, they are not leaks.
-
-### Heap Memory Test Results
-
-The DelegateMQ library Valgrind test results using the heap.
-
-```
-==140605== HEAP SUMMARY:
-==140605==     in use at exit: 64 bytes in 2 blocks
-==140605==   total heap usage: 114,487,427 allocs, 114,487,425 frees, 5,858,329,010 bytes allocated
-==140605== 
-==140605== 24 bytes in 1 blocks are still reachable in loss record 1 of 2
-==140605==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==140605==    by 0x59D59B: dmq::util::Timer::GetTimers() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x59CC27: dmq::util::Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x590298: dmq::os::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x4FAC44: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605== 
-==140605== 40 bytes in 1 blocks are still reachable in loss record 2 of 2
-==140605==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==140605==    by 0x59D69D: dmq::util::Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x59C7E3: dmq::util::Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x593F5B: std::__detail::_MakeUniq<dmq::util::Timer>::__single_object std::make_unique<dmq::util::Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x59014C: dmq::os::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605==    by 0x4FAC44: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==140605== 
-==140605== LEAK SUMMARY:
-==140605==    definitely lost: 0 bytes in 0 blocks
-==140605==    indirectly lost: 0 bytes in 0 blocks
-==140605==      possibly lost: 0 bytes in 0 blocks
-==140605==    still reachable: 64 bytes in 2 blocks
-==140605==         suppressed: 0 bytes in 0 blocks
-==140605== 
-==140605== For lists of detected and suppressed errors, rerun with: -s
-==140605== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-```
-
-### Fixed-Block Memory Allocator Test Results
-
-Test results with the fixed-block allocator. See [stl_allocator](https://github.com/endurodave/stl_allocator) and [xallocator](https://github.com/endurodave/xallocator) for information about the memory allocators.
-
-```
-==144812== 
-==144812== HEAP SUMMARY:
-==144812==     in use at exit: 64 bytes in 2 blocks
-==144812==   total heap usage: 57,130,929 allocs, 57,130,927 frees, 1,303,924,718 bytes allocated
-==144812== 
-==144812== 24 bytes in 1 blocks are still reachable in loss record 1 of 2
-==144812==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==144812==    by 0x5B2535: dmq::util::Timer::GetTimers[abi:cxx11]() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5B1B77: dmq::util::Timer::Start(std::chrono::duration<long, std::ratio<1l, 1000l> >, bool) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5A3FD4: dmq::os::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x50DEC4: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812== 
-==144812== 40 bytes in 1 blocks are still reachable in loss record 2 of 2
-==144812==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==144812==    by 0x5B267A: dmq::util::Timer::GetLock() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5B1733: dmq::util::Timer::Timer() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5A7D61: std::__detail::_MakeUniq<dmq::util::Timer>::__single_object std::make_unique<dmq::util::Timer>() (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x5A3E88: dmq::os::Thread::CreateThread(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812==    by 0x50DEC4: main (in /home/david/Documents/DelegateMQWorkspace/DelegateMQ/build/delegate_app/delegate_app)
-==144812== 
-==144812== LEAK SUMMARY:
-==144812==    definitely lost: 0 bytes in 0 blocks
-==144812==    indirectly lost: 0 bytes in 0 blocks
-==144812==      possibly lost: 0 bytes in 0 blocks
-==144812==    still reachable: 64 bytes in 2 blocks
-==144812==         suppressed: 0 bytes in 0 blocks
-==144812== 
-==144812== For lists of detected and suppressed errors, rerun with: -s
-==144812== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-
-```
-
-# Library Comparison
-
-The table below summarizes the various asynchronous function invocation implementations available in C and C++.
-
-| Repository                                                                                            | Language | Key Delegate Features                                                                                                                                                                                                               | Notes                                                                                                                                                                                                      |
-|-------------------------------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <a href="https://github.com/DelegateMQ/DelegateMQ">DelegateMQ</a> | C++17    | * Function-like template syntax<br> * Any delegate target function type (member, static, free, lambda)<br>  * N target function arguments<br> * N delegate subscribers<br>  * Optional fixed-block allocator     | * Modern C++ implementation<br> * Extensive unit tests<br> * Metaprogramming and variadic templates used for library implementation<br> * Any C++17 and higher compiler |
-<a href="https://github.com/endurodave/AsyncCallback">AsyncCallback</a>                               | C++      | * Traditional template syntax<br> * Callback target function type (static, free)<br> * 1 target function argument<br> * N callback subscribers                                                                                      | * Low lines of source code<br> * Compact C++ implementation<br> * Any C++ compiler                                                                                                                    |
-| <a href="https://github.com/endurodave/C_AsyncCallback">C_AsyncCallback</a>                           | C        | * Macros provide type-safety<br> * Callback target function type (static, free)<br> * 1 target function argument<br> * Fixed callback subscribers (set at compile time)<br> * Optional fixed-block allocator                        | * Low lines of source code<br> * Compact C implementation<br> * Any C compiler                                            
-
-# References
-
-Repositories utilizing the DelegateMQ library within different multithreaded applications.
-
-* <a href="https://github.com/endurodave/StateMachineWithModernDelegates">C++ State Machine with Asynchronous Delegates</a> - a framework combining a C++ state machine with the asynchronous delegate library.
-* <a href="https://github.com/endurodave/AsyncStateMachine">Asynchronous State Machine Design in C++</a> - an asynchronous C++ state machine implemented using an asynchronous delegate library.
-* <a href="https://github.com/DelegateMQ/IntegrationTestFramework">Integration Test Framework using Google Test and Delegates</a> - a multi-threaded C++ software integration test framework using Google Test and Delegate libraries.
-* <a href="https://github.com/DelegateMQ/Async-SQLite">Asynchronous SQLite API using C++ Delegates</a> - an asynchronous SQLite wrapper implemented using an asynchronous delegate library.
+Each test prints per-second progress and a final integrity report with pass/fail for every checked invariant.

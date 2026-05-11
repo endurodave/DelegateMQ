@@ -49,11 +49,13 @@ void UI::Start() {
         if (screen) screen->PostEvent(Event::Custom);
     }, &m_thread);
 
+    dmq::databus::QoS rpmQos;
+    rpmQos.minSeparation = std::chrono::milliseconds(40);
     auto cmdConn = dmq::databus::DataBus::Subscribe<CentrifugeSpeedMsg>(topics::RPM, [this](CentrifugeSpeedMsg msg) {
         m_currentRpm = msg.rpm;
         auto* screen = ScreenInteractive::Active();
         if (screen) screen->PostEvent(Event::Custom);
-    }, &m_thread);
+    }, &m_thread, rpmQos);
 
     auto runConn = dmq::databus::DataBus::Subscribe<RunStatusMsg>(topics::STATUS_RUN, [this](RunStatusMsg msg) {
         std::string status_text;

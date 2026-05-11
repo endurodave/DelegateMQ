@@ -71,35 +71,41 @@ The system is distributed across three independent processors (CPUs) communicati
 
 ### Thread Topology
 
-Every CPU in the system uses a standardized thread architecture to handle network communication and DataBus (Active Object) dispatching. All threads (excluding the OS Main Thread) are monitored by the **DelegateMQ Watchdog** with a 30-second timeout to detect and handle deadlocks.
+Every CPU uses a standardized thread architecture for network I/O and Active Object dispatch. Most `dmq::os::Thread` instances are protected by the **DelegateMQ Watchdog** (30-second timeout); exceptions are noted below. FreeRTOS tasks (Controller/Safety) are OS-managed and listed separately.
 
 #### GUI CPU
 | Thread | Role | Description |
 |:---|:---|:---|
-| **Main Thread** | UI Event Loop | Handles FTXUI keyboard/mouse input and terminal rendering. |
-| **NetworkThread** | Multi-Protocol Poller | Managed by the `Network` singleton. Simultaneously polls UDP telemetry and TCP command links. |
-| **SystemThread** | Active Object SM | Runs system-level logic, coordinates heartbeat, and dispatches DataBus callbacks. |
-| **BackgroundTimerThread** | Timer Dispatch | Drives `Timer::ProcessTimers()` and the periodic system tick at 100 ms. |
-| **UIThread** | DataBus Callbacks | Receives DataBus subscription callbacks and triggers FTXUI screen refresh events. |
-| **AlarmsThread** | Alarm Monitor | Processes fault events and deadline watchdog callbacks for the alarm subsystem. |
-| **LogsThread** | File I/O | Dedicated thread for writing the `logs.txt` audit trail. |
+| **Main Thread** | UI Event Loop | Runs FTXUI `screen.Loop()` — handles keyboard/mouse input and terminal rendering. |
+| **TickThread** | System Tick | Calls `System::Tick()` every 50 ms from `main()` while the UI loop blocks. No watchdog. |
+| **Watchdog** | Watchdog Loop | Calls `Thread::WatchdogCheckAll()` every 100 ms to detect and report deadlocks. |
+| **GUI_SystemThread** | Active Object SM | Runs system-level logic, coordinates heartbeat, and dispatches DataBus callbacks. |
+| **GUI_TimerThread** | Timer Dispatch | Drives `Timer::ProcessTimers()` and the 100 ms system tick. No watchdog. |
+| **GUI_NetworkThread** | Multi-Protocol Poller | Polls UDP telemetry and TCP command links; owned by the `Network` singleton. |
+| **UIThread** | DataBus Callbacks | Receives DataBus subscription callbacks and posts FTXUI screen refresh events. |
+| **AlarmsThread** | Alarm Monitor | Processes fault events and `DeadlineSubscription` watchdog callbacks. |
+| **LogsThread** | File I/O | Writes the `logs.txt` audit trail. Uses a 20-second watchdog timeout. |
 
 #### Controller CPU
 | Thread | Role | Description |
 |:---|:---|:---|
-| **Main/Timer Thread** | OS Orchestration | FreeRTOS application task; handles startup, system init, and `Timer` processing. |
-| **NetworkThread** | Multi-Protocol Poller | Managed by the `Network` singleton. Listens for TCP commands and broadcasts UDP telemetry. |
-| **SystemThread** | Active Object SM | Runs system-level logic and dispatches DataBus callbacks (start/stop/fault). |
+| **Controller Task** | OS Orchestration | FreeRTOS task (`vControllerTask`); calls `System::Initialize()` then ticks at 100 ms. |
+| **SysTimer** | Timer Dispatch | FreeRTOS software timer (10 ms period); calls `Timer::ProcessTimers()`. |
+| **Watchdog Task** | OS Watchdog | FreeRTOS task (`vWatchdogTask`); calls `Thread::WatchdogCheckAll()` every 100 ms. |
+| **Controller_SystemThread** | Active Object SM | Runs system-level logic and dispatches DataBus callbacks (start/stop/fault). |
+| **Controller_NetworkThread** | Multi-Protocol Poller | Listens for TCP commands and broadcasts UDP telemetry; owned by `Network` singleton. |
 | **ProcessThread** | Process State Machine | Runs `CellProcess` and `PumpProcess` state machines for instrument sequencing. |
-| **ActuatorsThread** | Hardware Output | Dedicated thread for executing valve and pump commands via blocking sync calls. |
-| **SensorsThread** | Hardware Input | Dedicated thread for querying pressure and air-in-line sensors. |
+| **ActuatorsThread** | Hardware Output | Executes valve and pump commands via blocking synchronous calls. |
+| **SensorsThread** | Hardware Input | Queries pressure and air-in-line sensors. |
 
 #### Safety CPU
 | Thread | Role | Description |
 |:---|:---|:---|
-| **Main/Timer Thread** | OS Orchestration | FreeRTOS application task; handles startup, system init, and `Timer` processing. |
-| **NetworkThread** | Multi-Protocol Poller | Managed by the `Network` singleton. Listens for real-time RPM updates via UDP. |
-| **SystemThread** | Active Object SM | Monitors centrifuge speed and publishes fault events over TCP when limits are exceeded. |
+| **Safety Task** | OS Orchestration | FreeRTOS task (`vSafetyTask`); calls `System::Initialize()` then ticks at 100 ms. |
+| **SysTimer** | Timer Dispatch | FreeRTOS software timer (10 ms period); calls `Timer::ProcessTimers()`. |
+| **Watchdog Task** | OS Watchdog | FreeRTOS task (`vWatchdogTask`); calls `Thread::WatchdogCheckAll()` every 100 ms. |
+| **Safety_SystemThread** | Active Object SM | Monitors centrifuge speed and publishes fault events over TCP when limits are exceeded. |
+| **Safety_NetworkThread** | Multi-Protocol Poller | Listens for real-time RPM/command updates via UDP and TCP; owned by `Network` singleton. |
 
 ### Pneumatics System
 ![Cellutron Pneumatics](pneumatics.svg)

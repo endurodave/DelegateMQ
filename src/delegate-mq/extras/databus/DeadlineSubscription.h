@@ -22,9 +22,15 @@
 /// **Lifetime:**
 /// The object is non-copyable and non-movable. All resources — the DataBus
 /// connection, the timer expiry connection, and the timer itself — are released
-/// automatically when the object is destroyed. Destruction is always clean:
-/// members are destroyed in reverse declaration order, so the DataBus connection
-/// disconnects before the timer is torn down.
+/// automatically when the object is destroyed. Members are destroyed in reverse
+/// declaration order, so the DataBus connection disconnects before the timer is
+/// torn down.
+///
+/// When a `thread` argument is supplied, stop or join that thread before
+/// destroying this object. `ScopedConnection` prevents new callbacks from being
+/// queued, but any callback already waiting in the thread's message queue will
+/// still execute and will access members of this object. This is the same rule
+/// that applies to any async delegate that captures a raw pointer.
 ///
 /// **`Timer::ProcessTimers()` requirement:**
 /// The deadline timer fires only when `Timer::ProcessTimers()` is called. On
