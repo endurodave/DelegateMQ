@@ -4,6 +4,7 @@
 #include <random>
 #include <chrono>
 #include <cstring>
+#include <atomic>
 
 using namespace dmq;
 using namespace dmq::os;
@@ -16,7 +17,7 @@ static Thread workerThread2("DelegateThreads2Tests");
 static std::mutex m_lock;
 static const int LOOPS = 10;
 static const int CNT_MAX = 7;
-static int callerCnt[CNT_MAX] = { 0 };
+static std::atomic<int> callerCnt[CNT_MAX];
 
 // Increased timeout to prevent flaky/busy tests in Debug/CI environments
 static const std::chrono::milliseconds TEST_TIMEOUT(5000);
@@ -71,7 +72,7 @@ public:
 
 static void FreeTests()
 {
-    std::memset(callerCnt, 0, sizeof(callerCnt));
+    for (auto& c : callerCnt) c.store(0, std::memory_order_relaxed);
 
     auto delegateSync1 = MakeDelegate(&FreeThreadSafe);
     auto delegateSync2 = MakeDelegate(&FreeThreadSafe);
@@ -123,7 +124,7 @@ static void FreeTests()
 
 static void MemberTests()
 {
-    std::memset(callerCnt, 0, sizeof(callerCnt));
+    for (auto& c : callerCnt) c.store(0, std::memory_order_relaxed);
     TestClass testClass;
 
     auto delegateSync1 = MakeDelegate(&testClass, &TestClass::MemberThreadSafe);
@@ -176,7 +177,7 @@ static void MemberTests()
 
 static void MemberSpTests()
 {
-    std::memset(callerCnt, 0, sizeof(callerCnt));
+    for (auto& c : callerCnt) c.store(0, std::memory_order_relaxed);
     auto testClass = std::make_shared<TestClass>();
 
     auto delegateSync1 = MakeDelegate(testClass, &TestClass::MemberThreadSafe);
@@ -229,7 +230,7 @@ static void MemberSpTests()
 
 static void FunctionTests()
 {
-    std::memset(callerCnt, 0, sizeof(callerCnt));
+    for (auto& c : callerCnt) c.store(0, std::memory_order_relaxed);
 
     auto delegateSync1 = MakeDelegate(LambdaThreadSafe);
     auto delegateSync2 = MakeDelegate(LambdaThreadSafe);
