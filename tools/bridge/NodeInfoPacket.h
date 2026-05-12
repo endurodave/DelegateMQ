@@ -11,6 +11,11 @@
 
 namespace dmq {
 
+enum class PacketType : uint8_t {
+    NodeInfo    = 1,
+    ThreadStats = 2,
+};
+
 /// @brief Heartbeat packet broadcast by NodeBridge to identify a node on the DataBus network.
 /// @details Periodically serialized and transmitted by NodeBridge. The dmq-monitor console
 /// listens for these packets and builds a live view of all active nodes.

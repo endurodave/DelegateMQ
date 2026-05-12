@@ -121,10 +121,14 @@ static void ReceiverThread(uint16_t port, std::string multicastGroup, std::strin
         if (received > 0) {
             g_packetCount++;
 
+            if (received < 2 ||
+                static_cast<dmq::PacketType>(buffer[0]) != dmq::PacketType::NodeInfo) {
+                continue;
+            }
+
             dmq::NodeInfoPacket packet;
-            std::string data(reinterpret_cast<char*>(buffer.data()), received);
+            std::string data(reinterpret_cast<char*>(buffer.data() + 1), received - 1);
             std::istringstream iss(data, std::ios::binary);
-            
             ms_decoder.read(iss, packet);
 
             if (iss.good() && !packet.nodeId.empty()) {
@@ -134,8 +138,7 @@ static void ReceiverThread(uint16_t port, std::string multicastGroup, std::strin
                 rec.packet = std::move(packet);
                 rec.lastSeen = std::chrono::steady_clock::now();
                 g_nodes[key] = std::move(rec);
-            }
- else {
+            } else {
                 g_errorCount++;
                 g_statusMessage = "Deserialize error (bytes=" + std::to_string(received) + ")";
             }

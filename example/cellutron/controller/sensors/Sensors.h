@@ -38,7 +38,7 @@ private:
     int InternalGetPressure();
     bool InternalIsAirInLine();
 
-    dmq::os::Thread m_thread{"SensorsThread", 50, dmq::os::FullPolicy::FAULT, dmq::DEFAULT_DISPATCH_TIMEOUT, "Controller"};
+    dmq::os::Thread m_thread{"SensorsThread", dmq::DEFAULT_QUEUE_SIZE, dmq::os::FullPolicy::FAULT, dmq::DEFAULT_DISPATCH_TIMEOUT, "Controller"};
     dmq::util::Timer m_pollTimer;
     dmq::ScopedConnection m_pollTimerConn;
 

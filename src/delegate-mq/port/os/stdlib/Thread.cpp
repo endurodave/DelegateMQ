@@ -10,6 +10,12 @@
 #include <Windows.h>
 #endif
 
+// Thread-local pointer into Process()'s stack frame. Set non-null only while
+// Process() is running on a given thread. ExitThread() writes true through it
+// when the thread destroys its own owning object so Process() can exit without
+// touching freed members.
+static thread_local bool* t_self_exit = nullptr;
+
 namespace dmq::os {
 
 using namespace std;
@@ -202,6 +208,9 @@ void Thread::ExitThread()
         {
             // We are killing ourselves. Detach so the thread object cleans up naturally.
             m_thread->detach();
+            // Signal Process() (running on this thread) to exit without touching
+            // 'this' again — the owning object is about to be freed.
+            if (t_self_exit) *t_self_exit = true;
         }
     }
 
@@ -351,10 +360,15 @@ dmq::RecursiveMutex& Thread::GetWatchdogLock()
 //----------------------------------------------------------------------------
 void Thread::Process()
 {
+    // selfExit is set by ExitThread() when the thread destroys its own owner.
+    // It lives on this stack frame so it remains valid even after 'this' is freed.
+    bool selfExit = false;
+    t_self_exit = &selfExit;
+
     // Signal that the thread has started processing to notify CreateThread
     m_threadStartPromise->set_value();
 
-    while (1)
+    while (!selfExit)
     {
         dmq::Duration watchdogTimeout;
         {
@@ -386,7 +400,7 @@ void Thread::Process()
             // If empty and exit is true, we should exit.
             if (m_queue.empty())
             {
-                if (m_exit.load()) return;
+                if (m_exit.load()) { t_self_exit = nullptr; return; }
                 continue;
             }
 
@@ -443,6 +457,7 @@ void Thread::Process()
 
             case MSG_EXIT_THREAD:
             {
+                t_self_exit = nullptr;
                 return;
             }
 
@@ -451,7 +466,10 @@ void Thread::Process()
                 throw std::invalid_argument("Invalid message ID");
             }
         }
+        // msg goes out of scope here — may trigger self-destruction of 'this'.
+        // After this point do not access any member; check selfExit in while().
     }
+    t_self_exit = nullptr;
 }
 
 #if defined(DMQ_DATABUS_TOOLS)

@@ -10,6 +10,7 @@
 #include <ftxui/component/screen_interactive.hpp>
 
 #include "UdpSocket.h"
+#include "NodeInfoPacket.h"
 #include "extras/util/ThreadMonitorSer.h"
 #include "extras/util/NetworkConnect.h"
 
@@ -73,10 +74,15 @@ static void ReceiverThread(uint16_t port, std::string multicastGroup, std::strin
         if (received > 0) {
             std::string senderIp = socket.GetRemoteAddress();
             g_packetCount++;
+
+            if (received < 2 ||
+                static_cast<dmq::PacketType>(buffer[0]) != dmq::PacketType::ThreadStats) {
+                continue;
+            }
+
             dmq::util::ThreadStatsPacket packet;
-            std::string data(reinterpret_cast<char*>(buffer.data()), received);
+            std::string data(reinterpret_cast<char*>(buffer.data() + 1), received - 1);
             std::istringstream iss(data, std::ios::binary);
-            
             serializer.Read(iss, packet);
 
             if (!packet.thread_name.empty()) {

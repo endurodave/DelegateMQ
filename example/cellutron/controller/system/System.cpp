@@ -15,7 +15,7 @@ using namespace dmq::util;
 namespace cellutron {
 
 System::System()
-    : m_thread("Controller_SystemThread", 200, FullPolicy::FAULT, dmq::DEFAULT_DISPATCH_TIMEOUT, "Controller")
+    : m_thread("Controller_SystemThread", 50, FullPolicy::FAULT, dmq::DEFAULT_DISPATCH_TIMEOUT, "Controller")
     , m_heartbeat("Controller", topics::CONTROLLER_HEARTBEAT, m_thread)
 {
 }

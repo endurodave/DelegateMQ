@@ -48,7 +48,7 @@ private:
     dmq::TimePoint m_lastClickTime = dmq::Clock::now();
 
     // Use standardized thread name for Active Object subsystem
-    dmq::os::Thread m_thread{"UIThread", 50, dmq::os::FullPolicy::DROP};
+    dmq::os::Thread m_thread{"UIThread", dmq::DEFAULT_QUEUE_SIZE, dmq::os::FullPolicy::DROP};
 
     std::unique_ptr<dmq::databus::DeadlineSubscription<HeartbeatMsg>> m_controllerWatchdog;
 };

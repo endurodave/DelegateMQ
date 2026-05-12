@@ -37,7 +37,7 @@ private:
     size_t m_writeCount = 0;
     
     // Use standardized thread name for Active Object subsystem
-    dmq::os::Thread m_thread{"LogsThread", 100, dmq::os::FullPolicy::DROP, dmq::DEFAULT_DISPATCH_TIMEOUT, "GUI"};
+    dmq::os::Thread m_thread{"LogsThread", dmq::DEFAULT_QUEUE_SIZE, dmq::os::FullPolicy::DROP, dmq::DEFAULT_DISPATCH_TIMEOUT, "GUI"};
 
     std::unique_ptr<dmq::util::Timer> m_heartbeatTimer;
     dmq::ScopedConnection m_heartbeatConn;

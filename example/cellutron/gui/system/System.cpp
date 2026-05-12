@@ -16,7 +16,7 @@ using namespace dmq::util;
 namespace cellutron {
 
 System::System()
-    : m_thread("GUI_SystemThread", 100, FullPolicy::FAULT, dmq::DEFAULT_DISPATCH_TIMEOUT, "GUI")
+    : m_thread("GUI_SystemThread", dmq::DEFAULT_QUEUE_SIZE, FullPolicy::FAULT, dmq::DEFAULT_DISPATCH_TIMEOUT, "GUI")
     , m_backgroundTimer("GUI_TimerThread", 0, FullPolicy::FAULT, dmq::DEFAULT_DISPATCH_TIMEOUT, "GUI")
     , m_heartbeat("GUI", topics::GUI_HEARTBEAT, m_thread)
 {
