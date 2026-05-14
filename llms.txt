@@ -310,3 +310,83 @@ For unsupported platforms, implement the `dmq::IThread` interface and the librar
 ## Comparison to Alternatives
 
 DelegateMQ differs from Qt signals (requires moc, Qt base class, Qt event loop), Boost.Signals2 (no async delivery, no remote, no embedded support), DDS (no IDL, no code gen, tiny footprint), and gRPC (no local/async mode, requires protobuf). DelegateMQ is the only option in this space that provides sync, async, and remote invocation in a single API with embedded/RTOS support.
+
+## Contributor Conventions (Modifying the Library)
+
+Rules for code added or changed under `src/delegate-mq/`. These exist because the library targets embedded/RTOS platforms where heap use, binary size, and stack depth are constrained.
+
+### No Heap in Library Internals
+
+- `std::array<T, N>` for fixed-size collections; capacity violations call `FaultHandler`, not realloc.
+- `xmap` / `xmultimap` instead of `std::unordered_map` or `std::map`.
+- `xlist` instead of `std::list`.
+- `xstring` instead of `std::string` in persistent data structures.
+- `xmake_shared` instead of `std::make_shared` where allocator control matters.
+- Never introduce `std::vector`, `std::deque`, `std::unordered_map`, or raw `new`/`delete` without explicit justification.
+
+### Conditional Includes via `DelegateOpt.h`
+
+Do not include allocator or platform headers directly. `DelegateOpt.h` (transitively included everywhere via `DelegateRemote.h`) gates all variants behind build options:
+
+- `DMQ_ALLOCATOR` — enables fixed-block allocator types (`xmap`, `xlist`, `xstring`, etc.)
+- `DMQ_THREAD_*` — selects OS mutex/clock/thread port
+- `DMQ_ASSERTS` — selects assert vs. exception error handling
+
+To add a new allocator-gated container: add the header under `extras/allocator/`, include it in the `#ifdef DMQ_ALLOCATOR` block of `DelegateOpt.h`, and add a `std::*` fallback alias in the `#else` block. No direct include needed in library files.
+
+### Port Exception — Desktop-Only Files
+
+Files under `port/transport/` and `port/os/` that are desktop-only (ZeroMQ, NNG, MQTT, Win32, Linux, serial, stdlib/Win32/Qt thread) may use `std::` primitives directly. Embedded transport and OS ports (`stm32-uart`, `arm-lwip-*`, `netx-udp`, `zephyr-udp`, FreeRTOS, ThreadX, Zephyr, CMSIS-RTOS2, bare-metal) must follow all allocation and abstraction rules. Code under `extras/` is shared across all targets and must always follow the rules.
+
+### Portable Abstractions
+
+Use the dmq-provided types instead of OS or std primitives:
+
+| Instead of | Use |
+|---|---|
+| `std::mutex` / `std::recursive_mutex` | `dmq::Mutex` / `dmq::RecursiveMutex` |
+| `std::lock_guard` | `dmq::LockGuard<T>` |
+| `std::thread` | `dmq::IThread` / `dmq::os::Thread` |
+| `std::chrono::steady_clock` | `dmq::Clock` |
+| `std::map` / `std::unordered_map` | `xmap` |
+| `std::list` | `xlist` |
+| `std::string` standalone data members | `xstring` |
+
+### Hot-Path Rules (`InternalPublish`)
+
+- No heap allocation on the publish path.
+- Use stack arrays sized to `dmq::MAX_PARTICIPANTS` for per-publish temporaries.
+- Attach error handlers once at channel creation — not on every send.
+- One participant-lock pass per publish is the target; avoid redundant lookups.
+
+### Exception vs. Assert
+
+The library has two error-handling modes selected at build time:
+
+- **Without `DMQ_ASSERTS`** (desktop default): allocation failures throw `std::bad_alloc`.
+- **With `DMQ_ASSERTS`** (embedded default, or when `__cpp_exceptions` is absent): `BAD_ALLOC()` calls `assert(false)`. `DelegateOpt.h` auto-enables `DMQ_ASSERTS` when the compiler reports no exception support.
+
+Always use the `BAD_ALLOC()` macro for allocation failures — never write `throw std::bad_alloc()` or bare `assert` directly. Use `FaultHandler` for hard invariant/capacity violations. Use `dmq::DelegateError` + `SetErrorHandler` for soft recoverable errors (serialization failure, dispatch timeout).
+
+### `XALLOCATOR` Macro
+
+Classes with high allocation frequency on the hot path (message types, delegate argument copies) should declare `XALLOCATOR` at the top of the class body. This routes `new`/`delete` through the fixed-block allocator when `DMQ_ALLOCATOR` is defined, and compiles to nothing otherwise.
+
+### `ScopedConnection` — Always Store
+
+`Signal::Connect()` and all `Subscribe*()` methods are `[[nodiscard]]`. The returned `dmq::ScopedConnection` owns the subscription — discarding it immediately destroys the connection, producing no callbacks and no error. Always store it in a member variable or container.
+
+### Stream Types
+
+Use `dmq::xostringstream` and `dmq::xstringstream` instead of `std::ostringstream` / `std::stringstream` in transport and serialization code. Under `DMQ_ALLOCATOR` these use the fixed-block allocator; both are defined in `DelegateOpt.h`.
+
+### Encapsulation
+
+- Keep implementation details private; use `friend class DataBus` to grant cross-class access rather than making members public.
+- Do not expose internal machinery as public API with "internal use only" comments — make it private or remove it.
+
+### Error Reporting
+
+- Errors surface through `dmq::DelegateError` and `SetErrorHandler` delegates, not exceptions or return codes.
+- DataBus-level errors propagate via `DataBus::SubscribeError` (global) and `Participant::SubscribeError` (per-node).
+- Internal error helpers are private; do not expose error injection publicly.

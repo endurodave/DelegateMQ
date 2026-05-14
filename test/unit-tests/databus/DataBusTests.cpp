@@ -10,6 +10,7 @@ extern int DataBusRemoteTestMain();
 extern int DataBusSpyTestMain();
 extern int DataBusBenchmarkTestMain();
 extern int DataBusTypeMismatchTestMain();
+extern int DataBusErrorTestMain();
 
 void RunDataBusTests() {
     std::cout << "--- Running DataBus Unit Tests ---" << std::endl;
@@ -20,6 +21,7 @@ void RunDataBusTests() {
     DataBusSpyTestMain();
     DataBusBenchmarkTestMain();
     DataBusTypeMismatchTestMain();
+    DataBusErrorTestMain();
     std::cout << "--- DataBus Unit Tests Completed ---" << std::endl;
 }
 

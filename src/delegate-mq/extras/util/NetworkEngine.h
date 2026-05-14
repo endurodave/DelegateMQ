@@ -14,7 +14,6 @@
 #include "extras/util/RemoteEndpoint.h"
 #include "extras/util/TransportMonitor.h"
 #include "extras/dispatcher/RemoteChannel.h"
-#include <map>
 #include <mutex>
 #include <atomic>
 #include <future>
@@ -356,7 +355,7 @@ private:
     ReliableTransport m_reliableTransport;
 #endif
 
-    std::map<dmq::DelegateRemoteId, dmq::IRemoteInvoker*> m_receiveIdMap;
+    xmap<dmq::DelegateRemoteId, dmq::IRemoteInvoker*> m_receiveIdMap;
     dmq::ScopedConnection m_statusConn;
 
     static const std::chrono::milliseconds SEND_TIMEOUT;

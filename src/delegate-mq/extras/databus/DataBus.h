@@ -13,7 +13,6 @@
 #include "extras/util/NetworkConnect.h"
 
 #include <string>
-#include <unordered_map>
 #include <memory>
 #include <mutex>
 #include <array>
@@ -141,12 +140,21 @@ public:
         return GetInstance().m_unhandledSignal.Connect(dmq::MakeDelegate(std::move(func)));
     }
 
+    /// Fired when a message is published but a technical error occurs (e.g. serialization failure).
+    static dmq::ScopedConnection SubscribeError(std::function<void(const std::string& topic, dmq::DelegateError error)> func) {
+        return GetInstance().m_errorSignal.Connect(dmq::MakeDelegate(std::move(func)));
+    }
+
     // Reset the DataBus (mostly for testing).
     static void ResetForTesting() {
         GetInstance().InternalReset();
     }
 
 private:
+    void InternalReportError(const std::string& topic, dmq::DelegateError error) {
+        m_errorSignal(topic, error);
+    }
+
     void InternalLastValueCache(const std::string& topic, bool enabled) {
         std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
         m_topicQos[topic].lastValueCache = enabled;
@@ -340,10 +348,35 @@ private:
         }
 
         // 8. Remote distribution using the snapshot
-        if (!localOnly && serializer) {
+        if (!localOnly) {
+            Participant* interested[dmq::MAX_PARTICIPANTS];
+            size_t interestedCount = 0;
             for (size_t i = 0; i < participantSnapshotCount; ++i) {
-                participantsSnapshot[i]->Send<T>(topic, data, *serializer);
-                handled = true;
+                dmq::DelegateRemoteId rid;
+                if (participantsSnapshot[i]->GetRemoteId(topic, rid)) {
+                    interested[interestedCount++] = participantsSnapshot[i].get();
+                }
+            }
+
+            if (interestedCount > 0) {
+                if (serializer) {
+                    for (size_t i = 0; i < interestedCount; ++i) {
+                        interested[i]->Send<T>(topic, data, *serializer);
+                        handled = true;
+                    }
+                } else {
+                    // HAZARD 3: Topic has remote interest but no serializer — fire once per topic.
+                    bool shouldFire = false;
+                    {
+                        std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
+                        constexpr uint8_t bit = uint8_t(1u << static_cast<int>(dmq::DelegateError::ERR_NO_SERIALIZER));
+                        auto& bits = m_reportedErrors[topic];
+                        if (!(bits & bit)) { bits |= bit; shouldFire = true; }
+                    }
+                    if (shouldFire)
+                        m_errorSignal(topic, dmq::DelegateError::ERR_NO_SERIALIZER);
+                    handled = true;
+                }
             }
         }
 
@@ -355,8 +388,14 @@ private:
 
     void InternalAddParticipant(std::shared_ptr<Participant> participant) {
         std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
-        if (m_participantCount < dmq::MAX_PARTICIPANTS)
+        if (m_participantCount < dmq::MAX_PARTICIPANTS) {
+            // Bridge participant-level technical errors to the global DataBus error signal
+            m_participantErrorConnections[m_participantCount] = participant->SubscribeError([this](const std::string& topic, dmq::DelegateError error) {
+                this->InternalReportError(topic, error);
+            });
+
             m_participants[m_participantCount++] = participant;
+        }
         else
             ::dmq::util::FaultHandler(__FILE__, (unsigned short)__LINE__);
     }
@@ -404,15 +443,19 @@ private:
     void InternalReset() {
         std::lock_guard<dmq::RecursiveMutex> lock(m_mutex);
         m_signals.clear();
-        for (size_t i = 0; i < m_participantCount; ++i)
+        for (size_t i = 0; i < m_participantCount; ++i) {
+            if (m_participants[i]) m_participants[i]->ResetErrors();
             m_participants[i].reset();
+            m_participantErrorConnections[i].Disconnect();
+        }
         m_participantCount = 0;
         m_serializers.clear();
         m_lastValues.clear();
         m_topicQos.clear();
-        m_stringifiers.clear(); // shared_ptr correctly frees allocated functions
+        m_stringifiers.clear();
         m_typeIndices.clear();
         m_monitorSignal.Clear();
+        m_reportedErrors.clear();
     }
 
     template <typename T>
@@ -445,16 +488,19 @@ private:
     };
 
     dmq::RecursiveMutex m_mutex;
-    std::unordered_map<std::string, std::shared_ptr<void>> m_signals;
-    std::unordered_map<std::string, std::type_index> m_typeIndices;
+    xmap<std::string, uint8_t> m_reportedErrors;
+    xmap<std::string, std::shared_ptr<void>> m_signals;
+    xmap<std::string, std::type_index> m_typeIndices;
     std::array<std::shared_ptr<Participant>, dmq::MAX_PARTICIPANTS> m_participants{};
     size_t m_participantCount = 0;
-    std::unordered_map<std::string, std::shared_ptr<void>> m_serializers;
-    std::unordered_map<std::string, LvcEntry> m_lastValues;
-    std::unordered_map<std::string, QoS> m_topicQos;
-    std::unordered_map<std::string, std::shared_ptr<void>> m_stringifiers;
+    xmap<std::string, std::shared_ptr<void>> m_serializers;
+    xmap<std::string, LvcEntry> m_lastValues;
+    xmap<std::string, QoS> m_topicQos;
+    xmap<std::string, std::shared_ptr<void>> m_stringifiers;
     dmq::Signal<void(const SpyPacket&)> m_monitorSignal;
     dmq::Signal<void(const std::string& topic)> m_unhandledSignal;
+    dmq::Signal<void(const std::string& topic, dmq::DelegateError error)> m_errorSignal;
+    std::array<dmq::ScopedConnection, dmq::MAX_PARTICIPANTS> m_participantErrorConnections;
 };
 
 } // namespace dmq::databus

@@ -106,7 +106,10 @@ channel(42, 3.14f, "config");   // all 3 args serialized and sent
 1. **Location Transparency**: Components subscribe to topics by name. They do not need to know if the publisher is on the same thread, a different thread, or a completely different machine. This is the defining characteristic that separates `dmq::databus::DataBus` from both raw signal/slot libraries (local-only) and DDS (remote-oriented, impractical for inter-thread use due to 10–15 threads of overhead). The same `Publish`/`Subscribe` API covers all three cases; adding a `dmq::databus::Participant` extends an existing local bus to the network without changing any publisher or subscriber code.
 2. **Dynamic Discovery (Manual)**: While not fully automatic like industrial DDS, `dmq::databus::DataBus` allows adding `dmq::databus::Participant` objects at runtime to bridge local buses across a network.
 3. **Type Safety**: Runtime checks ensure that if two components use the same topic name, they must use the same data type; otherwise, a fault is triggered.
-4. **Spy/Monitor Support**: Call `dmq::databus::DataBus::Monitor()` to receive a callback for every single message published on the bus. This is the foundation for the [DelegateMQ Tools](../tools/TOOLS.md) diagnostic consoles. The callback receives a `dmq::databus::SpyPacket` containing:
+4.  **Technical Error Notification**: Call `dmq::databus::DataBus::SubscribeError()` to receive notifications when a technical failure occurs (e.g., a missing serializer for a remote topic, or a serialization error). This replaces "silent failures" with a clear, actionable hook.
+
+5.  **Spy/Monitor Support**: Call `dmq::databus::DataBus::Monitor()`
+ to receive a callback for every single message published on the bus. This is the foundation for the [DelegateMQ Tools](../tools/TOOLS.md) diagnostic consoles. The callback receives a `dmq::databus::SpyPacket` containing:
     - **topic**: The unique string name of the data topic.
     - **value**: A stringified version of the data (provided by user-registered stringifiers).
     - **timestamp_us**: A high-resolution timestamp (microseconds since epoch) taken when the publisher called `dmq::databus::DataBus::Publish`.
@@ -486,7 +489,7 @@ Remote distribution requires several manual wiring calls. Each omission silently
 |:---|:---|:---|
 | 1 | `participant->AddRemoteTopic(topic, remoteId)` | Topic never serialized or sent — `Publish()` succeeds locally only |
 | 2 | `DataBus::AddParticipant(participant)` | Participant never sees `Publish()` events |
-| 3 | `DataBus::RegisterSerializer<T>(topic, serializer)` | Topic found but serialization fails silently at runtime |
+| 3 | `DataBus::RegisterSerializer<T>(topic, serializer)` | Topic found but serialization fails at runtime — **Hook `SubscribeError` to catch this.** |
 
 **Incoming (remote node → this node)** — choose one of two combined calls:
 

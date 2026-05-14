@@ -4,11 +4,9 @@
 #include "delegate/DelegateOpt.h"
 #include "delegate/Signal.h"
 #include "../../port/transport/ITransportMonitor.h"
-#include <map>
 #include <cstdint>
+#include <array>
 #include <chrono>
-#include <vector>
-#include <iostream>
 
 namespace dmq::util {
 
@@ -43,10 +41,7 @@ public:
     /// Subscribers receive: (remoteId, seqNum, status)
     dmq::Signal<void(dmq::DelegateRemoteId, uint16_t, Status)> OnSendStatus;
 
-    TransportMonitor(const dmq::Duration timeout = std::chrono::seconds(2)) : TRANSPORT_TIMEOUT(timeout)
-    {
-        m_expiredItems.reserve(8);
-    }
+    TransportMonitor(const dmq::Duration timeout = std::chrono::seconds(2)) : TRANSPORT_TIMEOUT(timeout) {}
 
     ~TransportMonitor()
     {
@@ -93,8 +88,8 @@ public:
     /// Call periodically to process message timeouts
     void Process()
     {
-        // 1. Collect expired items (reuse member buffer — no heap alloc on steady-state calls)
-        m_expiredItems.clear();
+        // 1. Collect expired items (fixed-size stack buffer — no heap)
+        size_t expiredCount = 0;
 
         {
             // Lock ONLY while reading/modifying the map
@@ -106,32 +101,29 @@ public:
             auto now = dmq::Clock::now();
             auto it = m_pending.begin();
 
-            // Optimization: Since we are using a map and potentially high volume,
-            // we want to limit the time spent holding this lock if there are many items.
-            // However, we must ensure all expired items are caught.
             while (it != m_pending.end())
             {
-                // Ensure consistent duration types
                 auto elapsed = std::chrono::duration_cast<dmq::Duration>(now - (*it).second.timeStamp);
 
                 if (elapsed > TRANSPORT_TIMEOUT)
                 {
-                    m_expiredItems.push_back({ (*it).first, (*it).second });
+                    if (expiredCount >= dmq::MAX_TIMER_EXPIRED)
+                        break; // Buffer full; remaining expired items processed next tick
+                    m_expiredItems[expiredCount++] = { (*it).first, (*it).second };
                     it = m_pending.erase(it);
                 }
                 else
                 {
-                    // If items are added in chronological order, we could break here,
-                    // but map is sorted by seqNum, not time. So we must continue.
+                    // map is sorted by seqNum, not time — must scan all entries
                     ++it;
                 }
             }
         } // Lock is RELEASED here
 
         // 2. Fire callbacks without holding the lock
-        for (const auto& item : m_expiredItems)
+        for (size_t i = 0; i < expiredCount; ++i)
         {
-            OnSendStatus(item.data.remoteId, item.seq, Status::TIMEOUT);
+            OnSendStatus(m_expiredItems[i].data.remoteId, m_expiredItems[i].seq, Status::TIMEOUT);
         }
     }
 
@@ -144,8 +136,8 @@ private:
 
     struct ExpiredItem { uint16_t seq; TimeoutData data; };
 
-    std::map<uint16_t, TimeoutData> m_pending;
-    std::vector<ExpiredItem> m_expiredItems;
+    xmap<uint16_t, TimeoutData> m_pending;
+    std::array<ExpiredItem, dmq::MAX_TIMER_EXPIRED> m_expiredItems{};
     const dmq::Duration TRANSPORT_TIMEOUT;
     dmq::RecursiveMutex m_lock;
 };

@@ -3,7 +3,6 @@
 
 #include "ThreadMonitor.h"
 #include "port/serialize/serialize/msg_serialize.h"
-#include <sstream>
 #include <iomanip>
 
 namespace dmq::util {
@@ -50,7 +49,7 @@ public:
 
 /// @brief Stringifier for ThreadStatsPacket (for DataSpy).
 inline std::string ThreadStatsPacketToString(const ThreadStatsPacket& p) {
-    std::stringstream ss;
+    dmq::xstringstream ss;
     ss << "CPU:" << p.cpu_name << " Thread:" << p.thread_name 
        << " Q:" << p.queue_depth << "/" << p.queue_depth_max_window << "/" << p.queue_depth_max_all
        << " Latency(ms):" << std::fixed << std::setprecision(2) << p.latency_avg_ms << "/" << p.latency_max_window_ms

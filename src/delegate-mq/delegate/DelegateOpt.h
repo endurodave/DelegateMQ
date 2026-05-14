@@ -278,6 +278,7 @@ namespace dmq
     // Use stl_allocator fixed-block allocator for dynamic storage allocation
     #include "extras/allocator/xstring.h"
     #include "extras/allocator/xlist.h"
+    #include "extras/allocator/xmap.h"
     #include "extras/allocator/xsstream.h"
     #include "extras/allocator/stl_allocator.h"
     #include "extras/allocator/xnew.h"
@@ -285,6 +286,7 @@ namespace dmq
 #else
     #include <string>
     #include <list>
+    #include <map>
     #include <sstream>
     #include <memory>
     #include <utility>
@@ -325,6 +327,13 @@ namespace dmq
             delete p;
         }
     }
+
+    // Fallback xmap/xmultimap — use std::map when fixed-block allocator is disabled
+    template <typename Key, typename Value, typename Alloc = std::allocator<std::pair<const Key, Value>>>
+    using xmap = std::map<Key, Value, std::less<Key>, Alloc>;
+
+    template <typename Key, typename Value, typename Alloc = std::allocator<std::pair<const Key, Value>>>
+    using xmultimap = std::multimap<Key, Value, std::less<Key>, Alloc>;
 #endif
 
 // @TODO: Select the desired logging (see Port.cmake).

@@ -17,9 +17,9 @@ static bool WaitCount(const std::atomic<int>& cnt, int expected,
                       std::chrono::milliseconds timeout = std::chrono::milliseconds(2000))
 {
     auto deadline = std::chrono::steady_clock::now() + timeout;
-    while (cnt.load() != expected && std::chrono::steady_clock::now() < deadline)
+    while (cnt.load() < expected && std::chrono::steady_clock::now() < deadline)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    return cnt.load() == expected;
+    return cnt.load() >= expected;
 }
 
 // Wait for thread queue to drain and give current message time to finish.

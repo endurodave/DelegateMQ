@@ -6,7 +6,6 @@
 #include "port/transport/ITransport.h"
 #include "port/transport/DmqHeader.h"
 #include "TransportMonitor.h"
-#include <map>
 #include <mutex>
 #include <cstdint>
 #include <vector>
@@ -161,7 +160,7 @@ private:
     dmq::transport::ITransport& m_transport;
     TransportMonitor& m_monitor;
     const int m_maxRetries;
-    std::map<uint16_t, RetryEntry> m_retryStore;
+    xmap<uint16_t, RetryEntry> m_retryStore;
     dmq::RecursiveMutex m_lock;
     dmq::ScopedConnection m_connection;
 };
