@@ -15,14 +15,18 @@ using namespace dmq::os;
 static std::function<void()> StartTimerDriver()
 {
     auto running = std::make_shared<std::atomic<bool>>(true);
-    std::thread([running]() {
+    auto t = std::make_shared<std::thread>([running]() {
         while (running->load()) {
             Timer::ProcessTimers();
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
-    }).detach();
+    });
 
-    return [running]() { running->store(false); };
+    return [running, t]() {
+        running->store(false);
+        if (t->joinable())
+            t->join();
+    };
 }
 
 int DataBusDeadlineTestMain()

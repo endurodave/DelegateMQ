@@ -76,10 +76,8 @@ void MainTask(void* pvParameters) {
     BSP_LED_On(LED4);
     printf("--- MainTask Started ---\n");
 
-    #if defined(DMQ_THREAD_FREERTOS)
-        TimerHandle_t xSystemTimer = xTimerCreate("SysTimer", mainTIMER_FREQUENCY_MS, pdTRUE, NULL, TimerCallback);
-        if (xSystemTimer) xTimerStart(xSystemTimer, 0);
-    #endif
+    TimerHandle_t xSystemTimer = xTimerCreate("SysTimer", mainTIMER_FREQUENCY_MS, pdTRUE, NULL, TimerCallback);
+    if (xSystemTimer) xTimerStart(xSystemTimer, 0);
 
     #if defined(RUN_SIMPLE_TESTS)
         printf("Mode: SIMPLE TESTS\n");
@@ -254,7 +252,7 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
     *pulIdleTaskStackSize = IDLE_STACK_SIZE;
 }
 
-#define TIMER_STACK_SIZE 512
+#define TIMER_STACK_SIZE 1024
 void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer,
                                      StackType_t **ppxTimerTaskStackBuffer,
                                      uint32_t *pulTimerTaskStackSize )

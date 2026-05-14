@@ -144,9 +144,7 @@ bool Timer::CheckExpired()
 //------------------------------------------------------------------------------
 void Timer::ProcessTimers()
 {
-    // Static: ProcessTimers() is called from a single thread, so reusing the
-    // same buffer each call is safe and avoids ~2.5KB of stack per invocation.
-    static dmq::Signal<void()>::Snapshot snapshots[dmq::MAX_TIMER_EXPIRED];
+    dmq::Signal<void()>::Snapshot snapshots[dmq::MAX_TIMER_EXPIRED];
     size_t count = 0;
 
     {
