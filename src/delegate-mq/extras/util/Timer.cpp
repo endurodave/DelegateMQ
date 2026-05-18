@@ -143,7 +143,7 @@ bool Timer::CheckExpired()
 // ProcessTimers
 //------------------------------------------------------------------------------
 void Timer::ProcessTimers()
-{
+{   
     dmq::Signal<void()>::Snapshot snapshots[dmq::MAX_TIMER_EXPIRED];
     size_t count = 0;
 

@@ -49,7 +49,7 @@ void NodeBridge::InitTelemetry(const std::string& address, uint16_t port, bool i
     if (gethostname(hostname, sizeof(hostname)) == 0) instance.hostname = hostname;
 
     // Create a dedicated bridge thread
-    instance.thread = std::make_unique<dmq::os::Thread>("NodeBridge", 1000, dmq::os::FullPolicy::DROP);
+    instance.thread = std::make_unique<dmq::os::Thread>("NodeBridge", 100, dmq::os::FullPolicy::DROP);
     instance.thread->CreateThread();
 
     // Subscribe to DataBus::Monitor to auto-discover topics. Asynchronous delivery to NodeBridge thread.

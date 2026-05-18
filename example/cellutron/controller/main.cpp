@@ -43,9 +43,9 @@ using namespace cellutron;
 // ---------------------------------------------------------------------------
 // Heap initialisation
 // ---------------------------------------------------------------------------
-#define mainREGION_1_SIZE   (512 * 1024)
-#define mainREGION_2_SIZE   (256 * 1024)
-#define mainREGION_3_SIZE   (256 * 1024)
+#define mainREGION_1_SIZE   (1024 * 1024)
+#define mainREGION_2_SIZE   (512 * 1024)
+#define mainREGION_3_SIZE   (512 * 1024)
 
 static uint8_t ucHeap1[mainREGION_1_SIZE];
 static uint8_t ucHeap2[mainREGION_2_SIZE];

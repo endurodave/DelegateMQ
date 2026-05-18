@@ -34,9 +34,9 @@
 #include "task.h"
 
 /* Heap regions for heap_5.c */
-#define mainREGION_1_SIZE                     8201
-#define mainREGION_2_SIZE                     23905
-#define mainREGION_3_SIZE                     16807
+#define mainREGION_1_SIZE                     (200 * 1024)
+#define mainREGION_2_SIZE                     (150 * 1024)
+#define mainREGION_3_SIZE                     (150 * 1024)
 
 extern void main_delegate(void);
 

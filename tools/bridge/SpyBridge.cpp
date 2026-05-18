@@ -29,7 +29,7 @@ void SpyBridge::Init(const std::string& address, uint16_t port, TransportType ty
     instance.nodeId = nodeId;
 
     // Create a dedicated bridge thread with DROP policy to prevent stalling publishers
-    instance.thread = std::make_unique<dmq::os::Thread>("SpyBridge", 10000, dmq::os::FullPolicy::DROP);
+    instance.thread = std::make_unique<dmq::os::Thread>("SpyBridge", 200, dmq::os::FullPolicy::DROP);
     dmq::util::ThreadMonitor::Register(instance.thread.get());
     instance.thread->CreateThread();
 

@@ -65,6 +65,12 @@ extern "C" void vApplicationMallocFailedHook(void)
     for (;;);
 }
 
+extern "C" void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName)
+{
+    printf("[FreeRTOS] Stack overflow in task: %s\n", pcTaskName);
+    for (;;);
+}
+
 extern "C" void vApplicationDaemonTaskStartupHook(void)
 {
     // Called once when the timer/daemon task starts — nothing needed here
