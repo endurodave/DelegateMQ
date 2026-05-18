@@ -1,5 +1,6 @@
 /// @file
 /// @brief Implement an asynchronous API using template helper function.
+/// Includes an async timeout example showing finite-wait delegate invocation.
 
 #include "AsyncAPI.h"
 #include "DelegateMQ.h"
@@ -117,6 +118,20 @@ namespace Example
     };
 
     // -------------------------------------------------------------------------
+    // Timeout helpers
+    // fast_op completes well within the timeout; slow_op deliberately exceeds it.
+    // -------------------------------------------------------------------------
+    static size_t fast_op(const std::string& data) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        return data.size();
+    }
+
+    static size_t slow_op(const std::string& data) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        return data.size();
+    }
+
+    // -------------------------------------------------------------------------
     // Main Example
     // -------------------------------------------------------------------------
     void AsyncAPIExample()
@@ -143,5 +158,53 @@ namespace Example
         size_t sent = AsyncInvoke(&AsyncApiHelpers::send_data_private, comm_thread, WAIT_INFINITE, std::string("send_data message"));
 
         comm_thread.ExitThread();
+
+        // -------------------------------------------------------------------------
+        // Async Timeout
+        //
+        // WAIT_INFINITE blocks until the target thread responds. A finite timeout
+        // lets the caller detect a hung or overloaded thread and act on it.
+        //
+        // Two ways to check whether the call succeeded or timed out:
+        //
+        //   1. AsyncInvoke() returns std::optional — empty on timeout.
+        //      Preferred when you need the return value: has_value() is unambiguous
+        //      even when the real return value could be 0 or false.
+        //
+        //   2. operator()() + IsSuccess() — returns default Ret{} on timeout.
+        //      Useful when the delegate is stored and reused across multiple calls.
+        // -------------------------------------------------------------------------
+        Thread work_thread("WorkThread");
+        work_thread.CreateThread();
+
+        constexpr auto kTimeout = std::chrono::milliseconds(50);
+
+        // -- Pattern 1: AsyncInvoke() -> std::optional ---------------------------
+        auto delegate = MakeDelegate(&slow_op, work_thread, kTimeout);
+
+        // slow_op sleeps 200ms; timeout is 50ms -> times out
+        auto result = delegate.AsyncInvoke(std::string("hello"));
+        if (result.has_value())
+            cout << "AsyncInvoke slow_op: success, bytes=" << result.value() << "\n";
+        else
+            cout << "AsyncInvoke slow_op: timed out after 50ms\n";
+
+        // fast_op sleeps 10ms; timeout is 50ms -> succeeds
+        auto delegate2 = MakeDelegate(&fast_op, work_thread, kTimeout);
+        auto result2 = delegate2.AsyncInvoke(std::string("hello"));
+        if (result2.has_value())
+            cout << "AsyncInvoke fast_op: success, bytes=" << result2.value() << "\n";
+        else
+            cout << "AsyncInvoke fast_op: timed out (unexpected)\n";
+
+        // -- Pattern 2: operator()() + IsSuccess() -------------------------------
+        auto delegate3 = MakeDelegate(&slow_op, work_thread, kTimeout);
+        size_t rv = delegate3(std::string("hello"));
+        if (delegate3.IsSuccess())
+            cout << "operator() slow_op: success, bytes=" << rv << "\n";
+        else
+            cout << "operator() slow_op: timed out, default return=" << rv << "\n";
+
+        work_thread.ExitThread();
     }
 }

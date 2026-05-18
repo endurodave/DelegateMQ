@@ -36,6 +36,9 @@
 #include "SignalSlotNoHeap.h"
 #include "ProducerConsumer.h"
 #include "CountdownLatch.h"
+#include "Coroutine.h"
+#include "MessagePriority.h"
+#include "ScatterGather.h"
 #include "ActiveObject.h"
 #include "AsyncMethodInvocation.h"
 #include "AsyncFuture.h"
@@ -121,8 +124,12 @@ int main(void)
 
     StartLogger();
 
-    // Create a worker thread with a 5s watchdog timeout
+    // Watchdog disabled in debug — slow builds cause false trips
+#ifdef NDEBUG
     workerThread1.CreateThread(std::chrono::milliseconds(5000));
+#else
+    workerThread1.CreateThread();
+#endif
     SysDataNoLock::GetInstance();
 
     // Create a timer that expires every 1S and calls
@@ -488,10 +495,19 @@ void RunAllExamples()
     // Run DataBus example
     DataBusExample();
 
+    // Run message priority example
+    MessagePriorityExample();
+
+    // Run scatter-gather example
+    ScatterGatherExample();
+
     // C++20 examples
 #if defined(_MSVC_LANG) && _MSVC_LANG >= 202002L || __cplusplus >= 202002L
     // Run countdown latch example
     CountdownLatchExample();
+
+    // Run coroutine co_await with delegates example
+    CoroutineExample();
 #endif
 }
 
@@ -501,8 +517,12 @@ void RunAllExamples()
 TestClass testClass;
 void RunMiscExamples()
 {
-    // Create a worker thread with a 5s watchdog timeout
+    // Watchdog disabled in debug — slow builds cause false trips
+#ifdef NDEBUG
     workerThread1.CreateThread(std::chrono::milliseconds(5000));
+#else
+    workerThread1.CreateThread();
+#endif
     SysDataNoLock::GetInstance();
 
     TestStruct testStruct;

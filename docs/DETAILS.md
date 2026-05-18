@@ -1698,6 +1698,37 @@ int main(void)
 }
 ```
 
+## C++20 Coroutine Example
+
+A thin `DelegateAwaitable` adapter (no core library changes) enables `co_await` on any async delegate call. The calling thread is **released** at each `co_await` and resumes the coroutine once the target thread finishes — unlike `WAIT_INFINITE`, which blocks the calling thread for the duration.
+
+```cpp
+// Build an awaitable that dispatches a member function to a target thread
+template<typename Obj, typename Ret, typename... Args>
+auto CoAwait(std::shared_ptr<Obj> obj, Ret(Obj::*func)(Args...), dmq::os::Thread& thread, Args... args);
+
+// Sequential reads across a thread boundary — no callbacks, no state machine
+static Task Process(std::shared_ptr<Sensor> sensor, dmq::os::Thread& sensor_thread)
+{
+    // Suspends here; sensor_thread calls Read(0); calling thread is free
+    int ch0 = co_await CoAwait(sensor, &Sensor::Read, sensor_thread, 0);
+
+    // Suspends again; calling thread remains free during Read(1)
+    int ch1 = co_await CoAwait(sensor, &Sensor::Read, sensor_thread, 1);
+
+    std::cout << "Sum: " << (ch0 + ch1) << "\n";
+}
+```
+
+| | `WAIT_INFINITE` | `co_await` |
+|---|---|---|
+| Calling thread during target work | blocked | free |
+| Other messages on calling thread | queued, delayed | processed normally |
+| Deadlock risk (cross-thread callbacks) | yes | no |
+| RTOS cost per concurrent operation | full task stack | coroutine frame only |
+
+Requires C++20. See `example/sample-code/Coroutine.cpp` for the full example.
+
 ## More Examples
 
 See the `examples/sample-code` directory for additional examples.
